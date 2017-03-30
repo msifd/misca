@@ -29,7 +29,9 @@ public class ChatFormat {
 
     private void processOfftop(ServerChatEvent event) {
         if (OFFTOP_PATTERN.matcher(event.message).matches()) {
-            ChatStyle style = event.component.getChatStyle();
+            // FIXME ChatComponentTranslation has no getChatStyle()
+//            ChatStyle style = event.component.getChatStyle();
+            ChatStyle style = new ChatStyle();
             style.setColor(OFFTOP_COLOR);
             event.component.setChatStyle(style);
         }

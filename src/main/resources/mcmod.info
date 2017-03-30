@@ -3,13 +3,13 @@
   "modid": "misca",
   "name": "Misca",
   "description": "Miscellaneous Ariadna [features]",
-  "version": "${version}",
-  "mcversion": "${mcversion}",
-  "url": "",
+  "version": "0.2.1",
+  "mcversion": "1.7.10",
+  "url": "https://gitlab.com/msifeed/misca",
   "updateUrl": "",
   "authorList": ["msifeed"],
-  "credits": "The Forge and FML guys, for making this example",
-  "logoFile": "",
+  "credits": "Все кредиты мне и только мне! Муахаха!",
+  "logoFile": "assets/misca/textures/misca.png",
   "screenshots": [],
   "dependencies": []
 }
