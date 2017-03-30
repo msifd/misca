@@ -21,12 +21,8 @@ public class ChatFormat {
     private static final Pattern OFFTOP_PATTERN = Pattern.compile("(^\\\\.*\\\\$)|(^\\\\{2}.*$)");
     private static final EnumChatFormatting OFFTOP_COLOR = EnumChatFormatting.GRAY;
 
-    public void init() {
-        MinecraftForge.EVENT_BUS.register(this);
-    }
-
-    @SideOnly(Side.SERVER)
     @SubscribeEvent
+    @SideOnly(Side.SERVER)
     public void onServerChatEvent(ServerChatEvent event) {
         processOfftop(event);
     }
