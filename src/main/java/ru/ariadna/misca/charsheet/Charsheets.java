@@ -1,5 +1,6 @@
 package ru.ariadna.misca.charsheet;
 
+import cpw.mods.fml.common.event.FMLServerStartingEvent;
 import net.minecraft.command.ICommand;
 import net.minecraftforge.client.ClientCommandHandler;
 
@@ -14,5 +15,9 @@ public class Charsheets {
     public void init() {
         CharsheetProvider.init();
         ClientCommandHandler.instance.registerCommand(command);
+    }
+
+    public void init(FMLServerStartingEvent event) {
+        event.registerServerCommand(command);
     }
 }

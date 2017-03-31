@@ -5,6 +5,7 @@ import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
+import cpw.mods.fml.common.event.FMLServerStartingEvent;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraftforge.common.MinecraftForge;
@@ -44,6 +45,12 @@ public class Misca {
     @SideOnly(Side.CLIENT)
     public void initClient(FMLInitializationEvent event) {
         MinecraftForge.EVENT_BUS.register(hideNametag);
+    }
+
+    @EventHandler
+    @SideOnly(Side.SERVER)
+    public void serverStart(FMLServerStartingEvent event) {
+        charsheets.init(event);
     }
 
     @EventHandler
