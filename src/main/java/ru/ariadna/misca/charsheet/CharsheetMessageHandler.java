@@ -27,8 +27,8 @@ public class CharsheetMessageHandler implements IMessageHandler<CharsheetMessage
             case SET:
                 CharsheetProvider.writeCharsheet(sender_name, message.payload);
                 break;
-            case CLEAR:
-                CharsheetProvider.deleteCharsheet(sender_name);
+            case REMOVE:
+                CharsheetProvider.removeCharsheet(sender_name);
                 break;
         }
 

@@ -19,7 +19,7 @@ public class CharsheetMessage implements IMessage {
     @Override
     public void fromBytes(ByteBuf buf) {
         this.type = Type.values()[buf.readByte()];
-        if (type != Type.CLEAR) {
+        if (type != Type.REMOVE) {
             this.payload = buf.toString(Charsets.UTF_8);
         }
     }
@@ -27,12 +27,12 @@ public class CharsheetMessage implements IMessage {
     @Override
     public void toBytes(ByteBuf buf) {
         buf.writeByte(type.ordinal());
-        if (type != Type.CLEAR) {
+        if (type != Type.REMOVE) {
             buf.writeBytes(payload.getBytes(Charsets.UTF_8));
         }
     }
 
     public enum Type {
-        GET, SET, CLEAR
+        GET, SET, REMOVE
     }
 }

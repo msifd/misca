@@ -60,7 +60,7 @@ class CharsheetProvider {
         }
     }
 
-    static void deleteCharsheet(String username) {
+    static void removeCharsheet(String username) {
         File file = new File(charsheet_dir, username + ".txt");
         if (file.canWrite()) {
             file.delete();

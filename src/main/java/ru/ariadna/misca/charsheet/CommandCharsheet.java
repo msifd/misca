@@ -10,10 +10,12 @@ import net.minecraft.util.ChatComponentTranslation;
 import net.minecraft.util.ChatStyle;
 import net.minecraft.util.EnumChatFormatting;
 
+import java.util.Arrays;
 import java.util.List;
 
 public class CommandCharsheet implements ICommand {
-    private static final String HELP_MSG = "/charsheet [ init | preview | upload | clear | <player> ]";
+    private static final String HELP_MSG = "/charsheet [ init | preview | upload | remove | <player> ]";
+    private static final List<String> subcommands = Arrays.asList("init", "preview", "upload", "remove");
 
     private SimpleNetworkWrapper network = new SimpleNetworkWrapper("misca.charsheet");
 
@@ -65,8 +67,8 @@ public class CommandCharsheet implements ICommand {
                         sender.addChatMessage(new ChatComponentTranslation("misca.charsheet.not_found_your"));
                     }
                     break;
-                case "clear":
-                    clearCharsheet();
+                case "remove":
+                    removeCharsheet();
                     break;
                 default:
                     // показать удаленный чаршит указанного игрока
@@ -95,7 +97,7 @@ public class CommandCharsheet implements ICommand {
 
     @Override
     public List addTabCompletionOptions(ICommandSender sender, String[] command_str) {
-        return null;
+        return subcommands;
     }
 
     @Override
@@ -118,7 +120,7 @@ public class CommandCharsheet implements ICommand {
         network.sendToServer(new CharsheetMessage(CharsheetMessage.Type.SET, text));
     }
 
-    private void clearCharsheet() {
-        network.sendToServer(new CharsheetMessage(CharsheetMessage.Type.CLEAR, null));
+    private void removeCharsheet() {
+        network.sendToServer(new CharsheetMessage(CharsheetMessage.Type.REMOVE, null));
     }
 }
