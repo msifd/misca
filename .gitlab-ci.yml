@@ -6,6 +6,11 @@ stages:
 before_script:
   - chmod +x gradlew
 
+cache:
+  paths:
+    - $HOME/.gradle/caches/
+    - $HOME/.gradle/wrapper/
+
 build:
   stage: build
   script:
@@ -13,5 +18,4 @@ build:
   allow_failure: false
   artifacts:
     paths:
-    - ./builds/
-
+      - ./build/libs/
