@@ -5,11 +5,12 @@ stages:
 
 before_script:
   - chmod +x gradlew
+  - export GRADLE_USER_HOME=`pwd`/.gradle
 
 cache:
   paths:
-    - $HOME/.gradle/caches/
-    - $HOME/.gradle/wrapper/
+    - .gradle/caches/
+    - .gradle/wrapper/
     - ./build/tmp/reobf/
 
 build:
