@@ -55,7 +55,7 @@ public class CommandCharsheet implements ICommand {
                 case "preview":
                     String cs = CharsheetProvider.readCharsheet(sender_name);
                     if (cs != null) {
-                        CharsheetProvider.sendCharsheet(sender, cs);
+                        CharsheetProvider.sendCharsheet(sender, sender_name, cs);
                     } else {
                         sender.addChatMessage(new ChatComponentTranslation("misca.charsheet.not_found_your"));
                     }

@@ -14,7 +14,7 @@ import ru.ariadna.misca.charsheet.Charsheets;
 import ru.ariadna.misca.chat.ChatFormat;
 import ru.ariadna.misca.client.HideNametag;
 
-@Mod(modid = "misca", version = "0.3.1", acceptableRemoteVersions = "0.3.1")
+@Mod(modid = "misca", version = "0.3.2")
 public class Misca {
     public static Logger logger = LogManager.getLogger("Misca");
 

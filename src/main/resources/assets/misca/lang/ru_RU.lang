@@ -1,5 +1,5 @@
 misca.charsheet.player_only=Эта команда только для игроков.
 misca.charsheet.title=§lЧаршит [%s]
-misca.charsheet.template=Пишите здесь и СОХРАНЯЙТЕ С КОДИРОВКОЙ UTF-8!\nПроверьте написанное через `/charsheet preview`.\nЗагрузите через `/charsheet upload`.
+misca.charsheet.template=Пишите здесь и СОХРАНЯЙТЕ С КОДИРОВКОЙ UTF-8!\nПроверьте написанное через '/charsheet preview'.\nЗагрузите через '/charsheet upload'.
 misca.charsheet.not_found=Чаршит не найден.
-misca.charsheet.not_found_your=У Вас еще нет чаршита. Его можно сделать с помощью `/charsheet init`!
+misca.charsheet.not_found_your=У Вас еще нет чаршита. Его можно сделать с помощью '/charsheet init'!

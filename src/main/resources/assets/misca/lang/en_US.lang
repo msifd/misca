@@ -1,5 +1,5 @@
 misca.charsheet.player_only=This command can be used only by a player
 misca.charsheet.title=§lCharsheet [%s]
-misca.charsheet.template=Write here and SAVE WITH UTF-8 ENCODING!\nCheck with `/charsheet preview`.\nUpload with `/charsheet upload`.
+misca.charsheet.template=Write here and SAVE WITH UTF-8 ENCODING!\nCheck with '/charsheet preview'.\nUpload with '/charsheet upload'.
 misca.charsheet.not_found=Charsheet not found.
-misca.charsheet.not_found_your=You have no charsheet yet. Make one via `/charsheet init`!
+misca.charsheet.not_found_your=You have no charsheet yet. Make one via '/charsheet init'!

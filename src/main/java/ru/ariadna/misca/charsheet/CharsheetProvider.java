@@ -25,9 +25,9 @@ class CharsheetProvider {
         charsheet_dir.mkdirs();
     }
 
-    static void sendCharsheet(ICommandSender sender, String text) {
+    static void sendCharsheet(ICommandSender sender, String username, String text) {
         String title = LanguageRegistry.instance().getStringLocalization("misca.charsheet.title");
-        String title_fmt = String.format(title, sender.getCommandSenderName());
+        String title_fmt = String.format(title, username);
         sender.addChatMessage(new ChatComponentText(title_fmt));
 
         try {
@@ -43,7 +43,8 @@ class CharsheetProvider {
         File file = new File(charsheet_dir, username + ".txt");
         if (file.isFile() && file.canRead()) {
             try {
-                return new String(Files.readAllBytes(file.toPath()), Charsets.UTF_8);
+                String text_bom = new String(Files.readAllBytes(file.toPath()), Charsets.UTF_8);
+                return text_bom.replace("\uFEFF", "");
             } catch (IOException e) {
                 Misca.logger.error("Failed to read charsheet '{}'!", username);
             }

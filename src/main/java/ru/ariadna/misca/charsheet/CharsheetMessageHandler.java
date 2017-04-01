@@ -17,7 +17,7 @@ public class CharsheetMessageHandler implements IMessageHandler<CharsheetMessage
             case GET:
                 String cs = CharsheetProvider.readCharsheet(message.payload);
                 if (cs != null) {
-                    CharsheetProvider.sendCharsheet(sender, cs);
+                    CharsheetProvider.sendCharsheet(sender, message.payload, cs);
                 } else if (sender_name.equals(message.payload)) {
                     sender.addChatMessage(new ChatComponentTranslation("misca.charsheet.not_found_your"));
                 } else {
