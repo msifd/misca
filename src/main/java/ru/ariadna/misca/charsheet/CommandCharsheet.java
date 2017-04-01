@@ -12,6 +12,7 @@ import net.minecraft.util.EnumChatFormatting;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class CommandCharsheet implements ICommand {
     private static final String HELP_MSG = "/charsheet [ init | preview | upload | remove | <player> ]";
@@ -39,15 +40,15 @@ public class CommandCharsheet implements ICommand {
     }
 
     @Override
-    public void processCommand(ICommandSender cmd_sender, String[] command_str) {
+    public void processCommand(ICommandSender cmd_sender, String[] args) {
         EntityPlayer sender = (EntityPlayer) cmd_sender;
         String sender_name = sender.getDisplayName();
 
-        if (command_str.length == 0) {
+        if (args.length == 0) {
             // показать удаленный чаршит этого игрока
             requestCharsheet(sender_name);
-        } else if (command_str.length == 1) {
-            switch (command_str[0]) {
+        } else if (args.length == 1) {
+            switch (args[0]) {
                 case "init":
                     CharsheetProvider.initCharsheet(sender_name);
                     break;
@@ -72,7 +73,7 @@ public class CommandCharsheet implements ICommand {
                     break;
                 default:
                     // показать удаленный чаршит указанного игрока
-                    requestCharsheet(command_str[0]);
+                    requestCharsheet(args[0]);
                     break;
             }
         } else {
@@ -96,14 +97,17 @@ public class CommandCharsheet implements ICommand {
     }
 
     @Override
-    public List addTabCompletionOptions(ICommandSender sender, String[] command_str) {
+    public List addTabCompletionOptions(ICommandSender sender, String[] args) {
+        if (args.length == 1) {
+            return subcommands.stream().filter(s -> s.startsWith(args[0])).collect(Collectors.toList());
+        }
         return subcommands;
     }
 
     @Override
     public boolean isUsernameIndex(String[] command_str, int index) {
         String s = command_str[0];
-        return index == 0 && !s.equals("init") && !s.equals("preview") && !s.equals("upload") && !s.equals("clear");
+        return index == 0 && !subcommands.contains(s);
     }
 
     @Override

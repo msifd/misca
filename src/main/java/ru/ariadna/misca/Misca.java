@@ -5,7 +5,6 @@ import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
-import cpw.mods.fml.common.event.FMLServerStartingEvent;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraftforge.common.MinecraftForge;
@@ -15,7 +14,7 @@ import ru.ariadna.misca.charsheet.Charsheets;
 import ru.ariadna.misca.chat.ChatFormat;
 import ru.ariadna.misca.client.HideNametag;
 
-@Mod(modid = "misca", version = "0.3", acceptableRemoteVersions = "*")
+@Mod(modid = "misca", version = "0.3.1", acceptableRemoteVersions = "0.3.1")
 public class Misca {
     public static Logger logger = LogManager.getLogger("Misca");
 
@@ -32,7 +31,6 @@ public class Misca {
 
     @EventHandler
     public void initCommon(FMLInitializationEvent event) {
-        charsheets.init();
     }
 
     @EventHandler
@@ -44,13 +42,8 @@ public class Misca {
     @EventHandler
     @SideOnly(Side.CLIENT)
     public void initClient(FMLInitializationEvent event) {
+        charsheets.init();
         MinecraftForge.EVENT_BUS.register(hideNametag);
-    }
-
-    @EventHandler
-    @SideOnly(Side.SERVER)
-    public void serverStart(FMLServerStartingEvent event) {
-        charsheets.init(event);
     }
 
     @EventHandler
