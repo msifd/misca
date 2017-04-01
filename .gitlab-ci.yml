@@ -10,6 +10,7 @@ cache:
   paths:
     - $HOME/.gradle/caches/
     - $HOME/.gradle/wrapper/
+    - ./build/tmp/reobf/
 
 build:
   stage: build
@@ -18,4 +19,4 @@ build:
   allow_failure: false
   artifacts:
     paths:
-      - ./build/libs/
+      - ./build/libs/misca-*.jar
