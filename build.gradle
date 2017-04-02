@@ -9,6 +9,7 @@ buildscript {
             name = "sonatype"
             url = "https://oss.sonatype.org/content/repositories/snapshots/"
         }
+
     }
     dependencies {
         classpath 'net.minecraftforge.gradle:ForgeGradle:1.2-SNAPSHOT'
@@ -37,8 +38,13 @@ idea {
     }
 }
 
+configurations {
+    shade
+    compile.extendsFrom shade
+}
+
 dependencies {
-    compile 'com.moandjiezana.toml:toml4j:0.7.1'
+    shade 'com.moandjiezana.toml:toml4j:0.7.1'
 }
 
 processResources {
@@ -57,5 +63,13 @@ processResources {
     // copy everything else, thats not the mcmod.info
     from(sourceSets.main.resources.srcDirs) {
         exclude 'mcmod.info'
+    }
+}
+
+jar {
+    configurations.shade.each { dep ->
+        from(project.zipTree(dep)) {
+            exclude 'com/google/gson/**', 'META-INF', 'META-INF/**'
+        }
     }
 }
