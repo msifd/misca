@@ -2,6 +2,8 @@ package ru.ariadna.misca.charsheet;
 
 import net.minecraft.command.ICommand;
 import net.minecraftforge.client.ClientCommandHandler;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * Чаршиты!
@@ -9,10 +11,12 @@ import net.minecraftforge.client.ClientCommandHandler;
  * Сервер выводит текст (get) и оперирует файлами (upload).
  */
 public class Charsheets {
-    private ICommand command = new CommandCharsheet();
+    static Logger logger = LogManager.getLogger("Misca-Charsheets");
+    static CharsheetProvider provider = new CharsheetProvider();
+    private ICommand command = new CommandCharsheet(provider);
 
     public void init() {
-        CharsheetProvider.init();
+        provider.init();
         ClientCommandHandler.instance.registerCommand(command);
     }
 }

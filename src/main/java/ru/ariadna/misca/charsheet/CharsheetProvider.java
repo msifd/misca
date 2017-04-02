@@ -18,14 +18,14 @@ import java.nio.file.Files;
 
 @SuppressWarnings("ResultOfMethodCallIgnored")
 class CharsheetProvider {
-    private static File charsheet_dir;
+    private File charsheet_dir;
 
-    static void init() {
+    void init() {
         charsheet_dir = new File(Misca.config.config_dir, "charsheets");
         charsheet_dir.mkdirs();
     }
 
-    static void sendCharsheet(ICommandSender sender, String username, String text) {
+    void sendCharsheet(ICommandSender sender, String username, String text) {
         String title = LanguageRegistry.instance().getStringLocalization("misca.charsheet.title");
         String title_fmt = String.format(title, username);
         sender.addChatMessage(new ChatComponentText(title_fmt));
@@ -35,33 +35,33 @@ class CharsheetProvider {
                 sender.addChatMessage(new ChatComponentText(line));
             }
         } catch (IOException e) {
-            Misca.logger.error("Unreachable! Tried to read charsheet by line.");
+            Charsheets.logger.error("Unreachable! Tried to read charsheet by line.");
         }
     }
 
-    static String readCharsheet(String username) {
+    String readCharsheet(String username) {
         File file = new File(charsheet_dir, username + ".txt");
         if (file.isFile() && file.canRead()) {
             try {
                 String text_bom = new String(Files.readAllBytes(file.toPath()), Charsets.UTF_8);
                 return text_bom.replace("\uFEFF", "");
             } catch (IOException e) {
-                Misca.logger.error("Failed to read charsheet '{}'!", username);
+                Charsheets.logger.error("Failed to read charsheet '{}'!", username);
             }
         }
         return null;
     }
 
-    static void writeCharsheet(String username, String text) {
+    void writeCharsheet(String username, String text) {
         File file = new File(charsheet_dir, username + ".txt");
         try {
             Files.write(file.toPath(), text.getBytes(Charsets.UTF_8));
         } catch (IOException e) {
-            Misca.logger.error("Failed to write charsheet '{}'! File: {}", username, file.getAbsolutePath());
+            Charsheets.logger.error("Failed to write charsheet '{}'! File: {}", username, file.getAbsolutePath());
         }
     }
 
-    static void removeCharsheet(String username) {
+    void removeCharsheet(String username) {
         File file = new File(charsheet_dir, username + ".txt");
         if (file.canWrite()) {
             file.delete();
@@ -69,7 +69,7 @@ class CharsheetProvider {
     }
 
     @SideOnly(Side.CLIENT)
-    static void initCharsheet(String username) {
+    void initCharsheet(String username) {
         File file = new File(charsheet_dir, username + ".txt");
         if (!file.exists()) {
             String temp = LanguageRegistry.instance().getStringLocalization("misca.charsheet.template");
@@ -78,7 +78,7 @@ class CharsheetProvider {
                 file.createNewFile();
                 Files.write(file.toPath(), temp.getBytes(Charsets.UTF_8));
             } catch (IOException e) {
-                Misca.logger.error("Failed to write init charsheet! File: {}", file.getAbsolutePath());
+                Charsheets.logger.error("Failed to write init charsheet! File: {}", file.getAbsolutePath());
             }
         }
 
@@ -86,7 +86,7 @@ class CharsheetProvider {
         try {
             Desktop.getDesktop().edit(file);
         } catch (Exception e) {
-            Misca.logger.error("Failed to open charsheet in editor! :( ({})", e.getMessage());
+            Charsheets.logger.error("Failed to open charsheet in editor! :( ({})", e.getMessage());
         }
     }
 }

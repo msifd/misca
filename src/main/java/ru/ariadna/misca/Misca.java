@@ -5,24 +5,27 @@ import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
+import cpw.mods.fml.common.event.FMLServerStartingEvent;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraftforge.common.MinecraftForge;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import ru.ariadna.misca.channels.ChatChannels;
 import ru.ariadna.misca.charsheet.Charsheets;
-import ru.ariadna.misca.chat.ChatFormat;
+import ru.ariadna.misca.chat.OfftopFormat;
 import ru.ariadna.misca.client.HideNametag;
 
-@Mod(modid = "misca", version = "0.3.2")
+@Mod(modid = "misca", version = "0.4")
 public class Misca {
-    public static Logger logger = LogManager.getLogger("Misca");
+    static Logger logger = LogManager.getLogger("Misca");
 
     public static MiscaConfig config;
 
-    private ChatFormat chatFormat = new ChatFormat();
+    private OfftopFormat offtopFormat = new OfftopFormat();
     private HideNametag hideNametag = new HideNametag();
     private Charsheets charsheets = new Charsheets();
+    private ChatChannels chatChannels = new ChatChannels();
 
     @EventHandler
     public void preInit(FMLPreInitializationEvent event) {
@@ -31,19 +34,25 @@ public class Misca {
 
     @EventHandler
     public void initCommon(FMLInitializationEvent event) {
+        charsheets.init();
     }
 
     @EventHandler
     @SideOnly(Side.SERVER)
     public void initServer(FMLInitializationEvent event) {
-        MinecraftForge.EVENT_BUS.register(chatFormat);
+        MinecraftForge.EVENT_BUS.register(offtopFormat);
     }
 
     @EventHandler
     @SideOnly(Side.CLIENT)
     public void initClient(FMLInitializationEvent event) {
-        charsheets.init();
         MinecraftForge.EVENT_BUS.register(hideNametag);
+    }
+
+    @EventHandler
+    @SideOnly(Side.SERVER)
+    public void serverStart(FMLServerStartingEvent event) {
+        chatChannels.init(event);
     }
 
     @EventHandler

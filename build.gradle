@@ -18,7 +18,7 @@ buildscript {
 apply plugin: 'forge'
 apply plugin: 'idea'
 
-version = "0.3.2"
+version = "0.4"
 group = "ru.ariadna.misca"
 archivesBaseName = "misca"
 
@@ -38,7 +38,7 @@ idea {
 }
 
 dependencies {
-
+    compile 'com.moandjiezana.toml:toml4j:0.7.1'
 }
 
 processResources {

@@ -12,7 +12,7 @@ import java.util.regex.Pattern;
  * Форматируем сообщения по шаблону.
  * Например сообщения в слешах делаются серыми чтобы отличить оффтоп
  */
-public class ChatFormat {
+public class OfftopFormat {
     private static final Pattern OFFTOP_PATTERN = Pattern.compile("(^\\\\.*\\\\$)|(^\\\\{2}.*$)");
     private static final EnumChatFormatting OFFTOP_COLOR = EnumChatFormatting.GRAY;
 
