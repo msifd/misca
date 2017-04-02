@@ -1,5 +1,18 @@
-misca.charsheet.player_only=This command can be used only by a player
+misca.command.player_only=This command can be used only by a player
+
 misca.charsheet.title=§lCharsheet [%s]
 misca.charsheet.template=Write here and SAVE WITH UTF-8 ENCODING!\nCheck with '/charsheet preview'.\nUpload with '/charsheet upload'.
 misca.charsheet.not_found=Charsheet not found.
 misca.charsheet.not_found_your=You have no charsheet yet. Make one via '/charsheet init'!
+
+misca.channels.help.help=Use '/channel help <command>' for more information on a specific command.\nCommands:\n help - show this message\n list - show channels you are in\n register - register new channel with given title\n remove - remove your channel\n set - modify your channel
+misca.channels.help.list=[channel list] list info
+misca.channels.help.register=[channel register]: register channel. Format: register <channel name>
+misca.channels.help.set=[channel set] modify channel
+misca.channels.error.unknown_channel=Can not find this channel!
+misca.channels.error.not_member=You are not a member of this channel!
+misca.channels.error.channel_already_exists=Channel with that already exists!
+misca.channels.error.have_no_perm=You have no permission for that!
+misca.channels.list.some=Your channels: %s
+misca.channels.list.none=You are not a member of any channel
+misca.channels.set.help=You are not a member of any channel

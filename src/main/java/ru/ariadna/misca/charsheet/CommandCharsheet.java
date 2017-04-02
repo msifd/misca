@@ -91,7 +91,7 @@ public class CommandCharsheet implements ICommand {
         if (sender instanceof EntityPlayer) {
             return true;
         } else {
-            sender.addChatMessage(new ChatComponentTranslation("misca.charsheet.player_only"));
+            sender.addChatMessage(new ChatComponentTranslation("misca.command.player_only"));
             return false;
         }
     }
