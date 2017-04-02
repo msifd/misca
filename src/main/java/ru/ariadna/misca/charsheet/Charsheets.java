@@ -12,10 +12,11 @@ import org.apache.logging.log4j.Logger;
  */
 public class Charsheets {
     static Logger logger = LogManager.getLogger("Misca-Charsheets");
-    private ICommand command = new CommandCharsheet();
+    static CharsheetProvider provider = new CharsheetProvider();
+    private ICommand command = new CommandCharsheet(provider);
 
     public void init() {
-        CharsheetProvider.init();
+        provider.init();
         ClientCommandHandler.instance.registerCommand(command);
     }
 }

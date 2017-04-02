@@ -12,12 +12,13 @@ public class CharsheetMessageHandler implements IMessageHandler<CharsheetMessage
     public IMessage onMessage(CharsheetMessage message, MessageContext ctx) {
         EntityPlayerMP sender = ctx.getServerHandler().playerEntity;
         String sender_name = sender.getDisplayName();
+        CharsheetProvider provider = Charsheets.provider;
 
         switch (message.type) {
             case GET:
-                String cs = CharsheetProvider.readCharsheet(message.payload);
+                String cs = provider.readCharsheet(message.payload);
                 if (cs != null) {
-                    CharsheetProvider.sendCharsheet(sender, message.payload, cs);
+                    provider.sendCharsheet(sender, message.payload, cs);
                 } else if (sender_name.equals(message.payload)) {
                     sender.addChatMessage(new ChatComponentTranslation("misca.charsheet.not_found_your"));
                 } else {
@@ -25,10 +26,12 @@ public class CharsheetMessageHandler implements IMessageHandler<CharsheetMessage
                 }
                 break;
             case SET:
-                CharsheetProvider.writeCharsheet(sender_name, message.payload);
+                provider.writeCharsheet(sender_name, message.payload);
+                sender.addChatMessage(new ChatComponentTranslation("misca.charsheet.upload"));
                 break;
             case REMOVE:
-                CharsheetProvider.removeCharsheet(sender_name);
+                provider.removeCharsheet(sender_name);
+                sender.addChatMessage(new ChatComponentTranslation("misca.charsheet.remove"));
                 break;
         }
 

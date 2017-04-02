@@ -1,6 +1,7 @@
 package ru.ariadna.misca.charsheet;
 
 import cpw.mods.fml.common.network.simpleimpl.SimpleNetworkWrapper;
+import cpw.mods.fml.common.registry.LanguageRegistry;
 import cpw.mods.fml.relauncher.Side;
 import net.minecraft.command.ICommand;
 import net.minecraft.command.ICommandSender;
@@ -9,18 +10,23 @@ import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.ChatComponentTranslation;
 import net.minecraft.util.ChatStyle;
 import net.minecraft.util.EnumChatFormatting;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
 
+import java.io.IOException;
+import java.io.StringReader;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class CommandCharsheet implements ICommand {
-    private static final String HELP_MSG = "/charsheet [ init | preview | upload | remove | <player> ]";
-    private static final List<String> subcommands = Arrays.asList("init", "preview", "upload", "remove");
+    private static final List<String> subcommands = Arrays.asList("help", "init", "preview", "upload", "remove");
 
     private SimpleNetworkWrapper network = new SimpleNetworkWrapper("misca.charsheet");
+    private CharsheetProvider provider;
 
-    CommandCharsheet() {
+    CommandCharsheet(CharsheetProvider provider) {
+        this.provider = provider;
         network.registerMessage(CharsheetMessageHandler.class, CharsheetMessage.class, 0, Side.SERVER);
     }
 
@@ -31,7 +37,7 @@ public class CommandCharsheet implements ICommand {
 
     @Override
     public String getCommandUsage(ICommandSender sender) {
-        return HELP_MSG;
+        return "/charsheets help";
     }
 
     @Override
@@ -47,42 +53,44 @@ public class CommandCharsheet implements ICommand {
         if (args.length == 0) {
             // показать удаленный чаршит этого игрока
             requestCharsheet(sender_name);
-        } else if (args.length == 1) {
-            switch (args[0]) {
-                case "init":
-                    CharsheetProvider.initCharsheet(sender_name);
-                    break;
-                case "preview":
-                    String cs = CharsheetProvider.readCharsheet(sender_name);
-                    if (cs != null) {
-                        CharsheetProvider.sendCharsheet(sender, sender_name, cs);
-                    } else {
-                        sender.addChatMessage(new ChatComponentTranslation("misca.charsheet.not_found_your"));
+            return;
+        }
+
+        switch (args[0]) {
+            case "init":
+                provider.initCharsheet(sender_name);
+                break;
+            case "preview":
+                String cs = provider.readCharsheet(sender_name);
+                if (cs != null) {
+                    provider.sendCharsheet(sender, sender_name, cs);
+                } else {
+                    sender.addChatMessage(new ChatComponentTranslation("misca.charsheet.not_found_your"));
+                }
+                break;
+            case "upload":
+                String cs2 = provider.readCharsheet(sender_name);
+                if (cs2 != null) {
+                    uploadCharsheet(cs2);
+                } else {
+                    sender.addChatMessage(new ChatComponentTranslation("misca.charsheet.not_found_your"));
+                }
+                break;
+            case "remove":
+                removeCharsheet();
+                break;
+            default:
+                // case help too
+                String msg = LanguageRegistry.instance().getStringLocalization("misca.charsheet.help");
+                msg = StringEscapeUtils.unescapeJava(msg);
+                try {
+                    for (String line : IOUtils.readLines(new StringReader(msg))) {
+                        sender.addChatMessage(new ChatComponentText(line));
                     }
-                    break;
-                case "upload":
-                    String cs2 = CharsheetProvider.readCharsheet(sender_name);
-                    if (cs2 != null) {
-                        uploadCharsheet(cs2);
-                    } else {
-                        sender.addChatMessage(new ChatComponentTranslation("misca.charsheet.not_found_your"));
-                    }
-                    break;
-                case "remove":
-                    removeCharsheet();
-                    break;
-                default:
-                    // показать удаленный чаршит указанного игрока
-                    requestCharsheet(args[0]);
-                    break;
-            }
-        } else {
-            // хелп мессадж
-            ChatComponentText cc = new ChatComponentText(HELP_MSG);
-            ChatStyle cs = new ChatStyle();
-            cs.setColor(EnumChatFormatting.RED);
-            cc.setChatStyle(cs);
-            sender.addChatMessage(cc);
+                } catch (IOException e) {
+                    Charsheets.logger.error("Unreachable! Tried to read charsheet help by line.");
+                }
+                break;
         }
     }
 

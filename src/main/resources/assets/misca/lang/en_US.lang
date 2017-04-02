@@ -4,6 +4,9 @@ misca.charsheet.title=§lCharsheet [%s]
 misca.charsheet.template=Write here and SAVE WITH UTF-8 ENCODING!\nCheck with '/charsheet preview'.\nUpload with '/charsheet upload'.
 misca.charsheet.not_found=Charsheet not found.
 misca.charsheet.not_found_your=You have no charsheet yet. Make one via '/charsheet init'!
+misca.charsheet.help=/charsheet [command] - Charsheets.\nCommands:\n (no command) - show your remote charsheet.\n help - show this help message\n init - create local charsheet and open it in editor.\n preview - show how your local charsheet will look after upload.\n upload - upload local charsheet to the sever, so others can read it.\n remove - remove your remote charsheet from server.
+misca.charsheet.upload=Charsheet uploaded.
+misca.charsheet.remove=Charsheet removed.
 
 misca.channels.help.usage=For help enter '/channel help <command>'
 misca.channels.help.unknown_command=Unknown command! For help enter '/channel help'

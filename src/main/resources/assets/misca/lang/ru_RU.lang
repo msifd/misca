@@ -4,6 +4,9 @@ misca.charsheet.title=§lЧаршит [%s]
 misca.charsheet.template=Пишите здесь и СОХРАНЯЙТЕ С КОДИРОВКОЙ UTF-8!\nПроверьте написанное через '/charsheet preview'.\nЗагрузите через '/charsheet upload'.
 misca.charsheet.not_found=Чаршит не найден.
 misca.charsheet.not_found_your=У Вас еще нет чаршита. Его можно сделать с помощью '/charsheet init'!
+misca.charsheet.help=/charsheet [команда] - Чаршиты.\nКоманды:\n (без команды) - показывает чаршит на сервере, который видят другие.\n help - показывает сообщение, которые Вы читаете.\n init - создаст локальный чаршит и откроет его в редакторе.\n preview - покажет как выглядит локальный чаршит. Используйте перед загрузкой на сервер.\n upload - загружает чаршит на сервер, после чего другие смогут его прочитать.\n remove - удаляет чаршит с сервера. Для самых скромных.
+misca.charsheet.upload=Чаршит загружен.
+misca.charsheet.remove=Чаршит удален.
 
 misca.channels.help.usage=Для помощи введите '/channel help <команда>'
 misca.channels.help.unknown_command=Неизвестная команда! Для помощи введите '/channel help'

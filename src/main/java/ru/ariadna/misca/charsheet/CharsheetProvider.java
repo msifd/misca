@@ -18,14 +18,14 @@ import java.nio.file.Files;
 
 @SuppressWarnings("ResultOfMethodCallIgnored")
 class CharsheetProvider {
-    private static File charsheet_dir;
+    private File charsheet_dir;
 
-    static void init() {
+    void init() {
         charsheet_dir = new File(Misca.config.config_dir, "charsheets");
         charsheet_dir.mkdirs();
     }
 
-    static void sendCharsheet(ICommandSender sender, String username, String text) {
+    void sendCharsheet(ICommandSender sender, String username, String text) {
         String title = LanguageRegistry.instance().getStringLocalization("misca.charsheet.title");
         String title_fmt = String.format(title, username);
         sender.addChatMessage(new ChatComponentText(title_fmt));
@@ -39,7 +39,7 @@ class CharsheetProvider {
         }
     }
 
-    static String readCharsheet(String username) {
+    String readCharsheet(String username) {
         File file = new File(charsheet_dir, username + ".txt");
         if (file.isFile() && file.canRead()) {
             try {
@@ -52,7 +52,7 @@ class CharsheetProvider {
         return null;
     }
 
-    static void writeCharsheet(String username, String text) {
+    void writeCharsheet(String username, String text) {
         File file = new File(charsheet_dir, username + ".txt");
         try {
             Files.write(file.toPath(), text.getBytes(Charsets.UTF_8));
@@ -61,7 +61,7 @@ class CharsheetProvider {
         }
     }
 
-    static void removeCharsheet(String username) {
+    void removeCharsheet(String username) {
         File file = new File(charsheet_dir, username + ".txt");
         if (file.canWrite()) {
             file.delete();
@@ -69,7 +69,7 @@ class CharsheetProvider {
     }
 
     @SideOnly(Side.CLIENT)
-    static void initCharsheet(String username) {
+    void initCharsheet(String username) {
         File file = new File(charsheet_dir, username + ".txt");
         if (!file.exists()) {
             String temp = LanguageRegistry.instance().getStringLocalization("misca.charsheet.template");
