@@ -1,29 +1,34 @@
 package ru.ariadna.misca.channels;
 
+import com.google.common.base.Throwables;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.util.ChatComponentTranslation;
 
 class ChannelsException extends Exception {
-    final Type type;
+    private final Type type;
 
     ChannelsException(Type type) {
         this.type = type;
     }
 
     void notifyPlayer(ICommandSender sender) {
-        String msgkey = "misca.channels.unknown_error";
+        String msgkey;
         switch (type) {
             case UNKNOWN_CHANNEL:
                 msgkey = "misca.channels.error.unknown_channel";
                 break;
-            case CHANNEL_ALREADY_EXISTS:
-                msgkey = "misca.channels.error.not_member";
-                break;
             case NOT_MEMBER:
-                msgkey = "misca.channels.error.channel_already_exists";
+                msgkey = "misca.channels.error.not_member";
                 break;
             case NO_PERM:
                 msgkey = "misca.channels.error.have_no_perm";
+                break;
+            case PLAYER_ONLY:
+                msgkey = "misca.command.player_only";
+                break;
+            default:
+                msgkey = "misca.channels.error.unknown_error";
+                ChatChannels.logger.error("Unknown error! {}", Throwables.getStackTraceAsString(new Throwable()));
                 break;
         }
         sender.addChatMessage(new ChatComponentTranslation(msgkey));
@@ -31,8 +36,9 @@ class ChannelsException extends Exception {
 
     enum Type {
         UNKNOWN_CHANNEL,
-        CHANNEL_ALREADY_EXISTS,
         NOT_MEMBER,
-        NO_PERM
+        NO_PERM,
+        PLAYER_ONLY,
+        UNKNOWN_PARAM
     }
 }

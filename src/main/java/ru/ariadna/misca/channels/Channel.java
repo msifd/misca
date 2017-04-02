@@ -1,15 +1,19 @@
 package ru.ariadna.misca.channels;
 
+import java.util.HashSet;
+import java.util.Set;
+
 class Channel {
     String name;
-    String owner;
     int radius = 0;
-    String format = "[%s]%s: %s";
-//    boolean crossDimension = true;
-//    String permission;
+    String format = "[%s] %s: %s";
+    boolean isMuted = false;
+    boolean canInvite = false;
+    boolean isPublic = false;
+    boolean isGlobal = false;
+    Set<String> players = new HashSet<>();
 
-    Channel(String owner, String name) {
+    Channel(String name) {
         this.name = name;
-        this.owner = owner;
     }
 }

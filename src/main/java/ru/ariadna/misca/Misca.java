@@ -13,19 +13,19 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import ru.ariadna.misca.channels.ChatChannels;
 import ru.ariadna.misca.charsheet.Charsheets;
-import ru.ariadna.misca.chat.ChatFormat;
+import ru.ariadna.misca.chat.OfftopFormat;
 import ru.ariadna.misca.client.HideNametag;
 
-@Mod(modid = "misca", version = "0.3.2")
+@Mod(modid = "misca", version = "0.4")
 public class Misca {
-    public static Logger logger = LogManager.getLogger("Misca");
+    static Logger logger = LogManager.getLogger("Misca");
 
     public static MiscaConfig config;
 
-    private ChatFormat chatFormat = new ChatFormat();
-    private ChatChannels chatChannels = new ChatChannels();
+    private OfftopFormat offtopFormat = new OfftopFormat();
     private HideNametag hideNametag = new HideNametag();
     private Charsheets charsheets = new Charsheets();
+    private ChatChannels chatChannels = new ChatChannels();
 
     @EventHandler
     public void preInit(FMLPreInitializationEvent event) {
@@ -40,7 +40,7 @@ public class Misca {
     @EventHandler
     @SideOnly(Side.SERVER)
     public void initServer(FMLInitializationEvent event) {
-        MinecraftForge.EVENT_BUS.register(chatFormat);
+        MinecraftForge.EVENT_BUS.register(offtopFormat);
     }
 
     @EventHandler

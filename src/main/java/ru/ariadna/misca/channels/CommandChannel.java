@@ -4,17 +4,20 @@ import com.google.common.base.Joiner;
 import cpw.mods.fml.common.registry.LanguageRegistry;
 import net.minecraft.command.ICommand;
 import net.minecraft.command.ICommandSender;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.ChatComponentTranslation;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
 
+import java.io.IOException;
+import java.io.StringReader;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class CommandChannel implements ICommand {
+class CommandChannel implements ICommand {
     private static final List<String> subcommands = Arrays.asList("help", "list", "register", "join", "invite", "leave", "remove", "set");
 
     private ChannelManager manager;
@@ -30,7 +33,7 @@ public class CommandChannel implements ICommand {
 
     @Override
     public String getCommandUsage(ICommandSender sender) {
-        return "/channel < help | list | register | join | leave | remove | set >";
+        return "/channel < help | list | register | join | invite | leave | remove | set >";
     }
 
     @Override
@@ -41,77 +44,93 @@ public class CommandChannel implements ICommand {
     @Override
     public void processCommand(ICommandSender sender, String[] args) {
         if (args.length == 0) {
-            sendManual(sender, null);
+            sendManual(sender, "help");
             return;
         }
 
+        if (args.length == 1) {
+            switch (args[0]) {
+                case "list":
+                    if (sender instanceof MinecraftServer) {
+                        sender.addChatMessage(new ChatComponentTranslation("misca.channels.list.server"));
+                        return;
+                    }
+
+                    Collection<String> chs = manager.listPlayerChannels(sender.getCommandSenderName());
+                    if (chs.isEmpty()) {
+                        sender.addChatMessage(new ChatComponentTranslation("misca.channels.list.none"));
+                    } else {
+                        String str = Joiner.on(' ').join(chs);
+                        sender.addChatMessage(new ChatComponentTranslation("misca.channels.list.some", str));
+                    }
+                    return;
+                default:
+                    // Kinda universal Help command
+                    sendManual(sender, args[0]);
+                    return;
+            }
+        }
+
         switch (args[0]) {
-            case "list":
-                Collection<Channel> chs = manager.listPlayerChannels(sender.getCommandSenderName());
-                if (chs.isEmpty()) {
-                    sender.addChatMessage(new ChatComponentTranslation("misca.channels.list.none"));
-                } else {
-                    List<String> chs_str = chs.stream().map(c -> c.name).collect(Collectors.toList());
-                    String str = Joiner.on(' ').join(chs_str);
-                    sender.addChatMessage(new ChatComponentTranslation("misca.channels.list.some", str));
-                }
-                break;
             case "register":
                 try {
-                    manager.registerChannel(sender.getCommandSenderName(), args[0]);
+                    manager.registerChannel(sender, args[1]);
                 } catch (ChannelsException e) {
                     e.notifyPlayer(sender);
                 }
                 break;
             case "join":
                 try {
-                    manager.joinToChannel(sender.getCommandSenderName(), args[0]);
+                    manager.joinToChannel(sender, args[1]);
                 } catch (ChannelsException e) {
                     e.notifyPlayer(sender);
                 }
                 break;
+            case "invite":
+                if (args.length == 3) {
+                    try {
+                        manager.inviteToChannel(sender, args[1], args[2]);
+                    } catch (ChannelsException e) {
+                        e.notifyPlayer(sender);
+                    }
+                } else {
+                    sendManual(sender, args[0]);
+                }
+                break;
             case "leave":
                 try {
-                    manager.leaveChannel(sender.getCommandSenderName(), args[0]);
+                    manager.leaveChannel(sender, args[1]);
                 } catch (ChannelsException e) {
                     e.notifyPlayer(sender);
                 }
                 break;
             case "remove":
                 try {
-                    manager.removeChannel((EntityPlayer) sender, args[0]);
+                    manager.removeChannel(sender, args[1]);
                 } catch (ChannelsException e) {
                     e.notifyPlayer(sender);
                 }
                 break;
             case "set":
-                if (args.length == 3) {
+                if (args.length == 4) {
                     try {
-                        manager.modifyChannel((EntityPlayer) sender, args[0], args[1], args[2]);
+                        manager.modifyChannel(sender, args[1], args[2], args[3]);
                     } catch (ChannelsException e) {
                         e.notifyPlayer(sender);
                     }
                 } else {
-                    sender.addChatMessage(new ChatComponentTranslation("misca.channels.help.set"));
+                    sendManual(sender, args[0]);
                 }
                 break;
-            case "help":
-                sendManual(sender, null);
-                break;
             default:
-                // send "unknown command"
+                sendManual(sender, "help");
                 break;
         }
     }
 
     @Override
     public boolean canCommandSenderUseCommand(ICommandSender sender) {
-        if (sender instanceof EntityPlayer) {
-            return true;
-        } else {
-            sender.addChatMessage(new ChatComponentTranslation("misca.command.player_only"));
-            return false;
-        }
+        return true;
     }
 
     @Override
@@ -135,9 +154,14 @@ public class CommandChannel implements ICommand {
     }
 
     private void sendManual(ICommandSender sender, String mode) {
-        String help_msg = LanguageRegistry.instance().getStringLocalization("misca.channels.help");
-        help_msg = StringEscapeUtils.unescapeJava(help_msg);
-        sender.addChatMessage(new ChatComponentText(help_msg));
-        // TODO send by line
+        String msg = LanguageRegistry.instance().getStringLocalization("misca.channels.help" + mode);
+        msg = StringEscapeUtils.unescapeJava(msg);
+        try {
+            for (String line : IOUtils.readLines(new StringReader(msg))) {
+                sender.addChatMessage(new ChatComponentText(line));
+            }
+        } catch (IOException e) {
+            ChatChannels.logger.error("Unreachable! Tried to read help message by line.");
+        }
     }
 }

@@ -4,9 +4,11 @@ import com.google.common.base.Joiner;
 import net.minecraft.command.ICommand;
 import net.minecraft.command.ICommandSender;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
-public class CommandSend implements ICommand {
+class CommandSend implements ICommand {
     private ChannelManager manager;
 
     CommandSend(ChannelManager manager) {
@@ -37,7 +39,7 @@ public class CommandSend implements ICommand {
         String ch = args[0];
         args[0] = null;
         try {
-            manager.sendToChannel(ch, sender.getCommandSenderName(), Joiner.on(' ').skipNulls().join(args));
+            manager.sendToChannel(ch, sender, Joiner.on(' ').skipNulls().join(args));
         } catch (ChannelsException e) {
             e.notifyPlayer(sender);
         }
@@ -45,12 +47,19 @@ public class CommandSend implements ICommand {
 
     @Override
     public boolean canCommandSenderUseCommand(ICommandSender sender) {
-        return false;
+        return true;
     }
 
     @Override
     public List addTabCompletionOptions(ICommandSender sender, String[] args) {
-        return null;
+        if (args.length != 1) {
+            return null;
+        }
+        Collection<String> chs = manager.listPlayerChannels(sender.getCommandSenderName());
+        if (chs.isEmpty()) {
+            return null;
+        }
+        return chs.stream().filter(cs -> cs.startsWith(args[0])).collect(Collectors.toList());
     }
 
     @Override

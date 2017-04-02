@@ -35,7 +35,7 @@ class CharsheetProvider {
                 sender.addChatMessage(new ChatComponentText(line));
             }
         } catch (IOException e) {
-            Misca.logger.error("Unreachable! Tried to read charsheet by line.");
+            Charsheets.logger.error("Unreachable! Tried to read charsheet by line.");
         }
     }
 
@@ -46,7 +46,7 @@ class CharsheetProvider {
                 String text_bom = new String(Files.readAllBytes(file.toPath()), Charsets.UTF_8);
                 return text_bom.replace("\uFEFF", "");
             } catch (IOException e) {
-                Misca.logger.error("Failed to read charsheet '{}'!", username);
+                Charsheets.logger.error("Failed to read charsheet '{}'!", username);
             }
         }
         return null;
@@ -57,7 +57,7 @@ class CharsheetProvider {
         try {
             Files.write(file.toPath(), text.getBytes(Charsets.UTF_8));
         } catch (IOException e) {
-            Misca.logger.error("Failed to write charsheet '{}'! File: {}", username, file.getAbsolutePath());
+            Charsheets.logger.error("Failed to write charsheet '{}'! File: {}", username, file.getAbsolutePath());
         }
     }
 
@@ -78,7 +78,7 @@ class CharsheetProvider {
                 file.createNewFile();
                 Files.write(file.toPath(), temp.getBytes(Charsets.UTF_8));
             } catch (IOException e) {
-                Misca.logger.error("Failed to write init charsheet! File: {}", file.getAbsolutePath());
+                Charsheets.logger.error("Failed to write init charsheet! File: {}", file.getAbsolutePath());
             }
         }
 
@@ -86,7 +86,7 @@ class CharsheetProvider {
         try {
             Desktop.getDesktop().edit(file);
         } catch (Exception e) {
-            Misca.logger.error("Failed to open charsheet in editor! :( ({})", e.getMessage());
+            Charsheets.logger.error("Failed to open charsheet in editor! :( ({})", e.getMessage());
         }
     }
 }
