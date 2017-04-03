@@ -10,23 +10,29 @@ import net.minecraft.util.ChatComponentTranslation;
 import net.minecraft.util.ChunkCoordinates;
 import ru.ariadna.misca.channels.ChannelsException.Type;
 
+import java.util.Arrays;
 import java.util.Collection;
-import java.util.Iterator;
+import java.util.List;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 class ChannelManager {
-    private Pattern channelNamePattern = Pattern.compile("^[0-9a-zA-Zа-яА-Я]{2,20}$");
+    private Pattern channelNamePattern = Pattern.compile("^[0-9a-zA-Z]{2,20}$");
     private ChannelProvider provider;
 
     ChannelManager(ChannelProvider provider) {
         this.provider = provider;
     }
 
+    private static boolean isBoolean(String s) {
+        return s.equalsIgnoreCase("true") || s.equalsIgnoreCase("false");
+    }
+
     Collection<String> listPlayerChannels(String username) {
+        String lower = username.toLowerCase();
         return provider.getChannels().values().stream()
-                .filter(ch -> ch.players.contains(username))
+                .filter(ch -> ch.players.contains(lower))
                 .map(ch -> ch.name)
                 .collect(Collectors.toList());
     }
@@ -45,7 +51,9 @@ class ChannelManager {
         }
 
         Channel ch = new Channel(channel);
-        ch.players.add(sender.getCommandSenderName());
+        if (sender instanceof EntityPlayer) {
+            ch.players.add(sender.getCommandSenderName().toLowerCase());
+        }
         provider.updateChannel(ch);
 
         sender.addChatMessage(new ChatComponentTranslation("misca.channels.register", channel));
@@ -60,8 +68,7 @@ class ChannelManager {
             throw new ChannelsException(Type.NO_PERM);
         }
 
-        String username = sender.getCommandSenderName();
-        ch.players.add(username);
+        ch.players.add(sender.getCommandSenderName().toLowerCase());
         provider.updateChannel(ch);
 
         sender.addChatMessage(new ChatComponentTranslation("misca.channels.join", channel));
@@ -74,7 +81,7 @@ class ChannelManager {
             throw new ChannelsException(Type.NO_PERM);
         }
 
-        ch.players.add(username);
+        ch.players.add(username.toLowerCase());
         provider.updateChannel(ch);
 
         sender.addChatMessage(new ChatComponentTranslation("misca.channels.invite", username, channel));
@@ -86,11 +93,22 @@ class ChannelManager {
         }
 
         Channel ch = provider.getChannel(channel);
-        String username = sender.getCommandSenderName();
-        ch.players.remove(username);
+        ch.players.remove(sender.getCommandSenderName().toLowerCase());
         provider.updateChannel(ch);
 
         sender.addChatMessage(new ChatComponentTranslation("misca.channels.leave", channel));
+    }
+
+    void excludeFromChannel(ICommandSender sender, String channel, String player) throws ChannelsException {
+        if (isSenderNotSuperuser(sender)) {
+            throw new ChannelsException(Type.NO_PERM);
+        }
+
+        Channel ch = provider.getChannel(channel);
+        ch.players.remove(player.toLowerCase());
+        provider.updateChannel(ch);
+
+        sender.addChatMessage(new ChatComponentTranslation("misca.channels.exclude", player, channel));
     }
 
     void removeChannel(ICommandSender sender, String channel) throws ChannelsException {
@@ -103,6 +121,28 @@ class ChannelManager {
         provider.removeChannel(ch);
 
         sender.addChatMessage(new ChatComponentTranslation("misca.channels.remove", channel));
+    }
+
+    void infoChannel(ICommandSender sender, String channel) throws ChannelsException {
+        Channel ch = provider.getChannel(channel);
+        if (isSenderNotSuperuser(sender)) {
+            throw new ChannelsException(Type.NO_PERM);
+        }
+
+        List<String> lines = Arrays.asList(
+                String.format("[%s]", ch.name),
+                String.format(" radius: %d", ch.radius),
+                String.format(" link: %b", ch.isLink),
+                String.format(" global: %b", ch.isGlobal),
+                String.format(" muted: %b", ch.isMuted),
+                String.format(" public: %b", ch.isPublic),
+                String.format(" can invite: %b", ch.canInvite),
+                String.format(" players: %d", ch.players.size())
+        );
+
+        for (String line : lines) {
+            sender.addChatMessage(new ChatComponentText(line));
+        }
     }
 
     void modifyChannel(ICommandSender sender, String channel, String param, String value) throws ChannelsException {
@@ -139,7 +179,7 @@ class ChannelManager {
                 }
                 break;
             case "muted":
-                if (Boolean.parseBoolean(value)) {
+                if (isBoolean(value)) {
                     ch.isMuted = Boolean.valueOf(value);
                     provider.updateChannel(ch);
                     response = new ChatComponentTranslation("misca.channels.set.muted", ch.canInvite);
@@ -149,7 +189,7 @@ class ChannelManager {
                 }
                 break;
             case "invites":
-                if (Boolean.parseBoolean(value)) {
+                if (isBoolean(value)) {
                     ch.canInvite = Boolean.valueOf(value);
                     provider.updateChannel(ch);
                     response = new ChatComponentTranslation("misca.channels.set.invites", ch.canInvite);
@@ -159,7 +199,7 @@ class ChannelManager {
                 }
                 break;
             case "public":
-                if (Boolean.parseBoolean(value)) {
+                if (isBoolean(value)) {
                     ch.isPublic = Boolean.valueOf(value);
                     provider.updateChannel(ch);
                     response = new ChatComponentTranslation("misca.channels.set.public", ch.isPublic);
@@ -169,10 +209,20 @@ class ChannelManager {
                 }
                 break;
             case "global":
-                if (Boolean.parseBoolean(value)) {
+                if (isBoolean(value)) {
                     ch.isGlobal = Boolean.valueOf(value);
                     provider.updateChannel(ch);
                     response = new ChatComponentTranslation("misca.channels.set.global", ch.isGlobal);
+                } else {
+                    response = new ChatComponentTranslation("misca.channels.set.true_or_false");
+                    error = true;
+                }
+                break;
+            case "link":
+                if (isBoolean(value)) {
+                    ch.isLink = Boolean.valueOf(value);
+                    provider.updateChannel(ch);
+                    response = new ChatComponentTranslation("misca.channels.set.link", ch.isLink);
                 } else {
                     response = new ChatComponentTranslation("misca.channels.set.true_or_false");
                     error = true;
@@ -188,47 +238,79 @@ class ChannelManager {
         if (!error) provider.updateChannel(ch);
     }
 
-    void sendToChannel(String channel, ICommandSender cmd_sender, String text) throws ChannelsException {
+    void sendToChannel(ICommandSender sender, String channel, String text) throws ChannelsException {
         Channel ch = provider.getChannel(channel);
+        if (ch.isLink) {
+            sender.addChatMessage(new ChatComponentTranslation("misca.channels.error.not_channel"));
+            return;
+        }
 
-        if (ch.isMuted && isSenderNotSuperuser(cmd_sender)) {
+        sendToSomeone(sender, ch, null, text);
+    }
+
+    void sendToLink(ICommandSender sender, String channel, String player, String text) throws ChannelsException {
+        Channel ch = provider.getChannel(channel);
+        if (!ch.isLink) {
+            sender.addChatMessage(new ChatComponentTranslation("misca.channels.error.not_link"));
+            return;
+        }
+
+        sendToSomeone(sender, ch, player.toLowerCase(), text);
+    }
+
+    private void sendToSomeone(ICommandSender sender, Channel ch, String player, String text) throws ChannelsException {
+        if (ch.isMuted && isSenderNotSuperuser(sender)) {
             throw new ChannelsException(Type.NO_PERM);
         }
 
         Collection<String> ch_player = ch.players;
-        if (!(cmd_sender instanceof MinecraftServer) && !ch_player.contains(cmd_sender.getCommandSenderName())) {
-            throw new ChannelsException(Type.NOT_MEMBER);
+        if (!(sender instanceof MinecraftServer) && !ch_player.contains(sender.getCommandSenderName().toLowerCase())) {
+            sender.addChatMessage(new ChatComponentTranslation("misca.channels.error.not_member"));
+            return;
         }
-
-        final int radius_override;
-        if ((cmd_sender instanceof EntityPlayer)) {
-            radius_override = ch.radius;
-        } else {
-            radius_override = 0;
+        if (ch.isLink && !ch_player.contains(player)) {
+            sender.addChatMessage(new ChatComponentTranslation("misca.channels.error.player_not_found"));
+            return;
         }
 
         ServerConfigurationManager scm = FMLCommonHandler.instance().getMinecraftServerInstance().getConfigurationManager();
         Stream<EntityPlayer> pl_stream = scm.playerEntityList.stream();
 
+        if (ch.isLink) {
+            pl_stream = pl_stream.filter(pl -> pl.getDisplayName().toLowerCase().equals(player));
+        }
+
         if (!ch.isGlobal) {
-            pl_stream = pl_stream.filter(pl -> ch_player.contains(pl.getDisplayName()));
+            pl_stream = pl_stream.filter(pl -> ch_player.contains(pl.getDisplayName().toLowerCase()));
         }
 
-        if (radius_override > 0) {
-            EntityPlayer sender = (EntityPlayer) cmd_sender;
+        if ((sender instanceof EntityPlayer) && ch.radius > 0) {
             ChunkCoordinates coord = sender.getPlayerCoordinates();
-            pl_stream = pl_stream.filter(pl -> pl.getPlayerCoordinates().getDistanceSquaredToChunkCoordinates(coord) < radius_override);
+            pl_stream = pl_stream.filter(pl -> pl.getPlayerCoordinates().getDistanceSquaredToChunkCoordinates(coord) < ch.radius);
         }
 
-        String message = String.format(ch.format, ch.name, cmd_sender.getCommandSenderName(), text);
+        String message = String.format(ch.format, ch.name, sender.getCommandSenderName(), text);
         ChatComponentText message_cmp = new ChatComponentText(message);
+        List<EntityPlayer> filtered_players = pl_stream.collect(Collectors.toList());
 
-        for (Iterator<EntityPlayer> it = pl_stream.iterator(); it.hasNext(); ) {
-            it.next().addChatMessage(message_cmp);
+        if (ch.isLink && (sender instanceof EntityPlayer)) {
+            filtered_players.add((EntityPlayer) sender);
+        }
+
+        ChatChannels.logger.info(message);
+        for (EntityPlayer pl : filtered_players) {
+            pl.addChatMessage(message_cmp);
         }
     }
 
-    private boolean isSenderNotSuperuser(ICommandSender sender) {
+    void reloadChannels(ICommandSender sender) throws ChannelsException {
+        if (isSenderNotSuperuser(sender)) {
+            throw new ChannelsException(Type.NO_PERM);
+        }
+        provider.reloadConfigFile();
+    }
+
+    boolean isSenderNotSuperuser(ICommandSender sender) {
         if (sender instanceof EntityPlayer) {
             ServerConfigurationManager scm = FMLCommonHandler.instance().getMinecraftServerInstance().getConfigurationManager();
             EntityPlayer pl = (EntityPlayer) sender;

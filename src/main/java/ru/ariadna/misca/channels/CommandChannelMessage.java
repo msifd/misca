@@ -3,15 +3,16 @@ package ru.ariadna.misca.channels;
 import com.google.common.base.Joiner;
 import net.minecraft.command.ICommand;
 import net.minecraft.command.ICommandSender;
+import net.minecraft.util.ChatComponentTranslation;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
-class CommandSend implements ICommand {
+class CommandChannelMessage implements ICommand {
     private ChannelManager manager;
 
-    CommandSend(ChannelManager manager) {
+    CommandChannelMessage(ChannelManager manager) {
         this.manager = manager;
     }
 
@@ -33,13 +34,14 @@ class CommandSend implements ICommand {
     @Override
     public void processCommand(ICommandSender sender, String[] args) {
         if (args.length < 2) {
+            sender.addChatMessage(new ChatComponentTranslation("misca.channels.cc.help"));
             return;
         }
 
         String ch = args[0];
         args[0] = null;
         try {
-            manager.sendToChannel(ch, sender, Joiner.on(' ').skipNulls().join(args));
+            manager.sendToChannel(sender, ch, Joiner.on(' ').skipNulls().join(args));
         } catch (ChannelsException e) {
             e.notifyPlayer(sender);
         }

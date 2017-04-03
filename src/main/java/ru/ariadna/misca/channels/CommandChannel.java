@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 class CommandChannel implements ICommand {
-    private static final List<String> subcommands = Arrays.asList("help", "list", "register", "join", "invite", "leave", "remove", "set");
+    private static final List<String> subcommands = Arrays.asList("help", "list", "register", "join", "leave", "invite", "exclude", "remove", "set", "reload", "info");
 
     private ChannelManager manager;
 
@@ -33,7 +33,7 @@ class CommandChannel implements ICommand {
 
     @Override
     public String getCommandUsage(ICommandSender sender) {
-        return "/channel < help | list | register | join | invite | leave | remove | set >";
+        return "/channel < help | list | register | join | leave | invite | exclude | remove | set | reload | info >";
     }
 
     @Override
@@ -62,6 +62,14 @@ class CommandChannel implements ICommand {
                     } else {
                         String str = Joiner.on(' ').join(chs);
                         sender.addChatMessage(new ChatComponentTranslation("misca.channels.list.some", str));
+                    }
+                    return;
+                case "reload":
+                    try {
+                        manager.reloadChannels(sender);
+                        sender.addChatMessage(new ChatComponentTranslation("misca.channels.reload"));
+                    } catch (ChannelsException e) {
+                        e.notifyPlayer(sender);
                     }
                     return;
                 default:
@@ -104,6 +112,17 @@ class CommandChannel implements ICommand {
                     e.notifyPlayer(sender);
                 }
                 break;
+            case "exclude":
+                if (args.length == 3) {
+                    try {
+                        manager.excludeFromChannel(sender, args[1], args[2]);
+                    } catch (ChannelsException e) {
+                        e.notifyPlayer(sender);
+                    }
+                } else {
+                    sendManual(sender, args[0]);
+                }
+                break;
             case "remove":
                 try {
                     manager.removeChannel(sender, args[1]);
@@ -122,15 +141,23 @@ class CommandChannel implements ICommand {
                     sendManual(sender, args[0]);
                 }
                 break;
-            default:
-                sendManual(sender, "help");
+            case "info":
+                try {
+                    manager.infoChannel(sender, args[1]);
+                } catch (ChannelsException e) {
+                    e.notifyPlayer(sender);
+                }
+                break;
+            case "help":
+                sendManual(sender, args[1]);
                 break;
         }
     }
 
     @Override
     public boolean canCommandSenderUseCommand(ICommandSender sender) {
-        return true;
+        return !manager.isSenderNotSuperuser(sender);
+//        return true;
     }
 
     @Override
@@ -154,7 +181,7 @@ class CommandChannel implements ICommand {
     }
 
     private void sendManual(ICommandSender sender, String mode) {
-        String msg = LanguageRegistry.instance().getStringLocalization("misca.channels.help" + mode);
+        String msg = LanguageRegistry.instance().getStringLocalization("misca.channels.help." + mode);
         msg = StringEscapeUtils.unescapeJava(msg);
         try {
             for (String line : IOUtils.readLines(new StringReader(msg))) {

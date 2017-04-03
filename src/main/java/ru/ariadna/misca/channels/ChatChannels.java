@@ -10,11 +10,13 @@ public class ChatChannels {
     private ChannelProvider provider = new ChannelProvider();
     private ChannelManager manager = new ChannelManager(provider);
     private CommandChannel commandChannel = new CommandChannel(manager);
-    private CommandSend commandSend = new CommandSend(manager);
+    private CommandChannelMessage commandChannelMessage = new CommandChannelMessage(manager);
+    private CommandLinkMessage commandLinkMessage = new CommandLinkMessage(manager);
 
     public void init(FMLServerStartingEvent event) {
         provider.init();
         event.registerServerCommand(commandChannel);
-        event.registerServerCommand(commandSend);
+        event.registerServerCommand(commandChannelMessage);
+        event.registerServerCommand(commandLinkMessage);
     }
 }

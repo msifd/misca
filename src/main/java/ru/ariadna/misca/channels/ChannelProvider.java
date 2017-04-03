@@ -17,10 +17,7 @@ class ChannelProvider {
 
     void init() {
         dataFile = new File(Misca.config.config_dir, "channels.toml");
-
-        if (dataFile.exists()) {
-            configContent = toml.read(dataFile).to(ChannelsConfigContent.class);
-        }
+        reloadConfigFile();
     }
 
     boolean channelExist(String channel) {
@@ -45,6 +42,18 @@ class ChannelProvider {
     void removeChannel(Channel ch) {
         if (configContent.channels.remove(ch.name) != null) {
             updateConfigFile();
+        }
+    }
+
+    void reloadConfigFile() {
+        try {
+            configContent = toml.read(dataFile).to(ChannelsConfigContent.class);
+            // Fix empty config file
+            if (configContent.channels == null) {
+                configContent.channels = new HashMap<>();
+            }
+        } catch (IllegalStateException e) {
+            ChatChannels.logger.error("Error while reading channels config! {}", e);
         }
     }
 

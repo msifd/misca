@@ -18,10 +18,9 @@ import ru.ariadna.misca.client.HideNametag;
 
 @Mod(modid = "misca", version = "0.4")
 public class Misca {
-    static Logger logger = LogManager.getLogger("Misca");
-
     public static MiscaConfig config;
-
+    static Logger logger = LogManager.getLogger("Misca");
+    
     private OfftopFormat offtopFormat = new OfftopFormat();
     private HideNametag hideNametag = new HideNametag();
     private Charsheets charsheets = new Charsheets();
