@@ -19,7 +19,7 @@ buildscript {
 apply plugin: 'forge'
 apply plugin: 'idea'
 
-version = "0.4"
+version = "0.4.1"
 group = "ru.ariadna.misca"
 archivesBaseName = "misca"
 
@@ -45,6 +45,7 @@ configurations {
 
 dependencies {
     shade 'com.moandjiezana.toml:toml4j:0.7.1'
+    runtime 'mysql:mysql-connector-java:5.1.41'
 }
 
 processResources {

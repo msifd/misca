@@ -21,7 +21,7 @@ class CharsheetProvider {
     private File charsheet_dir;
 
     void init() {
-        charsheet_dir = new File(Misca.config.config_dir, "charsheets");
+        charsheet_dir = new File(Misca.config_dir, "charsheets");
         charsheet_dir.mkdirs();
     }
 

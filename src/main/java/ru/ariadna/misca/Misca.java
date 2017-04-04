@@ -15,20 +15,28 @@ import ru.ariadna.misca.channels.ChatChannels;
 import ru.ariadna.misca.charsheet.Charsheets;
 import ru.ariadna.misca.chat.OfftopFormat;
 import ru.ariadna.misca.client.HideNametag;
+import ru.ariadna.misca.database.DBHandler;
 
-@Mod(modid = "misca", version = "0.4")
+import java.io.File;
+
+@Mod(modid = "misca", version = "0.4.1")
 public class Misca {
-    public static MiscaConfig config;
+    public static File config_dir;
     static Logger logger = LogManager.getLogger("Misca");
-    
+    private DBHandler dbHandler = new DBHandler();
     private OfftopFormat offtopFormat = new OfftopFormat();
+    private ChatChannels chatChannels = new ChatChannels();
     private HideNametag hideNametag = new HideNametag();
     private Charsheets charsheets = new Charsheets();
-    private ChatChannels chatChannels = new ChatChannels();
 
-    @EventHandler
+    @EventHandler()
     public void preInit(FMLPreInitializationEvent event) {
-        config = new MiscaConfig(event.getModConfigurationDirectory());
+        config_dir = new File(event.getModConfigurationDirectory(), "misca");
+        config_dir.mkdirs();
+
+        if (event.getSide().isServer()) {
+            dbHandler.init();
+        }
     }
 
     @EventHandler

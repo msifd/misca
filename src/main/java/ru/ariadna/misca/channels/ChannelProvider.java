@@ -16,7 +16,7 @@ class ChannelProvider {
     private ChannelsConfigContent configContent = new ChannelsConfigContent();
 
     void init() {
-        dataFile = new File(Misca.config.config_dir, "channels.toml");
+        dataFile = new File(Misca.config_dir, "channels.toml");
         reloadConfigFile();
     }
 
