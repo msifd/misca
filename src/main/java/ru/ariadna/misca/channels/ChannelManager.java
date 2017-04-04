@@ -1,5 +1,7 @@
 package ru.ariadna.misca.channels;
 
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
 import cpw.mods.fml.common.FMLCommonHandler;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
@@ -13,6 +15,7 @@ import ru.ariadna.misca.channels.ChannelsException.Type;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -20,6 +23,7 @@ import java.util.stream.Stream;
 class ChannelManager {
     private Pattern channelNamePattern = Pattern.compile("^[0-9a-zA-Z]{2,20}$");
     private ChannelProvider provider;
+    private Multimap<String, EntityPlayer> overhearOps = HashMultimap.create();
 
     ChannelManager(ChannelProvider provider) {
         this.provider = provider;
@@ -238,6 +242,25 @@ class ChannelManager {
         if (!error) provider.updateChannel(ch);
     }
 
+    void overhearChannel(ICommandSender sender, String channel) throws ChannelsException {
+        if (!(sender instanceof EntityPlayer)) {
+            throw new ChannelsException(Type.PLAYER_ONLY);
+        }
+        Channel ch = provider.getChannel(channel);
+        if (isSenderNotSuperuser(sender)) {
+            throw new ChannelsException(Type.NO_PERM);
+        }
+
+        EntityPlayer player = (EntityPlayer) sender;
+        if (overhearOps.containsEntry(ch.name, player)) {
+            overhearOps.remove(ch.name, player);
+            sender.addChatMessage(new ChatComponentTranslation("misca.channels.overhear.off", channel));
+        } else {
+            overhearOps.put(ch.name, player);
+            sender.addChatMessage(new ChatComponentTranslation("misca.channels.overhear.on", channel));
+        }
+    }
+
     void sendToChannel(ICommandSender sender, String channel, String text) throws ChannelsException {
         Channel ch = provider.getChannel(channel);
         if (ch.isLink) {
@@ -291,7 +314,12 @@ class ChannelManager {
 
         String message = String.format(ch.format, ch.name, sender.getCommandSenderName(), text);
         ChatComponentText message_cmp = new ChatComponentText(message);
-        List<EntityPlayer> filtered_players = pl_stream.collect(Collectors.toList());
+        Set<EntityPlayer> filtered_players = pl_stream.collect(Collectors.toSet());
+
+        if (ch.isLink && filtered_players.isEmpty()) {
+            sender.addChatMessage(new ChatComponentTranslation("misca.channels.error.player_not_found"));
+            return;
+        }
 
         if (ch.isLink && (sender instanceof EntityPlayer)) {
             filtered_players.add((EntityPlayer) sender);
@@ -300,6 +328,18 @@ class ChannelManager {
         ChatChannels.logger.info(message);
         for (EntityPlayer pl : filtered_players) {
             pl.addChatMessage(message_cmp);
+        }
+
+        // Overhearing ops ^_^
+        if (ch.isLink) {
+            EntityPlayer receiver = filtered_players.iterator().next();
+            String overhear_msg = String.format(
+                    "[OH][%s]%s-%s: %s",
+                    ch.name, sender.getCommandSenderName(), receiver.getDisplayName(), text);
+            ChatComponentText overhear_cmp = new ChatComponentText(overhear_msg);
+            for (EntityPlayer op : overhearOps.get(ch.name)) {
+                op.addChatComponentMessage(overhear_cmp);
+            }
         }
     }
 

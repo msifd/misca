@@ -11,7 +11,7 @@ public class CharsheetMessage implements IMessage {
     public CharsheetMessage() {
     }
 
-    public CharsheetMessage(Type type, String payload) {
+    CharsheetMessage(Type type, String payload) {
         this.type = type;
         this.payload = payload;
     }

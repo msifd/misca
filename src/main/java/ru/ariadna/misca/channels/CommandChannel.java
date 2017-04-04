@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 class CommandChannel implements ICommand {
-    private static final List<String> subcommands = Arrays.asList("help", "list", "register", "join", "leave", "invite", "exclude", "remove", "set", "reload", "info");
+    private static final List<String> subcommands = Arrays.asList("help", "list", "register", "join", "leave", "invite", "exclude", "remove", "set", "reload", "info", "overhear");
 
     private ChannelManager manager;
 
@@ -33,7 +33,7 @@ class CommandChannel implements ICommand {
 
     @Override
     public String getCommandUsage(ICommandSender sender) {
-        return "/channel < help | list | register | join | leave | invite | exclude | remove | set | reload | info >";
+        return "/channel < help | list | register | join | leave | invite | exclude | remove | set | reload | info | overhear >";
     }
 
     @Override
@@ -144,6 +144,13 @@ class CommandChannel implements ICommand {
             case "info":
                 try {
                     manager.infoChannel(sender, args[1]);
+                } catch (ChannelsException e) {
+                    e.notifyPlayer(sender);
+                }
+                break;
+            case "overhear":
+                try {
+                    manager.overhearChannel(sender, args[1]);
                 } catch (ChannelsException e) {
                     e.notifyPlayer(sender);
                 }
