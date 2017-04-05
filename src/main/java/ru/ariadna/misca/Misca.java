@@ -15,6 +15,7 @@ import ru.ariadna.misca.channels.ChatChannels;
 import ru.ariadna.misca.charsheet.Charsheets;
 import ru.ariadna.misca.chat.OfftopFormat;
 import ru.ariadna.misca.client.HideNametag;
+import ru.ariadna.misca.combat.Combat;
 import ru.ariadna.misca.database.DBHandler;
 
 import java.io.File;
@@ -28,6 +29,7 @@ public class Misca {
     private ChatChannels chatChannels = new ChatChannels();
     private HideNametag hideNametag = new HideNametag();
     private Charsheets charsheets = new Charsheets();
+    private Combat combat = new Combat();
 
     @EventHandler()
     public void preInit(FMLPreInitializationEvent event) {
@@ -60,6 +62,7 @@ public class Misca {
     @SideOnly(Side.SERVER)
     public void serverStart(FMLServerStartingEvent event) {
         chatChannels.init(event);
+        combat.init(event);
     }
 
     @EventHandler
