@@ -6,6 +6,7 @@ import org.apache.logging.log4j.Logger;
 import ru.ariadna.misca.Misca;
 import ru.ariadna.misca.combat.characters.CharacterProvider;
 import ru.ariadna.misca.combat.commands.CommandCharParams;
+import ru.ariadna.misca.combat.commands.CommandCombat;
 
 import java.io.File;
 
@@ -14,12 +15,17 @@ public class Combat {
     private File configDir;
 
     private CharacterProvider characterProvider = new CharacterProvider();
+    private CombatManager combatManager = new CombatManager();
+
     private CommandCharParams commandCharParams = new CommandCharParams(characterProvider);
+    private CommandCombat commandCombat = new CommandCombat(combatManager);
 
     public void init(FMLServerStartingEvent event) {
         configDir = new File(Misca.config_dir, "combat");
 
         characterProvider.init();
+        combatManager.init();
         event.registerServerCommand(commandCharParams);
+        event.registerServerCommand(commandCombat);
     }
 }

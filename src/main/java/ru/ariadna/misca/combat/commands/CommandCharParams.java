@@ -102,7 +102,7 @@ public class CommandCharParams implements ICommand {
 
     private int toInt(String s) throws Exception {
         int i = Integer.valueOf(s);
-        if (i < 1 || i > 10) throw new Exception();
+        if (i < 0 || i > 10) throw new Exception();
         return i;
     }
 }
