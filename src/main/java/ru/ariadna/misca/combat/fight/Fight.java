@@ -1,5 +1,8 @@
 package ru.ariadna.misca.combat.fight;
 
-public class Fight {
+import java.util.ArrayList;
+import java.util.List;
 
+public class Fight {
+    private List<Fighter> fighters = new ArrayList<>();
 }

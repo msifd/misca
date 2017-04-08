@@ -8,19 +8,37 @@ import net.minecraft.util.ChatComponentText;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
 import ru.ariadna.misca.combat.Combat;
+import ru.ariadna.misca.combat.CombatException;
 import ru.ariadna.misca.combat.CombatManager;
 import ru.ariadna.misca.combat.fight.Fighter;
+import ru.ariadna.misca.combat.fight.Action;
 
 import java.io.IOException;
 import java.io.StringReader;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class CommandCombat implements ICommand {
-    private static final List<String> other_cmd = Arrays.asList("help", "init");
-    private static final List<String> attack_cmd = Arrays.asList("help", "hit", "shoot", "magic", "slam", "other", "special", "safe", "flee");
-    private static final List<String> defence_cmd = Arrays.asList("help", "defence", "dodge", "magic", "dum", "stop");
+    private static final List<String> none_cmd;
+    private static final List<String> attack_cmd;
+    private static final List<String> defence_cmd;
+    private static final Set<String> all_cmd;
+
+    static {
+        none_cmd = Arrays.stream(Action.values())
+                .filter(a -> a.stage == Action.Stage.NONE)
+                .map(Action::toString).collect(Collectors.toList());
+        attack_cmd = Arrays.stream(Action.values())
+                .filter(a -> a.stage == Action.Stage.ATTACK || a.stage == Action.Stage.FIGHT)
+                .map(Action::toString).collect(Collectors.toList());
+        defence_cmd = Arrays.stream(Action.values())
+                .filter(a -> a.stage == Action.Stage.DEFENCE || a.stage == Action.Stage.FIGHT)
+                .map(Action::toString).collect(Collectors.toList());
+        all_cmd = Stream.of(none_cmd, attack_cmd, defence_cmd)
+                .flatMap(Collection::stream).collect(Collectors.toSet());
+    }
+
     private CombatManager manager;
 
     public CommandCombat(CombatManager manager) {
@@ -34,7 +52,7 @@ public class CommandCombat implements ICommand {
 
     @Override
     public String getCommandUsage(ICommandSender sender) {
-        return "/cmb <cmd> [...] ; /cmb help";
+        return "/cmb <cmd> [...] ; /cmb help [cmd]";
     }
 
     @Override
@@ -44,12 +62,36 @@ public class CommandCombat implements ICommand {
 
     @Override
     public void processCommand(ICommandSender sender, String[] args) {
-        if (args.length == 0 && args[0].equalsIgnoreCase("help")) {
+        if (args.length == 0) {
             sendHelp(sender, "help");
             return;
         }
+        if (args[0].equalsIgnoreCase("help")) {
+            if (args.length >= 2 && all_cmd.contains(args[1].toLowerCase())) {
+                sendHelp(sender, args[1].toLowerCase());
+            } else {
+                sendHelp(sender, "help");
+            }
+            return;
+        }
 
+        String arg1 = args[0];
 
+        int modifier = 0;
+        if (args.length >= 2 && (args[1].startsWith("+") || args[1].startsWith("-"))) {
+            try {
+                modifier = Integer.valueOf(args[1]);
+            } catch (NumberFormatException e) {
+                // ignore?
+            }
+        }
+
+        Action action = Action.valueOf(arg1.toUpperCase());
+        try {
+            manager.doAction((EntityPlayer) sender, action, modifier);
+        } catch (CombatException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -61,16 +103,19 @@ public class CommandCombat implements ICommand {
     public List addTabCompletionOptions(ICommandSender sender, String[] args) {
         Fighter f = manager.getFighter(sender.getCommandSenderName());
         if (f == null) {
-            return other_cmd;
+            return none_cmd;
         }
         if (args.length > 1) {
             return null;
         }
 
-        if (f.isAttacking) {
-            return attack_cmd.stream().filter(s -> s.startsWith(args[0])).collect(Collectors.toList());
-        } else {
-            return defence_cmd.stream().filter(s -> s.startsWith(args[0])).collect(Collectors.toList());
+        switch (f.stage) {
+            case ATTACK:
+                return attack_cmd.stream().filter(s -> s.startsWith(args[0])).collect(Collectors.toList());
+            case DEFENCE:
+                return defence_cmd.stream().filter(s -> s.startsWith(args[0])).collect(Collectors.toList());
+            default:
+                return null;
         }
     }
 
@@ -95,4 +140,6 @@ public class CommandCombat implements ICommand {
             Combat.logger.error("Unreachable! Tried to read combat help by line.");
         }
     }
+
+
 }

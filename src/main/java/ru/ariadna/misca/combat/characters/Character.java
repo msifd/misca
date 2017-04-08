@@ -9,4 +9,8 @@ public class Character {
     public int determination;
     public int wisdom;
     public int spirit;
+
+    public int[] toVector() {
+        return new int[]{strength, perception, reflexes, endurance, determination, wisdom, spirit};
+    }
 }
