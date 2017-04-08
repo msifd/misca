@@ -65,7 +65,7 @@ public class CommandCharParams implements ICommand {
 
         try {
             Character c = new Character();
-            c.name = sender.getCommandSenderName();
+            c.name = sender.getCommandSenderName().toLowerCase();
             c.strength = toInt(args[0]);
             c.perception = toInt(args[1]);
             c.reflexes = toInt(args[2]);

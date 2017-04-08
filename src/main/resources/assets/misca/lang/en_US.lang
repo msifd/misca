@@ -56,6 +56,6 @@ misca.channels.set.public=Publicity set to '%s'
 misca.channels.set.global=Global mode set to '%s'
 misca.channels.set.link=Link mode set to '%s'
 
-misca.combat.charparams.usage=/charparams <str per ref end det wis spr>. Example: /c..s 1 2 3 4 5 6 7
+misca.combat.charparams.usage=/charparams <str per ref end det wis spr>
 misca.combat.charparams.reloaded=Characters reloaded
 misca.combat.cmb.help.help=[Combat Help]\n

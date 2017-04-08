@@ -59,7 +59,6 @@ public class Misca {
     }
 
     @EventHandler
-    @SideOnly(Side.SERVER)
     public void serverStart(FMLServerStartingEvent event) {
         chatChannels.init(event);
         combat.init(event);

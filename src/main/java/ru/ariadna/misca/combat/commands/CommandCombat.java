@@ -10,12 +10,15 @@ import org.apache.commons.lang3.StringEscapeUtils;
 import ru.ariadna.misca.combat.Combat;
 import ru.ariadna.misca.combat.CombatException;
 import ru.ariadna.misca.combat.CombatManager;
-import ru.ariadna.misca.combat.fight.Fighter;
 import ru.ariadna.misca.combat.fight.Action;
+import ru.ariadna.misca.combat.fight.Fighter;
 
 import java.io.IOException;
 import java.io.StringReader;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -37,6 +40,9 @@ public class CommandCombat implements ICommand {
                 .map(Action::toString).collect(Collectors.toList());
         all_cmd = Stream.of(none_cmd, attack_cmd, defence_cmd)
                 .flatMap(Collection::stream).collect(Collectors.toSet());
+        none_cmd.add("help");
+        attack_cmd.add("help");
+        defence_cmd.add("help");
     }
 
     private CombatManager manager;

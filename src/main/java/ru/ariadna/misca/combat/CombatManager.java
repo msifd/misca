@@ -9,6 +9,11 @@ import java.util.Map;
 
 public class CombatManager {
     Map<String, Fighter> fighters = new HashMap<>();
+    private CalcRulesProvider provider;
+
+    public CombatManager(CalcRulesProvider provider) {
+        this.provider = provider;
+    }
 
     public void init() {
 

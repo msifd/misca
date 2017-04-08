@@ -56,5 +56,5 @@ misca.channels.set.public=Публичность установлен как '%s
 misca.channels.set.global=Глобальный режим установлен как '%s'
 misca.channels.set.link=Режим связи установлен как '%s'
 
-misca.combat.charparams.usage=/charparams <сил вос реф ст реш уч дух>. Пример: /c..s 1 2 3 4 5 6 7
+misca.combat.charparams.usage=/charparams <сил вос реф ст реш уч дух>
 misca.combat.charparams.reloaded=Персонажи перезагружены

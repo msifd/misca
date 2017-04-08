@@ -15,7 +15,8 @@ public class Combat {
     private File configDir;
 
     private CharacterProvider characterProvider = new CharacterProvider();
-    private CombatManager combatManager = new CombatManager();
+    private CalcRulesProvider rulesProvider = new CalcRulesProvider();
+    private CombatManager combatManager = new CombatManager(rulesProvider);
 
     private CommandCharParams commandCharParams = new CommandCharParams(characterProvider);
     private CommandCombat commandCombat = new CommandCombat(combatManager);

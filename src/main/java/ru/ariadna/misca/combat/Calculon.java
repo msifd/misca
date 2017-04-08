@@ -14,39 +14,6 @@ public class Calculon {
     private Random rnd = new Random();
     private EnumMap<Action, CalcRule> rules = new EnumMap<>(Action.class);
 
-    void load() {
-        rnd.setSeed(System.currentTimeMillis());
-    }
-
-    CalcResult calculate(Character character, Action action, int mod) {
-        CalcRule rule = rules.get(action);
-
-        CalcResult res = new CalcResult();
-        res.result = mod;
-
-        for (int edges : rule.dices) {
-            int roll = dice(edges);
-            res.result += roll;
-            res.rolls.add(roll);
-        }
-
-        int[] stats = character.toVector();
-        for (int i = 0; i< stats.length; i++) {
-            float coeff = rule.coefficients[i];
-            if (coeff != 0) {
-                res.result += Math.floor(stats[i] * coeff);
-                res.stats.add(stats[i]);
-                res.coeffs.add(coeff);
-            }
-        }
-
-        return res;
-    }
-
-    private int dice(int d) {
-        return rnd.nextInt(d) + 1;
-    }
-
     private static CalcRule parseRule(String rule_str) throws RuleParseException {
         Matcher m = rule_pattern.matcher(rule_str);
         boolean found = false;
@@ -89,7 +56,7 @@ public class Calculon {
             }
 
             try {
-                float number  = Float.valueOf(num_str);
+                float number = Float.valueOf(num_str);
                 rule.coefficients[index] = number;
             } catch (NumberFormatException e) {
                 throw new RuleParseException(RuleParseException.Type.COEFF);
@@ -97,55 +64,6 @@ public class Calculon {
         }
 
         return rule;
-    }
-
-    public static class CalcResult {
-        public int result;
-        public List<Integer> rolls = new LinkedList<>();
-        public List<Integer> stats = new LinkedList<>();
-        public List<Float> coeffs = new LinkedList<>();
-
-        @Override
-        public String toString() {
-            StringBuilder sb = new StringBuilder();
-
-            sb.append(Joiner.on(" + ").join(rolls));
-
-            Iterator<Integer> s_iter = stats.listIterator();
-            Iterator<Float> c_iter = coeffs.listIterator();
-            while (s_iter.hasNext()) {
-                sb.append(" + ");
-                sb.append(s_iter.next());
-                sb.append("*");
-                sb.append(c_iter.next());
-            }
-            sb.append(" = ");
-            sb.append(result);
-
-            return sb.toString();
-        }
-    }
-
-    private static class CalcRule {
-        int[] dices;
-        float[] coefficients = new float[7];
-
-        @Override
-        public String toString() {
-            return "rolls: " + Arrays.toString(dices) + " coeffs: " + Arrays.toString(coefficients);
-        }
-    }
-
-    public static class RuleParseException extends Exception {
-        public final Type type;
-
-        RuleParseException(Type t) {
-            type = t;
-        }
-
-        public enum Type {
-            FORMAT, DICE, STAT, COEFF
-        }
     }
 
     public static void main(String[] a) throws RuleParseException {
@@ -179,6 +97,88 @@ public class Calculon {
                 return 6;
             default:
                 return -1;
+        }
+    }
+
+    void load() {
+        rnd.setSeed(System.currentTimeMillis());
+    }
+
+    CalcResult calculate(Character character, Action action, int mod) {
+        CalcRule rule = rules.get(action);
+
+        CalcResult res = new CalcResult();
+        res.result = mod;
+
+        for (int edges : rule.dices) {
+            int roll = dice(edges);
+            res.result += roll;
+            res.rolls.add(roll);
+        }
+
+        int[] stats = character.toVector();
+        for (int i = 0; i < stats.length; i++) {
+            float coeff = rule.coefficients[i];
+            if (coeff != 0) {
+                res.result += Math.floor(stats[i] * coeff);
+                res.stats.add(stats[i]);
+                res.coeffs.add(coeff);
+            }
+        }
+
+        return res;
+    }
+
+    private int dice(int d) {
+        return rnd.nextInt(d) + 1;
+    }
+
+    public static class CalcResult {
+        int result;
+        List<Integer> rolls = new LinkedList<>();
+        List<Integer> stats = new LinkedList<>();
+        List<Float> coeffs = new LinkedList<>();
+
+        @Override
+        public String toString() {
+            StringBuilder sb = new StringBuilder();
+
+            sb.append(Joiner.on(" + ").join(rolls));
+
+            Iterator<Integer> s_iter = stats.listIterator();
+            Iterator<Float> c_iter = coeffs.listIterator();
+            while (s_iter.hasNext()) {
+                sb.append(" + ");
+                sb.append(s_iter.next());
+                sb.append("*");
+                sb.append(c_iter.next());
+            }
+            sb.append(" = ");
+            sb.append(result);
+
+            return sb.toString();
+        }
+    }
+
+    private static class CalcRule {
+        int[] dices;
+        float[] coefficients = new float[7];
+
+        @Override
+        public String toString() {
+            return "rolls: " + Arrays.toString(dices) + " coeffs: " + Arrays.toString(coefficients);
+        }
+    }
+
+    public static class RuleParseException extends Exception {
+        final Type type;
+
+        RuleParseException(Type t) {
+            type = t;
+        }
+
+        public enum Type {
+            FORMAT, DICE, STAT, COEFF
         }
     }
 }
