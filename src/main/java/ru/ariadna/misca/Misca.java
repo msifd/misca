@@ -16,6 +16,7 @@ import ru.ariadna.misca.charsheet.Charsheets;
 import ru.ariadna.misca.chat.OfftopFormat;
 import ru.ariadna.misca.client.HideNametag;
 import ru.ariadna.misca.database.DBHandler;
+import ru.ariadna.misca.toolbox.Toolbox;
 
 import java.io.File;
 
@@ -59,6 +60,7 @@ public class Misca {
     @EventHandler
     @SideOnly(Side.SERVER)
     public void serverStart(FMLServerStartingEvent event) {
+        Toolbox.initServer(event);
         chatChannels.init(event);
     }
 
