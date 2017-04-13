@@ -59,3 +59,4 @@ misca.channels.set.link=Link mode set to '%s'
 misca.combat.charparams.usage=/charparams <str per ref end det wis spr>
 misca.combat.charparams.reloaded=Characters reloaded
 misca.combat.cmb.help.help=[Combat Help]\n
+misca.combat.dice.help=[Dice Help]\n Format: /dice [dice]* [stat*coeff]* [modifier]*\n Example 1: /dice d20 d5 str*1.5 wis*0.5 -2\n Example 2: /dice d20 3\n Example 3: /dice d10 spr*3.1

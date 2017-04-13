@@ -10,6 +10,7 @@ import org.apache.commons.lang3.StringEscapeUtils;
 import ru.ariadna.misca.combat.Combat;
 import ru.ariadna.misca.combat.CombatException;
 import ru.ariadna.misca.combat.CombatManager;
+import ru.ariadna.misca.combat.characters.CharacterProvider;
 import ru.ariadna.misca.combat.fight.Action;
 import ru.ariadna.misca.combat.fight.Fighter;
 
@@ -45,9 +46,11 @@ public class CommandCombat implements ICommand {
         defence_cmd.add("help");
     }
 
-    private CombatManager manager;
+    private final CharacterProvider provider;
+    private final CombatManager manager;
 
-    public CommandCombat(CombatManager manager) {
+    public CommandCombat(CharacterProvider provider, CombatManager manager) {
+        this.provider = provider;
         this.manager = manager;
     }
 

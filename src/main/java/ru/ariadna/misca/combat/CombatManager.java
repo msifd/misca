@@ -1,6 +1,9 @@
 package ru.ariadna.misca.combat;
 
 import net.minecraft.entity.player.EntityPlayer;
+import ru.ariadna.misca.combat.calculation.CalcResult;
+import ru.ariadna.misca.combat.calculation.CalcRulesProvider;
+import ru.ariadna.misca.combat.calculation.Calculon;
 import ru.ariadna.misca.combat.fight.Action;
 import ru.ariadna.misca.combat.fight.Fighter;
 
@@ -33,5 +36,7 @@ public class CombatManager {
         if (fighter != null && fighter.stage != action_stage) {
             throw new CombatException();
         }
+
+        CalcResult result = Calculon.calculate(fighter.character, a, mod);
     }
 }

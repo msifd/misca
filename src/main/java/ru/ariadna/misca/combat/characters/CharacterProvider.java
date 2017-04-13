@@ -25,6 +25,12 @@ public class CharacterProvider {
         reloadCharacters();
     }
 
+    public Character get(String username) {
+        Character c = chars.get(username.toLowerCase());
+        if (c == null) c = new Character();
+        return c;
+    }
+
     public void reloadCharacters() {
         FileFilter fileFilter = new WildcardFileFilter("*.toml");
         File[] files = charsDir.listFiles(fileFilter);

@@ -1,14 +1,14 @@
 package ru.ariadna.misca.combat.characters;
 
 public class Character {
-    public String name;
-    public int strength;
-    public int perception;
-    public int reflexes;
-    public int endurance;
-    public int determination;
-    public int wisdom;
-    public int spirit;
+    public String name = "";
+    public int strength = 5;
+    public int perception = 5;
+    public int reflexes = 5;
+    public int endurance = 5;
+    public int determination = 5;
+    public int wisdom = 5;
+    public int spirit = 5;
 
     public int[] toVector() {
         return new int[]{strength, perception, reflexes, endurance, determination, wisdom, spirit};

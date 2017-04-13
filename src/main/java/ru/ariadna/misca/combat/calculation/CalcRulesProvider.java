@@ -1,4 +1,4 @@
-package ru.ariadna.misca.combat;
+package ru.ariadna.misca.combat.calculation;
 
 public class CalcRulesProvider {
 
