@@ -13,4 +13,9 @@ public class Character {
     public int[] toVector() {
         return new int[]{strength, perception, reflexes, endurance, determination, wisdom, spirit};
     }
+
+    public String stats() {
+        return String.format("str:%d per:%d ref:%d end:%d det:%d wis:%d spr:%d",
+                strength, perception, reflexes, endurance, determination, wisdom, spirit);
+    }
 }

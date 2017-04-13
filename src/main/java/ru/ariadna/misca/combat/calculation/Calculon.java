@@ -3,21 +3,14 @@ package ru.ariadna.misca.combat.calculation;
 import ru.ariadna.misca.combat.characters.Character;
 import ru.ariadna.misca.combat.fight.Action;
 
-import java.util.EnumMap;
 import java.util.Random;
 
 public class Calculon {
     private static Random rnd = new Random();
-    private static EnumMap<Action, CalcRule> rules = new EnumMap<>(Action.class);
+    private final CalcRulesProvider provider;
 
-    public static void init() {
-        rnd.setSeed(System.currentTimeMillis());
-    }
-
-    public static CalcResult calculate(Character character, Action action, int mod) {
-        CalcResult result = calculate(rules.get(action), character);
-        result.mods += mod;
-        return result;
+    public Calculon(CalcRulesProvider provider) {
+        this.provider = provider;
     }
 
     public static CalcResult calculate(CalcRule rule, Character character) {
@@ -47,5 +40,15 @@ public class Calculon {
 
     private static int dice(int d) {
         return rnd.nextInt(d) + 1;
+    }
+
+    public void init() {
+        rnd.setSeed(System.currentTimeMillis());
+    }
+
+    public CalcResult calculate(Character character, Action action, int mod) {
+        CalcResult result = calculate(provider.getRule(action), character);
+        result.mods += mod;
+        return result;
     }
 }

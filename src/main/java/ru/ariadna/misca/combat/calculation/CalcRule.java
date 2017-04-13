@@ -104,6 +104,23 @@ public class CalcRule {
             type = t;
         }
 
+        @Override
+        public String toString() {
+            switch (type) {
+                case FORMAT:
+                    return "Bad variable format!";
+                case DICE:
+                    return "Dice number is not a number, actually!";
+                case STAT:
+                    return "No character stat!";
+                case COEFF:
+                    return "Stat coefficient number is not a number!";
+                case MOD:
+                    return "Modifier number is not a number, actually!";
+            }
+            return "RuleParseException! :3";
+        }
+
         public enum Type {
             FORMAT, DICE, STAT, COEFF, MOD
         }

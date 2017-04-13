@@ -6,6 +6,7 @@ import net.minecraft.command.ICommand;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.ChatComponentTranslation;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
 import ru.ariadna.misca.combat.Combat;
@@ -61,6 +62,9 @@ public class CommandDice implements ICommand {
             CalcRule rule = new CalcRule(rule_raw);
             Character character = provider.get(sender.getCommandSenderName());
             CalcResult result = Calculon.calculate(rule, character);
+
+            if (character.name.isEmpty())
+                sender.addChatMessage(new ChatComponentTranslation("misca.combat.dice.default_char"));
             sender.addChatMessage(new ChatComponentText(result.toString()));
         } catch (CalcRule.RuleParseException e) {
             e.printStackTrace();

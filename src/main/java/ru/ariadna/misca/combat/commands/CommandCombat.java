@@ -105,7 +105,8 @@ public class CommandCombat implements ICommand {
 
     @Override
     public boolean canCommandSenderUseCommand(ICommandSender sender) {
-        return sender instanceof EntityPlayer;
+        return true;
+//        return sender instanceof EntityPlayer;
     }
 
     @Override
@@ -149,6 +150,4 @@ public class CommandCombat implements ICommand {
             Combat.logger.error("Unreachable! Tried to read combat help by line.");
         }
     }
-
-
 }

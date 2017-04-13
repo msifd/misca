@@ -1,34 +1,30 @@
 package ru.ariadna.misca.combat.commands;
 
-import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.registry.LanguageRegistry;
 import net.minecraft.command.ICommand;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.management.ServerConfigurationManager;
 import net.minecraft.util.ChatComponentTranslation;
-import ru.ariadna.misca.combat.Combat;
 import ru.ariadna.misca.combat.characters.Character;
 import ru.ariadna.misca.combat.characters.CharacterProvider;
 
 import java.util.List;
 
-public class CommandCharParams implements ICommand {
+public class CommandCharStats implements ICommand {
     private final CharacterProvider provider;
 
-    public CommandCharParams(CharacterProvider provider) {
+    public CommandCharStats(CharacterProvider provider) {
         this.provider = provider;
     }
 
     @Override
     public String getCommandName() {
-        return "charparams";
+        return "charstats";
     }
 
     @Override
     public String getCommandUsage(ICommandSender sender) {
-        return LanguageRegistry.instance().getStringLocalization("misca.combat.charparams.usage");
+        return LanguageRegistry.instance().getStringLocalization("misca.combat.charstats.usage");
     }
 
     @Override
@@ -38,29 +34,9 @@ public class CommandCharParams implements ICommand {
 
     @Override
     public void processCommand(ICommandSender sender, String[] args) {
-        if (args.length == 1 && args[0].equalsIgnoreCase("reload")) {
-            // Is sender OP?
-            if (sender instanceof EntityPlayer) {
-                ServerConfigurationManager scm = FMLCommonHandler.instance().getMinecraftServerInstance().getConfigurationManager();
-                EntityPlayer pl = (EntityPlayer) sender;
-                if (!scm.func_152596_g(pl.getGameProfile())) {
-                    sender.addChatMessage(new ChatComponentTranslation("misca.combat.charparams.usage"));
-                    return;
-                }
-            }
-
-            provider.reloadCharacters();
-            sender.addChatMessage(new ChatComponentTranslation("misca.combat.charparams.reloaded"));
-            return;
-        }
-
         if (args.length < 7) {
-            sender.addChatMessage(new ChatComponentTranslation("misca.combat.charparams.usage"));
+            sender.addChatMessage(new ChatComponentTranslation("misca.combat.charstats.usage"));
             return;
-        }
-
-        if (sender instanceof MinecraftServer) {
-            Combat.logger.info("Set char params can only players!");
         }
 
         try {
@@ -75,14 +51,15 @@ public class CommandCharParams implements ICommand {
             c.spirit = toInt(args[6]);
 
             provider.updateCharacter(c);
+            sender.addChatMessage(new ChatComponentTranslation("misca.combat.charstats.success", c.stats()));
         } catch (Throwable e) {
-            sender.addChatMessage(new ChatComponentTranslation("misca.combat.charparams.usage"));
+            sender.addChatMessage(new ChatComponentTranslation("misca.combat.charstats.usage"));
         }
     }
 
     @Override
     public boolean canCommandSenderUseCommand(ICommandSender sender) {
-        return (sender instanceof MinecraftServer) || (sender instanceof EntityPlayer);
+        return sender instanceof EntityPlayer;
     }
 
     @Override
