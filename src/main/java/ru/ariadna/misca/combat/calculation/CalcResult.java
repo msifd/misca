@@ -13,6 +13,10 @@ public class CalcResult {
     List<Float> coeffs = new LinkedList<>();
     int mods = 0;
 
+    public int getResult() {
+        return result;
+    }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();

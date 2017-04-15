@@ -20,57 +20,57 @@ public class LobbyManager {
     public void createLobby(EntityPlayer player) {
         String name = player.getDisplayName().toLowerCase();
         if (playerLobbies.containsKey(name)) {
-            player.addChatComponentMessage(new ChatComponentTranslation("misca.combat.lobby.error.you_in_lobby"));
+            player.addChatMessage(new ChatComponentTranslation("misca.combat.lobby.error.you_in_lobby"));
         }
         playerLobbies.put(name, new Lobby(player));
-        player.addChatComponentMessage(new ChatComponentTranslation("misca.combat.lobby.created"));
+        player.addChatMessage(new ChatComponentTranslation("misca.combat.lobby.created"));
     }
 
     public void leaveLobby(EntityPlayer player) {
         String name = player.getDisplayName().toLowerCase();
         if (playerLobbies.containsKey(name)) {
-            player.addChatComponentMessage(new ChatComponentTranslation("misca.combat.lobby.error.you_not_in_lobby"));
+            player.addChatMessage(new ChatComponentTranslation("misca.combat.lobby.error.you_not_in_lobby"));
         }
         removePlayerFromLobby(player);
-        player.addChatComponentMessage(new ChatComponentTranslation("misca.combat.lobby.leaved"));
     }
 
     public void joinLobby(EntityPlayer player, String target) {
-//        if (playerLobbies.containsKey(creator)) {
-//            creator.addChatComponentMessage(new ChatComponentTranslation("misca.combat.lobby.error.you_in_lobby"));
-//        }
         Lobby target_lobby = playerLobbies.get(target.toLowerCase());
         if (target_lobby == null) {
-            player.addChatComponentMessage(new ChatComponentTranslation("misca.combat.lobby.error.player_not_in_lobby"));
+            player.addChatMessage(new ChatComponentTranslation("misca.combat.lobby.error.player_not_in_lobby"));
             return;
         }
 
         removePlayerFromLobby(player);
         target_lobby.fighters.add(player);
         playerLobbies.put(player.getDisplayName().toLowerCase(), target_lobby);
-        player.addChatComponentMessage(new ChatComponentTranslation("misca.combat.lobby.joined"));
+        player.addChatMessage(new ChatComponentTranslation("misca.combat.lobby.joined"));
     }
 
     public void listLobby(EntityPlayer player) {
         Lobby lobby = playerLobbies.get(player.getDisplayName().toLowerCase());
         if (lobby == null) {
-            player.addChatComponentMessage(new ChatComponentTranslation("misca.combat.lobby.error.you_not_in_lobby"));
+            player.addChatMessage(new ChatComponentTranslation("misca.combat.lobby.error.you_not_in_lobby"));
             return;
         }
 
         String template = LanguageRegistry.instance().getStringLocalization("misca.combat.lobby.list");
         String players = Joiner.on(", ").join(lobby.fighters);
-        player.addChatComponentMessage(new ChatComponentText(String.format(template, players)));
+        player.addChatMessage(new ChatComponentText(String.format(template, players)));
     }
 
     public void fightLobby(EntityPlayer player) {
         Lobby lobby = playerLobbies.get(player.getDisplayName().toLowerCase());
         if (lobby == null) {
-            player.addChatComponentMessage(new ChatComponentTranslation("misca.combat.lobby.error.you_not_in_lobby"));
+            player.addChatMessage(new ChatComponentTranslation("misca.combat.lobby.error.you_not_in_lobby"));
             return;
         }
         if (lobby.owner != player) {
-            player.addChatComponentMessage(new ChatComponentTranslation("misca.combat.lobby.error.not_an_owner"));
+            player.addChatMessage(new ChatComponentTranslation("misca.combat.lobby.error.not_an_owner"));
+            return;
+        }
+        if (lobby.fighters.size() < 2) {
+            player.addChatMessage(new ChatComponentTranslation("misca.combat.lobby.error.empty_lobby"));
             return;
         }
 
@@ -84,8 +84,11 @@ public class LobbyManager {
         }
 
         lobby.fighters.remove(player);
+        // Устанавливаем нового владельца лобби
         if (lobby.owner == player && !lobby.fighters.isEmpty()) {
             lobby.owner = lobby.fighters.getFirst();
+            lobby.owner.addChatMessage(new ChatComponentTranslation("misca.combat.lobby.new_owner"));
         }
+        player.addChatMessage(new ChatComponentTranslation("misca.combat.lobby.leaved"));
     }
 }

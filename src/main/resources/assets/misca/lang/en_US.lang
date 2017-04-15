@@ -59,18 +59,28 @@ misca.channels.set.link=Link mode set to '%s'
 misca.combat.charstats.usage=/charparams <str per ref end det wis spr>
 misca.combat.charstats.success=Now your stats are: %s
 
-misca.combat.lobby.help=[Combat Lobby Help]\n
+misca.combat.lobby.help=[Combat Lobby Help] Commands:\n new - create new lobby\n leave - leave current lobby\n join <player> - join player's lobby\n list - list players from your lobby\n fight - start new fight with players in lobby
 misca.combat.lobby.created=New lobby created.
 misca.combat.lobby.leaved=You left the lobby.
 misca.combat.lobby.joined=You join to the lobby.
 misca.combat.lobby.list=Players in your lobby: %s
-misca.combat.lobby.new_owner=You are a new OWNER of this lobby.
+misca.combat.lobby.new_owner=You are now an owner of the lobby!
 misca.combat.lobby.error.you_in_lobby=Leave lobby before creating a new one.
 misca.combat.lobby.error.you_not_in_lobby=You are not in the lobby.
 misca.combat.lobby.error.player_not_in_lobby=Player you tried to join to is not in the lobby.
 misca.combat.lobby.error.not_an_owner=You are not an owner of the lobby!
+misca.combat.lobby.error.empty_lobby=Lobby must contain at least two players to start a fight!
+misca.combat.lobby.error.in_fight=You can't leave the lobby during a fight except to flee via '/cmb flee'.
 
 misca.combat.dice.help=[Dice Help]\n Format: /dice [dice]* [stat*coeff]* [modifier]*\n Example 1: /dice d20 d5 str*1.5 wis*0.5 -2\n Example 2: /dice d20 3\n Example 3: /dice d10 spr*3.1
 misca.combat.dice.default_char=Personal character stats are not found! Using default one with all fives;
 
-misca.combat.cmb.help.help=[Combat Help]\n
+misca.combat.cmb.help=[Combat Help]\n
+misca.combat.cmb.help.attack=[Combat Attack]\n
+misca.combat.cmb.help.defence=[Combat Defence]\n
+misca.combat.cmb.error.no_action=Unknown action!
+misca.combat.cmb.error.no_fight=You are not in the fight!
+misca.combat.cmb.error.wrong_stage=You can't use this action at your current fight stage.
+misca.combat.cmb.error.no_target=You have no target! Use '/cmd target <player>'
+misca.combat.cmb.error.player_not_in_fight=You can't use this action at your current fight stage.
+misca.combat.cmb.target=Target is set

@@ -5,21 +5,19 @@ import net.minecraft.command.ICommand;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.ChatComponentTranslation;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
+import ru.ariadna.misca.MiscaUtils;
 import ru.ariadna.misca.combat.Combat;
 import ru.ariadna.misca.combat.CombatException;
-import ru.ariadna.misca.combat.fight.FightManager;
-import ru.ariadna.misca.combat.characters.CharacterProvider;
 import ru.ariadna.misca.combat.fight.Action;
+import ru.ariadna.misca.combat.fight.FightManager;
 import ru.ariadna.misca.combat.fight.Fighter;
 
 import java.io.IOException;
 import java.io.StringReader;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -27,25 +25,40 @@ public class CommandCombat implements ICommand {
     private static final List<String> attack_cmd;
     private static final List<String> defence_cmd;
     private static final Set<String> all_cmd;
+    private static final HashMap<String, String> cmd_help;
+    private static final String cmd_help_attack;
+    private static final String cmd_help_defence;
+    private static final String cmd_help_all;
 
-    static {
+static {
+        // Список команд
         attack_cmd = Arrays.stream(Action.values())
-                .filter(a -> a.stage == Action.Stage.ATTACK || a.stage == Action.Stage.FIGHT)
+                .filter(Action::isFight)
                 .map(Action::toString).collect(Collectors.toList());
         defence_cmd = Arrays.stream(Action.values())
-                .filter(a -> a.stage == Action.Stage.DEFENCE || a.stage == Action.Stage.FIGHT)
+                .filter(Action::isDefence)
                 .map(Action::toString).collect(Collectors.toList());
         all_cmd = Stream.of(attack_cmd, defence_cmd)
                 .flatMap(Collection::stream).collect(Collectors.toSet());
         attack_cmd.add("help");
         defence_cmd.add("help");
+
+        // Кэш хелпа. пачиму бы и нет %)
+        LanguageRegistry reg = LanguageRegistry.instance();
+        HashMap<String, String> tmp = new HashMap<>();
+        for (String cmd : all_cmd) {
+            String h = reg.getStringLocalization("misca.combat.cmb.help." + cmd);
+            if (!h.isEmpty()) tmp.put(cmd, h);
+        }
+        cmd_help = tmp;
+        cmd_help_attack = reg.getStringLocalization("misca.combat.cmb.help.attack") + buildHelp(attack_cmd);
+        cmd_help_defence = reg.getStringLocalization("misca.combat.cmb.help.defence") + buildHelp(defence_cmd);
+        cmd_help_all = reg.getStringLocalization("misca.combat.cmb.help") +  cmd_help_attack + cmd_help_defence;
     }
 
-    private final CharacterProvider provider;
     private final FightManager manager;
 
-    public CommandCombat(CharacterProvider provider, FightManager manager) {
-        this.provider = provider;
+    public CommandCombat(FightManager manager) {
         this.manager = manager;
     }
 
@@ -56,7 +69,7 @@ public class CommandCombat implements ICommand {
 
     @Override
     public String getCommandUsage(ICommandSender sender) {
-        return "/cmb <cmd> [...] ; /cmb help [cmd]";
+        return "/cmb <cmd> [mod] ; /cmb help [cmd]";
     }
 
     @Override
@@ -67,22 +80,32 @@ public class CommandCombat implements ICommand {
     @Override
     public void processCommand(ICommandSender sender, String[] args) {
         if (args.length == 0) {
-            sendHelp(sender, "help");
-            return;
-        }
-        if (args[0].equalsIgnoreCase("help")) {
-            if (args.length >= 2 && all_cmd.contains(args[1].toLowerCase())) {
-                sendHelp(sender, args[1].toLowerCase());
-            } else {
-                sendHelp(sender, "help");
-            }
+            sendHelp(sender, "all");
             return;
         }
 
-        String arg1 = args[0];
+        EntityPlayer player = (EntityPlayer) sender;
+        switch (args[0].toLowerCase()) {
+            // Общий хелп и специальный для команд
+            case "help":
+                if (args.length >= 2 && all_cmd.contains(args[1].toLowerCase())) {
+                    sendHelp(sender, args[1].toLowerCase());
+                } else {
+                    sendHelp(sender, "all");
+                }
+                return;
+            // Выбор персонажа для атаки
+            case "target":
+                if (args.length > 1) {
+                    manager.selectTarget(player, args[1]);
+                    return;
+                }
+                break;
+        }
 
+        // Пробуем прочитать модификатор к действию
         int modifier = 0;
-        if (args.length >= 2 && (args[1].startsWith("+") || args[1].startsWith("-"))) {
+        if (args.length > 1) {
             try {
                 modifier = Integer.valueOf(args[1]);
             } catch (NumberFormatException e) {
@@ -90,28 +113,33 @@ public class CommandCombat implements ICommand {
             }
         }
 
-        Action action = Action.valueOf(arg1.toUpperCase());
         try {
-            manager.doAction((EntityPlayer) sender, action, modifier);
+            Action action = Action.valueOf(args[0].toUpperCase());
+            // Фильтруем системные действия (INIT)
+            if (action.isSystem()) {
+                throw new IllegalArgumentException();
+            }
+            manager.doAction(player, action, modifier);
         } catch (CombatException e) {
-            e.printStackTrace();
+            sender.addChatMessage(new ChatComponentText(e.toString()));
+        } catch (IllegalArgumentException e) {
+            sender.addChatMessage(new ChatComponentTranslation("misca.combat.cmb.error.no_action"));
         }
     }
 
     @Override
     public boolean canCommandSenderUseCommand(ICommandSender sender) {
-        return true;
-//        return sender instanceof EntityPlayer;
+        return sender instanceof EntityPlayer;
     }
 
     @Override
     public List addTabCompletionOptions(ICommandSender sender, String[] args) {
-        Fighter f = manager.getFighter(sender.getCommandSenderName());
         if (args.length > 1) {
             return null;
         }
 
-        switch (f.stage) {
+        Fighter fighter = manager.getFighter((EntityPlayer) sender);
+        switch (fighter.getStage()) {
             case ATTACK:
                 return attack_cmd.stream().filter(s -> s.startsWith(args[0])).collect(Collectors.toList());
             case DEFENCE:
@@ -132,14 +160,33 @@ public class CommandCombat implements ICommand {
     }
 
     private void sendHelp(ICommandSender sender, String postfix) {
-        String msg = LanguageRegistry.instance().getStringLocalization("misca.combat.cmb.help." + postfix);
-        msg = StringEscapeUtils.unescapeJava(msg);
-        try {
-            for (String line : IOUtils.readLines(new StringReader(msg))) {
-                sender.addChatMessage(new ChatComponentText(line));
-            }
-        } catch (IOException e) {
-            Combat.logger.error("Unreachable! Tried to read combat help by line.");
+        switch (postfix) {
+            case "attack":
+                MiscaUtils.sendMultiline(sender, cmd_help_attack);
+                break;
+            case "defence":
+                MiscaUtils.sendMultiline(sender, cmd_help_defence);
+                break;
+            default:
+                if (all_cmd.contains(postfix)) {
+                    MiscaUtils.sendMultiline(sender, cmd_help.get(postfix));
+                } else {
+                    MiscaUtils.sendMultiline(sender, cmd_help_all);
+                }
+                break;
         }
+    }
+
+    private static String buildHelp(List<String> cmds) {
+        StringBuilder sb = new StringBuilder();
+        for (String cmd : cmds) {
+            String h = cmd_help.get(cmd);
+            if (h == null) continue;
+            sb.append(cmd);
+            sb.append(" - ");
+            sb.append(h);
+            sb.append('\n');
+        }
+        return sb.toString();
     }
 }

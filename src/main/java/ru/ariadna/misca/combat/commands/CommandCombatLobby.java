@@ -27,7 +27,7 @@ public class CommandCombatLobby implements ICommand {
 
     @Override
     public String getCommandUsage(ICommandSender sender) {
-        return "/cmb-lobby <help|new|leave|fight|list|join [player]>";
+        return "/cmb-lobby <help|new|leave|fight|list|join <player>>";
     }
 
     @Override

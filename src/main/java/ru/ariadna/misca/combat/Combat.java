@@ -20,13 +20,13 @@ public class Combat {
     private CharacterProvider characterProvider = new CharacterProvider();
     private CalcRulesProvider rulesProvider = new CalcRulesProvider();
     private Calculon calculon = new Calculon(rulesProvider);
-    private FightManager fightManager = new FightManager(calculon);
+    private FightManager fightManager = new FightManager(characterProvider, calculon);
     private LobbyManager lobbyManager = new LobbyManager(fightManager);
 
     private CommandMiscaCombat commandMiscaCombat = new CommandMiscaCombat(characterProvider, rulesProvider);
     private CommandCharStats commandCharStats = new CommandCharStats(characterProvider);
     private CommandCombatLobby commandCombatLobby = new CommandCombatLobby(lobbyManager);
-    private CommandCombat commandCombat = new CommandCombat(characterProvider, fightManager);
+    private CommandCombat commandCombat = new CommandCombat(fightManager);
     private CommandDice commandDice = new CommandDice(characterProvider);
 
     public void init(FMLServerStartingEvent event) {
