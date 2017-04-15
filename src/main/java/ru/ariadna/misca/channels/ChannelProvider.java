@@ -46,6 +46,11 @@ class ChannelProvider {
     }
 
     void reloadConfigFile() {
+        if (!dataFile.exists()) {
+            ChatChannels.logger.info("No channels config file!");
+            return;
+        }
+
         try {
             configContent = toml.read(dataFile).to(ChannelsConfigContent.class);
             // Fix empty config file
