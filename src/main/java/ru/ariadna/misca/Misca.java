@@ -20,7 +20,7 @@ import ru.ariadna.misca.toolbox.Toolbox;
 
 import java.io.File;
 
-@Mod(modid = "misca", version = "0.4.1")
+@Mod(modid = "misca", version = "0.4.3")
 public class Misca {
     public static File config_dir;
     static Logger logger = LogManager.getLogger("Misca");

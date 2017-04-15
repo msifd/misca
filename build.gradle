@@ -19,7 +19,7 @@ buildscript {
 apply plugin: 'forge'
 apply plugin: 'idea'
 
-version = "0.4.2"
+version = "0.4.3"
 group = "ru.ariadna.misca"
 archivesBaseName = "misca"
 
