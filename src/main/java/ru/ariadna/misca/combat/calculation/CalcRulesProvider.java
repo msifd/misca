@@ -31,6 +31,10 @@ public class CalcRulesProvider {
     }
 
     public boolean reload() {
+        if (dataFile.exists()) {
+            Combat.logger.info("Combat rules file not found!");
+        }
+
         try {
             Map<String, String> content = toml.read(dataFile).to(HashMap.class);
             // Fix empty config file

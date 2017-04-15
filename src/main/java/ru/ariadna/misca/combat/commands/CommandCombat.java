@@ -9,7 +9,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
 import ru.ariadna.misca.combat.Combat;
 import ru.ariadna.misca.combat.CombatException;
-import ru.ariadna.misca.combat.CombatManager;
+import ru.ariadna.misca.combat.fight.FightManager;
 import ru.ariadna.misca.combat.characters.CharacterProvider;
 import ru.ariadna.misca.combat.fight.Action;
 import ru.ariadna.misca.combat.fight.Fighter;
@@ -24,32 +24,27 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class CommandCombat implements ICommand {
-    private static final List<String> none_cmd;
     private static final List<String> attack_cmd;
     private static final List<String> defence_cmd;
     private static final Set<String> all_cmd;
 
     static {
-        none_cmd = Arrays.stream(Action.values())
-                .filter(a -> a.stage == Action.Stage.NONE)
-                .map(Action::toString).collect(Collectors.toList());
         attack_cmd = Arrays.stream(Action.values())
                 .filter(a -> a.stage == Action.Stage.ATTACK || a.stage == Action.Stage.FIGHT)
                 .map(Action::toString).collect(Collectors.toList());
         defence_cmd = Arrays.stream(Action.values())
                 .filter(a -> a.stage == Action.Stage.DEFENCE || a.stage == Action.Stage.FIGHT)
                 .map(Action::toString).collect(Collectors.toList());
-        all_cmd = Stream.of(none_cmd, attack_cmd, defence_cmd)
+        all_cmd = Stream.of(attack_cmd, defence_cmd)
                 .flatMap(Collection::stream).collect(Collectors.toSet());
-        none_cmd.add("help");
         attack_cmd.add("help");
         defence_cmd.add("help");
     }
 
     private final CharacterProvider provider;
-    private final CombatManager manager;
+    private final FightManager manager;
 
-    public CommandCombat(CharacterProvider provider, CombatManager manager) {
+    public CommandCombat(CharacterProvider provider, FightManager manager) {
         this.provider = provider;
         this.manager = manager;
     }
@@ -112,9 +107,6 @@ public class CommandCombat implements ICommand {
     @Override
     public List addTabCompletionOptions(ICommandSender sender, String[] args) {
         Fighter f = manager.getFighter(sender.getCommandSenderName());
-        if (f == null) {
-            return none_cmd;
-        }
         if (args.length > 1) {
             return null;
         }

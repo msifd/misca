@@ -1,20 +1,22 @@
-package ru.ariadna.misca.combat;
+package ru.ariadna.misca.combat.fight;
 
 import net.minecraft.entity.player.EntityPlayer;
+import ru.ariadna.misca.combat.CombatException;
 import ru.ariadna.misca.combat.calculation.CalcResult;
 import ru.ariadna.misca.combat.calculation.Calculon;
 import ru.ariadna.misca.combat.fight.Action;
 import ru.ariadna.misca.combat.fight.Fighter;
+import ru.ariadna.misca.combat.lobby.Lobby;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class CombatManager {
+public class FightManager {
     private final Calculon calculon;
 
     Map<String, Fighter> fighters = new HashMap<>();
 
-    CombatManager(Calculon calculon) {
+    public FightManager(Calculon calculon) {
         this.calculon = calculon;
     }
 
@@ -38,5 +40,9 @@ public class CombatManager {
         }
 
         CalcResult result = calculon.calculate(fighter.character, a, mod);
+    }
+
+    public void startFight(Lobby lobby) {
+
     }
 }

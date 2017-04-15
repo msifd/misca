@@ -7,10 +7,9 @@ import ru.ariadna.misca.Misca;
 import ru.ariadna.misca.combat.calculation.CalcRulesProvider;
 import ru.ariadna.misca.combat.calculation.Calculon;
 import ru.ariadna.misca.combat.characters.CharacterProvider;
-import ru.ariadna.misca.combat.commands.CommandCharStats;
-import ru.ariadna.misca.combat.commands.CommandCombat;
-import ru.ariadna.misca.combat.commands.CommandDice;
-import ru.ariadna.misca.combat.commands.CommandMiscaCombat;
+import ru.ariadna.misca.combat.commands.*;
+import ru.ariadna.misca.combat.fight.FightManager;
+import ru.ariadna.misca.combat.lobby.LobbyManager;
 
 import java.io.File;
 
@@ -21,11 +20,13 @@ public class Combat {
     private CharacterProvider characterProvider = new CharacterProvider();
     private CalcRulesProvider rulesProvider = new CalcRulesProvider();
     private Calculon calculon = new Calculon(rulesProvider);
-    private CombatManager combatManager = new CombatManager(calculon);
+    private FightManager fightManager = new FightManager(calculon);
+    private LobbyManager lobbyManager = new LobbyManager(fightManager);
 
     private CommandMiscaCombat commandMiscaCombat = new CommandMiscaCombat(characterProvider, rulesProvider);
     private CommandCharStats commandCharStats = new CommandCharStats(characterProvider);
-    private CommandCombat commandCombat = new CommandCombat(characterProvider, combatManager);
+    private CommandCombatLobby commandCombatLobby = new CommandCombatLobby(lobbyManager);
+    private CommandCombat commandCombat = new CommandCombat(characterProvider, fightManager);
     private CommandDice commandDice = new CommandDice(characterProvider);
 
     public void init(FMLServerStartingEvent event) {
@@ -35,10 +36,11 @@ public class Combat {
         characterProvider.init();
         rulesProvider.init();
         calculon.init();
-        combatManager.init();
+        fightManager.init();
 
         event.registerServerCommand(commandMiscaCombat);
         event.registerServerCommand(commandCharStats);
+        event.registerServerCommand(commandCombatLobby);
         event.registerServerCommand(commandCombat);
         event.registerServerCommand(commandDice);
     }
