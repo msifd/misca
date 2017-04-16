@@ -26,7 +26,7 @@ public class Combat {
     private CommandMiscaCombat commandMiscaCombat = new CommandMiscaCombat(characterProvider, rulesProvider);
     private CommandCharStats commandCharStats = new CommandCharStats(characterProvider);
     private CommandCombatLobby commandCombatLobby = new CommandCombatLobby(lobbyManager);
-    private CommandCombat commandCombat = new CommandCombat(fightManager);
+    private CommandCombat commandCombat = new CommandCombat(fightManager, rulesProvider);
     private CommandDice commandDice = new CommandDice(characterProvider);
 
     public void init(FMLServerStartingEvent event) {

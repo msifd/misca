@@ -6,18 +6,17 @@ import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.ChatComponentTranslation;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.StringEscapeUtils;
 import ru.ariadna.misca.MiscaUtils;
-import ru.ariadna.misca.combat.Combat;
 import ru.ariadna.misca.combat.CombatException;
+import ru.ariadna.misca.combat.calculation.CalcRulesProvider;
 import ru.ariadna.misca.combat.fight.Action;
 import ru.ariadna.misca.combat.fight.FightManager;
 import ru.ariadna.misca.combat.fight.Fighter;
 
-import java.io.IOException;
-import java.io.StringReader;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -25,15 +24,11 @@ public class CommandCombat implements ICommand {
     private static final List<String> attack_cmd;
     private static final List<String> defence_cmd;
     private static final Set<String> all_cmd;
-    private static final HashMap<String, String> cmd_help;
-    private static final String cmd_help_attack;
-    private static final String cmd_help_defence;
-    private static final String cmd_help_all;
 
-static {
+    static {
         // Список команд
         attack_cmd = Arrays.stream(Action.values())
-                .filter(Action::isFight)
+                .filter(Action::isAttack)
                 .map(Action::toString).collect(Collectors.toList());
         defence_cmd = Arrays.stream(Action.values())
                 .filter(Action::isDefence)
@@ -42,24 +37,38 @@ static {
                 .flatMap(Collection::stream).collect(Collectors.toSet());
         attack_cmd.add("help");
         defence_cmd.add("help");
+    }
+
+    private final String cmd_help_attack;
+    private final String cmd_help_defence;
+    private final String cmd_help_all;
+    private final FightManager manager;
+
+    public CommandCombat(FightManager manager, CalcRulesProvider rules) {
+        this.manager = manager;
 
         // Кэш хелпа. пачиму бы и нет %)
         LanguageRegistry reg = LanguageRegistry.instance();
-        HashMap<String, String> tmp = new HashMap<>();
-        for (String cmd : all_cmd) {
-            String h = reg.getStringLocalization("misca.combat.cmb.help." + cmd);
-            if (!h.isEmpty()) tmp.put(cmd, h);
-        }
-        cmd_help = tmp;
-        cmd_help_attack = reg.getStringLocalization("misca.combat.cmb.help.attack") + buildHelp(attack_cmd);
-        cmd_help_defence = reg.getStringLocalization("misca.combat.cmb.help.defence") + buildHelp(defence_cmd);
-        cmd_help_all = reg.getStringLocalization("misca.combat.cmb.help") +  cmd_help_attack + cmd_help_defence;
+        cmd_help_attack = buildHelp(rules, attack_cmd, Action.Stage.ATTACK);
+        cmd_help_defence = buildHelp(rules, defence_cmd, Action.Stage.DEFENCE);
+        cmd_help_all = reg.getStringLocalization("misca.combat.cmb.help") + cmd_help_attack + cmd_help_defence;
     }
 
-    private final FightManager manager;
-
-    public CommandCombat(FightManager manager) {
-        this.manager = manager;
+    private static String buildHelp(CalcRulesProvider rules, List<String> cmds, Action.Stage stage) {
+        LanguageRegistry reg = LanguageRegistry.instance();
+        String prefix = reg.getStringLocalization("misca.combat.cmb.help." + stage.name().toLowerCase());
+        StringBuilder sb = new StringBuilder(prefix);
+        for (String cmd : cmds) {
+            String h = LanguageRegistry.instance().getStringLocalization("misca.combat.cmb.help." + cmd);
+            if (h == null || h.isEmpty()) continue;
+            sb.append(cmd);
+            sb.append(" - ");
+            sb.append(h);
+            sb.append(" (");
+            sb.append(rules.getRule(Action.valueOf(cmd), stage));
+            sb.append(")\n");
+        }
+        return sb.toString();
     }
 
     @Override
@@ -101,6 +110,12 @@ static {
                     return;
                 }
                 break;
+            case "pass":
+                manager.passTurn(player);
+                return;
+//            case "object":
+//                // TODO
+//                return;
         }
 
         // Пробуем прочитать модификатор к действию
@@ -169,24 +184,12 @@ static {
                 break;
             default:
                 if (all_cmd.contains(postfix)) {
-                    MiscaUtils.sendMultiline(sender, cmd_help.get(postfix));
+                    String h = LanguageRegistry.instance().getStringLocalization("misca.combat.cmb.help." + postfix);
+                    MiscaUtils.sendMultiline(sender, h);
                 } else {
                     MiscaUtils.sendMultiline(sender, cmd_help_all);
                 }
                 break;
         }
-    }
-
-    private static String buildHelp(List<String> cmds) {
-        StringBuilder sb = new StringBuilder();
-        for (String cmd : cmds) {
-            String h = cmd_help.get(cmd);
-            if (h == null) continue;
-            sb.append(cmd);
-            sb.append(" - ");
-            sb.append(h);
-            sb.append('\n');
-        }
-        return sb.toString();
     }
 }

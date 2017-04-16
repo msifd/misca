@@ -61,7 +61,7 @@ public class CommandDice implements ICommand {
         try {
             CalcRule rule = new CalcRule(rule_raw);
             Character character = provider.get(sender.getCommandSenderName());
-            CalcResult result = Calculon.calculate(rule, character);
+            CalcResult result = Calculon.calculate(character, rule);
 
             if (character.name.isEmpty())
                 sender.addChatMessage(new ChatComponentTranslation("misca.combat.dice.default_char"));

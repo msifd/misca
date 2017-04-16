@@ -6,7 +6,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-public class CalcResult {
+public class CalcResult implements Comparable {
     int result;
     List<Integer> rolls = new LinkedList<>();
     List<Integer> stats = new LinkedList<>();
@@ -42,5 +42,11 @@ public class CalcResult {
         sb.append(result);
 
         return sb.toString();
+    }
+
+
+    @Override
+    public int compareTo(Object o) {
+        return Integer.compare(result, ((CalcResult) o).result);
     }
 }

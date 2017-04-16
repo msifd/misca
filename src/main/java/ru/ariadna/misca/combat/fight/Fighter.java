@@ -8,19 +8,19 @@ public class Fighter {
     final Character character;
     Action.Stage stage = Action.Stage.ATTACK;
     Fighter target;
+    int bonus = 0;
     boolean isDead = false;
-
 
     public Fighter(EntityPlayer player, Character character) {
         this.player = player;
         this.character = character;
     }
 
-    public Action.Stage getStage() {
-        return stage;
+    public Character getCharacter() {
+        return character;
     }
 
-    public boolean isDead() {
-        return isDead;
+    public Action.Stage getStage() {
+        return stage;
     }
 }

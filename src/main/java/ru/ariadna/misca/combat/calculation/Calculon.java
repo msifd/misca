@@ -2,6 +2,7 @@ package ru.ariadna.misca.combat.calculation;
 
 import ru.ariadna.misca.combat.characters.Character;
 import ru.ariadna.misca.combat.fight.Action;
+import ru.ariadna.misca.combat.fight.Fighter;
 
 import java.util.Random;
 
@@ -13,7 +14,7 @@ public class Calculon {
         this.provider = provider;
     }
 
-    public static CalcResult calculate(CalcRule rule, Character character) {
+    public static CalcResult calculate(Character character, CalcRule rule) {
         CalcResult res = new CalcResult();
 
         for (int edges : rule.dices) {
@@ -46,8 +47,14 @@ public class Calculon {
         rnd.setSeed(System.currentTimeMillis());
     }
 
-    public CalcResult calculate(Character character, Action action, int mod) {
-        CalcResult result = calculate(provider.getRule(action), character);
+    public CalcResult calculateSystem(Character character, Action action) {
+        CalcRule rule = provider.getRule(action, Action.Stage.SYSTEM);
+        return calculate(character, rule);
+    }
+
+    public CalcResult calculate(Fighter fighter, Action action, int mod) {
+        CalcRule rule = provider.getRule(action, fighter.getStage());
+        CalcResult result = calculate(fighter.getCharacter(), rule);
         result.mods += mod;
         return result;
     }

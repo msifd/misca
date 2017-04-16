@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class CommandCombatLobby implements ICommand {
-    private static final List<String> commands = Arrays.asList("help", "new", "leave", "fight", "list", "join");
+    private static final List<String> commands = Arrays.asList("help", "new", "leave", "start", "stop", "list", "join");
 
     private final LobbyManager manager;
 
@@ -50,8 +50,11 @@ public class CommandCombatLobby implements ICommand {
             case "leave":
                 manager.leaveLobby(player);
                 return;
-            case "fight":
-                manager.fightLobby(player);
+            case "start":
+                manager.startFight(player);
+                return;
+            case "stop":
+                manager.stopFight(player);
                 return;
             case "list":
                 manager.listLobby(player);
