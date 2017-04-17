@@ -39,19 +39,19 @@ public class CommandCombat implements ICommand {
         defence_cmd.add("help");
     }
 
-    private final String cmd_help_attack;
-    private final String cmd_help_defence;
-    private final String cmd_help_all;
+    private String cmd_help_attack;
+    private String cmd_help_defence;
+    private String cmd_help_all;
     private final FightManager manager;
 
     public CommandCombat(FightManager manager, CalcRulesProvider rules) {
         this.manager = manager;
 
-        // Кэш хелпа. пачиму бы и нет %)
-        LanguageRegistry reg = LanguageRegistry.instance();
-        cmd_help_attack = buildHelp(rules, attack_cmd, Action.Stage.ATTACK);
-        cmd_help_defence = buildHelp(rules, defence_cmd, Action.Stage.DEFENCE);
-        cmd_help_all = reg.getStringLocalization("misca.combat.cmb.help") + cmd_help_attack + cmd_help_defence;
+//        // Кэш хелпа. пачиму бы и нет %)
+//        LanguageRegistry reg = LanguageRegistry.instance();
+//        cmd_help_attack = buildHelp(rules, attack_cmd, Action.Stage.ATTACK);
+//        cmd_help_defence = buildHelp(rules, defence_cmd, Action.Stage.DEFENCE);
+//        cmd_help_all = reg.getStringLocalization("misca.combat.cmb.help") + cmd_help_attack + cmd_help_defence;
     }
 
     private static String buildHelp(CalcRulesProvider rules, List<String> cmds, Action.Stage stage) {

@@ -1,5 +1,7 @@
 package ru.ariadna.misca.combat;
 
+import cpw.mods.fml.common.event.FMLInitializationEvent;
+import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.event.FMLServerStartingEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -29,15 +31,19 @@ public class Combat {
     private CommandCombat commandCombat = new CommandCombat(fightManager, rulesProvider);
     private CommandDice commandDice = new CommandDice(characterProvider);
 
-    public void init(FMLServerStartingEvent event) {
+    public void preInit(FMLPreInitializationEvent event) {
         configDir = new File(Misca.config_dir, "combat");
         configDir.mkdirs();
+    }
 
+    public void init(FMLInitializationEvent event) {
         characterProvider.init();
         rulesProvider.init();
         calculon.init();
         fightManager.init();
+    }
 
+    public void serverStart(FMLServerStartingEvent event) {
         event.registerServerCommand(commandMiscaCombat);
         event.registerServerCommand(commandCharStats);
         event.registerServerCommand(commandCombatLobby);
