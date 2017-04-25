@@ -86,7 +86,7 @@ public class DBHandler {
 
             return true;
         } catch (SQLException e) {
-            logger.error("Failed to connect to database! {}", e);
+            logger.error("Failed to connect to database! {}", e.getMessage());
         } catch (ClassNotFoundException e) {
             logger.error("Cannot find database driver!");
         }

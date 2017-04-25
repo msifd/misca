@@ -13,21 +13,21 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import ru.ariadna.misca.channels.ChatChannels;
 import ru.ariadna.misca.charsheet.Charsheets;
-import ru.ariadna.misca.chat.OfftopFormat;
-import ru.ariadna.misca.client.HideNametag;
+import ru.ariadna.misca.tweaks.OfftopFormat;
+import ru.ariadna.misca.tweaks.HideNametag;
 import ru.ariadna.misca.database.DBHandler;
 import ru.ariadna.misca.toolbox.Toolbox;
+import ru.ariadna.misca.tweaks.Tweaks;
 
 import java.io.File;
 
-@Mod(modid = "misca", version = "0.4.3")
+@Mod(modid = "misca", version = "0.4.4")
 public class Misca {
     public static File config_dir;
     static Logger logger = LogManager.getLogger("Misca");
     private DBHandler dbHandler = new DBHandler();
-    private OfftopFormat offtopFormat = new OfftopFormat();
+    private Tweaks tweaks = new Tweaks();
     private ChatChannels chatChannels = new ChatChannels();
-    private HideNametag hideNametag = new HideNametag();
     private Charsheets charsheets = new Charsheets();
 
     @EventHandler()
@@ -38,6 +38,8 @@ public class Misca {
         if (event.getSide().isServer()) {
             dbHandler.init();
         }
+
+        tweaks.preInit();
     }
 
     @EventHandler
@@ -48,13 +50,13 @@ public class Misca {
     @EventHandler
     @SideOnly(Side.SERVER)
     public void initServer(FMLInitializationEvent event) {
-        MinecraftForge.EVENT_BUS.register(offtopFormat);
+        tweaks.initServer();
     }
 
     @EventHandler
     @SideOnly(Side.CLIENT)
     public void initClient(FMLInitializationEvent event) {
-        MinecraftForge.EVENT_BUS.register(hideNametag);
+        tweaks.initClient();
     }
 
     @EventHandler
