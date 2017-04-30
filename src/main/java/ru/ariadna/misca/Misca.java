@@ -8,20 +8,17 @@ import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.event.FMLServerStartingEvent;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import net.minecraftforge.common.MinecraftForge;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import ru.ariadna.misca.channels.ChatChannels;
 import ru.ariadna.misca.charsheet.Charsheets;
-import ru.ariadna.misca.tweaks.OfftopFormat;
-import ru.ariadna.misca.tweaks.HideNametag;
 import ru.ariadna.misca.database.DBHandler;
 import ru.ariadna.misca.toolbox.Toolbox;
 import ru.ariadna.misca.tweaks.Tweaks;
 
 import java.io.File;
 
-@Mod(modid = "misca", version = "0.4.4")
+@Mod(modid = "misca", version = "0.4.5")
 public class Misca {
     public static File config_dir;
     static Logger logger = LogManager.getLogger("Misca");
@@ -43,20 +40,15 @@ public class Misca {
     }
 
     @EventHandler
-    public void initCommon(FMLInitializationEvent event) {
+    public void init(FMLInitializationEvent event) {
         charsheets.init();
-    }
+        tweaks.initCommon();
 
-    @EventHandler
-    @SideOnly(Side.SERVER)
-    public void initServer(FMLInitializationEvent event) {
-        tweaks.initServer();
-    }
-
-    @EventHandler
-    @SideOnly(Side.CLIENT)
-    public void initClient(FMLInitializationEvent event) {
-        tweaks.initClient();
+        if (event.getSide().isServer()) {
+            tweaks.initServer();
+        } else {
+            tweaks.initClient();
+        }
     }
 
     @EventHandler

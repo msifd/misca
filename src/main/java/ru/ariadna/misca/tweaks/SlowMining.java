@@ -25,7 +25,7 @@ public class SlowMining {
                 tinkerToolClass = Class.forName("tconstruct.library.tools.ToolCore");
                 Tweaks.logger.info("Tinker Construct found. Slowing it down...");
             } catch (ClassNotFoundException e) {
-                e.printStackTrace();
+                Tweaks.logger.warn("Tinker Construct not found. Ignore.");
             }
         }
     }
