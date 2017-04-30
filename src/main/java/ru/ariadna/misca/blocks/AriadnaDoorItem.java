@@ -6,6 +6,7 @@ import net.minecraft.item.ItemDoor;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
+import ru.ariadna.misca.Misca;
 
 public class AriadnaDoorItem extends ItemDoor {
     private final AriadnaDoor block;
@@ -15,7 +16,7 @@ public class AriadnaDoorItem extends ItemDoor {
         this.block = block;
 
         setUnlocalizedName("ariadna_door" + index);
-        setTextureName("door_wood");
+        setTextureName(Misca.MODID + ":ariadna_door" + index);
         setCreativeTab(MiscaBlocks.tab);
     }
 
