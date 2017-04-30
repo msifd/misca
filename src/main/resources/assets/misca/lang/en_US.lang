@@ -1,3 +1,5 @@
+itemGroup.misca=Misca
+
 misca.command.player_only=This command can be used only by a player
 
 misca.charsheet.title=§lCharsheet [%s]

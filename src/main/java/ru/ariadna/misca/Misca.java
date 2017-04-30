@@ -10,6 +10,7 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import ru.ariadna.misca.blocks.MiscaBlocks;
 import ru.ariadna.misca.channels.ChatChannels;
 import ru.ariadna.misca.charsheet.Charsheets;
 import ru.ariadna.misca.database.DBHandler;
@@ -18,8 +19,10 @@ import ru.ariadna.misca.tweaks.Tweaks;
 
 import java.io.File;
 
-@Mod(modid = "misca", version = "0.4.5")
+@Mod(modid = Misca.MODID, version = "0.4.5")
 public class Misca {
+    public static final String MODID = "misca";
+
     public static File config_dir;
     static Logger logger = LogManager.getLogger("Misca");
     private DBHandler dbHandler = new DBHandler();
@@ -41,6 +44,8 @@ public class Misca {
 
     @EventHandler
     public void init(FMLInitializationEvent event) {
+        MiscaBlocks.register();
+
         charsheets.init();
         tweaks.initCommon();
 
