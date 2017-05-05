@@ -25,6 +25,9 @@ public class SpawnInvincibility {
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onAttack(LivingAttackEvent event) {
+        if (!(event.entity instanceof EntityPlayer)) {
+            return;
+        }
         if (ignoredPlayers.containsKey(event.entity)) {
             event.setCanceled(true);
         }
