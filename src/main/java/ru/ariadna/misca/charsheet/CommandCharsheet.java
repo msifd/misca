@@ -1,5 +1,6 @@
 package ru.ariadna.misca.charsheet;
 
+import com.google.common.base.Joiner;
 import cpw.mods.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import cpw.mods.fml.common.registry.LanguageRegistry;
 import cpw.mods.fml.relauncher.Side;
@@ -77,8 +78,7 @@ public class CommandCharsheet implements ICommand {
             case "remove":
                 removeCharsheet();
                 break;
-            default:
-                // case help too
+            case "help":
                 String msg = LanguageRegistry.instance().getStringLocalization("misca.charsheet.help");
                 msg = StringEscapeUtils.unescapeJava(msg);
                 try {
@@ -89,6 +89,9 @@ public class CommandCharsheet implements ICommand {
                     Charsheets.logger.error("Unreachable! Tried to read charsheet help by line.");
                 }
                 break;
+            default:
+                // показать удаленный чаршит указанного игрока
+                requestCharsheet(args[0]);
         }
     }
 

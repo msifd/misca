@@ -1,3 +1,5 @@
+itemGroup.misca=Миска
+
 misca.command.player_only=Эта команда только для игроков.
 
 misca.charsheet.title=§lЧаршит [%s]

@@ -1,4 +1,4 @@
-package ru.ariadna.misca.client;
+package ru.ariadna.misca.tweaks;
 
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.relauncher.Side;
