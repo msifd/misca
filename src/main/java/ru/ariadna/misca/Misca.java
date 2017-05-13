@@ -19,7 +19,7 @@ import ru.ariadna.misca.tweaks.Tweaks;
 
 import java.io.File;
 
-@Mod(modid = Misca.MODID, version = "0.4.5")
+@Mod(modid = Misca.MODID, version = "@VERSION@")
 public class Misca {
     public static final String MODID = "misca";
 
