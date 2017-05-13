@@ -19,7 +19,7 @@ buildscript {
 apply plugin: 'forge'
 apply plugin: 'idea'
 
-version = "0.5"
+version = "${mod_version}"
 group = "ru.ariadna.misca"
 archivesBaseName = "misca"
 
@@ -27,15 +27,11 @@ sourceCompatibility = '1.8'
 targetCompatibility = '1.8'
 
 minecraft {
-    version = "1.7.10-10.13.4.1614-1.7.10"
+    version = "${minecraft_version}-${forge_version}"
     runDir = "eclipse"
-}
 
-// Fix IDEA resources
-idea {
-    module {
-        inheritOutputDirs = true
-    }
+    replaceIn "Misca.java"
+    replace "@VERSION@", project.version
 }
 
 configurations {
@@ -74,3 +70,6 @@ jar {
         }
     }
 }
+
+// Fix IDEA resources
+idea { module { inheritOutputDirs = true } }

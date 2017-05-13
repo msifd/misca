@@ -24,7 +24,7 @@ import ru.ariadna.misca.gui.MiscaKeyBinds;
 
 import java.io.File;
 
-@Mod(modid = "misca", version = "0.5")
+@Mod(modid = "misca", version = "@VERSION@")
 public class Misca {
     public static File config_dir;
     static Logger logger = LogManager.getLogger("Misca");
