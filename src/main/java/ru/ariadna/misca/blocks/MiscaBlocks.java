@@ -13,6 +13,6 @@ public class MiscaBlocks {
     };
 
     public static void register() {
-        AriadnaDoor.register();
+        BlockAriadnaDoor.register();
     }
 }

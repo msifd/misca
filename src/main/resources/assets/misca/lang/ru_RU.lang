@@ -57,3 +57,5 @@ misca.channels.set.invites=Инвайты установлены как '%s'
 misca.channels.set.public=Публичность установлен как '%s'
 misca.channels.set.global=Глобальный режим установлен как '%s'
 misca.channels.set.link=Режим связи установлен как '%s'
+
+misca.mining_stamina.msg=Ваших сил осталось примерно на %d секунд

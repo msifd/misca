@@ -57,3 +57,5 @@ misca.channels.set.invites=Invites set to '%s'
 misca.channels.set.public=Publicity set to '%s'
 misca.channels.set.global=Global mode set to '%s'
 misca.channels.set.link=Link mode set to '%s'
+
+misca.mining_stamina.msg=You have stamina left for about %d seconds

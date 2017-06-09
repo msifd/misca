@@ -7,7 +7,7 @@ import org.apache.logging.log4j.Logger;
 
 /**
  * Чаршиты!
- * Клиент отправляет запросы серверу (get, upload), создает локальный чаршит (init) и показывает его (preview).
+ * Клиент отправляет запросы серверу (get, upload), создает локальный чаршит (preInit) и показывает его (preview).
  * Сервер выводит текст (get) и оперирует файлами (upload).
  */
 public class Charsheets {

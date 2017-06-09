@@ -78,7 +78,7 @@ class CharsheetProvider {
                 file.createNewFile();
                 Files.write(file.toPath(), temp.getBytes(Charsets.UTF_8));
             } catch (IOException e) {
-                Charsheets.logger.error("Failed to write init charsheet! File: {}", file.getAbsolutePath());
+                Charsheets.logger.error("Failed to write preInit charsheet! File: {}", file.getAbsolutePath());
             }
         }
 

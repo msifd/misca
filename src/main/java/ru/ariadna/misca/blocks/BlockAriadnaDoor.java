@@ -3,34 +3,32 @@ package ru.ariadna.misca.blocks;
 import cpw.mods.fml.common.registry.GameRegistry;
 import net.minecraft.block.BlockDoor;
 import net.minecraft.block.material.Material;
-import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.world.World;
-import ru.ariadna.misca.Misca;
 
 import java.util.Random;
 
-class AriadnaDoor extends BlockDoor {
+class BlockAriadnaDoor extends BlockDoor {
 
-    static void register() {
-        for (int i = 1; i <= 15; i++) {
-            AriadnaDoor door = new AriadnaDoor(i);
-            GameRegistry.registerBlock(door, "ariadna_door" + i);
-            GameRegistry.registerItem(door.item, "ariadna_door_item" + i);
-        }
-    }
+    private final ItemAriadnaDoor item;
 
-    private final AriadnaDoorItem item;
-
-    private AriadnaDoor(int index) {
+    private BlockAriadnaDoor(int index) {
         super(Material.wood);
-        item = new AriadnaDoorItem(index, this);
+        item = new ItemAriadnaDoor(index, this);
 
         disableStats();
         setHardness(3.0F);
         setStepSound(soundTypeWood);
         setBlockName("ariadna_door" + index);
-        setBlockTextureName(Misca.MODID + ":ariadna_door" + index);
+        setBlockTextureName("misca:ariadna_door" + index);
+    }
+
+    static void register() {
+        for (int i = 1; i <= 15; i++) {
+            BlockAriadnaDoor door = new BlockAriadnaDoor(i);
+            GameRegistry.registerBlock(door, "ariadna_door" + i);
+            GameRegistry.registerItem(door.item, "ariadna_door_item" + i);
+        }
     }
 
     @Override

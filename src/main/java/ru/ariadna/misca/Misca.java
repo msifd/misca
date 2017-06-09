@@ -1,5 +1,6 @@
 package ru.ariadna.misca;
 
+import com.google.common.eventbus.EventBus;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
@@ -19,16 +20,19 @@ import ru.ariadna.misca.tweaks.Tweaks;
 
 import java.io.File;
 
-@Mod(modid = Misca.MODID, version = "@VERSION@")
+@Mod(modid = "misca", version = "@VERSION@")
 public class Misca {
-    public static final String MODID = "misca";
-
     public static File config_dir;
     static Logger logger = LogManager.getLogger("Misca");
+    private static EventBus eventBus = new EventBus();
     private DBHandler dbHandler = new DBHandler();
     private Tweaks tweaks = new Tweaks();
     private ChatChannels chatChannels = new ChatChannels();
     private Charsheets charsheets = new Charsheets();
+
+    public static EventBus eventBus() {
+        return eventBus;
+    }
 
     @EventHandler()
     public void preInit(FMLPreInitializationEvent event) {
@@ -40,12 +44,11 @@ public class Misca {
         }
 
         tweaks.preInit();
+        MiscaBlocks.register();
     }
 
     @EventHandler
     public void init(FMLInitializationEvent event) {
-        MiscaBlocks.register();
-
         charsheets.init();
         tweaks.initCommon();
 
@@ -61,10 +64,12 @@ public class Misca {
     public void serverStart(FMLServerStartingEvent event) {
         Toolbox.initServer(event);
         chatChannels.init(event);
+        tweaks.serverStart(event);
     }
 
     @EventHandler
     public void postInit(FMLPostInitializationEvent event) {
+        eventBus.post(event);
         logger.info("Misca is fully loaded! Bon appetit!");
     }
 }

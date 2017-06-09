@@ -1,5 +1,6 @@
 package ru.ariadna.misca.tweaks;
 
+import cpw.mods.fml.common.event.FMLServerStartingEvent;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraftforge.common.MinecraftForge;
@@ -11,12 +12,13 @@ public class Tweaks {
     static Logger logger = LogManager.getLogger("Misca-Tweaks");
     private OfftopFormat offtopFormat = new OfftopFormat();
     private HideNametag hideNametag = new HideNametag();
-    private SlowMining slowMining = new SlowMining();
+    private MiningNerf miningNerf = new MiningNerf();
     private SpawnInvincibility spawnInvincibility = new SpawnInvincibility();
     private DisableSomeCraftingTables disableSomeCraftingTables = new DisableSomeCraftingTables();
 
     public void preInit() {
-        config.init();
+        config.load();
+        miningNerf.preInit();
     }
 
     @SideOnly(Side.SERVER)
@@ -32,6 +34,10 @@ public class Tweaks {
     }
 
     public void initCommon() {
-        slowMining.init();
+
+    }
+
+    public void serverStart(FMLServerStartingEvent event) {
+        event.registerServerCommand(miningNerf.commandStamina);
     }
 }

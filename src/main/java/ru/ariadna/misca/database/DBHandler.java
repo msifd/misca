@@ -21,6 +21,17 @@ public class DBHandler {
     private DBConfigFile config = new DBConfigFile();
     private Connection connection;
 
+    static void asyncUpdate(PreparedStatement s) {
+        Thread thread = new Thread(() -> {
+            try {
+                s.executeUpdate();
+            } catch (SQLException e) {
+                logger.error("Failed to update database! {}", e);
+            }
+        });
+        thread.start();
+    }
+
     public void init() {
         configFile = new File(Misca.config_dir, "database.toml");
 
@@ -33,17 +44,6 @@ public class DBHandler {
 
         channels.init(connection, config.chat_table);
         logger.info("Misca successfully connected to database.");
-    }
-
-    static void asyncUpdate(PreparedStatement s) {
-        Thread thread = new Thread(() -> {
-            try {
-                s.executeUpdate();
-            } catch (SQLException e) {
-                logger.error("Failed to update database! {}", e);
-            }
-        });
-        thread.start();
     }
 
     private void createConfigFile() {

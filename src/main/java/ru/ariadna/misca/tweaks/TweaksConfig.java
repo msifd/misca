@@ -17,12 +17,10 @@ class TweaksConfig {
         return configContent;
     }
 
-    void init() {
-        configFile = new File(Misca.config_dir, "tweaks.toml");
-        load();
-    }
+    public void load() {
+        if (configFile == null)
+            configFile = new File(Misca.config_dir, "tweaks.toml");
 
-    private void load() {
         if (!configFile.exists()) {
             Tweaks.logger.info("No tweaks config file! Creating a default one.");
             writeDummy();
@@ -50,6 +48,6 @@ class TweaksConfig {
     }
 
     class ConfigFileContent {
-        public SlowMining.ConfigSection slow_mining = new SlowMining.ConfigSection();
+        public MiningNerf.ConfigSection slow_mining = new MiningNerf.ConfigSection();
     }
 }
