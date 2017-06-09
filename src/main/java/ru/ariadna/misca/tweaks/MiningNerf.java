@@ -202,7 +202,10 @@ public class MiningNerf {
 
         @Override
         public void processCommand(ICommandSender sender, String[] args) {
-            float stamina = module.playerStamina.get(sender.getCommandSenderName().toLowerCase()).value;
+            Stamina stamina_obj = module.playerStamina.get(sender.getCommandSenderName().toLowerCase());
+            if (stamina_obj == null) return;
+
+            float stamina = stamina_obj.value;
             String msg = LanguageRegistry.instance().getStringLocalization("misca.mining_stamina.msg");
             String formatted = String.format(msg, (int) Math.floor(stamina));
             sender.addChatMessage(new ChatComponentText(formatted));
