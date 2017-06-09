@@ -13,6 +13,7 @@ public class Tweaks {
     private HideNametag hideNametag = new HideNametag();
     private SlowMining slowMining = new SlowMining();
     private SpawnInvincibility spawnInvincibility = new SpawnInvincibility();
+    private DisableSomeCraftingTables disableSomeCraftingTables = new DisableSomeCraftingTables();
 
     public void preInit() {
         config.init();
@@ -27,6 +28,7 @@ public class Tweaks {
     @SideOnly(Side.CLIENT)
     public void initClient() {
         MinecraftForge.EVENT_BUS.register(hideNametag);
+        MinecraftForge.EVENT_BUS.register(disableSomeCraftingTables);
     }
 
     public void initCommon() {
