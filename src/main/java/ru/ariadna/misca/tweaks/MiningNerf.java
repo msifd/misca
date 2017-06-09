@@ -133,8 +133,6 @@ public class MiningNerf {
             stamina.value = Math.max(0f, stamina.value - ((float) passed) * config.stamina_cost / 1000f);
         }
 
-        System.out.println(stamina.value);
-
         stamina.last_mined = now;
         playerStamina.put(name, stamina);
 
