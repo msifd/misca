@@ -1,9 +1,7 @@
 package ru.ariadna.misca.tweaks;
 
 import com.google.common.eventbus.Subscribe;
-import cpw.mods.fml.common.event.FMLPostInitializationEvent;
-import cpw.mods.fml.common.event.FMLServerStartingEvent;
-import cpw.mods.fml.common.event.FMLServerStoppingEvent;
+import cpw.mods.fml.common.event.*;
 import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.registry.LanguageRegistry;
@@ -20,6 +18,7 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.oredict.OreDictionary;
 import ru.ariadna.misca.Misca;
+import ru.ariadna.misca.TomlConfig;
 
 import java.io.*;
 import java.lang.reflect.Field;
@@ -33,7 +32,7 @@ public class MiningNerf {
     private static final int MAX_CACHED_BLOCKS = 20;
     private static Class<?> tinkerToolClass;
     private CommandStamina commandStamina = new CommandStamina(this);
-    private ConfigSection config;
+    private TomlConfig<ConfigSection> config = new TomlConfig<>(ConfigSection.class, "mining_nerf.toml");
     private File stamina_file;
     private HashMap<String, Stamina> playerStamina = new HashMap<>();
     private Set<Block> oreBlocks = new HashSet<>();
@@ -42,12 +41,10 @@ public class MiningNerf {
     private long last_stamina_write = System.currentTimeMillis();
 
     @Subscribe
-    public void preInit() {
-        config = Tweaks.config.config().slow_mining;
+    public void preInit(FMLPreInitializationEvent event) {
         stamina_file = new File(Misca.config_dir, "mining_stamina.dat");
 
         readStaminaFile();
-        MinecraftForge.EVENT_BUS.register(this);
 
         try {
             tinkerToolClass = Class.forName("tconstruct.library.tools.ToolCore");
@@ -55,8 +52,11 @@ public class MiningNerf {
         } catch (ClassNotFoundException e) {
             Tweaks.logger.warn("Tinker Construct not found. Ignore.");
         }
+    }
 
-        Tweaks.logger.info("MiningNerf initialized");
+    @Subscribe
+    public void onInit(FMLInitializationEvent event) {
+        MinecraftForge.EVENT_BUS.register(this);
     }
 
     @Subscribe
@@ -79,6 +79,8 @@ public class MiningNerf {
         } catch (NoSuchFieldException | IllegalAccessException e) {
             e.printStackTrace();
         }
+
+        Tweaks.logger.info("MiningNerf initialized");
     }
 
     @Subscribe
@@ -98,7 +100,7 @@ public class MiningNerf {
 
         if (updateStamina(event.entityPlayer, event.block)) {
             if (event.newSpeed == 0) event.newSpeed = event.originalSpeed;
-            event.newSpeed /= config.tool_coefficient;
+            event.newSpeed /= config.get().tool_coefficient;
         } else {
             event.newSpeed = 0;
         }
@@ -115,6 +117,8 @@ public class MiningNerf {
     }
 
     private boolean updateStamina(EntityPlayer player, Block block) {
+        ConfigSection config = this.config.get();
+
         // Ахуеть как можно! Жджава уосемь уууху!
         Boolean is_ore = oreBlocksCache.computeIfAbsent(block, b -> oreBlocks.contains(b));
         if (!is_ore) return true;
@@ -173,10 +177,10 @@ public class MiningNerf {
     }
 
     static class ConfigSection {
-        float tool_coefficient = 5.0f;
-        float stamina_max = 500f;
-        float stamina_restoration = 0.005f;
-        float stamina_cost = 1.0f;
+        Float tool_coefficient = 5.0f;
+        Float stamina_max = 500f;
+        Float stamina_restoration = 0.005f;
+        Float stamina_cost = 1.0f;
     }
 
     static class CompactLinkedMap<K, V> extends LinkedHashMap<K, V> {

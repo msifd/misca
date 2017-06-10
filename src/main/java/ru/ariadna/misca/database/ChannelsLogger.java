@@ -36,7 +36,7 @@ public class ChannelsLogger {
             s.setInt(7, coord.posZ);
             s.setString(8, cmd);
             s.setString(9, text);
-//            s.executeUpdate();
+
             DBHandler.asyncUpdate(s);
 
         } catch (SQLException e) {

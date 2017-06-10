@@ -12,6 +12,7 @@ import ru.ariadna.misca.blocks.MiscaBlocks;
 import ru.ariadna.misca.channels.ChatChannels;
 import ru.ariadna.misca.charsheet.Charsheets;
 import ru.ariadna.misca.database.DBHandler;
+import ru.ariadna.misca.events.MiscaReloadEvent;
 import ru.ariadna.misca.toolbox.Toolbox;
 import ru.ariadna.misca.tweaks.MiningNerf;
 import ru.ariadna.misca.tweaks.Tweaks;
@@ -50,6 +51,7 @@ public class Misca {
         config_dir = new File(event.getModConfigurationDirectory(), "misca");
         config_dir.mkdirs();
 
+        eventBus.post(new MiscaReloadEvent());
         eventBus.post(event);
     }
 
