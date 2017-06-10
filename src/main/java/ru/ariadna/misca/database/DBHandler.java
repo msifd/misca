@@ -13,7 +13,6 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
-@SideOnly(Side.SERVER)
 public class DBHandler {
     public static ChannelsLogger channels = new ChannelsLogger();
     static Logger logger = LogManager.getLogger("Misca-DB");

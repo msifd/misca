@@ -1,6 +1,7 @@
 package ru.ariadna.misca;
 
 import com.google.common.eventbus.EventBus;
+import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.event.*;
@@ -11,6 +12,7 @@ import org.apache.logging.log4j.Logger;
 import ru.ariadna.misca.blocks.MiscaBlocks;
 import ru.ariadna.misca.channels.ChatChannels;
 import ru.ariadna.misca.charsheet.Charsheets;
+import ru.ariadna.misca.commands.CommandMiscaCommon;
 import ru.ariadna.misca.database.DBHandler;
 import ru.ariadna.misca.events.MiscaReloadEvent;
 import ru.ariadna.misca.toolbox.Toolbox;
@@ -22,7 +24,7 @@ import java.io.File;
 @Mod(modid = "misca", version = "@VERSION@")
 public class Misca {
     public static File config_dir;
-    static Logger logger = LogManager.getLogger("Misca");
+    private static Logger logger = LogManager.getLogger("Misca");
     private static EventBus eventBus = new EventBus();
     private DBHandler dbHandler = new DBHandler();
     private Tweaks tweaks = new Tweaks();
@@ -33,13 +35,16 @@ public class Misca {
     private MiningNerf miningNerf = new MiningNerf();
 
     public Misca() {
-        eventBus.register(dbHandler);
         eventBus.register(tweaks);
         eventBus.register(toolbox);
         eventBus.register(miscaBlocks);
         eventBus.register(chatChannels);
         eventBus.register(charsheets);
         eventBus.register(miningNerf);
+
+        if (FMLCommonHandler.instance().getSide().isServer()) {
+            eventBus.register(dbHandler);
+        }
     }
 
     public static EventBus eventBus() {
@@ -63,6 +68,8 @@ public class Misca {
     @EventHandler
     @SideOnly(Side.SERVER)
     public void serverStart(FMLServerStartingEvent event) {
+        event.registerServerCommand(new CommandMiscaCommon());
+
         eventBus.post(event);
     }
 
