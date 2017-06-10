@@ -2,6 +2,8 @@ package ru.ariadna.misca.tweaks;
 
 import com.google.common.eventbus.Subscribe;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
+import cpw.mods.fml.common.event.FMLServerStartingEvent;
+import cpw.mods.fml.common.event.FMLServerStoppingEvent;
 import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.registry.LanguageRegistry;
@@ -30,7 +32,7 @@ import java.util.*;
 public class MiningNerf {
     private static final int MAX_CACHED_BLOCKS = 20;
     private static Class<?> tinkerToolClass;
-    public final CommandStamina commandStamina = new CommandStamina(this);
+    private CommandStamina commandStamina = new CommandStamina(this);
     private ConfigSection config;
     private File stamina_file;
     private HashMap<String, Stamina> playerStamina = new HashMap<>();
@@ -39,10 +41,7 @@ public class MiningNerf {
 
     private long last_stamina_write = System.currentTimeMillis();
 
-    MiningNerf() {
-        Misca.eventBus().register(this);
-    }
-
+    @Subscribe
     public void preInit() {
         config = Tweaks.config.config().slow_mining;
         stamina_file = new File(Misca.config_dir, "mining_stamina.dat");
@@ -56,6 +55,8 @@ public class MiningNerf {
         } catch (ClassNotFoundException e) {
             Tweaks.logger.warn("Tinker Construct not found. Ignore.");
         }
+
+        Tweaks.logger.info("MiningNerf initialized");
     }
 
     @Subscribe
@@ -80,13 +81,15 @@ public class MiningNerf {
         }
     }
 
-//    @SubscribeEvent
-//    public void onOreRegistered(OreDictionary.OreRegisterEvent event) {
-//        Block block = Block.getBlockFromItem(event.Ore.getItem());
-//        if (block != Blocks.air) {
-//            oreBlocks.add(block);
-//        }
-//    }
+    @Subscribe
+    public void onServerStart(FMLServerStartingEvent event) {
+        event.registerServerCommand(commandStamina);
+    }
+
+    @Subscribe
+    public void onServerStop(FMLServerStoppingEvent event) {
+        writeStaminaFile();
+    }
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public void onBreakSpeed(PlayerEvent.BreakSpeed event) {

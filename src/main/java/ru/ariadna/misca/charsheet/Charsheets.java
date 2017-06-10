@@ -1,5 +1,8 @@
 package ru.ariadna.misca.charsheet;
 
+import com.google.common.eventbus.Subscribe;
+import cpw.mods.fml.common.event.FMLInitializationEvent;
+import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import net.minecraft.command.ICommand;
 import net.minecraftforge.client.ClientCommandHandler;
 import org.apache.logging.log4j.LogManager;
@@ -15,8 +18,13 @@ public class Charsheets {
     static CharsheetProvider provider = new CharsheetProvider();
     private ICommand command = new CommandCharsheet(provider);
 
-    public void init() {
+    @Subscribe
+    public void onPreInit(FMLPreInitializationEvent event) {
         provider.init();
+    }
+
+    @Subscribe
+    public void onInit(FMLInitializationEvent event) {
         ClientCommandHandler.instance.registerCommand(command);
     }
 }

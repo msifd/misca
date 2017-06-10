@@ -1,7 +1,9 @@
 package ru.ariadna.misca.database;
 
+import com.google.common.eventbus.Subscribe;
 import com.moandjiezana.toml.Toml;
 import com.moandjiezana.toml.TomlWriter;
+import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import ru.ariadna.misca.Misca;
@@ -32,7 +34,11 @@ public class DBHandler {
         thread.start();
     }
 
-    public void init() {
+    @Subscribe
+    public void onPreInit(FMLPreInitializationEvent event) {
+        if (event.getSide().isClient())
+            return;
+
         configFile = new File(Misca.config_dir, "database.toml");
 
         if (!configFile.exists()) {

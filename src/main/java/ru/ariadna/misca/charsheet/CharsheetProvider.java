@@ -16,7 +16,6 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.nio.file.Files;
 
-@SuppressWarnings("ResultOfMethodCallIgnored")
 class CharsheetProvider {
     private File charsheet_dir;
 

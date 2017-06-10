@@ -3,10 +3,7 @@ package ru.ariadna.misca;
 import com.google.common.eventbus.EventBus;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
-import cpw.mods.fml.common.event.FMLInitializationEvent;
-import cpw.mods.fml.common.event.FMLPostInitializationEvent;
-import cpw.mods.fml.common.event.FMLPreInitializationEvent;
-import cpw.mods.fml.common.event.FMLServerStartingEvent;
+import cpw.mods.fml.common.event.*;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import org.apache.logging.log4j.LogManager;
@@ -16,6 +13,7 @@ import ru.ariadna.misca.channels.ChatChannels;
 import ru.ariadna.misca.charsheet.Charsheets;
 import ru.ariadna.misca.database.DBHandler;
 import ru.ariadna.misca.toolbox.Toolbox;
+import ru.ariadna.misca.tweaks.MiningNerf;
 import ru.ariadna.misca.tweaks.Tweaks;
 
 import java.io.File;
@@ -27,44 +25,49 @@ public class Misca {
     private static EventBus eventBus = new EventBus();
     private DBHandler dbHandler = new DBHandler();
     private Tweaks tweaks = new Tweaks();
+    private Toolbox toolbox = new Toolbox();
+    private MiscaBlocks miscaBlocks = new MiscaBlocks();
     private ChatChannels chatChannels = new ChatChannels();
     private Charsheets charsheets = new Charsheets();
+    private MiningNerf miningNerf = new MiningNerf();
+
+    public Misca() {
+        eventBus.register(dbHandler);
+        eventBus.register(tweaks);
+        eventBus.register(toolbox);
+        eventBus.register(miscaBlocks);
+        eventBus.register(chatChannels);
+        eventBus.register(charsheets);
+        eventBus.register(miningNerf);
+    }
 
     public static EventBus eventBus() {
         return eventBus;
     }
 
-    @EventHandler()
+    @EventHandler
     public void preInit(FMLPreInitializationEvent event) {
         config_dir = new File(event.getModConfigurationDirectory(), "misca");
         config_dir.mkdirs();
 
-        if (event.getSide().isServer()) {
-            dbHandler.init();
-        }
-
-        tweaks.preInit();
-        MiscaBlocks.register();
+        eventBus.post(event);
     }
 
     @EventHandler
     public void init(FMLInitializationEvent event) {
-        charsheets.init();
-        tweaks.initCommon();
-
-        if (event.getSide().isServer()) {
-            tweaks.initServer();
-        } else {
-            tweaks.initClient();
-        }
+        eventBus.post(event);
     }
 
     @EventHandler
     @SideOnly(Side.SERVER)
     public void serverStart(FMLServerStartingEvent event) {
-        Toolbox.initServer(event);
-        chatChannels.init(event);
-        tweaks.serverStart(event);
+        eventBus.post(event);
+    }
+
+    @EventHandler
+    @SideOnly(Side.SERVER)
+    public void serverStop(FMLServerStoppingEvent event) {
+        eventBus.post(event);
     }
 
     @EventHandler

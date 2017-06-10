@@ -10,9 +10,9 @@ import java.util.Random;
 
 class BlockAriadnaDoor extends BlockDoor {
 
-    private final ItemAriadnaDoor item;
+    final ItemAriadnaDoor item;
 
-    private BlockAriadnaDoor(int index) {
+    BlockAriadnaDoor(int index) {
         super(Material.wood);
         item = new ItemAriadnaDoor(index, this);
 
@@ -21,14 +21,6 @@ class BlockAriadnaDoor extends BlockDoor {
         setStepSound(soundTypeWood);
         setBlockName("ariadna_door" + index);
         setBlockTextureName("misca:ariadna_door" + index);
-    }
-
-    static void register() {
-        for (int i = 1; i <= 15; i++) {
-            BlockAriadnaDoor door = new BlockAriadnaDoor(i);
-            GameRegistry.registerBlock(door, "ariadna_door" + i);
-            GameRegistry.registerItem(door.item, "ariadna_door_item" + i);
-        }
     }
 
     @Override
