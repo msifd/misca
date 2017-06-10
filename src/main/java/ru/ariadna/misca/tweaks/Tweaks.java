@@ -3,7 +3,6 @@ package ru.ariadna.misca.tweaks;
 import com.google.common.eventbus.Subscribe;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
-import cpw.mods.fml.common.event.FMLServerStartingEvent;
 import net.minecraftforge.common.MinecraftForge;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -16,6 +15,7 @@ public class Tweaks {
     private HideNametag hideNametag = new HideNametag();
     private SpawnInvincibility spawnInvincibility = new SpawnInvincibility();
     private DisableSomeCraftingTables disableSomeCraftingTables = new DisableSomeCraftingTables();
+    private DeathToll deathToll = new DeathToll();
 
     @Subscribe
     public void onPreInit(FMLPreInitializationEvent event) {
@@ -29,6 +29,7 @@ public class Tweaks {
         if (event.getSide().isServer()) {
             MinecraftForge.EVENT_BUS.register(offtopFormat);
             MinecraftForge.EVENT_BUS.register(spawnInvincibility);
+            MinecraftForge.EVENT_BUS.register(deathToll);
         } else {
             MinecraftForge.EVENT_BUS.register(hideNametag);
         }
