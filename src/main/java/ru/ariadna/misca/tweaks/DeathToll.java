@@ -5,7 +5,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.ChunkCoordinates;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
-import ru.ariadna.misca.Misca;
+import ru.ariadna.misca.config.ConfigManager;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -24,7 +24,7 @@ public class DeathToll {
 
         PrintWriter writer;
         try {
-            File log_file = new File(Misca.config_dir, "player_death.log");
+            File log_file = new File(ConfigManager.config_dir, "player_death.log");
             writer = new PrintWriter(new FileWriter(log_file, true));
         } catch (IOException e) {
             Tweaks.logger.error("Cannot create death log file! : " + e.getMessage());

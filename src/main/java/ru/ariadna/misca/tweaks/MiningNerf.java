@@ -17,8 +17,8 @@ import net.minecraft.util.ChatComponentText;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.oredict.OreDictionary;
-import ru.ariadna.misca.Misca;
-import ru.ariadna.misca.TomlConfig;
+import ru.ariadna.misca.config.ConfigManager;
+import ru.ariadna.misca.config.TomlConfig;
 
 import java.io.*;
 import java.lang.reflect.Field;
@@ -42,7 +42,7 @@ public class MiningNerf {
 
     @Subscribe
     public void preInit(FMLPreInitializationEvent event) {
-        stamina_file = new File(Misca.config_dir, "mining_stamina.dat");
+        stamina_file = new File(ConfigManager.config_dir, "mining_stamina.dat");
 
         readStaminaFile();
 
@@ -176,7 +176,7 @@ public class MiningNerf {
         float value;
     }
 
-    static class ConfigSection {
+    static class ConfigSection implements Serializable {
         Float tool_coefficient = 5.0f;
         Float stamina_max = 500f;
         Float stamina_restoration = 0.005f;

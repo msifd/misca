@@ -1,25 +1,26 @@
-package ru.ariadna.misca;
+package ru.ariadna.misca.config;
 
 import com.google.common.eventbus.Subscribe;
 import com.moandjiezana.toml.Toml;
 import com.moandjiezana.toml.TomlWriter;
-import cpw.mods.fml.common.event.FMLServerStoppingEvent;
+import cpw.mods.fml.common.FMLCommonHandler;
+import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import ru.ariadna.misca.events.MiscaReloadEvent;
+import ru.ariadna.misca.Misca;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.Serializable;
 import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
 
-public class TomlConfig<T> {
+public class TomlConfig<T extends Serializable> {
     private static Logger logger = LogManager.getLogger("Misca-Config");
     private String filename;
     private Class<T> config_class;
     private T config_object;
-
     private Toml toml_default;
+    private boolean syncEnabled = true;
 
     public TomlConfig(Class<T> clazz, String filename) {
         this.config_class = clazz;
@@ -33,20 +34,33 @@ public class TomlConfig<T> {
     }
 
     @Subscribe
-    public void onReloadEvent(MiscaReloadEvent event) {
-        read();
+    public void onReloadEvent(ConfigReloadEvent event) {
+        if (FMLCommonHandler.instance().getSide().isServer())
+            read();
+        else if (config_object == null)
+            config_object = getConfigDefault();
     }
 
     @Subscribe
-    public void onServerStop(FMLServerStoppingEvent event) {
-        write();
+    public void onSyncEvent(ConfigSyncEvent event) {
+        if (!syncEnabled) return;
+
+        if (FMLCommonHandler.instance().getSide().isServer()) {
+            event.configs.put(filename, config_object);
+        } else {
+            Object kinda_config = event.configs.get(filename);
+            if (config_class.isInstance(kinda_config))
+                config_object = config_class.cast(kinda_config);
+            else
+                logger.error("Sync config type mismatch for '{}'! Expected '{}' got '{}'",
+                        filename, config_class.getSimpleName(), kinda_config.getClass().getSimpleName());
+        }
     }
 
-    public void read() {
+    private void read() {
         File configFile = getConfigFile();
 
         if (!configFile.exists()) {
-            config_object = getConfigDefault();
             write();
             return;
         }
@@ -59,7 +73,7 @@ public class TomlConfig<T> {
         }
     }
 
-    public void write() {
+    private void write() {
         File configFile = getConfigFile();
 
         if (config_object == null)
@@ -74,12 +88,15 @@ public class TomlConfig<T> {
     }
 
     public T get() {
-        if (config_object == null) read();
         return config_object;
     }
 
+    public void setSync(boolean val) {
+        this.syncEnabled = val;
+    }
+
     private File getConfigFile() {
-        return new File(Misca.config_dir, filename);
+        return new File(ConfigManager.config_dir, filename);
     }
 
     private T getConfigDefault() {
@@ -88,29 +105,8 @@ public class TomlConfig<T> {
             constructor.setAccessible(true);
             return constructor.newInstance();
         } catch (ReflectiveOperationException e) {
-            logger.error("Getting dummy config", e);
+            logger.error("Getting dummy config '{}' : {}", filename, e.getMessage());
         }
         return null;
-    }
-
-    private boolean fixNullFields(T config) {
-        T dummy = getConfigDefault();
-        boolean has_null_fields = false;
-
-        try {
-            for (Field f : config_class.getDeclaredFields()) {
-                f.setAccessible(true);
-                Object dummy_value = f.get(dummy);
-                System.out.println(f.getName() + f.get(config));
-                if (f.get(config) == null && dummy_value != null) {
-                    f.set(config, dummy_value);
-                    has_null_fields = true;
-                }
-            }
-        } catch (ReflectiveOperationException e) {
-            logger.error("Fixing null fields", e);
-        }
-
-        return has_null_fields;
     }
 }

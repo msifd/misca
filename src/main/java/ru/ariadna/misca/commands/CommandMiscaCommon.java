@@ -3,8 +3,7 @@ package ru.ariadna.misca.commands;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.util.ChatComponentText;
-import ru.ariadna.misca.Misca;
-import ru.ariadna.misca.events.MiscaReloadEvent;
+import ru.ariadna.misca.config.ConfigManager;
 
 public class CommandMiscaCommon extends CommandBase {
     @Override
@@ -26,7 +25,7 @@ public class CommandMiscaCommon extends CommandBase {
 
         switch (args[0]) {
             case "reload":
-                Misca.eventBus().post(new MiscaReloadEvent());
+                ConfigManager.instance.reloadConfig();
                 sender.addChatMessage(new ChatComponentText("Misca reloaded"));
                 break;
         }

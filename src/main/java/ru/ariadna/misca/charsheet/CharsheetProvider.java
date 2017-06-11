@@ -8,7 +8,7 @@ import net.minecraft.util.ChatComponentText;
 import org.apache.commons.io.Charsets;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
-import ru.ariadna.misca.Misca;
+import ru.ariadna.misca.config.ConfigManager;
 
 import java.awt.*;
 import java.io.File;
@@ -20,7 +20,7 @@ class CharsheetProvider {
     private File charsheet_dir;
 
     void init() {
-        charsheet_dir = new File(Misca.config_dir, "charsheets");
+        charsheet_dir = new File(ConfigManager.config_dir, "charsheets");
         charsheet_dir.mkdirs();
     }
 
@@ -77,7 +77,7 @@ class CharsheetProvider {
                 file.createNewFile();
                 Files.write(file.toPath(), temp.getBytes(Charsets.UTF_8));
             } catch (IOException e) {
-                Charsheets.logger.error("Failed to write preInit charsheet! File: {}", file.getAbsolutePath());
+                Charsheets.logger.error("Failed to write initConfig charsheet! File: {}", file.getAbsolutePath());
             }
         }
 

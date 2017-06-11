@@ -2,7 +2,7 @@ package ru.ariadna.misca.channels;
 
 import com.moandjiezana.toml.Toml;
 import com.moandjiezana.toml.TomlWriter;
-import ru.ariadna.misca.Misca;
+import ru.ariadna.misca.config.ConfigManager;
 
 import java.io.File;
 import java.io.IOException;
@@ -16,7 +16,7 @@ class ChannelProvider {
     private ChannelsConfigContent configContent = new ChannelsConfigContent();
 
     void init() {
-        dataFile = new File(Misca.config_dir, "channels.toml");
+        dataFile = new File(ConfigManager.config_dir, "channels.toml");
         reloadConfigFile();
     }
 

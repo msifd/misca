@@ -2,12 +2,11 @@ package ru.ariadna.misca.database;
 
 import com.google.common.eventbus.Subscribe;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import ru.ariadna.misca.TomlConfig;
+import ru.ariadna.misca.config.TomlConfig;
 
+import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -18,6 +17,10 @@ public class DBHandler {
     static Logger logger = LogManager.getLogger("Misca-DB");
     private TomlConfig<DBConfigFile> config = new TomlConfig<>(DBConfigFile.class, "database.toml");
     private Connection connection;
+
+    public DBHandler() {
+        config.setSync(false);
+    }
 
     static void asyncUpdate(PreparedStatement s) {
         Thread thread = new Thread(() -> {
@@ -60,11 +63,11 @@ public class DBHandler {
         return false;
     }
 
-    private static class DBConfigFile {
+    private static class DBConfigFile implements Serializable {
         DB database = new DB();
         String chat_table = "chat_logs";
 
-        static class DB {
+        static class DB implements Serializable {
             String host = "localhost";
             int port = 3306;
             String database = "ariadna";

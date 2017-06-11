@@ -13,17 +13,14 @@ import ru.ariadna.misca.blocks.MiscaBlocks;
 import ru.ariadna.misca.channels.ChatChannels;
 import ru.ariadna.misca.charsheet.Charsheets;
 import ru.ariadna.misca.commands.CommandMiscaCommon;
+import ru.ariadna.misca.config.ConfigManager;
 import ru.ariadna.misca.database.DBHandler;
-import ru.ariadna.misca.events.MiscaReloadEvent;
 import ru.ariadna.misca.toolbox.Toolbox;
 import ru.ariadna.misca.tweaks.MiningNerf;
 import ru.ariadna.misca.tweaks.Tweaks;
 
-import java.io.File;
-
 @Mod(modid = "misca", version = "@VERSION@")
 public class Misca {
-    public static File config_dir;
     private static Logger logger = LogManager.getLogger("Misca");
     private static EventBus eventBus = new EventBus();
     private DBHandler dbHandler = new DBHandler();
@@ -53,10 +50,8 @@ public class Misca {
 
     @EventHandler
     public void preInit(FMLPreInitializationEvent event) {
-        config_dir = new File(event.getModConfigurationDirectory(), "misca");
-        config_dir.mkdirs();
+        ConfigManager.instance.initConfig(event);
 
-        eventBus.post(new MiscaReloadEvent());
         eventBus.post(event);
     }
 

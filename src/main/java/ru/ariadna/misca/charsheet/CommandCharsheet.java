@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class CommandCharsheet implements ICommand {
-    private static final List<String> subcommands = Arrays.asList("help", "preInit", "preview", "upload", "remove");
+    private static final List<String> subcommands = Arrays.asList("help", "init", "preview", "upload", "remove");
 
     private SimpleNetworkWrapper network = new SimpleNetworkWrapper("misca.charsheet");
     private CharsheetProvider provider;
@@ -55,7 +55,7 @@ public class CommandCharsheet implements ICommand {
         }
 
         switch (args[0]) {
-            case "preInit":
+            case "init":
                 provider.initCharsheet(sender_name);
                 break;
             case "preview":
