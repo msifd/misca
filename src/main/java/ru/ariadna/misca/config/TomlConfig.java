@@ -19,16 +19,11 @@ public class TomlConfig<T extends Serializable> {
     private String filename;
     private Class<T> config_class;
     private T config_object;
-    private Toml toml_default;
     private boolean syncEnabled = true;
 
     public TomlConfig(Class<T> clazz, String filename) {
         this.config_class = clazz;
         this.filename = filename;
-
-        // Such defaults wow
-        TomlWriter tomlWriter = new TomlWriter();
-        toml_default = new Toml().read(tomlWriter.write(getConfigDefault()));
 
         Misca.eventBus().register(this);
     }
@@ -66,6 +61,10 @@ public class TomlConfig<T extends Serializable> {
         }
 
         try {
+            // Such defaults wow
+            TomlWriter tomlWriter = new TomlWriter();
+            Toml toml_default = new Toml().read(tomlWriter.write(getConfigDefault()));
+
             config_object = new Toml(toml_default).read(configFile).to(config_class);
             write();
         } catch (IllegalStateException e) {
@@ -105,8 +104,8 @@ public class TomlConfig<T extends Serializable> {
             constructor.setAccessible(true);
             return constructor.newInstance();
         } catch (ReflectiveOperationException e) {
-            logger.error("Getting dummy config '{}' : {}", filename, e.getMessage());
+            logger.error("Getting default config '{}' : {}", filename, e.getMessage());
+            throw new RuntimeException("Failed to get default config for " + config_class.getName());
         }
-        return null;
     }
 }
