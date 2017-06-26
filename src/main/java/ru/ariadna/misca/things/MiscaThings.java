@@ -1,4 +1,4 @@
-package ru.ariadna.misca.blocks;
+package ru.ariadna.misca.things;
 
 import com.google.common.eventbus.Subscribe;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
@@ -7,8 +7,8 @@ import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 
-public class MiscaBlocks {
-    static final CreativeTabs tab = new CreativeTabs("misca") {
+public class MiscaThings {
+    public static final CreativeTabs tab = new CreativeTabs("misca") {
         @Override
         public Item getTabIconItem() {
             return Items.bowl;

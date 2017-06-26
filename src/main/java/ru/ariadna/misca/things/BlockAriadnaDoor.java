@@ -1,4 +1,4 @@
-package ru.ariadna.misca.blocks;
+package ru.ariadna.misca.things;
 
 import net.minecraft.block.BlockDoor;
 import net.minecraft.block.material.Material;

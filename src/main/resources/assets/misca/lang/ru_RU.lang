@@ -1,5 +1,9 @@
 itemGroup.misca=Миска
 
+item.battle_flag.name=Флаг битвы
+item.battle_flag.desc.1=ЛКМ на существо чтобы принудительно добавить его в ваше лобби.
+item.battle_flag.desc.2=ПКМ на существо чтобы исключить его из вашего лобби.
+
 misca.command.player_only=Эта команда только для игроков.
 
 misca.charsheet.title=§lЧаршит [%s]

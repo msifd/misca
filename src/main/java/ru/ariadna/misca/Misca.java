@@ -9,12 +9,13 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import ru.ariadna.misca.blocks.MiscaBlocks;
 import ru.ariadna.misca.channels.ChatChannels;
 import ru.ariadna.misca.charsheet.Charsheets;
 import ru.ariadna.misca.commands.CommandMiscaCommon;
 import ru.ariadna.misca.config.ConfigManager;
+import ru.ariadna.misca.crabs.Crabs;
 import ru.ariadna.misca.database.DBHandler;
+import ru.ariadna.misca.things.MiscaThings;
 import ru.ariadna.misca.toolbox.Toolbox;
 import ru.ariadna.misca.tweaks.MiningNerf;
 import ru.ariadna.misca.tweaks.Tweaks;
@@ -24,17 +25,19 @@ public class Misca {
     private static Logger logger = LogManager.getLogger("Misca");
     private static EventBus eventBus = new EventBus();
     private DBHandler dbHandler = new DBHandler();
+    private Crabs crabs = Crabs.instance();
     private Tweaks tweaks = new Tweaks();
     private Toolbox toolbox = new Toolbox();
-    private MiscaBlocks miscaBlocks = new MiscaBlocks();
+    private MiscaThings miscaThings = new MiscaThings();
     private ChatChannels chatChannels = new ChatChannels();
     private Charsheets charsheets = new Charsheets();
     private MiningNerf miningNerf = new MiningNerf();
 
     public Misca() {
+        eventBus.register(crabs);
         eventBus.register(tweaks);
         eventBus.register(toolbox);
-        eventBus.register(miscaBlocks);
+        eventBus.register(miscaThings);
         eventBus.register(chatChannels);
         eventBus.register(charsheets);
         eventBus.register(miningNerf);

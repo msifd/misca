@@ -177,7 +177,7 @@ public class MiningNerf {
     }
 
     static class ConfigSection implements Serializable {
-        Float tool_coefficient = 5.0f;
+        Float tool_coefficient = 6.0f;
         Float stamina_max = 500f;
         Float stamina_restoration = 0.005f;
         Float stamina_cost = 1.0f;

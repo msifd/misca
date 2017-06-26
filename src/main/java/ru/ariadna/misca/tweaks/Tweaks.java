@@ -18,11 +18,11 @@ public class Tweaks {
     @Subscribe
     public void onInit(FMLInitializationEvent event) {
         MinecraftForge.EVENT_BUS.register(disableSomeCraftingTables);
-        MinecraftForge.EVENT_BUS.register(deathToll); // TODO replace to server
 
         if (event.getSide().isServer()) {
             MinecraftForge.EVENT_BUS.register(offtopFormat);
             MinecraftForge.EVENT_BUS.register(spawnInvincibility);
+            MinecraftForge.EVENT_BUS.register(deathToll);
         } else {
             MinecraftForge.EVENT_BUS.register(hideNametag);
         }
