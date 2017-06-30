@@ -1,8 +1,17 @@
 itemGroup.misca=Misca
 
 item.battle_flag.name=Battle flag
-item.battle_flag.desc.1=Left-click on entity to force join him to your lobby.
-item.battle_flag.desc.2=Right-click on entity to exclude him from your lobby.
+item.battle_flag.desc=Left-click on entity to join it to your lobby.\nShift+Right-click on entity to exclude it from any lobby.\nRight-click to open lobby or fight.
+
+misca.lobby.create_lobby=Create lobby
+misca.lobby.msg.you_are_already_in_lobby=You are already in lobby!
+misca.lobby.msg.fighter_already_in_lobby=Fighter is already in lobby!
+misca.lobby.msg.lobby_not_found=Lobby not found!
+misca.lobby.msg.you_cant_leave=You can't leave this lobby!
+misca.lobby.msg.included=Fighter included into lobby.
+misca.lobby.msg.excluded=Fighter excluded from lobby.
+misca.lobby.msg.you_joined=You joined lobby.
+misca.lobby.msg.you_left=You left lobby.
 
 misca.command.player_only=This command can be used only by a player
 

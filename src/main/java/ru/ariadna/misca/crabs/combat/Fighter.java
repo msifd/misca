@@ -4,9 +4,12 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import ru.ariadna.misca.crabs.characters.Character;
 
-public class Fighter {
+import java.io.Serializable;
+
+public class Fighter implements Serializable {
     private Character character;
-    private EntityLivingBase entity;
+    private transient EntityLivingBase entity;
+    private int entityId;
 
     private boolean canLeaveLobby = true;
     private boolean hasDescribedMove = false;
@@ -15,6 +18,7 @@ public class Fighter {
     public Fighter(Character c, EntityLivingBase entity) {
         this.character = c;
         this.entity = entity;
+        this.entityId = entity.getEntityId();
     }
 
     public Character character() {
@@ -23,6 +27,15 @@ public class Fighter {
 
     public EntityLivingBase entity() {
         return entity;
+    }
+
+    public void setEntity(EntityLivingBase entity) {
+        this.entity = entity;
+        this.entityId = entity.getEntityId();
+    }
+
+    public int entityId() {
+        return entityId;
     }
 
     public boolean canLeaveLobby() {

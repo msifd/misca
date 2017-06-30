@@ -3,15 +3,22 @@ package ru.ariadna.misca.crabs.lobby;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.registry.LanguageRegistry;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.ChunkCoordinates;
+import net.minecraft.world.World;
 import net.minecraftforge.event.entity.player.EntityInteractEvent;
+import org.apache.commons.lang3.StringEscapeUtils;
+import ru.ariadna.misca.Misca;
 import ru.ariadna.misca.crabs.Crabs;
-import ru.ariadna.misca.crabs.characters.Character;
+import ru.ariadna.misca.crabs.gui.CrabsGuiHandler;
 import ru.ariadna.misca.things.MiscaThings;
 
+import java.util.Arrays;
 import java.util.List;
 
 public class ItemBattleFlag extends Item {
@@ -30,34 +37,52 @@ public class ItemBattleFlag extends Item {
 
     @Override
     public void addInformation(ItemStack stack, EntityPlayer player, List lines, boolean advanced) {
-        lines.add(LanguageRegistry.instance().getStringLocalization("item.battle_flag.desc.1"));
-        lines.add(LanguageRegistry.instance().getStringLocalization("item.battle_flag.desc.2"));
+        String desc = LanguageRegistry.instance().getStringLocalization("item.battle_flag.desc");
+        desc = StringEscapeUtils.unescapeJava(desc);
+        lines.addAll(Arrays.asList(desc.split("\n")));
+//        lines.add(LanguageRegistry.instance().getStringLocalization("item.battle_flag.desc.1"));
+//        lines.add(LanguageRegistry.instance().getStringLocalization("item.battle_flag.desc.2"));
+//        lines.add(LanguageRegistry.instance().getStringLocalization("item.battle_flag.desc.3"));
+//        lines.add(LanguageRegistry.instance().getStringLocalization("item.battle_flag.desc.4"));
     }
 
     @Override
-    public boolean onLeftClickEntity(ItemStack stack, EntityPlayer player, Entity entity) {
-        if (!(entity instanceof EntityLivingBase))
+    public boolean onLeftClickEntity(ItemStack stack, EntityPlayer player, Entity target) {
+        // Обработка только на сервере
+        // ЛКМ флагом по существу - добавление в лобби
+        if (!(player instanceof EntityPlayerMP) || !(target instanceof EntityLivingBase))
             return false;
 
-        Crabs.logger.info("left interact with {}", entity);
-
+        EntityLivingBase entity = (EntityLivingBase) target;
+        if (entity instanceof EntityLiving) ((EntityLiving) entity).playLivingSound();
+        Crabs.instance.lobbyManager.includeToPlayersLobby((EntityPlayerMP) player, entity);
 
         return true;
     }
 
+    @Override
+    public ItemStack onItemRightClick(ItemStack itemStack, World world, EntityPlayer player) {
+        // Открытие лобби или боя
+        if (!player.isSneaking()) {
+            ChunkCoordinates c = player.getPlayerCoordinates();
+            player.openGui(Misca.instance(), CrabsGuiHandler.GuiTypes.LOBBY.id(), player.getEntityWorld(), c.posX, c.posY, c.posZ);
+        }
+
+        return super.onItemRightClick(itemStack, world, player);
+    }
+
     @SubscribeEvent
     public void onEntityInteract(EntityInteractEvent event) {
-        if (!(event.entityPlayer.getHeldItem().getItem() instanceof ItemBattleFlag)
-                || !(event.target instanceof EntityLivingBase))
+        // Обработка только на сервере
+        // ПКМ флагом со сником по существу - исключение из лобби
+        if (!(event.entityPlayer instanceof EntityPlayerMP)
+                || !(event.entityPlayer.getHeldItem().getItem() instanceof ItemBattleFlag)
+                || !(event.target instanceof EntityLivingBase)
+                || !event.entityPlayer.isSneaking())
             return;
 
-        Entity entity = event.target;
-        Character character;
-
-        Crabs.logger.info("right interact with {}", entity);
-
-        if (entity instanceof EntityPlayer) {
-
-        }
+        EntityLivingBase entity = (EntityLivingBase) event.target;
+        if (entity instanceof EntityLiving) ((EntityLiving) entity).playLivingSound();
+        Crabs.instance.lobbyManager.excludeFromPlayersLobby((EntityPlayerMP) event.entityPlayer, entity);
     }
 }

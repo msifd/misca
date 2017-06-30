@@ -1,46 +1,60 @@
 package ru.ariadna.misca.crabs.lobby;
 
-import net.minecraft.entity.player.EntityPlayerMP;
-import ru.ariadna.misca.crabs.CrabsException;
-import ru.ariadna.misca.crabs.characters.Character;
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.player.EntityPlayer;
 import ru.ariadna.misca.crabs.combat.Fighter;
 
 import java.util.LinkedList;
+import java.util.Optional;
 
 public class Lobby {
-    Fighter master;
-    LinkedList<Fighter> characters = new LinkedList<>();
+    private EntityPlayer master;
+    private LinkedList<Fighter> members = new LinkedList<>();
 
-    Lobby(Fighter master) {
-        if (!(master.entity() instanceof EntityPlayerMP))
-            throw new CrabsException("Lobby master must be a Player!");
-
-        this.master = master;
-        characters.add(master);
+    public Lobby(Fighter master) {
+        this.master = (EntityPlayer) master.entity();
+        members.add(master);
     }
 
-    public void join(Fighter c) {
-        characters.add(c);
+    void join(Fighter c) {
+        members.add(c);
     }
 
-    public void leave(Fighter c) {
-        characters.remove(c);
-        if (c == master) {
-            master = characters.getFirst();
+    void leave(EntityLivingBase entity) {
+        Optional<Fighter> opt = members.stream().filter(f -> f.entity() == entity).findFirst();
+        if (!opt.isPresent()) return;
+
+        members.remove(opt.get());
+        if (entity == master && !members.isEmpty()) {
+            members.stream()
+                    .filter(f -> f.entity() instanceof EntityPlayer)
+                    .map(f -> (EntityPlayer) f.entity())
+                    .findFirst()
+                    .ifPresent(e -> master = e);
         }
     }
 
-    public Fighter master() {
+    public EntityPlayer master() {
         return master;
     }
 
     public LinkedList<Fighter> members() {
-        return characters;
+        return members;
     }
 
-    public Character[] membersArray() {
-        Character[] arr = new Character[characters.size()];
-        characters.toArray(arr);
-        return arr;
+    public Fighter findFighter(EntityLivingBase entity) {
+        for (Fighter f : members) {
+            if (f.entity() == entity)
+                return f;
+        }
+        return null;
+    }
+
+    public void setMaster(EntityPlayer master) {
+        this.master = master;
+    }
+
+    public void setMembers(LinkedList<Fighter> members) {
+        this.members = members;
     }
 }

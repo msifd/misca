@@ -1,8 +1,17 @@
 itemGroup.misca=Миска
 
 item.battle_flag.name=Флаг битвы
-item.battle_flag.desc.1=ЛКМ на существо чтобы принудительно добавить его в ваше лобби.
-item.battle_flag.desc.2=ПКМ на существо чтобы исключить его из вашего лобби.
+item.battle_flag.desc=ЛКМ на существо чтобы принудительно добавить его в ваше лобби.\nШифт+ПКМ на существо чтобы исключить его из вашего лобби.\nПКМ для открытия лобби или боя.
+
+misca.lobby.create_lobby=Создать лобби
+misca.lobby.msg.you_are_already_in_lobby=Вы уже в лобби!
+misca.lobby.msg.fighter_already_in_lobby=Боец уже в лобби!
+misca.lobby.msg.lobby_not_found=Лобби не найдено!
+misca.lobby.msg.you_cant_leave=Вы не можете покинуть данное лобби!
+misca.lobby.msg.included=Боец добавлен в лобби.
+misca.lobby.msg.excluded=Боец исключен из лобби.
+misca.lobby.msg.you_joined=Вы присоединились к лобби.
+misca.lobby.msg.you_left=Вы покинули лобби.
 
 misca.command.player_only=Эта команда только для игроков.
 
