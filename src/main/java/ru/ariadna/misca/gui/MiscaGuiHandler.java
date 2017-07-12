@@ -6,13 +6,15 @@ import cpw.mods.fml.common.network.IGuiHandler;
 import cpw.mods.fml.common.network.NetworkRegistry;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import ru.ariadna.misca.Misca;
 
 import java.util.TreeMap;
 
 public class MiscaGuiHandler implements IGuiHandler {
     public static final MiscaGuiHandler instance = new MiscaGuiHandler();
-
+    private static Logger logger = LogManager.getLogger("Misca");
     private TreeMap<Integer, IGuiHandler> delegates = new TreeMap<>();
 
     @Subscribe
@@ -22,7 +24,10 @@ public class MiscaGuiHandler implements IGuiHandler {
 
     public void register(IGuiHandler del, int[] ids) {
         for (int id : ids) {
-            delegates.put(id, del);
+            if (delegates.containsKey(id))
+                logger.warn("Gui id ({}) collision for {}", id, del.getClass().getSimpleName());
+            else
+                delegates.put(id, del);
         }
     }
 

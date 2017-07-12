@@ -1,25 +1,31 @@
 package ru.ariadna.misca.crabs.combat;
 
-import java.util.ArrayList;
-import java.util.List;
+import ru.ariadna.misca.crabs.combat.parts.Move;
+import ru.ariadna.misca.crabs.lobby.Lobby;
+
+import java.util.LinkedList;
 
 public class Fight {
-    Fighter master;
-    List<Fighter> fighters = new ArrayList<>();
-    List<Move> moves = new ArrayList<>();
-    Move current_move;
-    boolean skip_master = false;
+    Lobby lobby;
+    LinkedList<Fighter> queue = new LinkedList<>();
+    LinkedList<Move> moves = new LinkedList<>();
+    boolean master_op = false;
+    boolean skip_master_move = false;
 
-    Fight(Fighter master, List<Fighter> fighters) {
-        this.master = master;
-        this.fighters = fighters;
+    Fight(Lobby lobby) {
+        this.lobby = lobby;
+        this.queue.addAll(lobby.members());
     }
 
-    public Fighter leader() {
-        return master;
+    public Lobby lobby() {
+        return lobby;
     }
 
-    public List<Fighter> fighters() {
-        return fighters;
+    public LinkedList<Fighter> queue() {
+        return queue;
+    }
+
+    public LinkedList<Move> moves() {
+        return moves;
     }
 }

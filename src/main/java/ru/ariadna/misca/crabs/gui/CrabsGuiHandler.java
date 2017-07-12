@@ -8,7 +8,6 @@ import ru.ariadna.misca.gui.MiscaGuiHandler;
 import java.util.stream.IntStream;
 
 public class CrabsGuiHandler implements IGuiHandler {
-
     private static final int ID_SHIFT = 100;
 
     public void onInit() {
@@ -22,20 +21,17 @@ public class CrabsGuiHandler implements IGuiHandler {
 
     @Override
     public Object getClientGuiElement(int ID, EntityPlayer player, World world, int x, int y, int z) {
-        switch (GuiTypes.get(ID)) {
+        switch (GuiTypes.values()[ID - ID_SHIFT]) {
             case LOBBY:
-                return new LobbyGuiScreen();
+                return new GuiScreenLobby();
+            case COMBAT:
+                return new GuiScreenCombat();
         }
-
         return null;
     }
 
     public enum GuiTypes {
-        LOBBY;
-
-        public static GuiTypes get(int unshifted) {
-            return GuiTypes.values()[unshifted - ID_SHIFT];
-        }
+        LOBBY, COMBAT;
 
         public int id() {
             return this.ordinal() + ID_SHIFT;

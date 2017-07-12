@@ -1,12 +1,12 @@
 package ru.ariadna.misca.crabs.lobby;
 
 import cpw.mods.fml.common.registry.GameRegistry;
-import cpw.mods.fml.relauncher.Side;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.ChatComponentTranslation;
 import net.minecraftforge.common.MinecraftForge;
+import ru.ariadna.misca.MiscaUtils;
 import ru.ariadna.misca.crabs.Crabs;
 import ru.ariadna.misca.crabs.combat.Fighter;
 import ru.ariadna.misca.crabs.combat.FighterManager;
@@ -17,11 +17,10 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public class LobbyManager {
-
     private Map<EntityLivingBase, Lobby> entityToLobby = new HashMap<>();
 
     private static void notifyLobby(EntityLivingBase source, Lobby lobby) {
-        LobbyUpdateMessage msg = new LobbyUpdateMessage(source, lobby);
+        LobbyUpdateMessage msg = new LobbyUpdateMessage(lobby);
 
         Set<EntityPlayerMP> players = lobby.members().stream()
                 .map(Fighter::entity)
@@ -37,9 +36,6 @@ public class LobbyManager {
     }
 
     public void onInit() {
-        Crabs.instance.network.registerMessage(LobbyActionMessage.class, LobbyActionMessage.class, 0, Side.SERVER);
-        Crabs.instance.network.registerMessage(LobbyUpdateMessage.class, LobbyUpdateMessage.class, 1, Side.CLIENT);
-
         ItemBattleFlag itemBattleFlag = new ItemBattleFlag();
         MinecraftForge.EVENT_BUS.register(itemBattleFlag);
         GameRegistry.registerItem(itemBattleFlag, "battle_flag");
@@ -90,15 +86,15 @@ public class LobbyManager {
 
         lobby.leave(player);
         entityToLobby.remove(player);
-        Crabs.logger.trace("{} left lobby of {}", player, lobby.master());
-
-        notifyLobby(player, lobby);
-        player.addChatMessage(new ChatComponentTranslation("misca.lobby.msg.you_left"));
 
         // Check if players left
         if (lobby.members().stream().noneMatch(f -> f.entity() instanceof EntityPlayer)) {
             lobby.members().forEach(f -> entityToLobby.remove(f.entity()));
         }
+
+        Crabs.logger.trace("{} left lobby of {}", player, lobby.master());
+        notifyLobby(player, lobby);
+        player.addChatMessage(new ChatComponentTranslation("misca.lobby.msg.you_left"));
     }
 
     void includeToPlayersLobby(EntityPlayerMP player, EntityLivingBase target) {
@@ -149,9 +145,23 @@ public class LobbyManager {
             ((EntityPlayer) target).addChatMessage(new ChatComponentTranslation("misca.lobby.msg.you_left"));
     }
 
+    void startFight(EntityPlayerMP player) {
+        Lobby lobby = entityToLobby.get(player);
+        if (lobby == null) {
+            player.addChatMessage(new ChatComponentTranslation("misca.lobby.msg.lobby_not_found"));
+            return;
+        }
+        if (lobby.master() != player && !MiscaUtils.isOp(player)) {
+            player.addChatMessage(new ChatComponentTranslation("misca.lobby.msg.you_dont_have_perm"));
+            return;
+        }
+
+        Crabs.instance.fighterManager.startFight(player, lobby);
+    }
+
     void updatePlayersLobby(EntityPlayerMP player) {
         Lobby lobby = entityToLobby.get(player);
-        LobbyUpdateMessage msg = new LobbyUpdateMessage(player, lobby);
+        LobbyUpdateMessage msg = new LobbyUpdateMessage(lobby);
         Crabs.instance.network.sendTo(msg, player);
     }
 }

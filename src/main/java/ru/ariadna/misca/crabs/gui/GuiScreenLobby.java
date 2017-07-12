@@ -5,52 +5,45 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiTextField;
-import net.minecraft.client.multiplayer.WorldClient;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.common.MinecraftForge;
 import ru.ariadna.misca.MiscaUtils;
 import ru.ariadna.misca.crabs.Crabs;
 import ru.ariadna.misca.crabs.combat.Fighter;
-import ru.ariadna.misca.crabs.combat.FighterManager;
 import ru.ariadna.misca.crabs.lobby.Lobby;
 import ru.ariadna.misca.crabs.lobby.LobbyActionMessage;
 import ru.ariadna.misca.crabs.lobby.LobbyUpdateMessage;
 
-import java.util.LinkedList;
-
-public class LobbyGuiScreen extends GuiScreen {
+public class GuiScreenLobby extends GuiScreen {
     private static final ResourceLocation bg_texture = new ResourceLocation("misca", "textures/gui/crabs/lobby.png");
     private static final int bg_width = 256;
     private static final int bg_height = 160;
-
+    private static Lobby lobby;
     private int topLeftX;
     private int topLeftY;
-
     private GuiButtonExt createLobbyBtn;
     private GuiButtonExt joinLobbyBtn;
     private GuiButtonExt leaveLobbyBtn;
+    private GuiButtonExt startFightBtn;
     private GuiTextField playerToJoinText;
 
-    private Lobby lobby;
-
-    public LobbyGuiScreen() {
-//        MinecraftForge.EVENT_BUS.register(this);
+    public GuiScreenLobby() {
         Crabs.instance.network.sendToServer(new LobbyActionMessage(LobbyActionMessage.Type.NOOP));
     }
 
     @Override
     public void initGui() {
-        createLobbyBtn = new GuiButtonExt(0, 0, 0, 100, 20, MiscaUtils.localize("misca.lobby.create_lobby"));
+        createLobbyBtn = new GuiButtonExt(0, 0, 0, 100, 20, MiscaUtils.localize("misca.lobby.gui.create_lobby"));
         playerToJoinText = new GuiTextField(this.fontRendererObj, 0, 20, 100, 20);
         joinLobbyBtn = new GuiButtonExt(1, 0, 40, 100, 20, "join");
         leaveLobbyBtn = new GuiButtonExt(2, 0, 60, 100, 20, "leave");
+        startFightBtn = new GuiButtonExt(3, 0, 80, 100, 20, "fight");
 
         buttonList.add(createLobbyBtn);
         buttonList.add(joinLobbyBtn);
         buttonList.add(leaveLobbyBtn);
+        buttonList.add(startFightBtn);
     }
 
     @Override
@@ -119,11 +112,6 @@ public class LobbyGuiScreen extends GuiScreen {
     }
 
     @Override
-    public void onGuiClosed() {
-        MinecraftForge.EVENT_BUS.unregister(this);
-    }
-
-    @Override
     protected void actionPerformed(GuiButton button) {
         switch (button.id) {
             case 0: // Create Lobby
@@ -139,10 +127,14 @@ public class LobbyGuiScreen extends GuiScreen {
                 LobbyActionMessage leave_msg = new LobbyActionMessage(LobbyActionMessage.Type.LEAVE);
                 Crabs.instance.network.sendToServer(leave_msg);
                 break;
-            case 3: // Include in lobby
-                LobbyActionMessage include_msg = new LobbyActionMessage(LobbyActionMessage.Type.INCLUDE);
-                Crabs.instance.network.sendToServer(include_msg);
+            case 3: // Start fight
+                LobbyActionMessage fight_msg = new LobbyActionMessage(LobbyActionMessage.Type.FIGHT);
+                Crabs.instance.network.sendToServer(fight_msg);
                 break;
+//            case 3: // Include in lobby
+//                LobbyActionMessage include_msg = new LobbyActionMessage(LobbyActionMessage.Type.INCLUDE);
+//                Crabs.instance.network.sendToServer(include_msg);
+//                break;
             case 4: // Exclude from lobby
                 LobbyActionMessage exclude_msg = new LobbyActionMessage(LobbyActionMessage.Type.EXCLUDE);
                 Crabs.instance.network.sendToServer(exclude_msg);
@@ -151,25 +143,16 @@ public class LobbyGuiScreen extends GuiScreen {
     }
 
     public void onLobbyUpdate(LobbyUpdateMessage message) {
-        WorldClient worldClient = Minecraft.getMinecraft().theWorld;
+        lobby = message.lobby;
 
-        if (message.fighters.isEmpty()) {
+        EntityPlayer self = Minecraft.getMinecraft().thePlayer;
+        if (lobby != null && !lobby.hasMember(self))
             lobby = null;
-            return;
-        }
 
-        Fighter master = FighterManager.makeFighterClient(message.masterEntityId);
-        LinkedList<Fighter> members = message.fighters;
-        for (Fighter f : members) {
-            Entity e = worldClient.getEntityByID(f.entityId());
-            if (e != null && e instanceof EntityLivingBase)
-                f.setEntity((EntityLivingBase) e);
-        }
-
-        if (lobby == null)
-            lobby = new Lobby(master);
-        else if (master != null)
-            lobby.setMaster((EntityPlayer) master.entity());
-        lobby.setMembers(members);
+        playerToJoinText.setEnabled(lobby == null);
+        createLobbyBtn.enabled = lobby == null;
+        joinLobbyBtn.enabled = lobby == null;
+        leaveLobbyBtn.enabled = lobby != null;
+        startFightBtn.enabled = (lobby != null && self == lobby.master() && lobby.members().size() > 1);
     }
 }

@@ -40,10 +40,6 @@ public class ItemBattleFlag extends Item {
         String desc = LanguageRegistry.instance().getStringLocalization("item.battle_flag.desc");
         desc = StringEscapeUtils.unescapeJava(desc);
         lines.addAll(Arrays.asList(desc.split("\n")));
-//        lines.add(LanguageRegistry.instance().getStringLocalization("item.battle_flag.desc.1"));
-//        lines.add(LanguageRegistry.instance().getStringLocalization("item.battle_flag.desc.2"));
-//        lines.add(LanguageRegistry.instance().getStringLocalization("item.battle_flag.desc.3"));
-//        lines.add(LanguageRegistry.instance().getStringLocalization("item.battle_flag.desc.4"));
     }
 
     @Override
@@ -64,8 +60,9 @@ public class ItemBattleFlag extends Item {
     public ItemStack onItemRightClick(ItemStack itemStack, World world, EntityPlayer player) {
         // Открытие лобби или боя
         if (!player.isSneaking()) {
+            int gui_id = Crabs.instance.fighterManager.isInFight(player) ? CrabsGuiHandler.GuiTypes.COMBAT.id() : CrabsGuiHandler.GuiTypes.LOBBY.id();
             ChunkCoordinates c = player.getPlayerCoordinates();
-            player.openGui(Misca.instance(), CrabsGuiHandler.GuiTypes.LOBBY.id(), player.getEntityWorld(), c.posX, c.posY, c.posZ);
+            player.openGui(Misca.instance(), gui_id, player.getEntityWorld(), c.posX, c.posY, c.posZ);
         }
 
         return super.onItemRightClick(itemStack, world, player);

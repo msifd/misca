@@ -7,13 +7,16 @@ import cpw.mods.fml.common.network.simpleimpl.MessageContext;
 import io.netty.buffer.ByteBuf;
 import ru.ariadna.misca.crabs.Crabs;
 
+/**
+ * Сообщение получает только сервер
+ */
 public class LobbyActionMessage implements IMessage, IMessageHandler<LobbyActionMessage, IMessage> {
     public Type type;
     public String name;
     public int entityId;
 
     public LobbyActionMessage() {
-
+        this.type = Type.NOOP;
     }
 
     public LobbyActionMessage(Type type) {
@@ -67,11 +70,14 @@ public class LobbyActionMessage implements IMessage, IMessageHandler<LobbyAction
             case LEAVE:
                 Crabs.instance.lobbyManager.leaveLobby(ctx.getServerHandler().playerEntity);
                 break;
+            case FIGHT:
+                Crabs.instance.lobbyManager.startFight(ctx.getServerHandler().playerEntity);
+                break;
         }
         return null;
     }
 
     public enum Type {
-        NOOP, CREATE, JOIN, LEAVE, INCLUDE, EXCLUDE
+        NOOP, CREATE, JOIN, LEAVE, INCLUDE, EXCLUDE, FIGHT
     }
 }

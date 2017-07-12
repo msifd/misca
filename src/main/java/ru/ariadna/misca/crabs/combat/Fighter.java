@@ -1,7 +1,9 @@
 package ru.ariadna.misca.crabs.combat;
 
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.world.World;
 import ru.ariadna.misca.crabs.characters.Character;
 
 import java.io.Serializable;
@@ -54,4 +56,9 @@ public class Fighter implements Serializable {
         this.hasDescribedMove = hasDescribedMove;
     }
 
+    public void findEntityInWorld(World world) {
+        Entity e = world.getEntityByID(entityId);
+        if (e instanceof EntityLivingBase)
+            this.entity = (EntityLivingBase) e;
+    }
 }

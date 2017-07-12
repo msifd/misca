@@ -57,4 +57,8 @@ public class Lobby {
     public void setMembers(LinkedList<Fighter> members) {
         this.members = members;
     }
+
+    public boolean hasMember(EntityLivingBase entity) {
+        return members.stream().map(Fighter::entity).anyMatch(e -> e == entity);
+    }
 }
