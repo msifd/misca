@@ -8,9 +8,5 @@ import java.io.Serializable;
 public class Action implements Serializable {
     public ActionType type;
     public BodyPartType bodyPart;
-
-//    public Action(ActionType type, BodyPartType bodyPart) {
-//        this.type = type;
-//        this.bodyPart = bodyPart;
-//    }
+    public boolean describedMove = false;
 }

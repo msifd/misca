@@ -26,11 +26,9 @@ public class Lobby {
 
         members.remove(opt.get());
         if (entity == master && !members.isEmpty()) {
-            members.stream()
-                    .filter(f -> f.entity() instanceof EntityPlayer)
-                    .map(f -> (EntityPlayer) f.entity())
-                    .findFirst()
-                    .ifPresent(e -> master = e);
+            for (Fighter f : members)
+                if (f.entity() instanceof EntityPlayer)
+                    master = (EntityPlayer) f.entity();
         }
     }
 
@@ -45,6 +43,14 @@ public class Lobby {
     public Fighter findFighter(EntityLivingBase entity) {
         for (Fighter f : members) {
             if (f.entity() == entity)
+                return f;
+        }
+        return null;
+    }
+
+    public Fighter findFighter(int entityId) {
+        for (Fighter f : members) {
+            if (f.entity().getEntityId() == entityId)
                 return f;
         }
         return null;

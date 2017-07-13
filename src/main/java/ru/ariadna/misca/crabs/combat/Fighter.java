@@ -17,7 +17,7 @@ public class Fighter implements Serializable {
     private boolean hasDescribedMove = false;
     // TODO Эффекты боя
 
-    public Fighter(Character c, EntityLivingBase entity) {
+    Fighter(Character c, EntityLivingBase entity) {
         this.character = c;
         this.entity = entity;
         this.entityId = entity.getEntityId();

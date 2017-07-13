@@ -4,6 +4,7 @@ import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
 import cpw.mods.fml.common.network.simpleimpl.MessageContext;
 import io.netty.buffer.ByteBuf;
+import net.minecraft.entity.player.EntityPlayerMP;
 import ru.ariadna.misca.crabs.Crabs;
 import ru.ariadna.misca.crabs.combat.parts.Action;
 
@@ -14,6 +15,7 @@ import java.io.*;
  */
 public class CombatActionMessage implements IMessage, IMessageHandler<CombatActionMessage, IMessage> {
     public Type type;
+    public int targetId;
     public Action action;
 
     public CombatActionMessage() {
@@ -28,7 +30,7 @@ public class CombatActionMessage implements IMessage, IMessageHandler<CombatActi
     public void fromBytes(ByteBuf buf) {
         type = Type.values()[buf.readInt()];
 
-        if (type == Type.NOOP) return;
+        if (type != Type.UPDATE) return;
 
         int size = buf.readInt();
         ByteBuf map_buf = buf.readBytes(size);
@@ -37,11 +39,8 @@ public class CombatActionMessage implements IMessage, IMessageHandler<CombatActi
             ByteArrayInputStream bis = new ByteArrayInputStream(map_buf.array());
             ObjectInputStream ois = new ObjectInputStream(bis);
 
-            switch (type) {
-                case MOVE:
-                    action = (Action) ois.readObject();
-                    break;
-            }
+            targetId = ois.readInt();
+            action = (Action) ois.readObject();
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
         }
@@ -51,17 +50,14 @@ public class CombatActionMessage implements IMessage, IMessageHandler<CombatActi
     public void toBytes(ByteBuf buf) {
         buf.writeInt(type.ordinal());
 
-        if (type == Type.NOOP) return;
+        if (type != Type.UPDATE) return;
 
         try {
             ByteArrayOutputStream bos = new ByteArrayOutputStream();
             ObjectOutputStream oos = new ObjectOutputStream(bos);
 
-            switch (type) {
-                case MOVE:
-                    oos.writeObject(action);
-                    break;
-            }
+            oos.writeInt(targetId);
+            oos.writeObject(action);
 
             byte[] bytes = bos.toByteArray();
             buf.writeInt(bytes.length);
@@ -72,19 +68,26 @@ public class CombatActionMessage implements IMessage, IMessageHandler<CombatActi
     }
 
     @Override
-    public IMessage onMessage(CombatActionMessage message, MessageContext ctx) {
-        switch (message.type) {
+    public IMessage onMessage(CombatActionMessage msg, MessageContext ctx) {
+        EntityPlayerMP player = ctx.getServerHandler().playerEntity;
+        switch (msg.type) {
             case NOOP:
-                Crabs.instance.fighterManager.updatePlayersFight(ctx.getServerHandler().playerEntity);
+                Crabs.instance.fighterManager.updatePlayersFight(player);
+                break;
+            case UPDATE:
+                Crabs.instance.fighterManager.updateAction(player, msg.targetId, msg.action);
                 break;
             case MOVE:
-                Crabs.instance.fighterManager.makeMove(ctx.getServerHandler().playerEntity, ctx.getServerHandler().playerEntity, message.action);
+                Crabs.instance.fighterManager.makeMove(player);
+                break;
+            case END:
+                Crabs.instance.fighterManager.endFight(player);
                 break;
         }
         return null;
     }
 
     public enum Type {
-        NOOP, MOVE
+        NOOP, UPDATE, MOVE, END
     }
 }

@@ -15,6 +15,7 @@ misca.lobby.msg.you_joined=You joined lobby.
 misca.lobby.msg.you_left=You left lobby.
 
 misca.fight.msg.not_in_fight=You are not in fight!
+misca.fight.msg.no_control=You have no control now!
 
 misca.command.player_only=This command can be used only by a player
 
