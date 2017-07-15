@@ -72,16 +72,16 @@ public class CombatActionMessage implements IMessage, IMessageHandler<CombatActi
         EntityPlayerMP player = ctx.getServerHandler().playerEntity;
         switch (msg.type) {
             case NOOP:
-                Crabs.instance.fighterManager.updatePlayersFight(player);
+                Crabs.instance.fightManager.updatePlayersFight(player);
                 break;
             case UPDATE:
-                Crabs.instance.fighterManager.updateAction(player, msg.targetId, msg.action);
+                Crabs.instance.fightManager.updateAction(player, msg.targetId, msg.action);
                 break;
             case MOVE:
-                Crabs.instance.fighterManager.makeMove(player);
+                Crabs.instance.fightManager.makeMove(player);
                 break;
             case END:
-                Crabs.instance.fighterManager.endFight(player);
+                Crabs.instance.fightManager.endFight(player);
                 break;
         }
         return null;

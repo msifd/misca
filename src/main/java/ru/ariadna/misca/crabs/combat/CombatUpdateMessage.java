@@ -115,10 +115,7 @@ public class CombatUpdateMessage implements IMessage, IMessageHandler<CombatUpda
 
     @Override
     public IMessage onMessage(CombatUpdateMessage message, MessageContext ctx) {
-        if (Minecraft.getMinecraft().currentScreen instanceof GuiScreenCombat) {
-            GuiScreenCombat screenCombat = (GuiScreenCombat) Minecraft.getMinecraft().currentScreen;
-            screenCombat.onFightUpdate(message);
-        }
+        GuiScreenCombat.instance.onFightUpdate(message.fight);
         return null;
     }
 }

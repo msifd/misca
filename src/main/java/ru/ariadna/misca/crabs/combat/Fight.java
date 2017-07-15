@@ -46,6 +46,8 @@ public class Fight {
         return isAttack() ? current_move.attacker : current_move.defender;
     }
 
+    public Action current_action() { return isAttack() ? current_move.attack : current_move.defence; }
+
     public boolean isAttack() {
         return current_move.defence == null;
     }

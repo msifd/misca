@@ -21,7 +21,7 @@ import ru.ariadna.misca.toolbox.Toolbox;
 import ru.ariadna.misca.tweaks.MiningNerf;
 import ru.ariadna.misca.tweaks.Tweaks;
 
-@Mod(modid = "misca", version = "@VERSION@")
+@Mod(modid = "misca", version = "@VERSION@", dependencies = "required-after:llibrary@[1.5.1,)")
 public class Misca {
     @Mod.Instance
     private static Misca instance;

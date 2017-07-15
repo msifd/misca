@@ -8,18 +8,18 @@ import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
 import ru.ariadna.misca.crabs.Crabs;
-import ru.ariadna.misca.crabs.combat.CombatActionMessage;
-import ru.ariadna.misca.crabs.combat.CombatUpdateMessage;
-import ru.ariadna.misca.crabs.combat.Fight;
-import ru.ariadna.misca.crabs.combat.Fighter;
+import ru.ariadna.misca.crabs.combat.*;
 import ru.ariadna.misca.crabs.combat.parts.Action;
 import ru.ariadna.misca.crabs.combat.parts.ActionType;
 import ru.ariadna.misca.crabs.combat.parts.BodyPartType;
 import ru.ariadna.misca.crabs.combat.parts.Move;
 
-public class GuiScreenCombat extends GuiScreen {
+import java.util.LinkedList;
 
-    private static Fight fight = null;
+public class GuiScreenCombat extends GuiScreen {
+    public static final GuiScreenCombat instance = new GuiScreenCombat();
+
+    private Fight fight = null;
     private GuiButtonExt makeMoveBtn;
     private GuiButtonExt endFightBtn;
     private GuiButtonExt rollActionBtn;
@@ -28,21 +28,17 @@ public class GuiScreenCombat extends GuiScreen {
 
     private Action action = new Action();
 
-    public GuiScreenCombat() {
-        if (fight != null) {
-
-        }
-
-        Crabs.instance.network.sendToServer(new CombatActionMessage(CombatActionMessage.Type.NOOP));
-    }
-
     @Override
     public void initGui() {
+        Crabs.instance.network.sendToServer(new CombatActionMessage(CombatActionMessage.Type.NOOP));
+
         makeMoveBtn = new GuiButtonExt(0, 0, 0, 100, 20, "move");
         endFightBtn = new GuiButtonExt(1, 0, 20, 100, 20, "end");
         rollActionBtn = new GuiButtonExt(2, 0, 40, 100, 20, "roll action");
         rollBodyPartBtn = new GuiButtonExt(3, 0, 60, 100, 20, "roll bodypart");
-        rollTargetBtn = new GuiButtonExt(4, 0, 80, 100, 20, "roll targetId");
+        rollTargetBtn = new GuiButtonExt(4, 0, 80, 100, 20, "roll target");
+
+        onFightUpdate(fight);
 
         buttonList.add(makeMoveBtn);
         buttonList.add(endFightBtn);
@@ -73,7 +69,7 @@ public class GuiScreenCombat extends GuiScreen {
         sb.append("\nBody part: ");
         sb.append(action.bodyPart == null ? "None" : action.bodyPart);
         sb.append("\nTarget: ");
-        sb.append(target == null ? "None" : target.entity());
+        sb.append(target == null ? "None" : target.entity().getCommandSenderName());
         this.fontRendererObj.drawSplitString(sb.toString(), 110, 0, 150, 0xFFFFFF);
 
         sb = new StringBuilder();
@@ -99,6 +95,7 @@ public class GuiScreenCombat extends GuiScreen {
             sb.append(m.defence.type);
             sb.append(" - ");
             sb.append(m.defence.bodyPart);
+            sb.append('\n');
         }
         this.fontRendererObj.drawSplitString(sb.toString(), 360, 0, 200, 0xFFFFFF);
     }
@@ -131,12 +128,18 @@ public class GuiScreenCombat extends GuiScreen {
             case 4: // Roll targetId
                 if (fight.isDefence()) break;
 
-                int target_ord = fight.current_move().defender == null ? -1 : fight.queue().indexOf(fight.current_move().defender);
-                target_ord++;
-                if (target_ord >= fight.queue().size()) target_ord = 0;
+                Move current_move = fight.current_move();
+                LinkedList<Fighter> queue = fight.queue();
+                int target_ord = current_move.defender == null ? -1 : queue.indexOf(current_move.defender);
+                while (true) {
+                    target_ord++;
+                    if (target_ord >= fight.queue().size()) target_ord = 0;
 
-                fight.current_move().defender = fight.queue().get(target_ord);
-
+                    Fighter target = queue.get(target_ord);
+                    if (target == current_move.attacker) continue;
+                    current_move.defender = target;
+                    break;
+                }
                 sendUpdate();
                 break;
         }
@@ -160,14 +163,20 @@ public class GuiScreenCombat extends GuiScreen {
     }
 
     @SideOnly(Side.CLIENT)
-    public void onFightUpdate(CombatUpdateMessage msg) {
-        fight = msg.fight;
-        action = fight.isAttack() ? fight.current_move().attack : fight.current_move().defence;
+    public void onFightUpdate(Fight fight) {
+        this.fight = fight;
+        if (fight != null) action = fight.isAttack() ? fight.current_move().attack : fight.current_move().defence;
+        else action = new Action();
+
+        if (Minecraft.getMinecraft().currentScreen != instance) return;
 
         EntityPlayer self = Minecraft.getMinecraft().thePlayer;
+        boolean underControl = fight != null && FightManager.playerHasControl(self, fight);
 
-        makeMoveBtn.enabled = fight != null;
-        endFightBtn.enabled = fight != null && fight.lobby().master() == self;
-        rollTargetBtn.enabled = fight != null && fight.isAttack();
+        makeMoveBtn.enabled = underControl;
+        endFightBtn.enabled = underControl && fight.lobby().master() == self;
+        rollActionBtn.enabled = underControl;
+        rollBodyPartBtn.enabled = underControl;
+        rollTargetBtn.enabled = underControl && fight.isAttack();
     }
 }

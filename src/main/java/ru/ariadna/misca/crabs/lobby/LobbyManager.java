@@ -9,12 +9,10 @@ import net.minecraftforge.common.MinecraftForge;
 import ru.ariadna.misca.MiscaUtils;
 import ru.ariadna.misca.crabs.Crabs;
 import ru.ariadna.misca.crabs.combat.Fighter;
-import ru.ariadna.misca.crabs.combat.FighterManager;
+import ru.ariadna.misca.crabs.combat.FightManager;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 public class LobbyManager {
     private Map<EntityLivingBase, Lobby> entityToLobby = new HashMap<>();
@@ -30,7 +28,7 @@ public class LobbyManager {
             player.addChatMessage(new ChatComponentTranslation("misca.lobby.msg.you_are_already_in_lobby"));
         }
 
-        Fighter fighter = FighterManager.makeFighter(player);
+        Fighter fighter = FightManager.makeFighter(player);
         if (fighter != null) {
             Lobby lobby = new Lobby(fighter);
             entityToLobby.put(player, lobby);
@@ -90,12 +88,12 @@ public class LobbyManager {
         }
 
         Lobby targets_lobby = entityToLobby.get(target);
-        if (targets_lobby != null && targets_lobby != lobby) {
+        if (targets_lobby != null) {
             player.addChatMessage(new ChatComponentTranslation("misca.lobby.msg.fighter_already_in_lobby"));
             return;
         }
 
-        Fighter fighter = FighterManager.makeFighter(target);
+        Fighter fighter = FightManager.makeFighter(target);
         if (fighter != null) {
             lobby.join(fighter);
             entityToLobby.put(target, lobby);
@@ -146,7 +144,7 @@ public class LobbyManager {
             return;
         }
 
-        Crabs.instance.fighterManager.startFight(player, lobby);
+        Crabs.instance.fightManager.startFight(player, lobby);
     }
 
     public void closeLobby(Lobby lobby) {

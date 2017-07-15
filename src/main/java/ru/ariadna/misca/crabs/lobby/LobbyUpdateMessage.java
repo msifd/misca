@@ -7,7 +7,7 @@ import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.WorldClient;
 import ru.ariadna.misca.crabs.combat.Fighter;
-import ru.ariadna.misca.crabs.combat.FighterManager;
+import ru.ariadna.misca.crabs.combat.FightManager;
 import ru.ariadna.misca.crabs.gui.GuiScreenLobby;
 
 import java.io.*;
@@ -48,7 +48,7 @@ public class LobbyUpdateMessage implements IMessage, IMessageHandler<LobbyUpdate
 
             if (masterEntityId == 0) return;
 
-            Fighter master = FighterManager.makeFighterClient(masterEntityId);
+            Fighter master = FightManager.makeFighterClient(masterEntityId);
             WorldClient worldClient = Minecraft.getMinecraft().theWorld;
             for (Fighter f : fighters)
                 f.findEntityInWorld(worldClient);
@@ -83,10 +83,11 @@ public class LobbyUpdateMessage implements IMessage, IMessageHandler<LobbyUpdate
 
     @Override
     public IMessage onMessage(LobbyUpdateMessage message, MessageContext ctx) {
-        if (Minecraft.getMinecraft().currentScreen instanceof GuiScreenLobby) {
-            GuiScreenLobby lobbyScreen = (GuiScreenLobby) Minecraft.getMinecraft().currentScreen;
-            lobbyScreen.onLobbyUpdate(message);
-        }
+        GuiScreenLobby.instance.onLobbyUpdate(message.lobby);
+//        if (Minecraft.getMinecraft().currentScreen instanceof GuiScreenLobby) {
+//            GuiScreenLobby lobbyScreen = (GuiScreenLobby) Minecraft.getMinecraft().currentScreen;
+//            lobbyScreen.onLobbyUpdate(message.lobby);
+//        }
         return null;
     }
 }

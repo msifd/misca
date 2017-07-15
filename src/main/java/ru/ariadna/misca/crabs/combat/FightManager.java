@@ -17,7 +17,7 @@ import ru.ariadna.misca.crabs.lobby.Lobby;
 import java.util.HashMap;
 import java.util.Map;
 
-public class FighterManager {
+public class FightManager {
     private Map<EntityLivingBase, Fight> entityToFight = new HashMap<>();
 
     @SideOnly(Side.CLIENT)
@@ -65,30 +65,6 @@ public class FighterManager {
         return entityToFight.containsKey(entity);
     }
 
-    public void selectTarget(EntityPlayerMP player, int targetId) {
-        Fight fight = entityToFight.get(player);
-
-        if (fight == null) {
-            player.addChatMessage(new ChatComponentTranslation("misca.fight.msg.not_in_fight"));
-            return;
-        }
-        if (!playerHasControl(player, fight)) {
-            player.addChatMessage(new ChatComponentTranslation("misca.fight.msg.no_control"));
-            return;
-        }
-        if (fight.isDefence()) {
-            player.addChatMessage(new ChatComponentText("You can't select target during defence"));
-            return;
-        }
-
-        Fighter target = fight.lobby().findFighter(targetId);
-        if (target == null) {
-            player.addChatMessage(new ChatComponentText("Unknown fighter!"));
-            return;
-        }
-
-    }
-
     void updateAction(EntityPlayerMP player, int targetId, Action action) {
         Fight fight = entityToFight.get(player);
 
@@ -106,7 +82,7 @@ public class FighterManager {
             fight.current_move.attack = action;
             if (targetId > -1) {
                 Fighter target = fight.lobby().findFighter(targetId);
-                if (target == null)
+                if (target == null || target == fight.current_fighter())
                     player.addChatMessage(new ChatComponentText("Unknown fighter!"));
                 else
                     fight.current_move().defender = target;
@@ -132,14 +108,12 @@ public class FighterManager {
 
         Fighter fighter = fight.current_fighter();
         EntityLivingBase entity = fighter.entity();
-        Action current_action = fight.isAttack() ? fight.current_move().attack : fight.current_move().defence;
-
-
+        Action action = fight.current_action();
 
         if (player != entity)
-            Crabs.logger.info("{} controls {} and makes move {}", player.getCommandSenderName(), entity.getCommandSenderName(), current_action.type);
+            Crabs.logger.info("{} controls {} and makes move {}", player.getCommandSenderName(), entity.getCommandSenderName(), action.type);
         else
-            Crabs.logger.info("{} makes move {}", entity.getCommandSenderName(), current_action.type);
+            Crabs.logger.info("{} makes move {}", entity.getCommandSenderName(), action.type);
 
         if (fight.isAttack()) {
             fight.current_move().defence = new Action();

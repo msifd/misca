@@ -60,7 +60,7 @@ public class ItemBattleFlag extends Item {
     public ItemStack onItemRightClick(ItemStack itemStack, World world, EntityPlayer player) {
         // Открытие лобби или боя
         if (!player.isSneaking()) {
-            int gui_id = Crabs.instance.fighterManager.isInFight(player) ? CrabsGuiHandler.GuiTypes.COMBAT.id() : CrabsGuiHandler.GuiTypes.LOBBY.id();
+            int gui_id = Crabs.instance.fightManager.isInFight(player) ? CrabsGuiHandler.GuiTypes.COMBAT.id() : CrabsGuiHandler.GuiTypes.LOBBY.id();
             ChunkCoordinates c = player.getPlayerCoordinates();
             player.openGui(Misca.instance(), gui_id, player.getEntityWorld(), c.posX, c.posY, c.posZ);
         }

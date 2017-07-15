@@ -1,6 +1,7 @@
 package ru.ariadna.misca.crabs.gui;
 
 import cpw.mods.fml.client.config.GuiButtonExt;
+import cpw.mods.fml.common.FMLCommonHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
@@ -13,13 +14,14 @@ import ru.ariadna.misca.crabs.Crabs;
 import ru.ariadna.misca.crabs.combat.Fighter;
 import ru.ariadna.misca.crabs.lobby.Lobby;
 import ru.ariadna.misca.crabs.lobby.LobbyActionMessage;
-import ru.ariadna.misca.crabs.lobby.LobbyUpdateMessage;
 
 public class GuiScreenLobby extends GuiScreen {
+    public static final GuiScreenLobby instance = new GuiScreenLobby();
+
     private static final ResourceLocation bg_texture = new ResourceLocation("misca", "textures/gui/crabs/lobby.png");
     private static final int bg_width = 256;
     private static final int bg_height = 160;
-    private static Lobby lobby;
+    private Lobby lobby;
     private int topLeftX;
     private int topLeftY;
     private GuiButtonExt createLobbyBtn;
@@ -28,10 +30,6 @@ public class GuiScreenLobby extends GuiScreen {
     private GuiButtonExt startFightBtn;
     private GuiTextField playerToJoinText;
 
-    public GuiScreenLobby() {
-        Crabs.instance.network.sendToServer(new LobbyActionMessage(LobbyActionMessage.Type.NOOP));
-    }
-
     @Override
     public void initGui() {
         createLobbyBtn = new GuiButtonExt(0, 0, 0, 100, 20, MiscaUtils.localize("misca.lobby.gui.create_lobby"));
@@ -39,6 +37,8 @@ public class GuiScreenLobby extends GuiScreen {
         joinLobbyBtn = new GuiButtonExt(1, 0, 40, 100, 20, "join");
         leaveLobbyBtn = new GuiButtonExt(2, 0, 60, 100, 20, "leave");
         startFightBtn = new GuiButtonExt(3, 0, 80, 100, 20, "fight");
+
+        onLobbyUpdate(lobby);
 
         buttonList.add(createLobbyBtn);
         buttonList.add(joinLobbyBtn);
@@ -103,7 +103,7 @@ public class GuiScreenLobby extends GuiScreen {
     @Override
     protected void keyTyped(char p_73869_1_, int p_73869_2_) {
         super.keyTyped(p_73869_1_, p_73869_2_);
-        this.playerToJoinText.textboxKeyTyped(p_73869_1_, p_73869_2_);
+        playerToJoinText.textboxKeyTyped(p_73869_1_, p_73869_2_);
     }
 
     @Override
@@ -130,6 +130,7 @@ public class GuiScreenLobby extends GuiScreen {
             case 3: // Start fight
                 LobbyActionMessage fight_msg = new LobbyActionMessage(LobbyActionMessage.Type.FIGHT);
                 Crabs.instance.network.sendToServer(fight_msg);
+                Minecraft.getMinecraft().displayGuiScreen(GuiScreenCombat.instance);
                 break;
 //            case 3: // Include in lobby
 //                LobbyActionMessage include_msg = new LobbyActionMessage(LobbyActionMessage.Type.INCLUDE);
@@ -142,12 +143,14 @@ public class GuiScreenLobby extends GuiScreen {
         }
     }
 
-    public void onLobbyUpdate(LobbyUpdateMessage message) {
-        lobby = message.lobby;
+    public void onLobbyUpdate(Lobby lobby) {
+        this.lobby = lobby;
 
         EntityPlayer self = Minecraft.getMinecraft().thePlayer;
         if (lobby != null && !lobby.hasMember(self))
             lobby = null;
+
+        if (Minecraft.getMinecraft().currentScreen != instance) return;
 
         playerToJoinText.setEnabled(lobby == null);
         createLobbyBtn.enabled = lobby == null;

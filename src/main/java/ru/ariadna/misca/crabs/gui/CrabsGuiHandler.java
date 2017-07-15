@@ -3,6 +3,7 @@ package ru.ariadna.misca.crabs.gui;
 import cpw.mods.fml.common.network.IGuiHandler;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;
+import ru.ariadna.misca.crabs.characters.gui.CharactersGUI;
 import ru.ariadna.misca.gui.MiscaGuiHandler;
 
 import java.util.stream.IntStream;
@@ -22,16 +23,19 @@ public class CrabsGuiHandler implements IGuiHandler {
     @Override
     public Object getClientGuiElement(int ID, EntityPlayer player, World world, int x, int y, int z) {
         switch (GuiTypes.values()[ID - ID_SHIFT]) {
+            case CHAR:
+                return CharactersGUI.instance;
             case LOBBY:
-                return new GuiScreenLobby();
+                return GuiScreenLobby.instance;
             case COMBAT:
-                return new GuiScreenCombat();
+                return GuiScreenCombat.instance;
+
         }
         return null;
     }
 
     public enum GuiTypes {
-        LOBBY, COMBAT;
+        CHAR, LOBBY, COMBAT;
 
         public int id() {
             return this.ordinal() + ID_SHIFT;

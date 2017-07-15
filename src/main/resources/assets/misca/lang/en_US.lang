@@ -1,5 +1,9 @@
 itemGroup.misca=Misca
 
+key.misca=Misca
+key.misca.char=Characters
+key.misca.battle=Lobby or Fight
+
 item.battle_flag.name=Battle flag
 item.battle_flag.desc=Left-click on entity to join it to your lobby.\nShift+Right-click on entity to exclude it from any lobby.\nRight-click to open lobby or fight.
 
