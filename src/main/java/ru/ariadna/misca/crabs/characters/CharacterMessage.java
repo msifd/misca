@@ -4,7 +4,7 @@ import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
 import cpw.mods.fml.common.network.simpleimpl.MessageContext;
 import io.netty.buffer.ByteBuf;
-import ru.ariadna.misca.crabs.Crabs;
+import ru.ariadna.misca.Misca;
 
 import java.io.*;
 import java.util.Optional;
@@ -79,7 +79,7 @@ public class CharacterMessage implements IMessage, IMessageHandler<CharacterMess
     public CharacterMessage onMessage(CharacterMessage message, MessageContext ctx) {
         switch (message.type) {
             case REQUEST:
-                Character c = Crabs.instance.characterProvider.get(message.name);
+                Character c = Misca.crabs.characterProvider.get(message.name);
                 CharacterMessage response = new CharacterMessage();
                 response.type = Type.RESPONSE;
                 response.name = message.name;
@@ -87,10 +87,10 @@ public class CharacterMessage implements IMessage, IMessageHandler<CharacterMess
                 response.canEdit = CharacterProvider.canEditCharacter(ctx.getServerHandler().playerEntity, name);
                 return response;
             case UPDATE:
-                Crabs.instance.characterProvider.update(ctx.getServerHandler().playerEntity, message.character);
+                Misca.crabs.characterProvider.update(ctx.getServerHandler().playerEntity, message.character);
                 break;
             case RESPONSE:
-                Crabs.instance.characterProvider.response(message.name, Optional.ofNullable(message.character));
+                Misca.crabs.characterProvider.response(message.name, Optional.ofNullable(message.character));
                 break;
         }
         return null;

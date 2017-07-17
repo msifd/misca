@@ -2,10 +2,8 @@ package ru.ariadna.misca.crabs.characters;
 
 import com.moandjiezana.toml.Toml;
 import com.moandjiezana.toml.TomlWriter;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
-import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
+import ru.ariadna.misca.Misca;
 import ru.ariadna.misca.MiscaUtils;
 import ru.ariadna.misca.config.ConfigManager;
 import ru.ariadna.misca.crabs.Crabs;
@@ -22,6 +20,10 @@ public class CharacterProvider {
     private Map<String, Character> characters = new HashMap<>();
     private Map<String, Consumer<Optional<Character>>> requests = new HashMap<>();
 
+    public static boolean canEditCharacter(EntityPlayer player, String name) {
+        return player.getDisplayName().equalsIgnoreCase(name) || MiscaUtils.isOp(player);
+    }
+
     public void onInit() {
         char_dir = new File(ConfigManager.config_dir, "chars");
         char_dir.mkdirs();
@@ -32,7 +34,7 @@ public class CharacterProvider {
         request.type = CharacterMessage.Type.REQUEST;
         request.name = name;
         requests.put(name, consumer);
-        Crabs.instance.network.sendToServer(request);
+        Misca.crabs.network.sendToServer(request);
     }
 
     void response(String name, Optional<Character> c) {
@@ -51,6 +53,7 @@ public class CharacterProvider {
 
     public void update(EntityPlayer player, Character c) {
         if (!canEditCharacter(player, c.name)) return;
+        characters.put(c.name, c);
         writeCharacter(c);
     }
 
@@ -75,9 +78,5 @@ public class CharacterProvider {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    public static boolean canEditCharacter(EntityPlayer player, String name) {
-        return player.getDisplayName().equalsIgnoreCase(name) || MiscaUtils.isOp(player);
     }
 }

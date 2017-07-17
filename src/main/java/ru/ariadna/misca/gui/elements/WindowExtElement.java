@@ -1,4 +1,4 @@
-package ru.ariadna.misca.gui;
+package ru.ariadna.misca.gui.elements;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -9,8 +9,6 @@ import net.ilexiconn.llibrary.client.gui.element.ElementHandler;
 import net.minecraft.client.gui.GuiScreen;
 import org.lwjgl.opengl.GL11;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.function.Function;
 
 @SideOnly(Side.CLIENT)
@@ -23,7 +21,7 @@ public class WindowExtElement<T extends GuiScreen> extends Element<T> {
 
     private boolean isDraggable;
 
-    private List<Element<T>> elementList = new ArrayList<>();
+//    private List<Element<T>> elementList = new ArrayList<>();
 
     public WindowExtElement(T gui, String name, int width, int height) {
         this(gui, name, width, height, gui.width / 2 - width / 2, gui.height / 2 - height / 2, null);
@@ -57,9 +55,9 @@ public class WindowExtElement<T extends GuiScreen> extends Element<T> {
         this.drawRectangle(this.getPosX(), this.getPosY(), this.getWidth(), this.getHeight(), LLibrary.CONFIG.getPrimaryColor());
         this.drawRectangle(this.getPosX(), this.getPosY(), this.getWidth(), 14, LLibrary.CONFIG.getAccentColor());
         this.drawString(this.name, this.getPosX() + 2.0F, this.getPosY() + 3.0F, LLibrary.CONFIG.getTextColor(), false);
-        for (Element<T> element : this.elementList) {
-            element.render(mouseX, mouseY, partialTicks);
-        }
+//        for (Element<T> element : this.elementList) {
+//            element.render(mouseX, mouseY, partialTicks);
+//        }
         GL11.glPopMatrix();
         this.endScissor();
     }
@@ -106,12 +104,12 @@ public class WindowExtElement<T extends GuiScreen> extends Element<T> {
         return true;
     }
 
-    public void setDraggable(boolean draggable) {
-        isDraggable = draggable;
-    }
-
     public boolean isDraggable() {
         return isDraggable;
+    }
+
+    public void setDraggable(boolean draggable) {
+        isDraggable = draggable;
     }
 }
 

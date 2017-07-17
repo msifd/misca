@@ -6,16 +6,24 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.ChatComponentTranslation;
 import net.minecraftforge.common.MinecraftForge;
+import ru.ariadna.misca.Misca;
 import ru.ariadna.misca.MiscaUtils;
 import ru.ariadna.misca.crabs.Crabs;
-import ru.ariadna.misca.crabs.combat.Fighter;
 import ru.ariadna.misca.crabs.combat.FightManager;
+import ru.ariadna.misca.crabs.combat.Fighter;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class LobbyManager {
     private Map<EntityLivingBase, Lobby> entityToLobby = new HashMap<>();
+
+    private static void notifyLobby(Lobby lobby) {
+        LobbyUpdateMessage msg = new LobbyUpdateMessage(lobby);
+        for (Fighter f : lobby.members())
+            if (f.entity() instanceof EntityPlayerMP)
+                Misca.crabs.network.sendTo(msg, (EntityPlayerMP) f.entity());
+    }
 
     public void onInit() {
         ItemBattleFlag itemBattleFlag = new ItemBattleFlag();
@@ -144,7 +152,7 @@ public class LobbyManager {
             return;
         }
 
-        Crabs.instance.fightManager.startFight(player, lobby);
+        Misca.crabs.fightManager.startFight(player, lobby);
     }
 
     public void closeLobby(Lobby lobby) {
@@ -155,13 +163,6 @@ public class LobbyManager {
     void updatePlayersLobby(EntityPlayerMP player) {
         Lobby lobby = entityToLobby.get(player);
         LobbyUpdateMessage msg = new LobbyUpdateMessage(lobby);
-        Crabs.instance.network.sendTo(msg, player);
-    }
-
-    private static void notifyLobby(Lobby lobby) {
-        LobbyUpdateMessage msg = new LobbyUpdateMessage(lobby);
-        for (Fighter f : lobby.members())
-            if (f.entity() instanceof EntityPlayerMP)
-                Crabs.instance.network.sendTo(msg, (EntityPlayerMP) f.entity());
+        Misca.crabs.network.sendTo(msg, player);
     }
 }

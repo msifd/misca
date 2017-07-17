@@ -7,8 +7,11 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
-import ru.ariadna.misca.crabs.Crabs;
-import ru.ariadna.misca.crabs.combat.*;
+import ru.ariadna.misca.Misca;
+import ru.ariadna.misca.crabs.combat.CombatActionMessage;
+import ru.ariadna.misca.crabs.combat.Fight;
+import ru.ariadna.misca.crabs.combat.FightManager;
+import ru.ariadna.misca.crabs.combat.Fighter;
 import ru.ariadna.misca.crabs.combat.parts.Action;
 import ru.ariadna.misca.crabs.combat.parts.ActionType;
 import ru.ariadna.misca.crabs.combat.parts.BodyPartType;
@@ -30,7 +33,7 @@ public class GuiScreenCombat extends GuiScreen {
 
     @Override
     public void initGui() {
-        Crabs.instance.network.sendToServer(new CombatActionMessage(CombatActionMessage.Type.NOOP));
+        Misca.crabs.network.sendToServer(new CombatActionMessage(CombatActionMessage.Type.NOOP));
 
         makeMoveBtn = new GuiButtonExt(0, 0, 0, 100, 20, "move");
         endFightBtn = new GuiButtonExt(1, 0, 20, 100, 20, "end");
@@ -107,7 +110,7 @@ public class GuiScreenCombat extends GuiScreen {
                 sendMove();
                 break;
             case 1:
-                Crabs.instance.network.sendToServer(new CombatActionMessage(CombatActionMessage.Type.END));
+                Misca.crabs.network.sendToServer(new CombatActionMessage(CombatActionMessage.Type.END));
                 break;
             case 2: /// Roll action
                 int action_ord = action.type == null ? -1 : action.type.ordinal();
@@ -152,14 +155,14 @@ public class GuiScreenCombat extends GuiScreen {
 
     private void sendMove() {
         CombatActionMessage msg = new CombatActionMessage(CombatActionMessage.Type.MOVE);
-        Crabs.instance.network.sendToServer(msg);
+        Misca.crabs.network.sendToServer(msg);
     }
 
     private void sendUpdate() {
         CombatActionMessage msg = new CombatActionMessage(CombatActionMessage.Type.UPDATE);
         msg.targetId = fight.current_move().defender == null ? -1 : fight.current_move().defender.entityId();
         msg.action = this.action;
-        Crabs.instance.network.sendToServer(msg);
+        Misca.crabs.network.sendToServer(msg);
     }
 
     @SideOnly(Side.CLIENT)

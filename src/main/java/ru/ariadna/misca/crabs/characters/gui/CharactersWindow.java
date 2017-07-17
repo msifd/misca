@@ -2,23 +2,25 @@ package ru.ariadna.misca.crabs.characters.gui;
 
 import net.ilexiconn.llibrary.client.gui.element.ButtonElement;
 import net.ilexiconn.llibrary.client.gui.element.InputElement;
-import net.ilexiconn.llibrary.client.gui.element.WindowElement;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
-import ru.ariadna.misca.crabs.Crabs;
+import ru.ariadna.misca.Misca;
+import ru.ariadna.misca.crabs.characters.CharStats;
 import ru.ariadna.misca.crabs.characters.Character;
 import ru.ariadna.misca.crabs.characters.CharacterMessage;
 import ru.ariadna.misca.crabs.characters.CharacterProvider;
-import ru.ariadna.misca.gui.WindowExtElement;
+import ru.ariadna.misca.gui.elements.WindowExtElement;
 
 import java.util.Optional;
 import java.util.function.Consumer;
 
 public class CharactersWindow<T extends GuiScreen> extends WindowExtElement<T> {
 
-    private InputElement playerNameInput;
-    private InputElement playerStatsInput;
-    private InputElement charsheetInput;
+    private InputElement<T> playerNameInput;
+    private InputElement<T> playerStatsInput;
+//    private TextInputElement<T> charsheetInput;
+
+    private CharacterConsumer characterConsumer = new CharacterConsumer();
 
     public CharactersWindow(T gui) {
         super(gui, "Characters", 200, 200, (w) -> {
@@ -28,22 +30,22 @@ public class CharactersWindow<T extends GuiScreen> extends WindowExtElement<T> {
 
         ButtonElement requestCharBtn = new ButtonElement<>(gui, "req", 104, 16, 20, 12, b -> doRequest());
         ButtonElement updateCharBtn = new ButtonElement<>(gui, "upd", 104, 36, 20, 12, b -> doUpdate());
-        playerNameInput = new InputElement(gui, "", 2, 16, 100, new InputElementConsumer());
-        playerStatsInput = new InputElement(gui, "", 2, 36, 100, new InputElementConsumer());
-        charsheetInput = new InputElement(gui, "", 2, 56, getWidth() - 4, new InputElementConsumer());
-        charsheetInput.setHeight(getHeight() - 56 - 2);
-        charsheetInput.setEditable(false);
+        playerNameInput = new InputElement<>(gui, "", 2, 16, 100, new InputElementConsumer());
+        playerStatsInput = new InputElement<>(gui, "5 5 5 5 5 5", 2, 36, 100, new InputElementConsumer());
+//        charsheetInput = new TextInputElement<>(gui, "", 2, 56, getWidth() - 4, getHeight() - 56 - 2, new TextInputElementConsumer());
+
+        characterConsumer.accept(Optional.empty());
 
         addElement(requestCharBtn);
         addElement(updateCharBtn);
         addElement(playerNameInput);
         addElement(playerStatsInput);
-        addElement(charsheetInput);
+//        addElement(charsheetInput);
     }
 
     private boolean doRequest() {
         String name = playerNameInput.getText().trim();
-        if (name.length() > 1) Crabs.instance.characterProvider.request(name, new CharacterConsumer());
+        if (name.length() > 1) Misca.crabs.characterProvider.request(name, characterConsumer);
         return true;
     }
 
@@ -53,17 +55,22 @@ public class CharactersWindow<T extends GuiScreen> extends WindowExtElement<T> {
 
         Character c = new Character();
         c.name = name;
-        c.charsheet = charsheetInput.getText();
+//        c.charsheet = charsheetInput.getLines();
+
+        String[] stat_values = playerStatsInput.getText().split(" ");
+        for (int i = 0; i < 6; i++) {
+            c.stats.put(CharStats.values()[i], Byte.decode(stat_values[i]));
+        }
 
         CharacterMessage message = new CharacterMessage();
         message.type = CharacterMessage.Type.UPDATE;
         message.character = c;
-        Crabs.instance.network.sendToServer(message);
+        Misca.crabs.network.sendToServer(message);
 
         return true;
     }
 
-    private class InputElementConsumer implements Consumer<InputElement> {
+    private class InputElementConsumer implements Consumer<InputElement<T>> {
         @Override
         public void accept(InputElement inputElement) {
         }
@@ -72,11 +79,21 @@ public class CharactersWindow<T extends GuiScreen> extends WindowExtElement<T> {
     private class CharacterConsumer implements Consumer<Optional<Character>> {
         @Override
         public void accept(Optional<Character> character) {
-            charsheetInput.clearText();
             if (character.isPresent()) {
-                charsheetInput.writeText(character.get().charsheet);
+                Character c = character.get();
+                playerNameInput.clearText();
+                playerNameInput.writeText(c.name);
+//                charsheetInput.clearText();
+//                charsheetInput.writeText(c.charsheet);
+
+                playerStatsInput.clearText();
+                for (CharStats cs : CharStats.values()) {
+                    Byte val = c.stats.get(cs);
+                    playerStatsInput.writeText((val == null ? 5 : val) + " ");
+                }
             } else {
-                charsheetInput.writeText("Character not found.");
+//                charsheetInput.clearText();
+//                charsheetInput.setEditable(false);
             }
         }
     }

@@ -1,7 +1,6 @@
 package ru.ariadna.misca.crabs.gui;
 
 import cpw.mods.fml.client.config.GuiButtonExt;
-import cpw.mods.fml.common.FMLCommonHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
@@ -9,8 +8,8 @@ import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
+import ru.ariadna.misca.Misca;
 import ru.ariadna.misca.MiscaUtils;
-import ru.ariadna.misca.crabs.Crabs;
 import ru.ariadna.misca.crabs.combat.Fighter;
 import ru.ariadna.misca.crabs.lobby.Lobby;
 import ru.ariadna.misca.crabs.lobby.LobbyActionMessage;
@@ -116,29 +115,29 @@ public class GuiScreenLobby extends GuiScreen {
         switch (button.id) {
             case 0: // Create Lobby
                 LobbyActionMessage create_msg = new LobbyActionMessage(LobbyActionMessage.Type.CREATE);
-                Crabs.instance.network.sendToServer(create_msg);
+                Misca.crabs.network.sendToServer(create_msg);
                 break;
             case 1: // Join lobby
                 LobbyActionMessage join_msg = new LobbyActionMessage(LobbyActionMessage.Type.JOIN);
                 join_msg.name = playerToJoinText.getText();
-                Crabs.instance.network.sendToServer(join_msg);
+                Misca.crabs.network.sendToServer(join_msg);
                 break;
             case 2: // Leave lobby
                 LobbyActionMessage leave_msg = new LobbyActionMessage(LobbyActionMessage.Type.LEAVE);
-                Crabs.instance.network.sendToServer(leave_msg);
+                Misca.crabs.network.sendToServer(leave_msg);
                 break;
             case 3: // Start fight
                 LobbyActionMessage fight_msg = new LobbyActionMessage(LobbyActionMessage.Type.FIGHT);
-                Crabs.instance.network.sendToServer(fight_msg);
+                Misca.crabs.network.sendToServer(fight_msg);
                 Minecraft.getMinecraft().displayGuiScreen(GuiScreenCombat.instance);
                 break;
 //            case 3: // Include in lobby
 //                LobbyActionMessage include_msg = new LobbyActionMessage(LobbyActionMessage.Type.INCLUDE);
-//                Crabs.instance.network.sendToServer(include_msg);
+//                Crabs.crabs.network.sendToServer(include_msg);
 //                break;
             case 4: // Exclude from lobby
                 LobbyActionMessage exclude_msg = new LobbyActionMessage(LobbyActionMessage.Type.EXCLUDE);
-                Crabs.instance.network.sendToServer(exclude_msg);
+                Misca.crabs.network.sendToServer(exclude_msg);
                 break;
         }
     }

@@ -9,6 +9,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.ChatComponentTranslation;
+import ru.ariadna.misca.Misca;
 import ru.ariadna.misca.crabs.Crabs;
 import ru.ariadna.misca.crabs.combat.parts.Action;
 import ru.ariadna.misca.crabs.combat.parts.Move;
@@ -37,6 +38,13 @@ public class FightManager {
     public static boolean playerHasControl(EntityPlayer player, Fight fight) {
         Fighter f = fight.current_fighter();
         return player == f.entity() || (fight.lobby.master() == player && !(f.entity() instanceof EntityPlayer));
+    }
+
+    private static void notifyFight(Fight fight) {
+        CombatUpdateMessage message = new CombatUpdateMessage(fight);
+        for (Fighter f : fight.lobby.members())
+            if (f.entity() instanceof EntityPlayerMP)
+                Misca.crabs.network.sendTo(message, (EntityPlayerMP) f.entity());
     }
 
     public void onInit() {
@@ -92,7 +100,6 @@ public class FightManager {
         }
     }
 
-
     public void makeMove(EntityPlayerMP player) {
         Fight fight = entityToFight.get(player);
 
@@ -130,7 +137,7 @@ public class FightManager {
 
     void closeFight(Fight fight) {
         for (Fighter f : fight.lobby.members()) entityToFight.remove(f.entity());
-        Crabs.instance.lobbyManager.closeLobby(fight.lobby);
+        Misca.crabs.lobbyManager.closeLobby(fight.lobby);
 
         notifyFight(fight);
     }
@@ -138,13 +145,6 @@ public class FightManager {
     void updatePlayersFight(EntityPlayerMP player) {
         Fight fight = entityToFight.get(player);
         CombatUpdateMessage message = new CombatUpdateMessage(fight);
-        Crabs.instance.network.sendTo(message, player);
-    }
-
-    private static void notifyFight(Fight fight) {
-        CombatUpdateMessage message = new CombatUpdateMessage(fight);
-        for (Fighter f : fight.lobby.members())
-            if (f.entity() instanceof EntityPlayerMP)
-                Crabs.instance.network.sendTo(message, (EntityPlayerMP) f.entity());
+        Misca.crabs.network.sendTo(message, player);
     }
 }

@@ -5,7 +5,7 @@ import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
 import cpw.mods.fml.common.network.simpleimpl.MessageContext;
 import io.netty.buffer.ByteBuf;
-import ru.ariadna.misca.crabs.Crabs;
+import ru.ariadna.misca.Misca;
 
 /**
  * Сообщение получает только сервер
@@ -59,19 +59,19 @@ public class LobbyActionMessage implements IMessage, IMessageHandler<LobbyAction
     public IMessage onMessage(LobbyActionMessage message, MessageContext ctx) {
         switch (message.type) {
             case NOOP:
-                Crabs.instance.lobbyManager.updatePlayersLobby(ctx.getServerHandler().playerEntity);
+                Misca.crabs.lobbyManager.updatePlayersLobby(ctx.getServerHandler().playerEntity);
                 break;
             case CREATE:
-                Crabs.instance.lobbyManager.createLobby(ctx.getServerHandler().playerEntity);
+                Misca.crabs.lobbyManager.createLobby(ctx.getServerHandler().playerEntity);
                 break;
             case JOIN:
-                Crabs.instance.lobbyManager.joinToPlayer(ctx.getServerHandler().playerEntity, message.name);
+                Misca.crabs.lobbyManager.joinToPlayer(ctx.getServerHandler().playerEntity, message.name);
                 break;
             case LEAVE:
-                Crabs.instance.lobbyManager.leaveLobby(ctx.getServerHandler().playerEntity);
+                Misca.crabs.lobbyManager.leaveLobby(ctx.getServerHandler().playerEntity);
                 break;
             case FIGHT:
-                Crabs.instance.lobbyManager.startFight(ctx.getServerHandler().playerEntity);
+                Misca.crabs.lobbyManager.startFight(ctx.getServerHandler().playerEntity);
                 break;
         }
         return null;

@@ -5,7 +5,7 @@ import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
 import cpw.mods.fml.common.network.simpleimpl.MessageContext;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayerMP;
-import ru.ariadna.misca.crabs.Crabs;
+import ru.ariadna.misca.Misca;
 import ru.ariadna.misca.crabs.combat.parts.Action;
 
 import java.io.*;
@@ -72,16 +72,16 @@ public class CombatActionMessage implements IMessage, IMessageHandler<CombatActi
         EntityPlayerMP player = ctx.getServerHandler().playerEntity;
         switch (msg.type) {
             case NOOP:
-                Crabs.instance.fightManager.updatePlayersFight(player);
+                Misca.crabs.fightManager.updatePlayersFight(player);
                 break;
             case UPDATE:
-                Crabs.instance.fightManager.updateAction(player, msg.targetId, msg.action);
+                Misca.crabs.fightManager.updateAction(player, msg.targetId, msg.action);
                 break;
             case MOVE:
-                Crabs.instance.fightManager.makeMove(player);
+                Misca.crabs.fightManager.makeMove(player);
                 break;
             case END:
-                Crabs.instance.fightManager.endFight(player);
+                Misca.crabs.fightManager.endFight(player);
                 break;
         }
         return null;

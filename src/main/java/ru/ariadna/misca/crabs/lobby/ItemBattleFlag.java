@@ -14,7 +14,6 @@ import net.minecraft.world.World;
 import net.minecraftforge.event.entity.player.EntityInteractEvent;
 import org.apache.commons.lang3.StringEscapeUtils;
 import ru.ariadna.misca.Misca;
-import ru.ariadna.misca.crabs.Crabs;
 import ru.ariadna.misca.crabs.gui.CrabsGuiHandler;
 import ru.ariadna.misca.things.MiscaThings;
 
@@ -51,7 +50,7 @@ public class ItemBattleFlag extends Item {
 
         EntityLivingBase entity = (EntityLivingBase) target;
         if (entity instanceof EntityLiving) ((EntityLiving) entity).playLivingSound();
-        Crabs.instance.lobbyManager.includeToPlayersLobby((EntityPlayerMP) player, entity);
+        Misca.crabs.lobbyManager.includeToPlayersLobby((EntityPlayerMP) player, entity);
 
         return true;
     }
@@ -60,7 +59,7 @@ public class ItemBattleFlag extends Item {
     public ItemStack onItemRightClick(ItemStack itemStack, World world, EntityPlayer player) {
         // Открытие лобби или боя
         if (!player.isSneaking()) {
-            int gui_id = Crabs.instance.fightManager.isInFight(player) ? CrabsGuiHandler.GuiTypes.COMBAT.id() : CrabsGuiHandler.GuiTypes.LOBBY.id();
+            int gui_id = Misca.crabs.fightManager.isInFight(player) ? CrabsGuiHandler.GuiTypes.COMBAT.id() : CrabsGuiHandler.GuiTypes.LOBBY.id();
             ChunkCoordinates c = player.getPlayerCoordinates();
             player.openGui(Misca.instance(), gui_id, player.getEntityWorld(), c.posX, c.posY, c.posZ);
         }
@@ -80,6 +79,6 @@ public class ItemBattleFlag extends Item {
 
         EntityLivingBase entity = (EntityLivingBase) event.target;
         if (entity instanceof EntityLiving) ((EntityLiving) entity).playLivingSound();
-        Crabs.instance.lobbyManager.excludeFromPlayersLobby((EntityPlayerMP) event.entityPlayer, entity);
+        Misca.crabs.lobbyManager.excludeFromPlayersLobby((EntityPlayerMP) event.entityPlayer, entity);
     }
 }

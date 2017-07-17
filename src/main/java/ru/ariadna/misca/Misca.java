@@ -4,6 +4,7 @@ import com.google.common.eventbus.EventBus;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
+import cpw.mods.fml.common.SidedProxy;
 import cpw.mods.fml.common.event.*;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -23,35 +24,20 @@ import ru.ariadna.misca.tweaks.Tweaks;
 
 @Mod(modid = "misca", version = "@VERSION@", dependencies = "required-after:llibrary@[1.5.1,)")
 public class Misca {
+    @SidedProxy(serverSide = "ru.ariadna.misca.crabs.Crabs", clientSide = "ru.ariadna.misca.crabs.CrabsClient")
+    public static Crabs crabs;
     @Mod.Instance
     private static Misca instance;
-
     private static Logger logger = LogManager.getLogger("Misca");
     private static EventBus eventBus = new EventBus();
 
     private DBHandler dbHandler = new DBHandler();
-    private Crabs crabs = Crabs.instance;
     private Tweaks tweaks = new Tweaks();
     private Toolbox toolbox = new Toolbox();
     private MiscaThings miscaThings = new MiscaThings();
     private ChatChannels chatChannels = new ChatChannels();
     private Charsheets charsheets = new Charsheets();
     private MiningNerf miningNerf = new MiningNerf();
-
-    public Misca() {
-        eventBus.register(MiscaGuiHandler.instance);
-        eventBus.register(crabs);
-        eventBus.register(tweaks);
-        eventBus.register(toolbox);
-        eventBus.register(miscaThings);
-        eventBus.register(chatChannels);
-        eventBus.register(charsheets);
-        eventBus.register(miningNerf);
-
-        if (FMLCommonHandler.instance().getSide().isServer()) {
-            eventBus.register(dbHandler);
-        }
-    }
 
     public static Misca instance() {
         return instance;
@@ -64,6 +50,19 @@ public class Misca {
     @EventHandler
     public void preInit(FMLPreInitializationEvent event) {
         ConfigManager.instance.initConfig(event);
+
+        eventBus.register(MiscaGuiHandler.instance);
+        eventBus.register(crabs);
+        eventBus.register(tweaks);
+        eventBus.register(toolbox);
+        eventBus.register(miscaThings);
+        eventBus.register(chatChannels);
+        eventBus.register(charsheets);
+        eventBus.register(miningNerf);
+
+        if (FMLCommonHandler.instance().getSide().isServer()) {
+            eventBus.register(dbHandler);
+        }
 
         eventBus.post(event);
     }
