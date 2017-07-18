@@ -2,7 +2,13 @@ itemGroup.misca=Misca
 
 key.misca=Misca
 key.misca.char=Characters
-key.misca.battle=Lobby or Fight
+key.misca.battle=Calculator
+
+misca.calculator.action.phys=Физическая атака
+misca.calculator.action.shoot=Выстрел
+misca.calculator.action.def=Защита
+misca.calculator.action.magic=Магия
+misca.calculator.window.custom_dice=Бросить d10 + MOD
 
 item.battle_flag.name=Battle flag
 item.battle_flag.desc=Left-click on entity to join it to your lobby.\nShift+Right-click on entity to exclude it from any lobby.\nRight-click to open lobby or fight.

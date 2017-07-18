@@ -18,9 +18,9 @@ public class Calculon {
         rules.put(ActionType.MAGIC, c -> c.get(CharStats.SPIRIT) * 2 + c.get(CharStats.PERCEPTION) + c.get(CharStats.INTELLIGENCE));
     }
 
-    public static CalcResult calc_d20(Character character, ActionType actionType, int mod) {
+    public static CalcResult calc_fight(Character character, ActionType actionType, int mod) {
         CalcResult result = new CalcResult(character);
-        result.dice = (int) Math.floor(rollFate(3) + 4 * (20f / 7f));
+        result.dice = (int) Math.floor(rollFate(3) + 4 * (15f / 7f) + rollFate(2) + 3);
         result.stats = rules.get(actionType).apply(character);
         result.mod = mod;
         result.result = result.dice + result.stats + result.mod;

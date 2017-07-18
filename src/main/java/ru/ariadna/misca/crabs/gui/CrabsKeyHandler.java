@@ -8,11 +8,11 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.client.settings.KeyBinding;
 import org.lwjgl.input.Keyboard;
-import ru.ariadna.misca.crabs.calculator.gui.CalculatorGUI;
+import ru.ariadna.misca.crabs.calculator.gui.CalculatorGuiScreen;
 
 public class CrabsKeyHandler {
     //    private KeyBinding charKey = new KeyBinding("key.misca.char", Keyboard.KEY_C, "key.misca");
-    private KeyBinding battleKey = new KeyBinding("key.misca.battle", Keyboard.KEY_B, "key.misca");
+    private KeyBinding battleKey = new KeyBinding("key.misca.battle", Keyboard.KEY_N, "key.misca");
 
     public void onInit() {
 //        ClientRegistry.registerKeyBinding(charKey);
@@ -24,7 +24,7 @@ public class CrabsKeyHandler {
     @SubscribeEvent
     public void onKeyPressed(InputEvent.KeyInputEvent event) {
         if (battleKey.isPressed()) {
-            FMLCommonHandler.instance().showGuiScreen(new CalculatorGUI());
+            FMLCommonHandler.instance().showGuiScreen(new CalculatorGuiScreen());
         }
 //        if (charKey.isPressed()) {
 //            FMLCommonHandler.crabs().showGuiScreen(CharactersGUI.crabs);

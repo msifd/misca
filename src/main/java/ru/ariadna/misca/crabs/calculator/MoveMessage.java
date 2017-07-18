@@ -7,6 +7,7 @@ import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.ChatComponentText;
+import ru.ariadna.misca.MiscaUtils;
 import ru.ariadna.misca.crabs.characters.Character;
 import ru.ariadna.misca.crabs.combat.parts.ActionType;
 
@@ -88,34 +89,34 @@ public class MoveMessage implements IMessage, IMessageHandler<MoveMessage, IMess
     }
 
     private void calc_action(MoveMessage message, MessageContext ctx) {
-        CalcResult result = Calculon.calc_d20(message.character, message.actionType, message.mod);
+        CalcResult result = Calculon.calc_fight(message.character, message.actionType, message.mod);
         String msg;
         if (message.mod != 0)
-            msg = String.format("[Roll] %s [%d]+%d+%d=%d", stringifyAction(message.actionType), result.dice, result.stats, result.mod, result.result);
+            msg = String.format("[Roll] %s: %s [%d]+%d+%d=%d", ctx.getServerHandler().playerEntity.getDisplayName(), stringifyAction(message.actionType), result.dice, result.stats, result.mod, result.result);
         else
-            msg = String.format("[Roll] %s [%d]+%d=%d", stringifyAction(message.actionType), result.dice, result.stats, result.result);
+            msg = String.format("[Roll] %s: %s [%d]+%d=%d", ctx.getServerHandler().playerEntity.getDisplayName(), stringifyAction(message.actionType), result.dice, result.stats, result.result);
 
         send(msg, ctx.getServerHandler().playerEntity);
     }
 
     private void calc_custom(MoveMessage message, MessageContext ctx) {
         int dice = Calculon.roll_d10();
-        String msg = String.format("[Roll Custom] [%d]+%d=%d", dice, message.mod, dice + message.mod);
+        String msg = String.format("[Roll Custom] %s: [%d]+%d=%d", ctx.getServerHandler().playerEntity.getDisplayName(), dice, message.mod, dice + message.mod);
         send(msg, ctx.getServerHandler().playerEntity);
     }
 
     private String stringifyAction(ActionType actionType) {
         switch (actionType) {
             case PHYSICAL:
-                return "Физическая атака";
+                return MiscaUtils.localize("misca.calculator.action.phys");
             case SHOOT:
-                return "Выстрел";
+                return MiscaUtils.localize("misca.calculator.action.shoot");
             case DEFEND:
-                return "Защита";
+                return MiscaUtils.localize("misca.calculator.action.def");
             case MAGIC:
-                return "Магия";
+                return MiscaUtils.localize("misca.calculator.action.magic");
             default:
-                return "Лучи смерти";
+                return "Death rays!";
         }
     }
 

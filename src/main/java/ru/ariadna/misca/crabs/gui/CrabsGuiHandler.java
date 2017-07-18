@@ -3,8 +3,7 @@ package ru.ariadna.misca.crabs.gui;
 import cpw.mods.fml.common.network.IGuiHandler;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;
-import ru.ariadna.misca.crabs.calculator.gui.CalculatorGUI;
-import ru.ariadna.misca.crabs.characters.gui.CharactersGUI;
+import ru.ariadna.misca.crabs.calculator.gui.CalculatorGuiScreen;
 import ru.ariadna.misca.gui.MiscaGuiHandler;
 
 import java.util.stream.IntStream;
@@ -25,9 +24,9 @@ public class CrabsGuiHandler implements IGuiHandler {
     public Object getClientGuiElement(int ID, EntityPlayer player, World world, int x, int y, int z) {
         switch (GuiTypes.values()[ID - ID_SHIFT]) {
             case CALC:
-                return new CalculatorGUI();
+                return new CalculatorGuiScreen();
             case CHAR:
-                return CharactersGUI.instance;
+//                return CharactersGUI.instance;
             case LOBBY:
                 return GuiScreenLobby.instance;
             case COMBAT:

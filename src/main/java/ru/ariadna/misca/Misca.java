@@ -22,7 +22,7 @@ import ru.ariadna.misca.toolbox.Toolbox;
 import ru.ariadna.misca.tweaks.MiningNerf;
 import ru.ariadna.misca.tweaks.Tweaks;
 
-@Mod(modid = "misca", version = "@VERSION@", dependencies = "required-after:llibrary@[1.5.1,)")
+@Mod(modid = "misca", version = "@VERSION@")
 public class Misca {
     @SidedProxy(serverSide = "ru.ariadna.misca.crabs.Crabs", clientSide = "ru.ariadna.misca.crabs.CrabsClient")
     public static Crabs crabs;
