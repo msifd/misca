@@ -3,10 +3,12 @@ package ru.ariadna.misca.crabs;
 import com.google.common.eventbus.Subscribe;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
+import cpw.mods.fml.common.event.FMLServerStartingEvent;
 import cpw.mods.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import cpw.mods.fml.relauncher.Side;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import ru.ariadna.misca.crabs.calculator.CheatRollCommand;
 import ru.ariadna.misca.crabs.calculator.MoveMessage;
 import ru.ariadna.misca.crabs.characters.CharacterMessage;
 import ru.ariadna.misca.crabs.characters.CharacterProvider;
@@ -37,5 +39,10 @@ public class Crabs {
         network.registerMessage(CombatActionMessage.class, CombatActionMessage.class, 2, Side.SERVER);
         network.registerMessage(CharacterMessage.class, CharacterMessage.class, 4, Side.SERVER);
         network.registerMessage(MoveMessage.class, MoveMessage.class, 6, Side.SERVER);
+    }
+
+    @Subscribe
+    public void serverStart(FMLServerStartingEvent event) {
+        event.registerServerCommand(new CheatRollCommand());
     }
 }

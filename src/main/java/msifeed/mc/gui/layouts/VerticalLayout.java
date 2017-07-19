@@ -6,6 +6,7 @@ import msifeed.mc.gui.widgets.IWidget;
 import java.util.List;
 
 public class VerticalLayout extends BaseLayout {
+    protected int padding = 0;
     private List<IWidget> children = Lists.newArrayList();
 
     @Override
@@ -16,12 +17,12 @@ public class VerticalLayout extends BaseLayout {
             for (IWidget w : children) free_height -= w.getHeight();
             padding = free_height / (children.size() + 1);
         }
-        int occupied_height = 0;
+        int offset = 0;
         for (IWidget w : children) {
-            occupied_height += padding;
-            w.setPosX(getPosX() + (maxWidth - w.getWidth()) / 2);
-            w.setPosY(getPosY() + occupied_height);
-            occupied_height += w.getHeight();
+            offset += padding;
+            w.setPosX((maxWidth - w.getWidth()) / 2);
+            w.setPosY(offset);
+            offset += w.getHeight();
         }
     }
 

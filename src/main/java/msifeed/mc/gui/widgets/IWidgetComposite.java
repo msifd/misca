@@ -1,5 +1,6 @@
 package msifeed.mc.gui.widgets;
 
+import msifeed.mc.gui.WidgetCommons;
 import msifeed.mc.gui.events.KeyEvent;
 import msifeed.mc.gui.events.MouseEvent;
 
@@ -22,7 +23,14 @@ public interface IWidgetComposite extends IWidget {
     }
 
     default void onMouseEvent(MouseEvent event) {
-        for (IWidget w : getChildren()) if (w.isPosInBounds(event.mouseX, event.mouseY)) w.onMouseEvent(event);
+        boolean found = false;
+        for (IWidget w : getChildren()) {
+            if (w.isPosInBounds(event.mouseX, event.mouseY)) {
+                w.onMouseEvent(event);
+                found = true;
+            }
+        }
+        if (!found) WidgetCommons.setFocused(null);
     }
 
     default void onKeyEvent(KeyEvent event) {

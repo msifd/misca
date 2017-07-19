@@ -8,16 +8,11 @@ import java.util.List;
 public class CenterLayout extends BaseLayout {
     private IWidget child;
 
-    public CenterLayout(IWidget centeredWidget) {
-        bindChild(centeredWidget);
-    }
-
     @Override
     protected void updateLayout() {
-        IWidget parent = getParent();
-        if (child == null || parent == null) return;
-        child.setPosX(parent.getWidth() / 2 - child.getWidth() / 2);
-        child.setPosY(parent.getHeight() / 2 - child.getHeight() / 2);
+        if (child == null) return;
+        child.setPosX(getWidth() / 2 - child.getWidth() / 2);
+        child.setPosY(getHeight() / 2 - child.getHeight() / 2);
     }
 
     @Override
@@ -37,9 +32,5 @@ public class CenterLayout extends BaseLayout {
 
     public IWidget getCenteredWidget() {
         return child;
-    }
-
-    public void setCenteredWidget(IWidget centeredWidget) {
-        this.child = centeredWidget;
     }
 }

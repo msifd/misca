@@ -9,7 +9,9 @@ public class WidgetCommons {
         return focused;
     }
 
-    public static void setFocused(IWidget focused) {
-        WidgetCommons.focused = focused;
+    public static void setFocused(IWidget focus) {
+        IWidget old = focused;
+        WidgetCommons.focused = focus;
+        if (old != null && old != focus) old.onFocusLoose();
     }
 }

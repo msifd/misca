@@ -1,9 +1,15 @@
 package ru.ariadna.misca.crabs.combat.parts;
 
-public enum ActionType {
-    PHYSICAL, SHOOT, DEFEND, MAGIC
+import ru.ariadna.misca.MiscaUtils;
 
-//    POINT_STRIKE, FLURRY_STRIKE, HEAVY_STRIKE,
+public enum ActionType {
+    HIT, SHOOT, DEFENCE, MAGIC;
+
+    public String toPrettyString() {
+        return MiscaUtils.localize("misca.crabs.action." + this.toString().toLowerCase());
+    }
+
+    //    POINT_STRIKE, FLURRY_STRIKE, HEAVY_STRIKE,
 //    QUICK_SHOT, AIMED_SHOT, COMMON_SHOT,
 //    EVASION, BLOCK, PARRY,
 //    HARD_BLOW, RUDE_SHOCK, FEINT,

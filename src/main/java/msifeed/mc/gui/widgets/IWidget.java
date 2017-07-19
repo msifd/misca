@@ -32,6 +32,16 @@ public interface IWidget {
         return getHeight();
     }
 
+    default int getAbsPosX() {
+        final IWidgetComposite parent = getParent();
+        return parent != null ? parent.getAbsPosX() + getPosX() : getPosX();
+    }
+
+    default int getAbsPosY() {
+        final IWidgetComposite parent = getParent();
+        return parent != null ? parent.getAbsPosY() + getPosY() : getPosY();
+    }
+
     default void update() {
     }
 
@@ -43,7 +53,8 @@ public interface IWidget {
     }
 
     default boolean isPosInBounds(int x, int y) {
-        return x >= getPosX() && x < getPosX() + getPossibleWidth() && y >= getPosY() && y < getPosY() + getPossibleHeight();
+        int posX = getAbsPosX(), posY = getAbsPosY();
+        return x >= posX && x < posX + getPossibleWidth() && y >= posY && y < posY + getPossibleHeight();
     }
 
     default boolean isFocused() {
@@ -52,5 +63,8 @@ public interface IWidget {
 
     default void setFocused() {
         WidgetCommons.setFocused(this);
+    }
+
+    default void onFocusLoose() {
     }
 }

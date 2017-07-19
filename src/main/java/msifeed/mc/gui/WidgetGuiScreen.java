@@ -19,12 +19,6 @@ public class WidgetGuiScreen extends GuiScreen implements IWidgetComposite {
     }
 
     @Override
-    public void handleKeyboardInput() {
-        System.out.println("pew");
-        super.handleKeyboardInput();
-    }
-
-    @Override
     protected void keyTyped(char character, int key) {
         super.keyTyped(character, key);
         onKeyEvent(new KeyEvent(character, key));

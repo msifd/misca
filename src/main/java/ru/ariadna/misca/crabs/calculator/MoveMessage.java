@@ -7,7 +7,6 @@ import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.ChatComponentText;
-import ru.ariadna.misca.MiscaUtils;
 import ru.ariadna.misca.crabs.characters.Character;
 import ru.ariadna.misca.crabs.combat.parts.ActionType;
 
@@ -25,6 +24,33 @@ public class MoveMessage implements IMessage, IMessageHandler<MoveMessage, IMess
 
     public MoveMessage(Type type) {
         this.type = type;
+    }
+
+    public static void sendActionRollResult(EntityPlayer player, CalcResult result) {
+        String msg;
+        if (result.mod != 0)
+            msg = String.format("\u00A76[Roll] %s: %s [%s]+%d+%d=%d", player.getDisplayName(), result.action.toPrettyString(), makeCritical(result.dice), result.stats, result.mod, result.result);
+        else
+            msg = String.format("\u00A76[Roll] %s: %s [%s]+%d=%d", player.getDisplayName(), result.action.toPrettyString(), makeCritical(result.dice), result.stats, result.result);
+
+        send(msg, player);
+    }
+
+    public static void sendCustomRollResult(EntityPlayer player, int dice, int mod) {
+        String msg = String.format("\u00A76[Roll Custom] %s: [%s]+%d=%d", player.getDisplayName(), makeCritical(dice), mod, dice + mod);
+        send(msg, player);
+    }
+
+    private static String makeCritical(int dice) {
+        if (dice <= 3) return "\u00A74" + dice + "\u00A76";
+        else if (dice >= 18) return "\u00A72" + dice + "\u00A76";
+        else return String.valueOf(dice);
+    }
+
+    private static void send(String msg, EntityPlayer center) {
+        center.getEntityWorld().playerEntities.stream()
+                .filter(p -> ((EntityPlayer) p).getDistanceToEntity(center) <= 15)
+                .forEach(o -> ((EntityPlayerMP) o).addChatMessage(new ChatComponentText(msg)));
     }
 
     @Override
@@ -78,52 +104,15 @@ public class MoveMessage implements IMessage, IMessageHandler<MoveMessage, IMess
     public IMessage onMessage(MoveMessage message, MessageContext ctx) {
         switch (message.type) {
             case ACTION:
-                calc_action(message, ctx);
+                CalcResult result = Calculon.calc_fight(message.character, message.actionType, message.mod);
+                sendActionRollResult(ctx.getServerHandler().playerEntity, result);
                 break;
             case CUSTOM:
-                calc_custom(message, ctx);
+                sendCustomRollResult(ctx.getServerHandler().playerEntity, Calculon.roll_stat(), message.mod);
                 break;
         }
 
         return null;
-    }
-
-    private void calc_action(MoveMessage message, MessageContext ctx) {
-        CalcResult result = Calculon.calc_fight(message.character, message.actionType, message.mod);
-        String msg;
-        if (message.mod != 0)
-            msg = String.format("[Roll] %s: %s [%d]+%d+%d=%d", ctx.getServerHandler().playerEntity.getDisplayName(), stringifyAction(message.actionType), result.dice, result.stats, result.mod, result.result);
-        else
-            msg = String.format("[Roll] %s: %s [%d]+%d=%d", ctx.getServerHandler().playerEntity.getDisplayName(), stringifyAction(message.actionType), result.dice, result.stats, result.result);
-
-        send(msg, ctx.getServerHandler().playerEntity);
-    }
-
-    private void calc_custom(MoveMessage message, MessageContext ctx) {
-        int dice = Calculon.roll_d10();
-        String msg = String.format("[Roll Custom] %s: [%d]+%d=%d", ctx.getServerHandler().playerEntity.getDisplayName(), dice, message.mod, dice + message.mod);
-        send(msg, ctx.getServerHandler().playerEntity);
-    }
-
-    private String stringifyAction(ActionType actionType) {
-        switch (actionType) {
-            case PHYSICAL:
-                return MiscaUtils.localize("misca.calculator.action.phys");
-            case SHOOT:
-                return MiscaUtils.localize("misca.calculator.action.shoot");
-            case DEFEND:
-                return MiscaUtils.localize("misca.calculator.action.def");
-            case MAGIC:
-                return MiscaUtils.localize("misca.calculator.action.magic");
-            default:
-                return "Death rays!";
-        }
-    }
-
-    private void send(String msg, EntityPlayer center) {
-        center.getEntityWorld().playerEntities.stream()
-                .filter(p -> ((EntityPlayer) p).getDistanceToEntity(center) <= 15)
-                .forEach(o -> ((EntityPlayerMP) o).addChatMessage(new ChatComponentText(msg)));
     }
 
     public enum Type {

@@ -6,8 +6,6 @@ import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.SidedProxy;
 import cpw.mods.fml.common.event.*;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import ru.ariadna.misca.channels.ChatChannels;
@@ -73,7 +71,6 @@ public class Misca {
     }
 
     @EventHandler
-    @SideOnly(Side.SERVER)
     public void serverStart(FMLServerStartingEvent event) {
         event.registerServerCommand(new CommandMiscaCommon());
 
@@ -81,7 +78,6 @@ public class Misca {
     }
 
     @EventHandler
-    @SideOnly(Side.SERVER)
     public void serverStop(FMLServerStoppingEvent event) {
         eventBus.post(event);
     }

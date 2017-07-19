@@ -16,12 +16,12 @@ public class HorizontalLayout extends BaseLayout {
             for (IWidget w : children) free_width -= w.getWidth();
             padding = free_width / (children.size() + 1);
         }
-        int occupied_width = 0;
+        int offset = 0;
         for (IWidget w : children) {
-            occupied_width += padding;
-            w.setPosX(getPosX() + occupied_width);
-            w.setPosY(getPosY() + (maxHeight - w.getHeight()) / 2);
-            occupied_width += w.getHeight();
+            offset += padding;
+            w.setPosX(offset);
+            w.setPosY((maxHeight - w.getHeight()) / 2);
+            offset += w.getWidth();
         }
     }
 

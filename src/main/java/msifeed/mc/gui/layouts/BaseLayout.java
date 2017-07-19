@@ -7,7 +7,16 @@ import net.minecraft.client.Minecraft;
 
 public abstract class BaseLayout extends BaseWidget implements IWidgetComposite {
     protected int maxWidth, maxHeight;
+    protected int sumWidth, sumHeight;
     private boolean updating = false;
+
+    public BaseLayout bind(IWidget... children) {
+        updating = true;
+        for (IWidget w : children) bindChild(w);
+        updating = false;
+        update();
+        return this;
+    }
 
     protected abstract void updateLayout();
 
@@ -45,17 +54,20 @@ public abstract class BaseLayout extends BaseWidget implements IWidgetComposite 
     @Override
     public int getPossibleHeight() {
         final IWidgetComposite parent = getParent();
-        return parent != null ? parent.getPossibleHeight() : getWidth();
+        return parent != null ? parent.getPossibleHeight() : getHeight();
     }
 
     @Override
     public void bindChild(IWidget child) {
         IWidgetComposite.super.bindChild(child);
 
-        maxWidth = maxHeight = 0;
+        maxWidth = maxHeight = sumWidth = sumHeight = 0;
         for (IWidget w : getChildren()) {
-            maxWidth = Math.max(maxWidth, w.getWidth());
-            maxHeight = Math.max(maxHeight, w.getHeight());
+            int wid = w.getWidth(), hei = w.getHeight();
+            maxWidth = Math.max(maxWidth, wid);
+            maxHeight = Math.max(maxHeight, hei);
+            sumWidth += wid;
+            sumHeight += hei;
         }
     }
 }

@@ -15,7 +15,7 @@ public class LabelWidget extends BaseWidget {
 
     @Override
     public void render(Minecraft mc, int mouseX, int mouseY, float tick) {
-        mc.fontRenderer.drawString(text, getPosX(), getPosY(), color.getRGB());
+        mc.fontRenderer.drawString(text, getAbsPosX(), getAbsPosY(), color.getRGB());
     }
 
     public String getText() {

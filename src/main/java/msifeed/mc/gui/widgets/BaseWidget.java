@@ -25,7 +25,7 @@ public abstract class BaseWidget implements IWidget {
     }
 
     public void setParent(IWidgetComposite parent) {
-        if (this.parent == parent) throw new RuntimeException("Cyclic widget parenting!");
+        if (this == parent) throw new RuntimeException("Cyclic widget parenting!");
         if (this.parent != null) this.parent.removeChild(this);
         this.parent = parent;
     }

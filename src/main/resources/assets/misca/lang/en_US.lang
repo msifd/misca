@@ -4,10 +4,10 @@ key.misca=Misca
 key.misca.char=Characters
 key.misca.battle=Calculator
 
-misca.calculator.action.phys=Физическая атака
-misca.calculator.action.shoot=Выстрел
-misca.calculator.action.def=Защита
-misca.calculator.action.magic=Магия
+misca.crabs.action.hit=Удар
+misca.crabs.action.shoot=Выстрел
+misca.crabs.action.defence=Защита
+misca.crabs.action.magic=Магия
 misca.calculator.window.custom_dice=Бросить d10 + MOD
 
 item.battle_flag.name=Battle flag
