@@ -71,10 +71,9 @@ public class ItemBattleFlag extends Item {
     public void onEntityInteract(EntityInteractEvent event) {
         // Обработка только на сервере
         // ПКМ флагом со сником по существу - исключение из лобби
-        if (!(event.entityPlayer instanceof EntityPlayerMP)
-                || !(event.entityPlayer.getHeldItem().getItem() instanceof ItemBattleFlag)
-                || !(event.target instanceof EntityLivingBase)
-                || !event.entityPlayer.isSneaking())
+        if (!(event.entityPlayer instanceof EntityPlayerMP) || !(event.target instanceof EntityLivingBase)) return;
+        ItemStack itemStack = event.entityPlayer.getHeldItem();
+        if (itemStack == null || !(itemStack.getItem() instanceof ItemBattleFlag) || !event.entityPlayer.isSneaking())
             return;
 
         EntityLivingBase entity = (EntityLivingBase) event.target;

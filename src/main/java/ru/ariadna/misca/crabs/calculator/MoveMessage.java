@@ -4,9 +4,7 @@ import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
 import cpw.mods.fml.common.network.simpleimpl.MessageContext;
 import io.netty.buffer.ByteBuf;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.util.ChatComponentText;
+import ru.ariadna.misca.crabs.characters.CharStats;
 import ru.ariadna.misca.crabs.characters.Character;
 import ru.ariadna.misca.crabs.combat.parts.ActionType;
 
@@ -17,6 +15,8 @@ public class MoveMessage implements IMessage, IMessageHandler<MoveMessage, IMess
     public Character character;
     public ActionType actionType;
     public int mod;
+    public CharStats stat;
+    public int stat_value;
 
     public MoveMessage() {
 
@@ -26,38 +26,13 @@ public class MoveMessage implements IMessage, IMessageHandler<MoveMessage, IMess
         this.type = type;
     }
 
-    public static void sendActionRollResult(EntityPlayer player, CalcResult result) {
-        String msg;
-        if (result.mod != 0)
-            msg = String.format("\u00A76[Roll] %s: %s [%s]+%d+%d=%d", player.getDisplayName(), result.action.toPrettyString(), makeCritical(result.dice), result.stats, result.mod, result.result);
-        else
-            msg = String.format("\u00A76[Roll] %s: %s [%s]+%d=%d", player.getDisplayName(), result.action.toPrettyString(), makeCritical(result.dice), result.stats, result.result);
-
-        send(msg, player);
-    }
-
-    public static void sendCustomRollResult(EntityPlayer player, int dice, int mod) {
-        String msg = String.format("\u00A76[Roll Custom] %s: [%s]+%d=%d", player.getDisplayName(), makeCritical(dice), mod, dice + mod);
-        send(msg, player);
-    }
-
-    private static String makeCritical(int dice) {
-        if (dice <= 3) return "\u00A74" + dice + "\u00A76";
-        else if (dice >= 18) return "\u00A72" + dice + "\u00A76";
-        else return String.valueOf(dice);
-    }
-
-    private static void send(String msg, EntityPlayer center) {
-        center.getEntityWorld().playerEntities.stream()
-                .filter(p -> ((EntityPlayer) p).getDistanceToEntity(center) <= 15)
-                .forEach(o -> ((EntityPlayerMP) o).addChatMessage(new ChatComponentText(msg)));
-    }
-
     @Override
     public void fromBytes(ByteBuf buf) {
         type = Type.values()[buf.readInt()];
 
         if (type == Type.CUSTOM) {
+            stat = CharStats.values()[buf.readInt()];
+            stat_value = buf.readInt();
             mod = buf.readInt();
             return;
         }
@@ -81,6 +56,8 @@ public class MoveMessage implements IMessage, IMessageHandler<MoveMessage, IMess
         buf.writeInt(type.ordinal());
 
         if (type == Type.CUSTOM) {
+            buf.writeInt(stat.ordinal());
+            buf.writeInt(stat_value);
             buf.writeInt(mod);
             return;
         }
@@ -105,10 +82,10 @@ public class MoveMessage implements IMessage, IMessageHandler<MoveMessage, IMess
         switch (message.type) {
             case ACTION:
                 CalcResult result = Calculon.calc_fight(message.character, message.actionType, message.mod);
-                sendActionRollResult(ctx.getServerHandler().playerEntity, result);
+                RollPrinter.sendActionRollResult(ctx.getServerHandler().playerEntity, result);
                 break;
             case CUSTOM:
-                sendCustomRollResult(ctx.getServerHandler().playerEntity, Calculon.roll_stat(), message.mod);
+                RollPrinter.sendCustomRollResult(ctx.getServerHandler().playerEntity, message.stat, Calculon.roll_stat(), message.stat_value, message.mod);
                 break;
         }
 

@@ -2,6 +2,9 @@ package ru.ariadna.misca.database;
 
 import com.google.common.eventbus.Subscribe;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
+import net.minecraft.command.ICommandSender;
+import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.util.ChunkCoordinates;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import ru.ariadna.misca.config.TomlConfig;
@@ -12,17 +15,18 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
-public class DBHandler {
-    public static ChannelsLogger channels = new ChannelsLogger();
-    static Logger logger = LogManager.getLogger("Misca-DB");
-    private TomlConfig<DBConfigFile> config = new TomlConfig<>(DBConfigFile.class, "database.toml");
-    private Connection connection;
+public enum DBHandler {
+    INSTANCE;
 
-    public DBHandler() {
+    private static Logger logger = LogManager.getLogger("Misca-DB");
+    private Connection connection;
+    private TomlConfig<DBConfigFile> config = new TomlConfig<>(DBConfigFile.class, "database.toml");
+
+    DBHandler() {
         config.setSync(false);
     }
 
-    static void asyncUpdate(PreparedStatement s) {
+    private static void asyncUpdate(PreparedStatement s) {
         Thread thread = new Thread(() -> {
             try {
                 s.executeUpdate();
@@ -42,8 +46,39 @@ public class DBHandler {
             return;
         }
 
-        channels.init(connection, config.get().chat_table);
         logger.info("Misca successfully connected to database.");
+    }
+
+    public void logMessage(ICommandSender sender, String cmd, String text) {
+        if (connection == null) return;
+
+        try {
+            String query = "INSERT INTO `" + config.get().chat_table +
+                    "` (`chara`,`uuid`,`time`,`world`,`X`,`Y`,`Z`,`command`,`text`) " +
+                    "VALUES (?,?,?,?,?,?,?,?,?);";
+
+            String uuid = "";
+            if (sender instanceof EntityPlayerMP) {
+                uuid = ((EntityPlayerMP) sender).getUniqueID().toString();
+            }
+            ChunkCoordinates coord = sender.getPlayerCoordinates();
+
+            PreparedStatement s = connection.prepareStatement(query);
+            s.setString(1, sender.getCommandSenderName());
+            s.setString(2, uuid);
+            s.setLong(3, System.currentTimeMillis());
+            s.setString(4, sender.getEntityWorld().getWorldInfo().getWorldName());
+            s.setInt(5, coord.posX);
+            s.setInt(6, coord.posY);
+            s.setInt(7, coord.posZ);
+            s.setString(8, cmd);
+            s.setString(9, text);
+
+            asyncUpdate(s);
+
+        } catch (SQLException e) {
+            logger.error("Failed to prepare chat log sql! {}", e);
+        }
     }
 
     private boolean connectToDB() {
@@ -59,6 +94,8 @@ public class DBHandler {
             logger.error("Failed to connect to database! {}", e.getMessage());
         } catch (ClassNotFoundException e) {
             logger.error("Cannot find database driver!");
+        } catch (Exception e) {
+            logger.error("Database connect exception {}!", e);
         }
         return false;
     }

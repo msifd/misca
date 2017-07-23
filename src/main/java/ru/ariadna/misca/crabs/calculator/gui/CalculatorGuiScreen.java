@@ -8,6 +8,7 @@ import msifeed.mc.gui.layouts.HorizontalLayout;
 import msifeed.mc.gui.layouts.VerticalLayout;
 import msifeed.mc.gui.widgets.*;
 import ru.ariadna.misca.Misca;
+import ru.ariadna.misca.MiscaUtils;
 import ru.ariadna.misca.config.ConfigManager;
 import ru.ariadna.misca.crabs.calculator.MoveMessage;
 import ru.ariadna.misca.crabs.characters.CharStats;
@@ -19,7 +20,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CalculatorGuiScreen extends WidgetGuiScreen {
-
     private static Character character = loadChar();
     private int mod = 0;
 
@@ -30,7 +30,7 @@ public class CalculatorGuiScreen extends WidgetGuiScreen {
         panel.setZLevel(-10);
         ws.add(panel);
 
-        LabelWidget title = new LabelWidget("\u00A76Calculon");
+        LabelWidget title = new LabelWidget(MiscaUtils.localize("misca.crabs.calc"));
         title.setPosX(2);
         title.setPosY(2);
         ws.add(title);
@@ -110,7 +110,6 @@ public class CalculatorGuiScreen extends WidgetGuiScreen {
 
     private void saveChar() {
         File file = new File(ConfigManager.config_dir, "calc_char.dat");
-        if (!file.canWrite()) return;
 
         try {
             FileOutputStream fos = new FileOutputStream(file);
@@ -137,7 +136,9 @@ public class CalculatorGuiScreen extends WidgetGuiScreen {
             setFocused();
 
             MoveMessage message = new MoveMessage(MoveMessage.Type.CUSTOM);
-            message.mod = character.stats.get(stat);
+            message.stat = stat;
+            message.stat_value = character.stats.get(stat);
+            message.mod = mod;
             Misca.crabs.network.sendToServer(message);
         }
     }
@@ -153,14 +154,15 @@ public class CalculatorGuiScreen extends WidgetGuiScreen {
 
         @Override
         public boolean onTextUpdate(String newText) {
-            if (newText.isEmpty()) return true;
+            boolean ismod = stat == null;
+            if (newText.isEmpty() || (ismod && newText.equals("-"))) return true;
 
             try {
                 int val = Integer.valueOf(newText);
-                boolean ok = val > 0 && val < 11;
+                boolean ok = ismod ? (val >= -20 && val <= 20) : (val > 0 && val < 11);
                 if (ok) {
-                    if (stat != null) character.stats.put(stat, (byte) val);
-                    else mod = val;
+                    if (ismod) mod = val;
+                    else character.stats.put(stat, (byte) val);
                 }
                 return ok;
             } catch (NumberFormatException e) {

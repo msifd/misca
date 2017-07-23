@@ -4,17 +4,18 @@ import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ChatComponentText;
+import ru.ariadna.misca.crabs.characters.CharStats;
 import ru.ariadna.misca.crabs.combat.parts.ActionType;
 
 public class CheatRollCommand extends CommandBase {
     @Override
     public String getCommandName() {
-        return "cheatroll";
+        return "lawfulroll";
     }
 
     @Override
     public String getCommandUsage(ICommandSender sender) {
-        return "cheatroll <hit|shoot|def|magic|custom> <dice> <stat> [mod]";
+        return "lawfulroll <hit|shoot|def|magic|str|'STAT'> <dice> <stat> [mod]";
     }
 
     @Override
@@ -30,6 +31,7 @@ public class CheatRollCommand extends CommandBase {
 
         String str_act = args[0].toUpperCase();
         ActionType action = null;
+        CharStats charStat = null;
         switch (str_act) {
             case "HIT":
             case "SHOOT":
@@ -40,11 +42,13 @@ public class CheatRollCommand extends CommandBase {
             case "DEF":
                 action = ActionType.DEFENCE;
                 break;
-            case "CUSTOM":
-                break;
             default:
-                sender.addChatMessage(new ChatComponentText("Unknown action! Valid: hit|shoot|def|defence|magic|custom"));
-                return;
+                charStat = CharStats.fromShort(args[0]);
+                if (charStat == null) {
+                    sender.addChatMessage(new ChatComponentText("Unknown action! Valid: hit|shoot|def|defence|magic|'STAT'))"));
+                    return;
+                }
+                break;
         }
 
         int dice;
@@ -73,16 +77,18 @@ public class CheatRollCommand extends CommandBase {
             }
         }
 
-        if (action == null) {
-            MoveMessage.sendCustomRollResult((EntityPlayer) sender, dice, stat);
-        } else {
+        if (action != null) {
             CalcResult calcResult = new CalcResult(null);
             calcResult.action = action;
             calcResult.dice = dice;
             calcResult.stats = stat;
             calcResult.mod = mod;
             calcResult.result = dice + stat + mod;
-            MoveMessage.sendActionRollResult((EntityPlayer) sender, calcResult);
+            RollPrinter.sendActionRollResult((EntityPlayer) sender, calcResult);
+        } else if (charStat != null) {
+            RollPrinter.sendCustomRollResult((EntityPlayer) sender, charStat, dice, stat, mod);
+        } else {
+            sender.addChatMessage(new ChatComponentText("Invalid something!"));
         }
     }
 }

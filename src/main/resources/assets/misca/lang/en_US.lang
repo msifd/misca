@@ -4,6 +4,8 @@ key.misca=Misca
 key.misca.char=Characters
 key.misca.battle=Calculator
 
+misca.crabs.calc=§6Calculon
+
 misca.crabs.action.hit=Удар
 misca.crabs.action.shoot=Выстрел
 misca.crabs.action.defence=Защита
@@ -86,3 +88,8 @@ misca.channels.set.global=Global mode set to '%s'
 misca.channels.set.link=Link mode set to '%s'
 
 misca.mining_stamina.msg=You have stamina left for about %d seconds
+misca.death_toll.intro=Вы заболели
+misca.death_toll.illnesses=мышечными спазмами;немощью;ломкостью;неуклюжестью;нарушением моторики;трясучкой;потерей чувств;неразборчивостью;расфокусировкой;амнезией;технологической слепотой;забывчивостью;бесхребетностью;раболепием;подавлением иммунитета;душевными метаниями;магочувствительностью
+misca.health_note.wound=получил рану
+misca.health_note.injury=получил травму
+misca.health_note.dying=при смерти

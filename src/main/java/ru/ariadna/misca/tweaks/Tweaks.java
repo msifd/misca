@@ -14,15 +14,17 @@ public class Tweaks {
     private SpawnInvincibility spawnInvincibility = new SpawnInvincibility();
     private DisableSomeCraftingTables disableSomeCraftingTables = new DisableSomeCraftingTables();
     private DeathToll deathToll = new DeathToll();
+    private HealthNotification healthNotification = new HealthNotification();
 
     @Subscribe
     public void onInit(FMLInitializationEvent event) {
         MinecraftForge.EVENT_BUS.register(disableSomeCraftingTables);
 
+        MinecraftForge.EVENT_BUS.register(deathToll);
+        MinecraftForge.EVENT_BUS.register(healthNotification);
         if (event.getSide().isServer()) {
             MinecraftForge.EVENT_BUS.register(offtopFormat);
             MinecraftForge.EVENT_BUS.register(spawnInvincibility);
-            MinecraftForge.EVENT_BUS.register(deathToll);
         } else {
             MinecraftForge.EVENT_BUS.register(hideNametag);
         }

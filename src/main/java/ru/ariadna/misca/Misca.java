@@ -29,7 +29,7 @@ public class Misca {
     private static Logger logger = LogManager.getLogger("Misca");
     private static EventBus eventBus = new EventBus();
 
-    private DBHandler dbHandler = new DBHandler();
+    private DBHandler dbHandler = DBHandler.INSTANCE;
     private Tweaks tweaks = new Tweaks();
     private Toolbox toolbox = new Toolbox();
     private MiscaThings miscaThings = new MiscaThings();

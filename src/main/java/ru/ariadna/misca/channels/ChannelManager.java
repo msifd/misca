@@ -11,7 +11,7 @@ import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.ChatComponentTranslation;
 import net.minecraft.util.ChunkCoordinates;
 import ru.ariadna.misca.channels.ChannelsException.Type;
-import ru.ariadna.misca.database.ChannelsLogger;
+import ru.ariadna.misca.database.DBHandler;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -343,7 +343,7 @@ class ChannelManager {
         }
 
         ChatChannels.logger.info(message);
-        ChannelsLogger.logMessage(sender, player == null ? "cc" : "cl", text);
+        DBHandler.INSTANCE.logMessage(sender, player == null ? "cc" : "cl", text);
     }
 
     void reloadChannels(ICommandSender sender) throws ChannelsException {
