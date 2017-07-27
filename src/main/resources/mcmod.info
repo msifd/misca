@@ -5,7 +5,7 @@
   "description": "Miscellaneous Ariadna features",
   "version": "${version}",
   "mcversion": "${mcversion}",
-  "url": "https://gitlab.com/msifeed/misca",
+  "url": "https://github.com/msifd/misca",
   "updateUrl": "",
   "authorList": ["msifeed"],
   "credits": "Все кредиты мне и только мне! Муахаха!",

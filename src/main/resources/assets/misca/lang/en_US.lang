@@ -1,5 +1,34 @@
 itemGroup.misca=Misca
 
+key.misca=Misca
+key.misca.char=Characters
+key.misca.battle=Calculator
+
+misca.crabs.calc=§6Calculon
+
+misca.crabs.action.hit=Удар
+misca.crabs.action.shoot=Выстрел
+misca.crabs.action.defence=Защита
+misca.crabs.action.magic=Магия
+misca.calculator.window.custom_dice=Бросить d10 + MOD
+
+item.battle_flag.name=Battle flag
+item.battle_flag.desc=Left-click on entity to join it to your lobby.\nShift+Right-click on entity to exclude it from any lobby.\nRight-click to open lobby or fight.
+
+misca.lobby.gui.create_lobby=Create lobby
+misca.lobby.msg.you_are_already_in_lobby=You are already in lobby!
+misca.lobby.msg.fighter_already_in_lobby=Fighter is already in lobby!
+misca.lobby.msg.lobby_not_found=Lobby not found!
+misca.lobby.msg.you_cant_leave=You can't leave this lobby!
+misca.lobby.msg.you_dont_have_perm=You don't have permission for that!
+misca.lobby.msg.included=Fighter included into lobby.
+misca.lobby.msg.excluded=Fighter excluded from lobby.
+misca.lobby.msg.you_joined=You joined lobby.
+misca.lobby.msg.you_left=You left lobby.
+
+misca.fight.msg.not_in_fight=You are not in fight!
+misca.fight.msg.no_control=You have no control now!
+
 misca.command.player_only=This command can be used only by a player
 
 misca.charsheet.title=§lCharsheet [%s]
@@ -59,3 +88,8 @@ misca.channels.set.global=Global mode set to '%s'
 misca.channels.set.link=Link mode set to '%s'
 
 misca.mining_stamina.msg=You have stamina left for about %d seconds
+misca.death_toll.intro=Вы заболели
+misca.death_toll.illnesses=мышечными спазмами;немощью;ломкостью;неуклюжестью;нарушением моторики;трясучкой;потерей чувств;неразборчивостью;расфокусировкой;амнезией;технологической слепотой;забывчивостью;бесхребетностью;раболепием;подавлением иммунитета;душевными метаниями;магочувствительностью
+misca.health_note.wound=получил рану
+misca.health_note.injury=получил травму
+misca.health_note.dying=при смерти

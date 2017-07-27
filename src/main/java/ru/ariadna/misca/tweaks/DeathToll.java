@@ -1,21 +1,21 @@
 package ru.ariadna.misca.tweaks;
 
+import com.google.common.base.Charsets;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.ChunkCoordinates;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
+import ru.ariadna.misca.MiscaUtils;
 import ru.ariadna.misca.config.ConfigManager;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Random;
 
 public class DeathToll {
+    private static String[] illnesses;
 
     @SubscribeEvent
     public void onEntityDeath(LivingDeathEvent event) {
@@ -25,7 +25,8 @@ public class DeathToll {
         PrintWriter writer;
         try {
             File log_file = new File(ConfigManager.config_dir, "player_death.log");
-            writer = new PrintWriter(new FileWriter(log_file, true));
+            OutputStreamWriter outputStreamWriter = new OutputStreamWriter(new FileOutputStream(log_file, true), Charsets.UTF_8);
+            writer = new PrintWriter(outputStreamWriter);
         } catch (IOException e) {
             Tweaks.logger.error("Cannot create death log file! : " + e.getMessage());
             return;
@@ -36,7 +37,7 @@ public class DeathToll {
         String death_source = event.source.damageType;
         ChunkCoordinates coords = player.getPlayerCoordinates();
         String illness = getRandomIllness();
-        String msg = String.format("[%s] Player '%s' died from '%s' at (%s) %d-%d-%d. Random illness '%s'\n",
+        String msg = String.format("[%s] Player '%s' died from '%s' at (%s: %d %d %d). Random illness '%s'\n",
                 timestamp,
                 player.getDisplayName(),
                 death_source,
@@ -47,20 +48,14 @@ public class DeathToll {
         writer.append(msg);
         writer.flush();
         writer.close();
+        Tweaks.logger.info(msg);
 
-        String chat_msg = "Вы заболели " + illness;
+        String chat_msg = String.format("%s \"%s\"!", MiscaUtils.localize("misca.death_toll.intro"), illness);
         player.addChatMessage(new ChatComponentText(chat_msg));
     }
 
     private String getRandomIllness() {
-        final String[] stats = {
-                "мышечными спазмами", "Немощью", "Ломкостью",
-                "неуклюжестью", "нарушением моторики", "Трясучкой",
-                "потерей чувств", "Неразборчивостью", "Расфокусировкой",
-                "амнезией", "Технологической слепотой", "забывчивостью",
-                "Бесхребетностью", "Раболепием", "подавлением иммунитета",
-                "Душевными метаниями", "Магочувствительностью"};
-        Random rand = new Random();
-        return stats[rand.nextInt(stats.length)];
+        if (illnesses == null) illnesses = MiscaUtils.localize("misca.death_toll.illnesses").split(";");
+        return illnesses[new Random().nextInt(illnesses.length)];
     }
 }
