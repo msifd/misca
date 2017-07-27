@@ -7,6 +7,7 @@ class Channel {
     String name;
     int radius = 0;
     String format = "[%s] %s: %s";
+    String color = "white";
     boolean isLink = false;
     boolean isMuted = false;
     boolean canInvite = false;

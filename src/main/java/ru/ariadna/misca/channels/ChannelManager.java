@@ -10,6 +10,7 @@ import net.minecraft.server.management.ServerConfigurationManager;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.ChatComponentTranslation;
 import net.minecraft.util.ChunkCoordinates;
+import net.minecraft.util.EnumChatFormatting;
 import ru.ariadna.misca.channels.ChannelsException.Type;
 import ru.ariadna.misca.database.DBHandler;
 
@@ -136,6 +137,7 @@ class ChannelManager {
 
         List<String> lines = Arrays.asList(
                 String.format("[%s]", ch.name),
+                String.format(" color: %b", ch.color),
                 String.format(" radius: %d", ch.radius),
                 String.format(" link: %b", ch.isLink),
                 String.format(" global: %b", ch.isGlobal),
@@ -171,6 +173,17 @@ class ChannelManager {
                     provider.getChannels().remove(channel);
                     provider.updateChannel(ch);
                     response = new ChatComponentTranslation("misca.channels.set.name", channel, value);
+                }
+                break;
+            case "color":
+                EnumChatFormatting new_color = EnumChatFormatting.getValueByName(value);
+                if (new_color != null && new_color.isColor()) {
+                    ch.color = value;
+                    provider.updateChannel(ch);
+                    response = new ChatComponentTranslation("misca.channels.set.color", ch.radius);
+                } else {
+                    response = new ChatComponentTranslation("misca.channels.set.color.format");
+                    error = true;
                 }
                 break;
             case "radius":
@@ -313,8 +326,10 @@ class ChannelManager {
             pl_stream = pl_stream.filter(pl -> pl.getPlayerCoordinates().getDistanceSquaredToChunkCoordinates(coord) < ch.radius);
         }
 
+        EnumChatFormatting color = EnumChatFormatting.getValueByName(ch.color);
         String message = String.format(ch.format, ch.name, sender.getCommandSenderName(), text);
         ChatComponentText message_cmp = new ChatComponentText(message);
+        message_cmp.setChatStyle(message_cmp.getChatStyle().setColor(color));
         Set<EntityPlayer> filtered_players = pl_stream.collect(Collectors.toSet());
 
         if (ch.isLink && filtered_players.isEmpty()) {

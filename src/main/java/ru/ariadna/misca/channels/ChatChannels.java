@@ -5,6 +5,7 @@ import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.event.FMLServerStartingEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import ru.ariadna.misca.config.ConfigReloadEvent;
 
 public class ChatChannels {
     static Logger logger = LogManager.getLogger("Misca-Channels");
@@ -25,5 +26,10 @@ public class ChatChannels {
         event.registerServerCommand(commandChannel);
         event.registerServerCommand(commandChannelMessage);
         event.registerServerCommand(commandLinkMessage);
+    }
+
+    @Subscribe
+    public void onReloadEvent(ConfigReloadEvent event) {
+        provider.reloadConfigFile();
     }
 }
