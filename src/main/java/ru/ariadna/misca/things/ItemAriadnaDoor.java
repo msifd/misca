@@ -10,12 +10,12 @@ import net.minecraft.world.World;
 public class ItemAriadnaDoor extends ItemDoor {
     private final BlockAriadnaDoor block;
 
-    ItemAriadnaDoor(int index, BlockAriadnaDoor block) {
+    ItemAriadnaDoor(String id_base, int index, BlockAriadnaDoor block) {
         super(Material.wood);
         this.block = block;
 
-        setUnlocalizedName("ariadna_door" + index);
-        setTextureName("misca:ariadna_door" + index);
+        setUnlocalizedName(id_base + index);
+        setTextureName("misca:" + id_base + index);
         setCreativeTab(MiscaThings.tab);
     }
 

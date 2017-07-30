@@ -8,18 +8,17 @@ import net.minecraft.world.World;
 import java.util.Random;
 
 class BlockAriadnaDoor extends BlockDoor {
-
     final ItemAriadnaDoor item;
 
-    BlockAriadnaDoor(int index) {
-        super(Material.wood);
-        item = new ItemAriadnaDoor(index, this);
+    BlockAriadnaDoor(String id_base, int index, Material material) {
+        super(material);
+        item = new ItemAriadnaDoor(id_base, index, this);
 
         disableStats();
         setHardness(3.0F);
-        setStepSound(soundTypeWood);
-        setBlockName("ariadna_door" + index);
-        setBlockTextureName("misca:ariadna_door" + index);
+        setStepSound(material == Material.iron ? soundTypeMetal : soundTypeWood);
+        setBlockName(id_base + index);
+        setBlockTextureName("misca:" + id_base + index);
     }
 
     @Override

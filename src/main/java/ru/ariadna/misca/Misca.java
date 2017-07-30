@@ -24,6 +24,8 @@ import ru.ariadna.misca.tweaks.Tweaks;
 public class Misca {
     @SidedProxy(serverSide = "ru.ariadna.misca.crabs.Crabs", clientSide = "ru.ariadna.misca.crabs.CrabsClient")
     public static Crabs crabs;
+    @SidedProxy(serverSide = "ru.ariadna.misca.things.MiscaThings", clientSide = "ru.ariadna.misca.things.MiscaThingsClient")
+    public static MiscaThings miscaThings;
     @Mod.Instance
     private static Misca instance;
     private static Logger logger = LogManager.getLogger("Misca");
@@ -32,7 +34,6 @@ public class Misca {
     private DBHandler dbHandler = DBHandler.INSTANCE;
     private Tweaks tweaks = new Tweaks();
     private Toolbox toolbox = new Toolbox();
-    private MiscaThings miscaThings = new MiscaThings();
     private ChatChannels chatChannels = new ChatChannels();
     private Charsheets charsheets = new Charsheets();
     private MiningNerf miningNerf = new MiningNerf();
@@ -51,9 +52,9 @@ public class Misca {
 
         eventBus.register(MiscaGuiHandler.instance);
         eventBus.register(crabs);
+        eventBus.register(miscaThings);
         eventBus.register(tweaks);
         eventBus.register(toolbox);
-        eventBus.register(miscaThings);
         eventBus.register(chatChannels);
         eventBus.register(charsheets);
         eventBus.register(miningNerf);
