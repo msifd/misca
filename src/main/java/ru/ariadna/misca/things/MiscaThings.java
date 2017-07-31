@@ -39,7 +39,11 @@ public class MiscaThings {
         }
 
         for (int i = 1; i <= 25; i++) {
-            GameRegistry.registerBlock(new RegularRotatedBlock(i), RegularRotatedBlock.NAME_BASE + i);
+            GameRegistry.registerBlock(new RegularPillar(i), RegularPillar.NAME_BASE + i);
+        }
+
+        for (int i = 1; i <= 25; i++) {
+            GameRegistry.registerBlock(new RegularBarrel(i), RegularBarrel.NAME_BASE + i);
         }
 
         for (int i = 1; i <= 10; i++) {
@@ -56,8 +60,14 @@ public class MiscaThings {
             GameRegistry.registerBlock(new RegularPane(i), RegularPane.NAME_BASE + i);
         }
 
+        for (int i = 1; i <= 5; i++) {
+            GameRegistry.registerBlock(new RegularBrewingStand(i), RegularBrewingStand.NAME_BASE + i);
+        }
+
         for (int i = 1; i <= 20; i++) {
             GameRegistry.registerBlock(new RegularChest(i), RegularChest.NAME_BASE + i);
         }
+
+        GameRegistry.registerBlock(new TransparentBlock(), TransparentBlock.NAME_BASE);
     }
 }
