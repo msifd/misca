@@ -60,6 +60,10 @@ public class MiscaThings {
             GameRegistry.registerBlock(new RegularPane(i), RegularPane.NAME_BASE + i);
         }
 
+        for (int i = 1; i <= 25; i++) {
+            GameRegistry.registerBlock(new RegularCarpet(i), RegularCarpet.NAME_BASE + i);
+        }
+
         for (int i = 1; i <= 5; i++) {
             GameRegistry.registerBlock(new RegularBrewingStand(i), RegularBrewingStand.NAME_BASE + i);
         }
