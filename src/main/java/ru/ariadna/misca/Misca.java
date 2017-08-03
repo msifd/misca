@@ -26,13 +26,14 @@ public class Misca {
     public static Crabs crabs;
     @SidedProxy(serverSide = "ru.ariadna.misca.things.MiscaThings", clientSide = "ru.ariadna.misca.things.MiscaThingsClient")
     public static MiscaThings miscaThings;
+    public static Tweaks tweaks = new Tweaks();
+
     @Mod.Instance
     private static Misca instance;
     private static Logger logger = LogManager.getLogger("Misca");
     private static EventBus eventBus = new EventBus();
 
     private DBHandler dbHandler = DBHandler.INSTANCE;
-    private Tweaks tweaks = new Tweaks();
     private Toolbox toolbox = new Toolbox();
     private ChatChannels chatChannels = new ChatChannels();
     private Charsheets charsheets = new Charsheets();

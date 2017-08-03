@@ -217,5 +217,10 @@ public class MiningNerf {
             String formatted = String.format(msg, (int) Math.floor(stamina));
             sender.addChatMessage(new ChatComponentText(formatted));
         }
+
+        @Override
+        public boolean canCommandSenderUseCommand(ICommandSender sender) {
+            return sender instanceof EntityPlayer;
+        }
     }
 }
