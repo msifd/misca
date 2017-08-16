@@ -13,6 +13,10 @@ public class RegularPillar extends BlockRotatedPillar {
         setBlockName(NAME_BASE + index);
         setBlockTextureName("misca:" + NAME_BASE + index);
         setCreativeTab(MiscaThings.tab);
+
+        setHardness(2);
+        setResistance(10);
+        setStepSound(soundTypePiston);
     }
 
     @Override

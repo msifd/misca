@@ -18,6 +18,8 @@ public class RegularCarpet extends BlockCarpet {
         setBlockName(NAME_BASE + index);
         setBlockTextureName("misca:" + NAME_BASE + index);
         setCreativeTab(MiscaThings.tab);
+
+        setHardness(0.1f);
     }
 
     @Override

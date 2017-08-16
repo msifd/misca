@@ -13,8 +13,8 @@ public class RegularPane extends BlockPane {
         setBlockTextureName("misca:" + NAME_BASE + index);
         setCreativeTab(MiscaThings.tab);
 
-        setHardness(5.0F);
-        setResistance(10.0F);
+        setHardness(2);
+        setResistance(10);
         setStepSound(soundTypeMetal);
     }
 }

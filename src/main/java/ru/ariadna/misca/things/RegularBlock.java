@@ -4,7 +4,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 
 public class RegularBlock extends Block {
-    public static final String NAME_BASE = "misca_block_";
+    static final String NAME_BASE = "misca_block_";
 
     RegularBlock(int index) {
         super(Material.rock);
@@ -12,5 +12,9 @@ public class RegularBlock extends Block {
         setBlockName(NAME_BASE + index);
         setBlockTextureName("misca:" + NAME_BASE + index);
         setCreativeTab(MiscaThings.tab);
+
+        setHardness(2);
+        setResistance(10);
+        setStepSound(soundTypePiston);
     }
 }

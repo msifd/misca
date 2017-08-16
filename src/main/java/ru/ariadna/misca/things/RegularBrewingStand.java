@@ -11,5 +11,8 @@ public class RegularBrewingStand extends BlockBrewingStand {
         setCreativeTab(MiscaThings.tab);
 
         setLightOpacity(255);
+        setHardness(2);
+        setResistance(10);
+        setStepSound(soundTypePiston);
     }
 }

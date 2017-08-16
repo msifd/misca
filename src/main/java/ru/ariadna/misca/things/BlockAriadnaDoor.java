@@ -15,7 +15,8 @@ class BlockAriadnaDoor extends BlockDoor {
         item = new ItemAriadnaDoor(id_base, index, this);
 
         disableStats();
-        setHardness(3.0F);
+        setHardness(3);
+        setResistance(10);
         setStepSound(material == Material.iron ? soundTypeMetal : soundTypeWood);
         setBlockName(id_base + index);
         setBlockTextureName("misca:" + id_base + index);
