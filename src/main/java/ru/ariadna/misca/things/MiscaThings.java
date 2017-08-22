@@ -35,7 +35,15 @@ public class MiscaThings {
         }
 
         for (int i = 1; i <= 50; i++) {
-            GameRegistry.registerBlock(new RegularBlock(i), RegularBlock.NAME_BASE + i);
+            String name_base = "misca_block_";
+            GameRegistry.registerBlock(new RegularBlock(name_base, i), name_base + i);
+        }
+
+        for (int i = 1; i <= 4; i++) {
+            String name_base = "misca_block_ub_";
+            RegularBlock block = new RegularBlock(name_base, i);
+            block.setBlockUnbreakable().setResistance(6000000.0F);
+            GameRegistry.registerBlock(block, name_base + i);
         }
 
         for (int i = 1; i <= 25; i++) {
@@ -43,7 +51,15 @@ public class MiscaThings {
         }
 
         for (int i = 1; i <= 25; i++) {
-            GameRegistry.registerBlock(new RegularBarrel(i), RegularBarrel.NAME_BASE + i);
+            String name_base = "misca_barrel_";
+            GameRegistry.registerBlock(new RegularBarrel(name_base, i), name_base + i);
+        }
+
+        for (int i = 1; i <= 4; i++) {
+            String name_base = "misca_barrel_ub_";
+            RegularBarrel block = new RegularBarrel(name_base, i);
+            block.setBlockUnbreakable().setResistance(6000000.0F);
+            GameRegistry.registerBlock(block, name_base + i);
         }
 
         for (int i = 1; i <= 10; i++) {

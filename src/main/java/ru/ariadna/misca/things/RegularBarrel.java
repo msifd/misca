@@ -6,15 +6,14 @@ import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.util.IIcon;
 
 public class RegularBarrel extends Block {
-    public static final String NAME_BASE = "misca_barrel_";
     private IIcon bottomIcon;
     private IIcon topIcon;
 
-    protected RegularBarrel(int index) {
+    RegularBarrel(String name_base, int index) {
         super(Material.rock);
 
-        setBlockName(NAME_BASE + index);
-        setBlockTextureName("misca:" + NAME_BASE + index);
+        setBlockName(name_base + index);
+        setBlockTextureName("misca:" + name_base + index);
         setCreativeTab(MiscaThings.tab);
 
         setHardness(2);
