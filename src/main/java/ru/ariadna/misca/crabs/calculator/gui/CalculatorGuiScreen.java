@@ -30,7 +30,7 @@ public class CalculatorGuiScreen extends WidgetGuiScreen {
         panel.setZLevel(-10);
         ws.add(panel);
 
-        LabelWidget title = new LabelWidget(MiscaUtils.localize("misca.crabs.calc"));
+        LabelWidget title = new LabelWidget(MiscaUtils.l10n("misca.crabs.calc"));
         title.setPosX(2);
         title.setPosY(2);
         ws.add(title);

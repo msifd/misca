@@ -8,8 +8,11 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.management.ServerConfigurationManager;
 
 public class MiscaUtils {
-    public static String localize(String raw) {
+    public static String l10n(String raw) {
         return LanguageRegistry.instance().getStringLocalization(raw);
+    }
+    public static String l10n(String fmt, Object... args) {
+        return String.format(LanguageRegistry.instance().getStringLocalization(fmt), args);
     }
 
     public static boolean isOp(ICommandSender sender) {

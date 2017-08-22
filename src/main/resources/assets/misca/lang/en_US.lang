@@ -95,3 +95,8 @@ misca.death_toll.illnesses=мышечными спазмами;немощью;л
 misca.health_note.wound=получил рану
 misca.health_note.injury=получил травму
 misca.health_note.dying=при смерти
+
+item.walkie-talkie.name=Walkie-Talkie
+misca.walkie-talkie.item.enabled=§2Enabled
+misca.walkie-talkie.item.disabled=§7Disabled
+misca.walkie-talkie.item.fq=Frequency: %f MHz

@@ -32,13 +32,13 @@ public class HealthNotification {
             notified.remove(player);
         else if (ratio > 0.5 && ratio <= 0.75 && last < 1) {
             notified.put(player, 1);
-            sendNear(player, String.format("%s %s.", player.getDisplayName(), MiscaUtils.localize("misca.health_note.wound")));
+            sendNear(player, String.format("%s %s.", player.getDisplayName(), MiscaUtils.l10n("misca.health_note.wound")));
         } else if (ratio > 0.25 && ratio <= 0.5 && last < 2) {
             notified.put(player, 2);
-            sendNear(player, String.format("%s %s.", player.getDisplayName(), MiscaUtils.localize("misca.health_note.injury")));
+            sendNear(player, String.format("%s %s.", player.getDisplayName(), MiscaUtils.l10n("misca.health_note.injury")));
         } else if (ratio <= 0.25 && last < 3) {
             notified.put(player, 3);
-            sendNear(player, String.format("%s %s.", player.getDisplayName(), MiscaUtils.localize("misca.health_note.dying")));
+            sendNear(player, String.format("%s %s.", player.getDisplayName(), MiscaUtils.l10n("misca.health_note.dying")));
         }
     }
 }

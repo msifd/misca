@@ -6,7 +6,7 @@ public enum ActionType {
     HIT, SHOOT, DEFENCE, MAGIC;
 
     public String toPrettyString() {
-        return MiscaUtils.localize("misca.crabs.action." + this.toString().toLowerCase());
+        return MiscaUtils.l10n("misca.crabs.action." + this.toString().toLowerCase());
     }
 
     //    POINT_STRIKE, FLURRY_STRIKE, HEAVY_STRIKE,

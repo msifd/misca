@@ -31,7 +31,7 @@ public class GuiScreenLobby extends GuiScreen {
 
     @Override
     public void initGui() {
-        createLobbyBtn = new GuiButtonExt(0, 0, 0, 100, 20, MiscaUtils.localize("misca.lobby.gui.create_lobby"));
+        createLobbyBtn = new GuiButtonExt(0, 0, 0, 100, 20, MiscaUtils.l10n("misca.lobby.gui.create_lobby"));
         playerToJoinText = new GuiTextField(this.fontRendererObj, 0, 20, 100, 20);
         joinLobbyBtn = new GuiButtonExt(1, 0, 40, 100, 20, "join");
         leaveLobbyBtn = new GuiButtonExt(2, 0, 60, 100, 20, "leave");

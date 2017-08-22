@@ -50,12 +50,12 @@ public class DeathToll {
         writer.close();
         Tweaks.logger.info(msg);
 
-        String chat_msg = String.format("%s \"%s\"!", MiscaUtils.localize("misca.death_toll.intro"), illness);
+        String chat_msg = String.format("%s \"%s\"!", MiscaUtils.l10n("misca.death_toll.intro"), illness);
         player.addChatMessage(new ChatComponentText(chat_msg));
     }
 
     private String getRandomIllness() {
-        if (illnesses == null) illnesses = MiscaUtils.localize("misca.death_toll.illnesses").split(";");
+        if (illnesses == null) illnesses = MiscaUtils.l10n("misca.death_toll.illnesses").split(";");
         return illnesses[new Random().nextInt(illnesses.length)];
     }
 }

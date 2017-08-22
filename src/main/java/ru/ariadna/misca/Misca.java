@@ -19,6 +19,7 @@ import ru.ariadna.misca.things.MiscaThings;
 import ru.ariadna.misca.toolbox.Toolbox;
 import ru.ariadna.misca.tweaks.MiningNerf;
 import ru.ariadna.misca.tweaks.Tweaks;
+import ru.ariadna.misca.twowayradio.WalkieTalkie;
 
 @Mod(modid = "misca", version = "@VERSION@")
 public class Misca {
@@ -26,6 +27,8 @@ public class Misca {
     public static Crabs crabs;
     @SidedProxy(serverSide = "ru.ariadna.misca.things.MiscaThings", clientSide = "ru.ariadna.misca.things.MiscaThingsClient")
     public static MiscaThings miscaThings;
+    @SidedProxy(serverSide = "ru.ariadna.misca.twowayradio.WalkieTalkie", clientSide = "ru.ariadna.misca.twowayradio.WalkieTalkieClient")
+    public static WalkieTalkie walkieTalkie;
     public static Tweaks tweaks = new Tweaks();
 
     @Mod.Instance
@@ -54,6 +57,7 @@ public class Misca {
         eventBus.register(MiscaGuiHandler.instance);
         eventBus.register(crabs);
         eventBus.register(miscaThings);
+        eventBus.register(walkieTalkie);
         eventBus.register(tweaks);
         eventBus.register(toolbox);
         eventBus.register(chatChannels);
