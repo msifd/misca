@@ -4,11 +4,11 @@ import ru.ariadna.misca.crabs.characters.CharStats;
 import ru.ariadna.misca.crabs.characters.Character;
 import ru.ariadna.misca.crabs.combat.parts.ActionType;
 
-import java.util.EnumMap;
-import java.util.Random;
+import java.util.*;
 import java.util.function.Function;
 
 public class Calculon {
+    private static final Random rand = new Random();
     private static EnumMap<ActionType, Function<Character, Integer>> rules = new EnumMap<>(ActionType.class);
 
     static {
@@ -21,19 +21,23 @@ public class Calculon {
     public static CalcResult calc_fight(Character character, ActionType actionType, int mod) {
         CalcResult result = new CalcResult(character);
         result.action = actionType;
-        result.dice = posFate(2, 10) - 1 + dice(11);
+        result.dice = roll_fight();
         result.stats = rules.get(actionType).apply(character);
         result.mod = mod;
         result.result = result.dice + result.stats + result.mod;
         return result;
     }
 
+    public static int roll_fight() {
+        return (int) Math.floor(gaussRoll(4.5, 1, 21));
+    }
+
     public static int roll_stat() {
-        return posFate(2, 5) - 1 + dice(6);
+        return (int) Math.round(gaussRoll(4.5, 1, 21) / 2.);
     }
 
     private static int fate(int times) {
-        return new Random().ints(times, -1, 2).sum();
+        return rand.ints(times, -1, 2).sum();
     }
 
     private static int posFate(int times, int n) {
@@ -43,17 +47,31 @@ public class Calculon {
     }
 
     private static int dice(int n) {
-        return new Random().nextInt(n) + 1;
+        return rand.nextInt(n) + 1;
+    }
+
+    private static double gaussRoll(double mean, int min, int max) {
+        final double std_dev = min / 2. + max / 2.;
+        double roll = min - 1;
+        while (roll < min || roll > max) {
+            roll = rand.nextGaussian() * mean + std_dev;
+        }
+        return roll;
     }
 
 //    public static void main(String[] args) {
-//        IntStream.range(0, 50).forEach(i -> {
-////            System.out.print(posFate(2, 3) + " ");
-////            System.out.print(posFate(3, 15) + dice(15) + " ");
-////            System.out.print(posFate(3, 10) + dice(10) + " ");
-//
-////            System.out.print(posFate(2, 5) - 1 + dice(6) + " ");
-//            System.out.print(posFate(2, 10) - 1 + dice(11) + " ");
-//        });
+//        int total = 1000000;
+//        System.out.println("Rule: ~(gaussDice(4.5, 1, 21) / 2)");
+//        java.util.stream.IntStream.range(0, total)
+//            .map(i -> (int) Math.floor(gaussRoll(4.5, 1, 21))) // fight roll
+////            .map(i -> (int) Math.round(gaussRoll(4.5, 1, 21) / 2.)) // stat roll
+//            .boxed()
+//            .collect(Collectors.groupingBy(Function.identity(), TreeMap::new, Collectors.counting()))
+//            .forEach((i, c) -> {
+//                float percent = c / (float) total * 100;
+//                int bars_n = (int) Math.round(percent);
+//                String bars = String.join("", Collections.nCopies(bars_n, "#"));
+//                System.out.println(String.format("%2d: %4.1f%% %s", i, percent, bars));
+//            });
 //    }
 }
