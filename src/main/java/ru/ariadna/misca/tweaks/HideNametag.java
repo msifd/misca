@@ -12,6 +12,7 @@ import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.util.ChatComponentText;
 import net.minecraftforge.client.event.RenderLivingEvent;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import ru.ariadna.misca.Misca;
@@ -108,11 +109,13 @@ public class HideNametag implements IMessageHandler<HideNametag.MessageIncognito
         @Override
         public void processCommand(ICommandSender sender, String[] args) {
             String name = sender.getCommandSenderName();
-            if (!module.incognitos.remove(name))
+            boolean enabling = !module.incognitos.remove(name);
+            if (enabling)
                 module.incognitos.add(name);
             MessageIncognito msg = new MessageIncognito();
             msg.incognitos.addAll(module.incognitos);
             Misca.tweaks.network.sendToAll(msg);
+            sender.addChatMessage(new ChatComponentText(enabling ? "Incognito enabled" : "Incognito disabled"));
         }
 
         @Override

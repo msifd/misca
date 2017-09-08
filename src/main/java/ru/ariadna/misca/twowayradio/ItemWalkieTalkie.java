@@ -14,13 +14,10 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.IIcon;
-import net.minecraft.util.MouseHelper;
-import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 import net.minecraftforge.client.event.MouseEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
-import org.lwjgl.input.Mouse;
 import ru.ariadna.misca.MiscaUtils;
 import ru.ariadna.misca.things.MiscaThings;
 
@@ -96,16 +93,10 @@ public class ItemWalkieTalkie extends Item {
             return;
         }
 
-        final boolean enabled = itemStack.getItemDamage() > 0;
-        if (!enabled) {
-            itemStack.setItemDamage(1);
-        } else {
-            if (!player.isUsingItem())
-                player.setItemInUse(itemStack, Integer.MAX_VALUE);
-
-            if (FMLCommonHandler.instance().getSide().isClient()) {
-                adjusted_fq = itemStack.stackTagCompound.getFloat("fq");
-            }
+        if (!player.isUsingItem())
+            player.setItemInUse(itemStack, Integer.MAX_VALUE);
+        if (FMLCommonHandler.instance().getSide().isClient()) {
+            adjusted_fq = itemStack.stackTagCompound.getFloat("fq");
         }
 
         event.setCanceled(true);
@@ -132,8 +123,9 @@ public class ItemWalkieTalkie extends Item {
 
     @Override
     public void onPlayerStoppedUsing(ItemStack itemStack, World world, EntityPlayer player, int delta) {
-        if (Integer.MAX_VALUE - delta <= PRE_ADJUSTMENT_TICKS) {
-            itemStack.setItemDamage(0);
+        final boolean enabled = itemStack.getItemDamage() > 0;
+        if (!enabled || Integer.MAX_VALUE - delta <= PRE_ADJUSTMENT_TICKS) {
+            itemStack.setItemDamage(enabled ? 0 : 1);
             return;
         } else if (FMLCommonHandler.instance().getSide().isClient()) {
             itemStack.stackTagCompound.setFloat("fq", adjusted_fq);
@@ -148,6 +140,7 @@ public class ItemWalkieTalkie extends Item {
     }
 
     @Override
+    @SideOnly(Side.CLIENT)
     public void registerIcons(IIconRegister iconRegister) {
         super.registerIcons(iconRegister);
         disabledIcon = iconRegister.registerIcon("misca:walkie-talkie_disabled");

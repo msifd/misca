@@ -6,6 +6,7 @@ import cpw.mods.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 
 public class WalkieTalkie {
     public final SimpleNetworkWrapper network = new SimpleNetworkWrapper("misca.ht");
+    public final FrequencyManager frequencyManager = new FrequencyManager();
 
     @Subscribe
     public void onInit(FMLInitializationEvent event) {

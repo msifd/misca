@@ -12,7 +12,6 @@ class RegularBlock extends Block {
         setCreativeTab(MiscaThings.tab);
 
         setHardness(2);
-        setResistance(10);
         setStepSound(soundTypePiston);
     }
 }

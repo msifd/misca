@@ -3,18 +3,14 @@ package ru.ariadna.misca.things;
 import com.google.common.eventbus.Subscribe;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.registry.GameRegistry;
+import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 
 public class MiscaThings {
-    public static final CreativeTabs tab = new CreativeTabs("misca") {
-        @Override
-        public Item getTabIconItem() {
-            return Items.bowl;
-        }
-    };
+    public static final MiscaCreativeTab tab = new MiscaCreativeTab();
 
     @Subscribe
     public void onInit(FMLInitializationEvent event) {
@@ -34,9 +30,11 @@ public class MiscaThings {
             GameRegistry.registerItem(door.item, id_base + "_item" + i);
         }
 
-        for (int i = 1; i <= 50; i++) {
+        for (int i = 1; i <= 65; i++) {
             String name_base = "misca_block_";
-            GameRegistry.registerBlock(new RegularBlock(name_base, i), name_base + i);
+            RegularBlock block = new RegularBlock(name_base, i);
+            block.setResistance(10);
+            GameRegistry.registerBlock(block, name_base + i);
         }
 
         for (int i = 1; i <= 4; i++) {
@@ -46,11 +44,18 @@ public class MiscaThings {
             GameRegistry.registerBlock(block, name_base + i);
         }
 
-        for (int i = 1; i <= 25; i++) {
+        for (int i = 1; i <= 30; i++) {
+            String name_base = "misca_block_wool_";
+            RegularBlock block = new RegularBlock(name_base, i);
+            block.setStepSound(Block.soundTypeCloth).setHardness(0.8F);
+            GameRegistry.registerBlock(block, name_base + i);
+        }
+
+        for (int i = 1; i <= 40; i++) {
             GameRegistry.registerBlock(new RegularPillar(i), RegularPillar.NAME_BASE + i);
         }
 
-        for (int i = 1; i <= 25; i++) {
+        for (int i = 1; i <= 40; i++) {
             String name_base = "misca_barrel_";
             GameRegistry.registerBlock(new RegularBarrel(name_base, i), name_base + i);
         }
@@ -86,6 +91,33 @@ public class MiscaThings {
 
         for (int i = 1; i <= 20; i++) {
             GameRegistry.registerBlock(new RegularChest(i), RegularChest.NAME_BASE + i);
+        }
+
+        for (int i = 1; i <= 15; i++) {
+            String name_base = "misca_cross_";
+            RegularCross block = new RegularCross(name_base, i);
+            block.setHardness(4);
+            GameRegistry.registerBlock(block, name_base + i);
+        }
+
+        for (int i = 1; i <= 15; i++) {
+            String name_base = "misca_pad_";
+            RegularPad block = new RegularPad(name_base, i);
+            block.setHardness(4);
+            GameRegistry.registerBlock(block, name_base + i);
+        }
+
+        for (int i = 1; i <= 15; i++) {
+            final String id_base = "misca_bed_";
+            RegularBed block = new RegularBed(id_base, i);
+            GameRegistry.registerBlock(block, id_base + i);
+            GameRegistry.registerItem(block.item, id_base + "_item" + i);
+        }
+
+        for (int i = 1; i <= 10; i++) {
+            final String id_base = "misca_trapdoor_";
+            RegularTrapdoor block = new RegularTrapdoor(id_base, i);
+            GameRegistry.registerBlock(block, id_base + i);
         }
 
         GameRegistry.registerBlock(new TransparentBlock(), TransparentBlock.NAME_BASE);
