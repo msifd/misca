@@ -21,6 +21,7 @@ import java.util.List;
 
 public class CalculatorGuiScreen extends WidgetGuiScreen {
     private static Character character = loadChar();
+    private static long last_press = 0;
     private int mod = 0;
 
     public CalculatorGuiScreen() {
@@ -122,6 +123,19 @@ public class CalculatorGuiScreen extends WidgetGuiScreen {
         }
     }
 
+    /**
+     * Check wait for 1 sec
+     * @return is check passed
+     */
+    private static boolean checkPressTiming() {
+        final long now = System.currentTimeMillis();
+        if (now - last_press < 1000) {
+            return false;
+        }
+        last_press = now;
+        return true;
+    }
+
     private class StatLabelWidget extends LabelWidget {
         private CharStats stat;
 
@@ -134,6 +148,8 @@ public class CalculatorGuiScreen extends WidgetGuiScreen {
         public void onMouseEvent(MouseEvent event) {
             if (stat == null || event.type != MouseEvent.Type.PRESS) return;
             setFocused();
+
+            if (!checkPressTiming()) return;
 
             MoveMessage message = new MoveMessage(MoveMessage.Type.CUSTOM);
             message.stat = stat;
@@ -186,6 +202,8 @@ public class CalculatorGuiScreen extends WidgetGuiScreen {
 
         @Override
         protected void onPress(MouseEvent event) {
+            if (!checkPressTiming()) return;
+
             MoveMessage message = new MoveMessage(MoveMessage.Type.ACTION);
             message.character = character;
             message.actionType = actionType;
