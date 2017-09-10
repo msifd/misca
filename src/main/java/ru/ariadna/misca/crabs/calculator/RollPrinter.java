@@ -32,8 +32,8 @@ public class RollPrinter {
     }
 
     private static String makeCritical20(int dice) {
-        if (dice <= 3) return "\u00A74" + dice + "\u00A76";
-        else if (dice >= 18) return "\u00A72" + dice + "\u00A76";
+        if (dice <= 2) return "\u00A74" + dice + "\u00A76";
+        else if (dice >= 19) return "\u00A72" + dice + "\u00A76";
         else return String.valueOf(dice);
     }
 
