@@ -1,5 +1,6 @@
-package ru.ariadna.misca.config;
+package msifeed.mc.config;
 
+import com.google.common.eventbus.EventBus;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
@@ -10,11 +11,11 @@ import cpw.mods.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.entity.player.EntityPlayerMP;
-import ru.ariadna.misca.Misca;
 
 import java.io.File;
 
 public class ConfigManager implements IMessageHandler<ConfigSyncMessage, ConfigSyncMessage> {
+    public static final EventBus eventbus = new EventBus();
     public static final ConfigManager instance = new ConfigManager();
 
     public static File config_dir;
@@ -30,7 +31,7 @@ public class ConfigManager implements IMessageHandler<ConfigSyncMessage, ConfigS
         network.registerMessage(this, ConfigSyncMessage.class, 0, Side.CLIENT);
         FMLCommonHandler.instance().bus().register(this);
 
-        Misca.eventBus().post(new ConfigReloadEvent());
+        eventbus.post(new ConfigEvent.Reload());
     }
 
     @SubscribeEvent
@@ -41,21 +42,21 @@ public class ConfigManager implements IMessageHandler<ConfigSyncMessage, ConfigS
 
     @Override
     public ConfigSyncMessage onMessage(ConfigSyncMessage message, MessageContext ctx) {
-        ConfigSyncEvent event = new ConfigSyncEvent();
+        ConfigEvent.Sync event = new ConfigEvent.Sync();
         event.configs = message.configs;
-        Misca.eventBus().post(event);
+        eventbus.post(event);
 
         return null;
     }
 
     public void reloadConfig() {
-        Misca.eventBus().post(new ConfigReloadEvent());
+        eventbus.post(new ConfigEvent.Reload());
         network.sendToAll(bakeSyncMessage());
     }
 
     private ConfigSyncMessage bakeSyncMessage() {
-        ConfigSyncEvent event = new ConfigSyncEvent();
-        Misca.eventBus().post(event);
+        ConfigEvent.Sync event = new ConfigEvent.Sync();
+        eventbus.post(event);
 
         ConfigSyncMessage msg = new ConfigSyncMessage();
         msg.configs = event.configs;

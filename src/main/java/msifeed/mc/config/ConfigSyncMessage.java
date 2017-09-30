@@ -1,4 +1,4 @@
-package ru.ariadna.misca.config;
+package msifeed.mc.config;
 
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import io.netty.buffer.ByteBuf;

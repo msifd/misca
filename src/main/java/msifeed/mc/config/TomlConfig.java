@@ -1,4 +1,4 @@
-package ru.ariadna.misca.config;
+package msifeed.mc.config;
 
 import com.google.common.eventbus.Subscribe;
 import com.moandjiezana.toml.Toml;
@@ -6,7 +6,7 @@ import com.moandjiezana.toml.TomlWriter;
 import cpw.mods.fml.common.FMLCommonHandler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import ru.ariadna.misca.Misca;
+import msifeed.mc.misca.Misca;
 
 import java.io.File;
 import java.io.IOException;
@@ -24,11 +24,11 @@ public class TomlConfig<T extends Serializable> {
         this.config_class = clazz;
         this.filename = filename;
 
-        Misca.eventBus().register(this);
+        ConfigManager.eventbus.register(this);
     }
 
     @Subscribe
-    public void onReloadEvent(ConfigReloadEvent event) {
+    public void onReloadEvent(ConfigEvent.Reload event) {
         if (FMLCommonHandler.instance().getSide().isServer())
             read();
         else if (config_object == null)
@@ -36,7 +36,7 @@ public class TomlConfig<T extends Serializable> {
     }
 
     @Subscribe
-    public void onSyncEvent(ConfigSyncEvent event) {
+    public void onSyncEvent(ConfigEvent.Sync event) {
         if (!syncEnabled) return;
 
         if (FMLCommonHandler.instance().getSide().isServer()) {
