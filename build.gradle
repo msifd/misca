@@ -19,7 +19,7 @@ apply plugin: 'forge'
 apply plugin: 'idea'
 
 version = "${mod_version}"
-group = "ru.ariadna.misca"
+group = "msifeed.mc.misca"
 archivesBaseName = "misca"
 
 sourceCompatibility = '1.8'
