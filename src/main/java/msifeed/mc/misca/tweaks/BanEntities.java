@@ -1,12 +1,12 @@
 package msifeed.mc.misca.tweaks;
 
 import com.google.common.eventbus.Subscribe;
-import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import msifeed.mc.misca.config.ConfigEvent;
 import msifeed.mc.misca.config.ConfigManager;
 import msifeed.mc.misca.config.TomlConfig;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 
 import java.io.Serializable;
@@ -38,6 +38,9 @@ public class BanEntities {
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onEntityJoin(EntityJoinWorldEvent event) {
+        Class ec = event.entity.getClass();
+        if (!ec.isInstance(EntityLivingBase.class))
+            return;
         if (classesSet.contains(event.entity.getClass()))
             event.setCanceled(true);
     }
