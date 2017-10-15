@@ -19,14 +19,14 @@ public class Tweaks {
     private DisableSomeCraftingTables disableSomeCraftingTables = new DisableSomeCraftingTables();
     private DeathToll deathToll = new DeathToll();
     private HealthNotification healthNotification = new HealthNotification();
-    private BanEntites banEntites = new BanEntites();
+    private BanEntities banEntities = new BanEntities();
 
     @Subscribe
     public void onInit(FMLInitializationEvent event) {
         MinecraftForge.EVENT_BUS.register(disableSomeCraftingTables);
         MinecraftForge.EVENT_BUS.register(deathToll);
         MinecraftForge.EVENT_BUS.register(healthNotification);
-        MinecraftForge.EVENT_BUS.register(banEntites);
+        MinecraftForge.EVENT_BUS.register(banEntities);
 
         if (event.getSide().isServer()) {
             MinecraftForge.EVENT_BUS.register(offtopFormat);

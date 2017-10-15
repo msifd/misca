@@ -10,4 +10,7 @@ public class ConfigEvent {
 
     public static class Reload extends ConfigEvent {
     }
+
+    public static class ReloadDone extends ConfigEvent {
+    }
 }

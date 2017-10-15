@@ -28,6 +28,7 @@ public enum ConfigManager {
         FMLCommonHandler.instance().bus().register(INSTANCE);
 
         eventbus.post(new ConfigEvent.Reload());
+        eventbus.post(new ConfigEvent.ReloadDone());
     }
 
     @SubscribeEvent

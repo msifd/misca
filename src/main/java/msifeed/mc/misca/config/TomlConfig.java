@@ -37,6 +37,10 @@ public class TomlConfig<T extends Serializable> {
         }
 
         read();
+
+        if (!getConfigFile().exists()) {
+            write();
+        }
     }
 
     @Subscribe
