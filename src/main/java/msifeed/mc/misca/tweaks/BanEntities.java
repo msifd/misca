@@ -39,10 +39,14 @@ public class BanEntities {
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onEntityJoin(EntityJoinWorldEvent event) {
         Class ec = event.entity.getClass();
-        if (!ec.isInstance(EntityLivingBase.class))
+        if (!EntityLivingBase.class.isAssignableFrom(ec))
             return;
-        if (classesSet.contains(event.entity.getClass()))
-            event.setCanceled(true);
+        for (Class c : classesSet) {
+            if (c.isAssignableFrom(ec)) {
+                event.setCanceled(true);
+                return;
+            }
+        }
     }
 
     static class ConfigSection implements Serializable {
