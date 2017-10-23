@@ -118,5 +118,6 @@ public class MiscaThings {
         }
 
         GameRegistry.registerBlock(new TransparentBlock(), TransparentBlock.NAME_BASE);
+        GameRegistry.registerBlock(new DripsBlock(), DripsBlock.NAME_BASE);
     }
 }
