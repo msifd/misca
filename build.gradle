@@ -33,13 +33,7 @@ minecraft {
     replace "@VERSION@", project.version
 }
 
-configurations {
-    shade
-    compile.extendsFrom shade
-}
-
 dependencies {
-    shade 'com.moandjiezana.toml:toml4j:0.7.1'
     runtime 'mysql:mysql-connector-java:5.1.41'
 }
 
@@ -59,14 +53,6 @@ processResources {
     // copy everything else, thats not the mcmod.info
     from(sourceSets.main.resources.srcDirs) {
         exclude 'mcmod.info'
-    }
-}
-
-jar {
-    configurations.shade.each { dep ->
-        from(project.zipTree(dep)) {
-            exclude 'com/google/gson/**', 'META-INF', 'META-INF/**'
-        }
     }
 }
 

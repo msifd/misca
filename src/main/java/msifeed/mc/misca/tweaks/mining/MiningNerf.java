@@ -5,7 +5,7 @@ import cpw.mods.fml.common.event.*;
 import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import msifeed.mc.misca.config.ConfigManager;
-import msifeed.mc.misca.config.TomlConfig;
+import msifeed.mc.misca.config.JsonConfig;
 import msifeed.mc.misca.tweaks.Tweaks;
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
@@ -28,12 +28,9 @@ import java.util.*;
 public class MiningNerf {
     private static final int MAX_CACHED_BLOCKS = 20;
     private static Class<?> tinkerToolClass;
-
-    private CommandMiningStamina commandStamina = new CommandMiningStamina(this);
-    private TomlConfig<ConfigSection> config = new TomlConfig<>(ConfigSection.class, "mining_nerf.toml");
-
     HashMap<String, Stamina> playerStamina = new HashMap<>();
-
+    private CommandMiningStamina commandStamina = new CommandMiningStamina(this);
+    private JsonConfig<ConfigSection> config = ConfigManager.getConfigFor(ConfigSection.class, "mining_nerf.json");
     private Set<Block> oreBlocks = new HashSet<>();
     private LinkedHashMap<Block, Boolean> oreBlocksCache = new CompactLinkedMap<>();
 

@@ -1,15 +1,13 @@
 package msifeed.mc.misca.config;
 
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
-import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
-import cpw.mods.fml.common.network.simpleimpl.MessageContext;
 import io.netty.buffer.ByteBuf;
 
 import java.io.*;
 import java.util.HashMap;
 
-public class ConfigSyncMessage implements IMessage, IMessageHandler<ConfigSyncMessage, ConfigSyncMessage> {
-    HashMap<String, Serializable> configs;
+public class ConfigSyncMessage implements IMessage {
+    HashMap<String, String> configs;
 
     @Override
     public void fromBytes(ByteBuf buf) {
@@ -19,7 +17,7 @@ public class ConfigSyncMessage implements IMessage, IMessageHandler<ConfigSyncMe
 
             ByteArrayInputStream bis = new ByteArrayInputStream(map_buf.array());
             ObjectInputStream ois = new ObjectInputStream(bis);
-            configs = (HashMap<String, Serializable>) ois.readObject();
+            configs = (HashMap<String, String>) ois.readObject();
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
         }
@@ -38,13 +36,5 @@ public class ConfigSyncMessage implements IMessage, IMessageHandler<ConfigSyncMe
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    @Override
-    public ConfigSyncMessage onMessage(ConfigSyncMessage message, MessageContext ctx) {
-        ConfigEvent.Sync event = new ConfigEvent.Sync();
-        event.configs = message.configs;
-        ConfigManager.eventbus.post(event);
-        return null;
     }
 }

@@ -19,8 +19,6 @@ import org.apache.logging.log4j.Logger;
 @Mod(modid = "misca", version = "@VERSION@")
 public class Misca {
     public static final EventBus eventbus = new EventBus();
-    private static Logger logger = LogManager.getLogger("Misca");
-
     @SidedProxy(
             serverSide = "msifeed.mc.misca.crabs.Crabs",
             clientSide = "msifeed.mc.misca.crabs.CrabsClient"
@@ -32,7 +30,7 @@ public class Misca {
     )
     public static MiscaThings miscaThings;
     public static Tweaks tweaks = new Tweaks();
-
+    private static Logger logger = LogManager.getLogger("Misca");
     private MiningNerf miningNerf = new MiningNerf();
 
     @EventHandler
@@ -55,6 +53,7 @@ public class Misca {
             eventbus.register(DBHandler.INSTANCE);
         }
 
+        ConfigManager.INSTANCE.reloadConfig();
         eventbus.post(event);
     }
 

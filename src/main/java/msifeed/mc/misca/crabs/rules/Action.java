@@ -3,8 +3,8 @@ package msifeed.mc.misca.crabs.rules;
 import java.util.List;
 
 public class Action {
-    public String name;
     public final Type type;
+    public String name;
     public List<Roll> rolls;
     public List<Effect> target_effects;
     public List<Effect> self_effects;

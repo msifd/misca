@@ -46,8 +46,7 @@ public class MiscaCreativeTab extends CreativeTabs {
         cache.sort(Comparator.comparing(ItemStack::getUnlocalizedName, new AlphanumComparator()));
         list.addAll(cache);
 
-        if (this.func_111225_m() != null)
-        {
+        if (this.func_111225_m() != null) {
             this.addEnchantmentBooksToList(list, this.func_111225_m());
         }
     }

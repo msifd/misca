@@ -5,7 +5,7 @@ import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import msifeed.mc.misca.config.ConfigEvent;
 import msifeed.mc.misca.config.ConfigManager;
-import msifeed.mc.misca.config.TomlConfig;
+import msifeed.mc.misca.config.JsonConfig;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 
@@ -14,14 +14,12 @@ import java.util.ArrayList;
 import java.util.HashSet;
 
 public class BanEntities {
-    private TomlConfig<ConfigSection> config = new TomlConfig<>(ConfigSection.class, "banned_entities.toml");
+    private JsonConfig<ConfigSection> config = ConfigManager.getServerConfigFor(ConfigSection.class, "banned_entities.json");
     private HashSet<Class> classesSet = new HashSet<>();
 
     public BanEntities() {
-        config.setServerOnly(true);
-
         // Remake classes set
-        ConfigManager.eventbus.register(this);
+        ConfigManager.INSTANCE.eventbus.register(this);
     }
 
     @Subscribe

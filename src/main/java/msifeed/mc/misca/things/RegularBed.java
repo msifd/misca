@@ -71,7 +71,7 @@ public class RegularBed extends BlockBed {
             else if (p_77648_7_ != 1) return false;
 
             ++y;
-            int i1 = MathHelper.floor_double((double)(player.rotationYaw * 4.0F / 360.0F) + 0.5D) & 3;
+            int i1 = MathHelper.floor_double((double) (player.rotationYaw * 4.0F / 360.0F) + 0.5D) & 3;
             byte b0 = 0;
             byte b1 = 0;
 
@@ -91,10 +91,8 @@ public class RegularBed extends BlockBed {
 
                     --stack.stackSize;
                     return true;
-                }
-                else return false;
-            }
-            else return false;
+                } else return false;
+            } else return false;
         }
     }
 }

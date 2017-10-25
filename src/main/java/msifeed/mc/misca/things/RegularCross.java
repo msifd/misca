@@ -16,18 +16,15 @@ class RegularCross extends Block {
         setLightOpacity(1);
     }
 
-    public int getRenderType()
-    {
+    public int getRenderType() {
         return 1;
     }
 
-    public boolean isOpaqueCube()
-    {
+    public boolean isOpaqueCube() {
         return false;
     }
 
-    public boolean renderAsNormalBlock()
-    {
+    public boolean renderAsNormalBlock() {
         return false;
     }
 

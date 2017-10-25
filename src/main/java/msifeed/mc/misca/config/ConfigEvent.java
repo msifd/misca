@@ -1,14 +1,17 @@
 package msifeed.mc.misca.config;
 
-import java.io.Serializable;
 import java.util.HashMap;
 
 public class ConfigEvent {
-    public static class Sync extends ConfigEvent {
-        public HashMap<String, Serializable> configs = new HashMap<>();
+    static class Collect extends ConfigEvent {
+        HashMap<String, String> configs = new HashMap<>();
     }
 
-    public static class Reload extends ConfigEvent {
+    static class Override extends ConfigEvent {
+        HashMap<String, String> configs = new HashMap<>();
+    }
+
+    static class Reload extends ConfigEvent {
     }
 
     public static class ReloadDone extends ConfigEvent {

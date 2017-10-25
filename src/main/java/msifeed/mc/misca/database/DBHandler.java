@@ -2,14 +2,14 @@ package msifeed.mc.misca.database;
 
 import com.google.common.eventbus.Subscribe;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
+import msifeed.mc.misca.config.ConfigManager;
+import msifeed.mc.misca.config.JsonConfig;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.ChunkCoordinates;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import msifeed.mc.misca.config.TomlConfig;
 
-import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -20,11 +20,7 @@ public enum DBHandler {
 
     private static Logger logger = LogManager.getLogger("Misca-DB");
     private Connection connection;
-    private TomlConfig<DBConfigFile> config = new TomlConfig<>(DBConfigFile.class, "database.toml");
-
-    DBHandler() {
-        config.setServerOnly(true);
-    }
+    private JsonConfig<ConfigSection> config = ConfigManager.getServerConfigFor(ConfigSection.class, "database.json");
 
     private static void asyncUpdate(PreparedStatement s) {
         Thread thread = new Thread(() -> {
@@ -42,9 +38,8 @@ public enum DBHandler {
         if (event.getSide().isClient())
             return;
 
-        if (!connectToDB() || connection == null) {
+        if (!connectToDB() || connection == null)
             return;
-        }
 
         logger.info("Misca successfully connected to database.");
     }
@@ -85,7 +80,7 @@ public enum DBHandler {
         try {
             Class.forName("com.mysql.jdbc.Driver");
 
-            DBConfigFile.DB config = this.config.get().database;
+            ConfigSection.DB config = this.config.get().database;
             String url = String.format("jdbc:mysql://%s:%d/%s", config.host, config.port, config.database);
             connection = DriverManager.getConnection(url, config.username, config.password);
 
@@ -100,11 +95,11 @@ public enum DBHandler {
         return false;
     }
 
-    private static class DBConfigFile implements Serializable {
+    public static class ConfigSection {
         DB database = new DB();
         String chat_table = "chat_logs";
 
-        static class DB implements Serializable {
+        public static class DB {
             String host = "localhost";
             int port = 3306;
             String database = "ariadna";

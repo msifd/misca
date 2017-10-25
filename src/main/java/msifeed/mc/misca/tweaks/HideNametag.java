@@ -25,8 +25,8 @@ import java.util.HashSet;
  */
 public class HideNametag implements IMessageHandler<HideNametag.MessageIncognito, IMessage> {
     private static final int RENDER_DISTANCE = 3;
-    private HashSet<String> incognitos = new HashSet<>();
     CommandIncognito commandIncognito = new CommandIncognito(this);
+    private HashSet<String> incognitos = new HashSet<>();
 
     @SubscribeEvent
     @SideOnly(Side.CLIENT)

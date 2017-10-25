@@ -1,9 +1,9 @@
 package msifeed.mc.misca.commands;
 
+import msifeed.mc.misca.config.ConfigManager;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.util.ChatComponentText;
-import msifeed.mc.misca.config.ConfigManager;
 
 public class CommandMiscaCommon extends CommandBase {
     @Override
@@ -26,6 +26,7 @@ public class CommandMiscaCommon extends CommandBase {
         switch (args[0]) {
             case "reload":
                 ConfigManager.INSTANCE.reloadConfig();
+                ConfigManager.INSTANCE.syncConfig();
                 sender.addChatMessage(new ChatComponentText("Misca reloaded"));
                 break;
         }
