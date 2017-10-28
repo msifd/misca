@@ -1,0 +1,14 @@
+{
+  "name": "point_hit",
+  "type": "melee",
+  "rolls": [
+    "g30+",
+    "str",
+    "per",
+    "int",
+    "-5"
+  ],
+  "target_effects": [
+    "damage"
+  ]
+}

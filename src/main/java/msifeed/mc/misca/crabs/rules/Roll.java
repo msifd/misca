@@ -21,6 +21,13 @@ public abstract class Roll {
         return false;
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        return this.getClass().equals(obj.getClass());
+    }
+
+    // // // // // // // //
+
     public static class DiceG30 extends Roll {
         protected int value(Character c) {
             return DiceMath.g30();
@@ -29,6 +36,33 @@ public abstract class Roll {
         @Override
         public boolean isDice() {
             return true;
+        }
+
+        @Override
+        public String toString() {
+            return "g30";
+        }
+    }
+
+    public static class DiceG30Plus extends DiceG30 {
+        protected int value(Character c) {
+            return DiceMath.g30_plus();
+        }
+
+        @Override
+        public String toString() {
+            return "g30+";
+        }
+    }
+
+    public static class DiceG30Minus extends DiceG30 {
+        protected int value(Character c) {
+            return DiceMath.g30_minus();
+        }
+
+        @Override
+        public String toString() {
+            return "g30-";
         }
     }
 
@@ -43,18 +77,38 @@ public abstract class Roll {
         protected int value(Character c) {
             return c.stat(stat);
         }
+
+        @Override
+        public String toString() {
+            return stat.toString();
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            return super.equals(obj) && this.stat.equals(((Stat) obj).stat);
+        }
     }
 
     public static class Const extends Roll {
         private final int constant;
 
-        public Const(int constant) {
-            this.constant = constant;
+        public Const(int c) {
+            this.constant = c;
         }
 
         @Override
         protected int value(Character c) {
             return constant;
+        }
+
+        @Override
+        public String toString() {
+            return Integer.toString(constant);
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            return super.equals(obj) && this.constant == ((Const) obj).constant;
         }
     }
 }

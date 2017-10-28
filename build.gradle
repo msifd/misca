@@ -34,6 +34,7 @@ minecraft {
 }
 
 dependencies {
+    testCompile 'junit:junit:4.12'
     runtime 'mysql:mysql-connector-java:5.1.41'
 }
 
