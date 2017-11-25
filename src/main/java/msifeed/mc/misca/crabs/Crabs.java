@@ -1,13 +1,12 @@
 package msifeed.mc.misca.crabs;
 
-import msifeed.mc.misca.crabs.management.ActionManager;
-import msifeed.mc.misca.crabs.management.FightManager;
+import com.google.common.eventbus.Subscribe;
+import cpw.mods.fml.common.event.FMLPreInitializationEvent;
+import msifeed.mc.misca.crabs.fight.FightNetman;
 
 public class Crabs {
-    private FightManager fightManager = new FightManager();
-    private ActionManager actionManager = new ActionManager();
-
-    public void preInit() {
-
+    @Subscribe
+    public void preInit(FMLPreInitializationEvent event) {
+        FightNetman.INSTANCE.init(event);
     }
 }

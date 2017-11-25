@@ -1,14 +1,8 @@
 buildscript {
     repositories {
         mavenCentral()
-        maven {
-            name "forge"
-            url "http://files.minecraftforge.net/maven"
-        }
-        maven {
-            name "sonatype"
-            url "https://oss.sonatype.org/content/repositories/snapshots/"
-        }
+        maven { url "http://files.minecraftforge.net/maven" }
+        maven { url "https://oss.sonatype.org/content/repositories/snapshots" }
     }
     dependencies {
         classpath 'net.minecraftforge.gradle:ForgeGradle:1.2-SNAPSHOT'
@@ -34,8 +28,8 @@ minecraft {
 }
 
 dependencies {
-    testCompile 'junit:junit:4.12'
     runtime 'mysql:mysql-connector-java:5.1.41'
+    testCompile 'junit:junit:4.12'
 }
 
 processResources {
@@ -48,7 +42,7 @@ processResources {
         include 'mcmod.info'
 
         // replace version and mcversion
-        expand 'version':project.version, 'mcversion':project.minecraft.version
+        expand 'version': project.version, 'mcversion': project.minecraft.version
     }
 
     // copy everything else, thats not the mcmod.info

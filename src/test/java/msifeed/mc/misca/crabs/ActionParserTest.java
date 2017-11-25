@@ -13,13 +13,26 @@ import msifeed.mc.misca.crabs.rules.Roll;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import static org.junit.Assert.*;
-
 import java.io.IOException;
 import java.net.URL;
 import java.util.Collections;
 
+import static org.junit.Assert.assertEquals;
+
 public class ActionParserTest {
+    private static Action getPointHitAction() {
+        Action act = new Action("point_hit", Action.Type.MELEE);
+        Collections.addAll(act.rolls,
+                new Roll.DiceG30Plus(),
+                new Roll.Stat(Stats.STR),
+                new Roll.Stat(Stats.PER),
+                new Roll.Stat(Stats.INT),
+                new Roll.Const(-5));
+        Collections.addAll(act.target_effects,
+                new Effect.Damage());
+        return act;
+    }
+
     @Ignore
     @Test
     public void test_liner() throws IOException {
@@ -40,18 +53,5 @@ public class ActionParserTest {
         Action exp = getPointHitAction();
 
         assertEquals(exp, act);
-    }
-
-    private static Action getPointHitAction() {
-        Action act = new Action("point_hit", Action.Type.MELEE);
-        Collections.addAll(act.rolls,
-                new Roll.DiceG30Plus(),
-                new Roll.Stat(Stats.STR),
-                new Roll.Stat(Stats.PER),
-                new Roll.Stat(Stats.INT),
-                new Roll.Const(-5));
-        Collections.addAll(act.target_effects,
-                new Effect.Damage());
-        return act;
     }
 }

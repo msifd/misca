@@ -5,10 +5,10 @@ import java.util.Random;
 public final class DiceMath {
     private static final Random rand = new Random();
 
-    public static double gauss(double mean, int min, int max) {
-        final double std_dev = min / 2. + max / 2.;
-        double roll = min - 1;
-        while (roll < min || roll > max) {
+    public static double gauss(double mean, int from, int to) {
+        final double std_dev = from / 2. + to / 2.;
+        double roll = from - 1;
+        while (roll < from || roll > to) {
             roll = rand.nextGaussian() * mean + std_dev;
         }
         return roll;
