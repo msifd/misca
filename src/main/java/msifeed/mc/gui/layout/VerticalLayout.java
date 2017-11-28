@@ -1,7 +1,7 @@
-package msifeed.mc.gui.layouts;
+package msifeed.mc.gui.layout;
 
 import com.google.common.collect.Lists;
-import msifeed.mc.gui.widgets.IWidget;
+import msifeed.mc.gui.widget.IWidget;
 
 import java.util.List;
 

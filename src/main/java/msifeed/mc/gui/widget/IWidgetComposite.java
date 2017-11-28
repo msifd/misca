@@ -1,8 +1,8 @@
-package msifeed.mc.gui.widgets;
+package msifeed.mc.gui.widget;
 
 import msifeed.mc.gui.WidgetCommons;
-import msifeed.mc.gui.events.KeyEvent;
-import msifeed.mc.gui.events.MouseEvent;
+import msifeed.mc.gui.event.KeyEvent;
+import msifeed.mc.gui.event.MouseEvent;
 
 import java.util.List;
 

@@ -1,7 +1,7 @@
-package msifeed.mc.gui.widgets;
+package msifeed.mc.gui.widget;
 
 import msifeed.mc.gui.GraphicsHelper;
-import msifeed.mc.gui.events.MouseEvent;
+import msifeed.mc.gui.event.MouseEvent;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.PositionedSoundRecord;
 import net.minecraft.client.gui.FontRenderer;
@@ -43,7 +43,7 @@ public class ButtonWidget extends BaseWidget {
         if (event.type != MouseEvent.Type.PRESS) return;
 
         setFocused();
-        PositionedSoundRecord sound = PositionedSoundRecord.func_147674_a(new ResourceLocation("gui.button.press"), 1.0F);
+        PositionedSoundRecord sound = PositionedSoundRecord.func_147674_a(new ResourceLocation("client.button.press"), 1.0F);
         Minecraft.getMinecraft().getSoundHandler().playSound(sound);
 
         onPress(event);

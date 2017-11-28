@@ -1,6 +1,6 @@
-package msifeed.mc.gui.layouts;
+package msifeed.mc.gui.layout;
 
-import msifeed.mc.gui.widgets.IWidget;
+import msifeed.mc.gui.widget.IWidget;
 
 import java.util.Collections;
 import java.util.List;

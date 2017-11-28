@@ -39,8 +39,8 @@ public class SpawnInvincibility {
             return;
         }
 
-        EntityPlayer player = (EntityPlayer) event.entity;
-        ChunkCoordinates init_pos = ignoredPlayers.get(player);
+        final EntityPlayer player = (EntityPlayer) event.entity;
+        final ChunkCoordinates init_pos = ignoredPlayers.get(player);
         if (init_pos == null) return;
         if (init_pos.getDistanceSquaredToChunkCoordinates(player.getPlayerCoordinates()) > 4) {
             ignoredPlayers.remove(player);

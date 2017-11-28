@@ -1,8 +1,8 @@
-package msifeed.mc.gui.layouts;
+package msifeed.mc.gui.layout;
 
-import msifeed.mc.gui.widgets.BaseWidget;
-import msifeed.mc.gui.widgets.IWidget;
-import msifeed.mc.gui.widgets.IWidgetComposite;
+import msifeed.mc.gui.widget.BaseWidget;
+import msifeed.mc.gui.widget.IWidget;
+import msifeed.mc.gui.widget.IWidgetComposite;
 import net.minecraft.client.Minecraft;
 
 public abstract class BaseLayout extends BaseWidget implements IWidgetComposite {

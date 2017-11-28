@@ -1,4 +1,4 @@
-package msifeed.mc.gui.events;
+package msifeed.mc.gui.event;
 
 public class MouseEvent {
     public Type type;

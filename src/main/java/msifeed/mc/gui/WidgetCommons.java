@@ -1,6 +1,6 @@
 package msifeed.mc.gui;
 
-import msifeed.mc.gui.widgets.IWidget;
+import msifeed.mc.gui.widget.IWidget;
 
 public class WidgetCommons {
     private static IWidget focused = null;

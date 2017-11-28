@@ -1,4 +1,4 @@
-package msifeed.mc.gui.widgets;
+package msifeed.mc.gui.widget;
 
 public abstract class BaseWidget implements IWidget {
     protected int posX, posY, zLevel;

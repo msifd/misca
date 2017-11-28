@@ -1,4 +1,4 @@
-package msifeed.mc.gui.widgets;
+package msifeed.mc.gui.widget;
 
 import net.minecraft.client.Minecraft;
 

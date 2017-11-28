@@ -1,8 +1,8 @@
-package msifeed.mc.gui.widgets;
+package msifeed.mc.gui.widget;
 
 import msifeed.mc.gui.GraphicsHelper;
-import msifeed.mc.gui.events.KeyEvent;
-import msifeed.mc.gui.events.MouseEvent;
+import msifeed.mc.gui.event.KeyEvent;
+import msifeed.mc.gui.event.MouseEvent;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.util.ChatAllowedCharacters;

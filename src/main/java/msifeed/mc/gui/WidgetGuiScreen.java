@@ -1,10 +1,10 @@
 package msifeed.mc.gui;
 
 import com.google.common.collect.Lists;
-import msifeed.mc.gui.events.KeyEvent;
-import msifeed.mc.gui.events.MouseEvent;
-import msifeed.mc.gui.widgets.IWidget;
-import msifeed.mc.gui.widgets.IWidgetComposite;
+import msifeed.mc.gui.event.KeyEvent;
+import msifeed.mc.gui.event.MouseEvent;
+import msifeed.mc.gui.widget.IWidget;
+import msifeed.mc.gui.widget.IWidgetComposite;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 
