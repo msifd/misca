@@ -16,6 +16,6 @@ public class CrabsRenderHandler extends Gui {
 
     @SubscribeEvent
     public void onRenderGui(RenderGameOverlayEvent.Post event) {
-        fsexFont.renderString("Шри\u00A76фты \u00A7nчада", 0, 20, 0xFFFFFFFF, false);
+        fsexFont.renderString("Шри\u00A76фты\n \u00A7nчада", 0, 20, 0xFFFFFFFF, false);
     }
 }

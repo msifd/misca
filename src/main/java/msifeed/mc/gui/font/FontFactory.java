@@ -8,21 +8,19 @@ import java.io.InputStream;
 
 public class FontFactory {
     protected static int[] colorCodes = new int[32];
+
     static {
-        for (int i = 0; i < 32; ++i)
-        {
+        for (int i = 0; i < 32; ++i) {
             int j = (i >> 3 & 1) * 85;
             int k = (i >> 2 & 1) * 170 + j;
             int l = (i >> 1 & 1) * 170 + j;
             int i1 = (i >> 0 & 1) * 170 + j;
 
-            if (i == 6)
-            {
+            if (i == 6) {
                 k += 85;
             }
 
-            if (i >= 16)
-            {
+            if (i >= 16) {
                 k /= 4;
                 l /= 4;
                 i1 /= 4;
@@ -32,6 +30,9 @@ public class FontFactory {
         }
     }
 
+    /**
+     * Fixedsys Excelsior 3
+     */
     public static StringCache createFsexFontRenderer() {
         try {
             InputStream is = FontFactory.class.getResourceAsStream("FSEX300.ttf");
