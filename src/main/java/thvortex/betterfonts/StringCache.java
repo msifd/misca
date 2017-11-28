@@ -86,6 +86,8 @@ public class StringCache
      */
     private int colorTable[];
 
+    private int fontSize = 18;
+
     /**
      * A cache of recently seen strings to their fully layed-out state, complete with color changes and texture coordinates of
      * all pre-rendered glyph images needed to display this string. The weakRefCache holds strong references to the Key
@@ -366,6 +368,8 @@ public class StringCache
         weakRefCache.clear();
         stringCache.clear();
 
+        this.fontSize = size;
+
         /* Pre-cache the ASCII digits to allow for fast glyph substitution */
         cacheDightGlyphs();
     }
@@ -606,6 +610,11 @@ public class StringCache
 
         /* Return total horizontal advance (slightly wider than the bounding box, but close enough for centering strings) */
         return entry.advance / 2;
+    }
+
+    public int getFontSize()
+    {
+        return fontSize;
     }
 
     /**

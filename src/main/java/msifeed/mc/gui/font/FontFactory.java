@@ -7,7 +7,8 @@ import java.io.IOException;
 import java.io.InputStream;
 
 public class FontFactory {
-    protected static int[] colorCodes = new int[32];
+    private static int[] colorCodes = new int[32];
+    public static final StringCache fsexFont;
 
     static {
         for (int i = 0; i < 32; ++i) {
@@ -28,6 +29,8 @@ public class FontFactory {
 
             colorCodes[i] = (k & 255) << 16 | (l & 255) << 8 | i1 & 255;
         }
+
+        fsexFont = FontFactory.createFsexFontRenderer();
     }
 
     /**
@@ -35,8 +38,8 @@ public class FontFactory {
      */
     public static StringCache createFsexFontRenderer() {
         try {
-            InputStream is = FontFactory.class.getResourceAsStream("FSEX300.ttf");
-            Font font = Font.createFont(Font.TRUETYPE_FONT, is);
+            final InputStream is = FontFactory.class.getResourceAsStream("FSEX300.ttf");
+            final Font font = Font.createFont(Font.TRUETYPE_FONT, is);
             return createFontRenderer(font, 16, false);
         } catch (FontFormatException | IOException e) {
             e.printStackTrace();
@@ -45,7 +48,7 @@ public class FontFactory {
     }
 
     public static StringCache createFontRenderer(Font font, int size, boolean antiAlias) {
-        StringCache sc = new StringCache(colorCodes);
+        final StringCache sc = new StringCache(colorCodes);
         sc.setDefaultFont(font, size, antiAlias);
         return sc;
     }
