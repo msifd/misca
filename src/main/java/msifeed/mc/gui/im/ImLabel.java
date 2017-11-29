@@ -19,6 +19,17 @@ public class ImLabel {
     }
 
     /**
+     * Splits lines at line break and draws
+     */
+    public void multiline(String label, int x, int y, int color, boolean shadow) {
+        final int labelHeight = (font.getFontSize() - 1) / 2; // ???
+        final String[] lines = label.split("\n");
+        for (int i = 0; i < lines.length; i++) {
+            label(lines[i], x, y + i * labelHeight, color, shadow);
+        }
+    }
+
+    /**
      * Draw centered in rect label
      * @param trim label to fit in rect
      */

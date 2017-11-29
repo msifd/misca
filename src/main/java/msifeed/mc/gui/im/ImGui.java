@@ -17,6 +17,10 @@ public class ImGui {
         imLabel.label(label, x, y, 0xFFFFFFFF, false);
     }
 
+    public void labelMultiline(String label, int x, int y) {
+        imLabel.multiline(label, x, y, 0xFFFFFFFF, false);
+    }
+
     public void label(String label, int x, int y, int width, int height, boolean trim) {
         imLabel.label(label, x, y, width, height, 0xFFFFFFFF, false, trim);
     }

@@ -2,26 +2,32 @@ package msifeed.mc.misca.crabs.client;
 
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import msifeed.mc.gui.im.ImGui;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 
 public class CrabsRenderHandler extends Gui {
     public static final CrabsRenderHandler INSTANCE = new CrabsRenderHandler();
 
-    private boolean fighting = false;
-
     @SubscribeEvent
     public void onRenderGui(RenderGameOverlayEvent.Post event) {
-        ImGui gui = ImGui.INSTANCE;
-        gui.newFrame();
-        if (gui.button(fighting ? "Stop fight" : "Start fight", 5, 5)) {
-            fighting = !fighting;
-        }
+        if (event.type != RenderGameOverlayEvent.ElementType.ALL) return;
 
-        if (gui.button(fighting ? "Stop fight" : "Start fight 123456789-123456789-123456789-123456789", 5, 30)) {
-            fighting = !fighting;
+        final Minecraft mc = Minecraft.getMinecraft();
+        final EntityPlayer player = mc.thePlayer;
+
+        
+
+        final boolean fighting = false;
+
+        ImGui imgui = ImGui.INSTANCE;
+        imgui.newFrame();
+        if (imgui.button(fighting ? "Stop fight" : "Start fight", 5, 5)) {
+
         }
 
         String debugInfo = String.format("");
+        imgui.labelMultiline(debugInfo, 120, 5);
     }
 }
