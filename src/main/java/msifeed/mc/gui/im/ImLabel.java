@@ -6,7 +6,7 @@ import net.minecraft.profiler.Profiler;
 import thvortex.betterfonts.StringCache;
 
 public class ImLabel {
-    public StringCache font = FontFactory.createFsexFontRenderer();
+    public StringCache font = FontFactory.fsexFont;
 
     /**
      * Draw label at pos

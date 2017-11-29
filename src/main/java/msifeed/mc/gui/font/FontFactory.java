@@ -36,7 +36,7 @@ public class FontFactory {
     /**
      * Fixedsys Excelsior 3
      */
-    public static StringCache createFsexFontRenderer() {
+    private static StringCache createFsexFontRenderer() {
         try {
             final InputStream is = FontFactory.class.getResourceAsStream("FSEX300.ttf");
             final Font font = Font.createFont(Font.TRUETYPE_FONT, is);
