@@ -17,5 +17,11 @@ public class CrabsRenderHandler extends Gui {
         if (gui.button(fighting ? "Stop fight" : "Start fight", 5, 5)) {
             fighting = !fighting;
         }
+
+        if (gui.button(fighting ? "Stop fight" : "Start fight 123456789-123456789-123456789-123456789", 5, 30)) {
+            fighting = !fighting;
+        }
+
+        String debugInfo = String.format("");
     }
 }

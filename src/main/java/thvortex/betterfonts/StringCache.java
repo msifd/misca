@@ -440,11 +440,8 @@ public class StringCache
          * function doesn't try to save/restore the blending state. Hopefully everything else that depends on blending in Minecraft
          * will set its own state as needed.
          */
-        if(antiAliasEnabled)
-        {
-            GL11.glEnable(GL11.GL_BLEND);
-            GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-        }
+        GL11.glEnable(GL11.GL_BLEND);
+        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 
         /* Using the Tessellator to queue up data in a vertex array and then draw all at once should be faster than immediate mode */
         Tessellator tessellator = Tessellator.instance;
