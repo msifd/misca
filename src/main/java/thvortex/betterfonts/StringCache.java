@@ -383,9 +383,9 @@ public class StringCache
         /* Need to cache each font style combination; the digitGlyphsReady = false disabled the normal glyph substitution mechanism */
         digitGlyphsReady = false;
         digitGlyphs[Font.PLAIN] = cacheString("0123456789").glyphs;
-        digitGlyphs[Font.BOLD] = cacheString("�l0123456789").glyphs;
-        digitGlyphs[Font.ITALIC] = cacheString("�o0123456789").glyphs;
-        digitGlyphs[Font.BOLD | Font.ITALIC] = cacheString("�l�o0123456789").glyphs;
+        digitGlyphs[Font.BOLD] = cacheString("\u00A7l0123456789").glyphs;
+        digitGlyphs[Font.ITALIC] = cacheString("\u00A7o0123456789").glyphs;
+        digitGlyphs[Font.BOLD | Font.ITALIC] = cacheString("\u00A7l\u00A7o0123456789").glyphs;
         digitGlyphsReady = true;
     }
 
@@ -772,8 +772,8 @@ public class StringCache
             int length = stripColorCodes(entry, str, text);
 
             /* Layout the entire string, splitting it up by color codes and the Unicode bidirectional algorithm */
-            List<Glyph> glyphList = new ArrayList();
-            entry.advance = (int) layoutBidiString(glyphList, text, 0, length, entry.colors);
+            List<Glyph> glyphList = new ArrayList<>();
+            entry.advance = layoutBidiString(glyphList, text, 0, length, entry.colors);
 
             /* Convert the accumulated Glyph list to an array for efficient storage */
             entry.glyphs = new Glyph[glyphList.size()];
@@ -815,8 +815,8 @@ public class StringCache
                 key = new Key();
 
                 /* Make a copy of the original String to avoid creating a strong reference to it */
-                key.str = new String(str);
-                entry.keyRef = new WeakReference(key);
+                key.str = str;
+                entry.keyRef = new WeakReference<>(key);
                 stringCache.put(key, entry);
             }
         }
@@ -979,7 +979,7 @@ public class StringCache
                 for(int index = 0; index < runCount; index++)
                 {
                     levels[index] = (byte) bidi.getRunLevel(index);
-                    ranges[index] = new Integer(index);
+                    ranges[index] = index;
                 }
                 Bidi.reorderVisually(levels, 0, ranges, 0, runCount);
 

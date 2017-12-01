@@ -219,7 +219,7 @@ public class GlyphCache
 
         /* Use Java's logical font as the default initial font if user does not override it in some configuration file */
         java.awt.GraphicsEnvironment.getLocalGraphicsEnvironment().preferLocaleFonts();
-        usedFonts.add(new Font(Font.SANS_SERIF, Font.PLAIN, 1));
+//        usedFonts.add(new Font(Font.SANS_SERIF, Font.PLAIN, 1));
     }
 
     /**
@@ -578,7 +578,6 @@ public class GlyphCache
 
         /* Allocate new OpenGL texure */
         singleIntBuffer.clear();
-//        GLAllocation.generateTextureNames(singleIntBuffer); // FIXME
         singleIntBuffer.put(0, TextureUtil.glGenTextures());
         textureName = singleIntBuffer.get(0);
 
