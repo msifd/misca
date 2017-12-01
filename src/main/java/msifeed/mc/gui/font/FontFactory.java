@@ -38,8 +38,8 @@ public class FontFactory {
      */
     private static StringCache createFsexFontRenderer() {
         try {
-            final InputStream is = FontFactory.class.getResourceAsStream("FSEX320-FIXED.ttf");
-            Font font = Font.createFont(Font.TRUETYPE_FONT, is);
+            final InputStream is = FontFactory.class.getResourceAsStream("FSEX302_FIXED.ttf");
+            final Font font = Font.createFont(Font.TRUETYPE_FONT, is);
             return createFontRenderer(font, 16, false);
         } catch (FontFormatException | IOException e) {
             e.printStackTrace();

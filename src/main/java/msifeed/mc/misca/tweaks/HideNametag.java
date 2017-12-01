@@ -1,5 +1,6 @@
 package msifeed.mc.misca.tweaks;
 
+import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
@@ -19,6 +20,7 @@ import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 
 import java.io.*;
 import java.util.HashSet;
+import java.util.UUID;
 
 /**
  * Отменяет рендеринг плашки с именем
@@ -26,15 +28,14 @@ import java.util.HashSet;
 public class HideNametag implements IMessageHandler<HideNametag.MessageIncognito, IMessage> {
     private static final int RENDER_DISTANCE = 3;
     CommandIncognito commandIncognito = new CommandIncognito(this);
-    private HashSet<String> incognitos = new HashSet<>();
+    private HashSet<UUID> incognitos = new HashSet<>();
 
     @SubscribeEvent
     @SideOnly(Side.CLIENT)
     public void onRenderLivingSpecial(RenderLivingEvent.Specials.Pre event) {
         EntityPlayer self = Minecraft.getMinecraft().thePlayer;
-        if (event.entity instanceof EntityPlayer && event.isCancelable()
-                && (self.getDistanceToEntity(event.entity) > RENDER_DISTANCE
-                || incognitos.contains(event.entity.getCommandSenderName()))) {
+        if (event.entity instanceof EntityPlayer && (self.getDistanceToEntity(event.entity) > RENDER_DISTANCE
+                || incognitos.contains(event.entity.getUniqueID()))) {
             event.setCanceled(true);
         }
     }
@@ -57,7 +58,7 @@ public class HideNametag implements IMessageHandler<HideNametag.MessageIncognito
     }
 
     public static class MessageIncognito implements IMessage {
-        HashSet<String> incognitos = new HashSet<>();
+        HashSet<UUID> incognitos = new HashSet<>();
 
         @Override
         public void fromBytes(ByteBuf buf) {
@@ -67,7 +68,7 @@ public class HideNametag implements IMessageHandler<HideNametag.MessageIncognito
             try {
                 ByteArrayInputStream bis = new ByteArrayInputStream(map_buf.array());
                 ObjectInputStream ois = new ObjectInputStream(bis);
-                this.incognitos = (HashSet<String>) ois.readObject();
+                this.incognitos = (HashSet<UUID>) ois.readObject();
             } catch (IOException | ClassNotFoundException e) {
                 e.printStackTrace();
             }
@@ -108,10 +109,12 @@ public class HideNametag implements IMessageHandler<HideNametag.MessageIncognito
 
         @Override
         public void processCommand(ICommandSender sender, String[] args) {
-            String name = sender.getCommandSenderName();
-            boolean enabling = !module.incognitos.remove(name);
-            if (enabling)
-                module.incognitos.add(name);
+            if (!(sender instanceof EntityPlayer)) return;
+
+            UUID uuid = ((EntityPlayer) sender).getUniqueID();
+            boolean enabling = !module.incognitos.remove(uuid);
+            if (enabling) module.incognitos.add(uuid);
+
             MessageIncognito msg = new MessageIncognito();
             msg.incognitos.addAll(module.incognitos);
             Misca.tweaks.network.sendToAll(msg);
