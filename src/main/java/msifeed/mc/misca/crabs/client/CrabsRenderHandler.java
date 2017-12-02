@@ -2,9 +2,9 @@ package msifeed.mc.misca.crabs.client;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import msifeed.mc.gui.im.ImGui;
+import msifeed.mc.misca.crabs.EntityUtils;
 import msifeed.mc.misca.crabs.battle.BattleManager;
 import msifeed.mc.misca.crabs.battle.BattleNetwork;
 import msifeed.mc.misca.crabs.battle.FighterAction;
@@ -41,18 +41,21 @@ public class CrabsRenderHandler extends Gui {
         }
 
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        String contextStr = gson.toJson(context);
+        String contextStr = gson.toJson(BattleManager.INSTANCE.getContexts());
 
-        String debugInfo = String.format("inBattle: %b\ncontext: %s", inBattle, contextStr);
+        String debugInfo = String.format("inBattle: %b\ncontexts: %s", inBattle, contextStr);
         imgui.labelMultiline(debugInfo, 120, 5);
     }
 
-    @SubscribeEvent(priority = EventPriority.HIGHEST)
-    public void onRenderLivingSpecial(RenderLivingEvent.Specials.Pre event) {
-        if (!BattleManager.INSTANCE.isBattling(event.entity.getUniqueID())) return;
+    @SubscribeEvent
+    public void onRenderLiving(RenderLivingEvent.Post event) {
+        EntityPlayer self = Minecraft.getMinecraft().thePlayer;
+        if (event.entity == self) return;
+        if (!BattleManager.INSTANCE.isBattling(EntityUtils.getUuid(self))
+                || !BattleManager.INSTANCE.isBattling(EntityUtils.getUuid(event.entity)))
+            return;
 
         // Рендер плашки с режимом боя над энтити
-
         RenderManager renderManager = RenderManager.instance;
         float f = 1.6F;
         float f1 = 0.016666668F * f;
@@ -60,12 +63,14 @@ public class CrabsRenderHandler extends Gui {
         GL11.glTranslatef((float) event.x, (float) event.y + event.entity.height + 1F, (float) event.z);
         GL11.glNormal3f(0.0F, 1.0F, 0.0F);
         GL11.glRotatef(-renderManager.playerViewY, 0.0F, 1.0F, 0.0F);
-        GL11.glRotatef(-renderManager.playerViewX, 1.0F, 0.0F, 0.0F);
+        GL11.glRotatef(renderManager.playerViewX, 1.0F, 0.0F, 0.0F);
         GL11.glScalef(-f1, -f1, f1);
+
         GL11.glDisable(GL11.GL_LIGHTING);
+//        GL11.glDisable(GL11.GL_DEPTH_TEST);
+//        GL11.glDepthMask(false);
         GL11.glEnable(GL11.GL_BLEND);
         OpenGlHelper.glBlendFunc(770, 771, 1, 0);
-
         GL11.glDisable(GL11.GL_TEXTURE_2D);
 
         final double icon_half = 5;
@@ -80,8 +85,11 @@ public class CrabsRenderHandler extends Gui {
         tessellator.draw();
 
         GL11.glEnable(GL11.GL_TEXTURE_2D);
-        GL11.glEnable(GL11.GL_LIGHTING);
         GL11.glDisable(GL11.GL_BLEND);
+//        GL11.glEnable(GL11.GL_DEPTH_TEST);
+//        GL11.glDepthMask(true);
+        GL11.glEnable(GL11.GL_LIGHTING);
+
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
         GL11.glPopMatrix();
     }

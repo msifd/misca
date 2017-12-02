@@ -1,6 +1,7 @@
 package msifeed.mc.misca.crabs.battle;
 
-import net.minecraft.entity.player.EntityPlayer;
+import msifeed.mc.misca.crabs.EntityUtils;
+import net.minecraft.entity.EntityLivingBase;
 
 import java.io.Serializable;
 import java.util.UUID;
@@ -10,12 +11,11 @@ public class FighterContext implements Serializable {
     State state;
     long lastStateChange;
 
-    transient EntityPlayer player;
+    transient EntityLivingBase entity;
 
-    public FighterContext(EntityPlayer player) {
-        this.uuid = player.getUniqueID();
-        this.player = player;
-
+    public FighterContext(EntityLivingBase entity) {
+        this.uuid = EntityUtils.getUuid(entity);
+        this.entity = entity;
         updateState(State.ACTIVE);
     }
 
