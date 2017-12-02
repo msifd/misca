@@ -6,6 +6,8 @@ import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import msifeed.mc.gui.im.ImGui;
 import msifeed.mc.misca.crabs.battle.BattleManager;
+import msifeed.mc.misca.crabs.battle.BattleNetwork;
+import msifeed.mc.misca.crabs.battle.FighterAction;
 import msifeed.mc.misca.crabs.battle.FighterContext;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
@@ -34,8 +36,8 @@ public class CrabsRenderHandler extends Gui {
         ImGui imgui = ImGui.INSTANCE;
         imgui.newFrame();
         if (imgui.button(inBattle ? "Stop fight" : "Start fight", 5, 5)) {
-            if (inBattle) bm.leaveBattle(player.getUniqueID());
-            else bm.joinBattle(player);
+            FighterAction action = new FighterAction(inBattle ? FighterAction.Type.LEAVE : FighterAction.Type.JOIN);
+            BattleNetwork.INSTANCE.notifyServer(action);
         }
 
         Gson gson = new GsonBuilder().setPrettyPrinting().create();

@@ -51,7 +51,7 @@ public class FighterContextMessage implements IMessage, IMessageHandler<FighterC
 
     @Override
     public IMessage onMessage(FighterContextMessage message, MessageContext ctx) {
-        BattleManager.INSTANCE.applyUpdateFromServer(message.vctx);
+        BattleManager.INSTANCE.onUpdateFromServer(message.vctx);
         return null;
     }
 }

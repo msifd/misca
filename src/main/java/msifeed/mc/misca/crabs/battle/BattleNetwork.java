@@ -3,6 +3,8 @@ package msifeed.mc.misca.crabs.battle;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 
 import java.util.Collection;
@@ -14,6 +16,7 @@ public enum BattleNetwork {
 
     public void onInit(FMLInitializationEvent event) {
         network.registerMessage(FighterContextMessage.class, FighterContextMessage.class, 0, Side.CLIENT);
+        network.registerMessage(FighterActionMessage.class, FighterActionMessage.class, 1, Side.SERVER);
     }
 
     public void syncPlayer(EntityPlayerMP playerMP, Collection<FighterContext> toSync) {
@@ -22,5 +25,10 @@ public enum BattleNetwork {
 
     public void syncAll(Collection<FighterContext> toSync) {
         network.sendToAll(new FighterContextMessage(toSync));
+    }
+
+    @SideOnly(Side.CLIENT)
+    public void notifyServer(FighterAction action) {
+        network.sendToServer(new FighterActionMessage(action));
     }
 }

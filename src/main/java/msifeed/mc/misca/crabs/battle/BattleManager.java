@@ -48,16 +48,36 @@ public enum BattleManager {
         FighterContext ctx = new FighterContext(player);
         uuidToContext.put(ctx.uuid, ctx);
         toSync.add(ctx);
+
+        logger.info("{} is joined battle.", ctx.player.getDisplayName());
     }
 
     public void leaveBattle(UUID uuid) {
-        FighterContext context = uuidToContext.get(uuid);
-        if (context == null) return;
-        context.updateState(FighterContext.State.LEAVING);
+        FighterContext ctx = uuidToContext.get(uuid);
+        if (ctx == null) return;
+
+        ctx.updateState(FighterContext.State.LEAVING);
+        toSync.add(ctx);
+
+        logger.info("{} is leaving battle.", ctx.player.getDisplayName());
+    }
+
+    @SideOnly(Side.SERVER)
+    void onActionFromClient(EntityPlayerMP player, FighterAction action) {
+        FighterContext ctx = uuidToContext.get(player.getUniqueID());
+
+        if (ctx == null) {
+            if (action.type == FighterAction.Type.JOIN) joinBattle(player);
+            return;
+        }
+
+        if (ctx.state != FighterContext.State.LEAVING && action.type == FighterAction.Type.LEAVE) {
+            leaveBattle(ctx.uuid);
+        }
     }
 
     @SideOnly(Side.CLIENT)
-    void applyUpdateFromServer(ArrayList<FighterContext> vctx) {
+    void onUpdateFromServer(ArrayList<FighterContext> vctx) {
         for (FighterContext ctx : vctx) {
             if (ctx.isWaitedForLeave()) uuidToContext.remove(ctx.uuid);
             else {
@@ -72,9 +92,9 @@ public enum BattleManager {
         if (event.phase != TickEvent.Phase.END) return;
 
         long now = System.currentTimeMillis();
-        if (now - lastSync < 500) return;
-
+        if (now - lastSync < 500 || toSync.isEmpty()) return;
         lastSync = now;
+
         BattleNetwork.INSTANCE.syncAll(toSync);
         toSync.clear();
     }
