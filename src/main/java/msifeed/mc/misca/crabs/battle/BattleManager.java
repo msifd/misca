@@ -7,6 +7,7 @@ import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.PlayerEvent;
 import cpw.mods.fml.common.gameevent.TickEvent;
 import msifeed.mc.misca.crabs.EntityUtils;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -38,8 +39,16 @@ public enum BattleManager {
         return uuidToContext.containsKey(uuid);
     }
 
+    public boolean isBattling(Entity entity) {
+        return uuidToContext.containsKey(EntityUtils.getUuid(entity));
+    }
+
     public FighterContext getContext(UUID uuid) {
         return uuidToContext.get(uuid);
+    }
+
+    public FighterContext getContext(Entity entity) {
+        return uuidToContext.get(EntityUtils.getUuid(entity));
     }
 
     public Collection<FighterContext> getContexts() {
@@ -47,7 +56,7 @@ public enum BattleManager {
     }
 
     public void joinBattle(EntityLivingBase entity) {
-        if (uuidToContext.containsKey(EntityUtils.getUuid(entity))) return;
+        if (isBattling(entity)) return;
 
         FighterContext ctx = new FighterContext(entity);
         uuidToContext.put(ctx.uuid, ctx);
@@ -133,8 +142,8 @@ public enum BattleManager {
 
         // Ограничиваем получение урона бойцами
         EntityDamageSource source = (EntityDamageSource) event.source;
-        FighterContext attacker_ctx = uuidToContext.get(EntityUtils.getUuid(source.getEntity()));
-        FighterContext target_ctx = uuidToContext.get(EntityUtils.getUuid(event.entity));
+        FighterContext attacker_ctx = getContext(source.getEntity());
+        FighterContext target_ctx = getContext(event.entity);
         if (attacker_ctx != null && !attacker_ctx.canAttack() || attacker_ctx == null && target_ctx != null)
             event.setCanceled(true);
 

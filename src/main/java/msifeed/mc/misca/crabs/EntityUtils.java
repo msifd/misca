@@ -1,5 +1,6 @@
 package msifeed.mc.misca.crabs;
 
+import com.google.common.primitives.Bytes;
 import com.google.common.primitives.Ints;
 import cpw.mods.fml.common.FMLCommonHandler;
 import net.minecraft.client.Minecraft;
@@ -12,11 +13,13 @@ import net.minecraft.world.World;
 import java.util.UUID;
 
 public class EntityUtils {
-    private static final int UUID_SALT = 1337;
-
     public static UUID getUuid(Entity e) {
         if (e instanceof EntityPlayer) return e.getUniqueID();
-        else return UUID.nameUUIDFromBytes(Ints.toByteArray(UUID_SALT + e.getEntityId()));
+        else {
+            final byte[] worldSalt = Ints.toByteArray(e.worldObj.provider.dimensionId);
+            final byte[] entityId = Ints.toByteArray(e.getEntityId());
+            return UUID.nameUUIDFromBytes(Bytes.concat(worldSalt, entityId));
+        }
     }
 
     public static EntityLivingBase lookupPlayer(UUID uuid) {

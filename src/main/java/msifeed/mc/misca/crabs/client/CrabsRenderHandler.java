@@ -51,8 +51,7 @@ public class CrabsRenderHandler extends Gui {
     public void onRenderLiving(RenderLivingEvent.Post event) {
         EntityPlayer self = Minecraft.getMinecraft().thePlayer;
         if (event.entity == self) return;
-        if (!BattleManager.INSTANCE.isBattling(EntityUtils.getUuid(self))
-                || !BattleManager.INSTANCE.isBattling(EntityUtils.getUuid(event.entity)))
+        if (!BattleManager.INSTANCE.isBattling(self) || !BattleManager.INSTANCE.isBattling(event.entity))
             return;
 
         // Рендер плашки с режимом боя над энтити
