@@ -1,40 +1,65 @@
 package msifeed.mc.misca.crabs.battle;
 
 import msifeed.mc.misca.crabs.EntityUtils;
+import msifeed.mc.misca.crabs.actions.Action;
 import net.minecraft.entity.EntityLivingBase;
 
 import java.io.Serializable;
 import java.util.UUID;
 
 public class FighterContext implements Serializable {
-    UUID uuid;
-    State state;
-    long lastStateChange;
+    public UUID uuid;
+    public Status status;
+    public long lastStateChange;
+    public UUID control = null;
 
-    transient EntityLivingBase entity;
+    public Stage stage;
+    public Action action;
+    public boolean described;
+    public UUID target;
+
+    public transient EntityLivingBase entity;
 
     public FighterContext(EntityLivingBase entity) {
         this.uuid = EntityUtils.getUuid(entity);
         this.entity = entity;
-        updateState(State.ACTIVE);
+        updateStatus(Status.IDLE);
+        resetMove();
     }
 
-    public void updateState(State newState) {
-        this.state = newState;
+    public void resetMove() {
+        this.stage = Stage.ACT;
+        this.action = null;
+        this.described = false;
+        this.target = null;
+    }
+
+    public void updateStatus(Status status) {
+        this.status = status;
         this.lastStateChange = System.currentTimeMillis() / 1000;
+
+        resetMove();
+    }
+
+    public void updateAction(Action action) {
+        this.action = action;
+        this.described = false;
     }
 
     public boolean canAttack() {
-        return state == State.ACTIVE || state == State.DEFEND;
+        return action != null && described && stage != Stage.WAIT;
     }
 
-    public boolean isWaitedForLeave() {
-        final int LEAVING_WAIT = 5; // in secs
+    public boolean canLeaveNow() {
         final long now = System.currentTimeMillis() / 1000;
-        return state == FighterContext.State.LEAVING && (now - lastStateChange > LEAVING_WAIT);
+        return status == Status.LEAVING && (now - lastStateChange > BattleDefines.SECS_BEFORE_LEAVE_BATTLE);
     }
 
-    public enum State {
-        ACTIVE, ATTACK, DEFEND, KO_ED, DEAD, LEAVING;
+    public enum Status {
+        IDLE, ACTIVE, KO_ED, MISSING, LEAVING;
+    }
+
+    public enum Stage {
+        ACT, DEAL_DAMAGE, WAIT
     }
 }

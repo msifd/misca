@@ -17,6 +17,7 @@ import org.apache.commons.lang3.StringEscapeUtils;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 
 public class ItemBattleStick extends Item {
     public ItemBattleStick() {
@@ -39,7 +40,7 @@ public class ItemBattleStick extends Item {
 
     @Override
     public void addInformation(ItemStack stack, EntityPlayer player, List lines, boolean advanced) {
-        String desc = LanguageRegistry.instance().getStringLocalization("item.battle_flag.desc");
+        String desc = LanguageRegistry.instance().getStringLocalization("item.battle_stick.desc");
         desc = StringEscapeUtils.unescapeJava(desc);
         lines.addAll(Arrays.asList(desc.split("\n")));
     }
@@ -57,22 +58,20 @@ public class ItemBattleStick extends Item {
         return true;
     }
 
-    @Override
-    public ItemStack onItemRightClick(ItemStack itemStack, World world, EntityPlayer player) {
-        // TODO Контроль энтитей
-        return super.onItemRightClick(itemStack, world, player);
-    }
-
     @SubscribeEvent
     public void onEntityInteract(EntityInteractEvent event) {
         // Обработка только на сервере
-        // ПКМ палкой со сником по существу - исключение из битвы
+        // ПКМ палкой по существу:  со сником - исключение из битвы, без - контроль действий
         if (event.entityPlayer.worldObj.isRemote || !(event.target instanceof EntityLivingBase)) return;
 
         ItemStack itemStack = event.entityPlayer.getHeldItem();
-        if (itemStack == null || !(itemStack.getItem() instanceof ItemBattleStick) || !event.entityPlayer.isSneaking())
-            return;
+        if (itemStack == null || !(itemStack.getItem() instanceof ItemBattleStick)) return;
 
-        BattleManager.INSTANCE.leaveBattle(EntityUtils.getUuid(event.target));
+        if (event.entityPlayer.isSneaking()) {
+            BattleManager.INSTANCE.leaveBattle((EntityLivingBase) event.target, true);
+        }
+        else {
+            BattleManager.INSTANCE.toggleControl(event.entityPlayer, (EntityLivingBase) event.target);
+        }
     }
 }

@@ -35,15 +35,22 @@ public class CrabsRenderHandler extends Gui {
 
         ImGui imgui = ImGui.INSTANCE;
         imgui.newFrame();
+
         if (imgui.button(inBattle ? "Stop fight" : "Start fight", 5, 5)) {
             FighterAction action = new FighterAction(inBattle ? FighterAction.Type.LEAVE : FighterAction.Type.JOIN);
             BattleNetwork.INSTANCE.notifyServer(action);
         }
 
+        if (inBattle) {
+            if (imgui.button("Punch", 5, 30)) {
+                BattleNetwork.INSTANCE.notifyServer(new FighterAction(FighterAction.Type.MOVE));
+            }
+        }
+
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         String contextStr = gson.toJson(BattleManager.INSTANCE.getContexts());
 
-        String debugInfo = String.format("inBattle: %b\ncontexts: %s", inBattle, contextStr);
+        String debugInfo = String.format("inBattle: %b\nme: %s\ncontexts: %s", inBattle, player.getUniqueID(), contextStr);
         imgui.labelMultiline(debugInfo, 120, 5);
     }
 
@@ -51,8 +58,13 @@ public class CrabsRenderHandler extends Gui {
     public void onRenderLiving(RenderLivingEvent.Post event) {
         EntityPlayer self = Minecraft.getMinecraft().thePlayer;
         if (event.entity == self) return;
-        if (!BattleManager.INSTANCE.isBattling(self) || !BattleManager.INSTANCE.isBattling(event.entity))
-            return;
+
+        final FighterContext self_ctx = BattleManager.INSTANCE.getContext(self.getUniqueID());
+        final FighterContext entity_ctx = BattleManager.INSTANCE.getContext(event.entity);
+        if (self_ctx == null || entity_ctx == null) return;
+
+        final boolean isUnderMyControl = self_ctx.control == entity_ctx.uuid;
+        final int color = isUnderMyControl ? 0x808020 : 0x802020;
 
         // Рендер плашки с режимом боя над энтити
         RenderManager renderManager = RenderManager.instance;
@@ -76,7 +88,8 @@ public class CrabsRenderHandler extends Gui {
 
         Tessellator tessellator = Tessellator.instance;
         tessellator.startDrawingQuads();
-        tessellator.setColorRGBA_F(0.5F, 0.1F, 0.1F, 0.8F);
+        tessellator.setColorRGBA_I(color, 200);
+//        tessellator.setColorRGBA_F(0.5F, 0.1F, 0.1F, 0.8F);
         tessellator.addVertex(-icon_half, -icon_half, 0.0D);
         tessellator.addVertex(-icon_half, icon_half, 0.0D);
         tessellator.addVertex(icon_half, icon_half, 0.0D);

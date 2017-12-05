@@ -10,6 +10,6 @@ public class FighterAction implements Serializable {
     }
 
     public enum Type {
-        JOIN, LEAVE
+        JOIN, MOVE, LEAVE
     }
 }
