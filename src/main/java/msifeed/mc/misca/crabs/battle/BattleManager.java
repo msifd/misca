@@ -13,6 +13,7 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.EntityDamageSource;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.ServerChatEvent;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
@@ -31,11 +32,12 @@ public enum BattleManager {
     private Logger logger = LogManager.getLogger("Crabs.Battle");
     private HashMap<UUID, FighterContext> uuidToContext = new HashMap<>();
 
-    private long lastSync = 0;
+    private long lastUpdate = 0;
     private ArrayList<FighterContext> toSync = new ArrayList<>();
 
     public void onInit(FMLInitializationEvent event) {
         BattleNetwork.INSTANCE.onInit(event);
+        MinecraftForge.EVENT_BUS.register(INSTANCE);
         FMLCommonHandler.instance().bus().register(INSTANCE);
     }
 
@@ -58,7 +60,7 @@ public enum BattleManager {
     public void joinBattle(EntityLivingBase entity) {
         if (isBattling(entity)) return;
 
-        FighterContext ctx = new FighterContext(entity);
+        final FighterContext ctx = new FighterContext(entity);
         uuidToContext.put(ctx.uuid, ctx);
         toSync.add(ctx);
 
@@ -74,42 +76,44 @@ public enum BattleManager {
         if (controller == null || actor == null) return;
 
         // Выключаем контроль при повторном вызове или устанавливаем новую марионетку
-         controller.control = (controller.control == actor.uuid) ? null : actor.uuid;
+        controller.control = (controller.control == actor.uuid) ? null : actor.uuid;
     }
 
     public void leaveBattle(EntityLivingBase entity, boolean instant) {
-        FighterContext ctx = uuidToContext.get(EntityUtils.getUuid(entity));
+        final FighterContext ctx = uuidToContext.get(EntityUtils.getUuid(entity));
         if (ctx == null) return;
 
         // Энтити выходят из боя мгновенно
         if (instant || !(ctx.entity instanceof EntityPlayer)) {
             removeFromBattle(ctx);
-        }
-        else {
+        } else {
             ctx.updateStatus(FighterContext.Status.LEAVING);
             toSync.add(ctx);
             logger.info("{} is leaving the battle.", ctx.entity.getCommandSenderName());
         }
     }
 
+    public void resetFighter(EntityLivingBase entity) {
+        final FighterContext ctx = BattleManager.INSTANCE.getContext(entity);
+        if (ctx == null) return;
+
+        ctx.reset();
+        toSync.add(ctx);
+        logger.info("{} has been reseted.", ctx.entity.getCommandSenderName());
+    }
+
     private void removeFromBattle(FighterContext ctx) {
-        ctx.updateStatus(FighterContext.Status.LEAVING);
-        ctx.lastStateChange = 0;
+        ctx.updateStatus(FighterContext.Status.REMOVED);
         uuidToContext.remove(ctx.uuid);
 
-        if (ctx.target != null) {
-            // TODO unbind targets, controlls
-        }
+        // TODO unbind targets, controlls
 
         toSync.add(ctx);
-        logger.info("{} remove from the battle.", ctx.entity.getCommandSenderName());
+        logger.info("{} removed from the battle.", ctx.entity.getCommandSenderName());
     }
 
     private void syncBattleList() {
-        long now = System.currentTimeMillis();
-        if (now - lastSync < 500 || toSync.isEmpty()) return;
-        lastSync = now;
-
+        if (toSync.isEmpty()) return;
         BattleNetwork.INSTANCE.syncAll(toSync);
         toSync.clear();
     }
@@ -122,13 +126,10 @@ public enum BattleManager {
             return;
         }
 
-        FighterContext actor = ctx.control == null ? ctx : getContext(ctx.control);
-
         switch (action.type) {
             case MOVE:
+                FighterContext actor = ctx.control == null ? ctx : getContext(ctx.control);
                 actor.updateAction(Actions.point_hit);
-//                FighterContext target = getContext(actor.target);
-//                ActionManager.INSTANCE.doAction(actor, target);
                 break;
             case LEAVE:
                 if (ctx.status != FighterContext.Status.LEAVING) leaveBattle(player, false);
@@ -138,12 +139,12 @@ public enum BattleManager {
 
     void onUpdateFromServer(ArrayList<FighterContext> vctx) {
         for (FighterContext ctx : vctx) {
-            if (ctx.canLeaveNow()) {
+            if (ctx.status == FighterContext.Status.REMOVED) {
                 uuidToContext.remove(ctx.uuid);
                 continue;
             }
 
-            FighterContext oldCtx = uuidToContext.get(ctx.uuid);
+            final FighterContext oldCtx = uuidToContext.get(ctx.uuid);
             if (oldCtx != null && oldCtx.entity != null) ctx.entity = oldCtx.entity;
             else ctx.entity = EntityUtils.lookupPlayer(ctx.uuid);
 
@@ -154,6 +155,13 @@ public enum BattleManager {
     @SubscribeEvent
     public void onServerTick(TickEvent.ServerTickEvent event) {
         if (event.phase != TickEvent.Phase.END) return;
+
+        final int UPDATE_DELTA_MS = 500;
+        final long now = System.currentTimeMillis();
+        if (now - lastUpdate < UPDATE_DELTA_MS) return;
+        lastUpdate = now;
+
+        ActionManager.INSTANCE.finalizeMoves();
         syncBattleList();
     }
 
@@ -162,12 +170,22 @@ public enum BattleManager {
         final FighterContext ctx = getContext(event.entityLiving);
         if (ctx == null) return;
 
-        if (ctx.canLeaveNow()) removeFromBattle(ctx);
+        final long now = System.currentTimeMillis() / 1000;
+        final long statusAge = now - ctx.lastStateChange;
+
+        switch (ctx.status) {
+            case LEAVING:
+                if (statusAge >= BattleDefines.SECS_BEFORE_LEAVE_BATTLE) removeFromBattle(ctx);
+                break;
+            case DEAL_DAMAGE:
+                if (statusAge >= BattleDefines.SECS_TO_DEAL_DAMAGE) ActionManager.INSTANCE.stopDealingDamage(ctx);
+                break;
+        }
     }
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public void onDamage(LivingAttackEvent event) {
-        if (!(event.entity instanceof EntityPlayer) || !(event.source instanceof EntityDamageSource)) return;
+        if (!(event.source instanceof EntityDamageSource)) return;
 
         final EntityDamageSource damage = (EntityDamageSource) event.source;
         final FighterContext attacker_ctx = getContext((EntityLivingBase) damage.getEntity());
@@ -176,17 +194,25 @@ public enum BattleManager {
         // Урон проходит как обычно только когда никто не дерется
         if (attacker_ctx == null && target_ctx == null) return;
 
+        // Пришел урон по результатам хода
+        if (damage instanceof CrabsDamage) return;
+
         // Отменяем получение урона. Его мы вернем после хода... может быть
         event.setCanceled(true);
 
         // Если в бою только одна сторона, то урон не возвращаем
         if (attacker_ctx == null || target_ctx == null) return;
 
-        // Если атакующий еще не должен бить (завершать ход), то игнорим
-        if (!attacker_ctx.canAttack()) return;
+        // Хотя бить может и закулисье, правила выдачи урона считаются для марионетки
+        final FighterContext actor = attacker_ctx.control == null ? attacker_ctx : getContext(attacker_ctx.control);
 
-        FighterContext actor = attacker_ctx.control == null ? attacker_ctx : getContext(attacker_ctx.control);
-        ActionManager.INSTANCE.passDamage(actor, damage);
+        // Если атакующий еще не должен бить (завершать ход), то игнорим
+        if (!actor.canAttack()) return;
+
+        // После того как цель определена можно атаковать только её
+        if (actor.target != null && actor.target != target_ctx.uuid) return;
+
+        ActionManager.INSTANCE.dealDamage(actor, target_ctx, damage, event.ammount);
     }
 
     @SubscribeEvent
@@ -204,21 +230,14 @@ public enum BattleManager {
     public void onPlayerLoggedOut(PlayerEvent.PlayerLoggedOutEvent event) {
         final FighterContext ctx = uuidToContext.get(event.player.getUniqueID());
         if (ctx == null) return;
-
-        // Сохраняем контекст 10 минут
-        final int KEEP_CTX_TIME = 600;
-        ctx.updateStatus(FighterContext.Status.LEAVING);
-        ctx.lastStateChange -= KEEP_CTX_TIME;
-        toSync.add(ctx);
+        removeFromBattle(ctx);
     }
 
     @SubscribeEvent
     public void onEntityDeath(LivingDeathEvent event) {
         final FighterContext ctx = getContext(event.entityLiving);
         if (ctx == null) return;
-
-        // TODO unbind targets
-        leaveBattle(event.entityLiving, true);
+        removeFromBattle(ctx);
     }
 
     @SubscribeEvent
@@ -231,6 +250,7 @@ public enum BattleManager {
         final int words = cleanedMsg.split("\\s+").length;
         if (words < BattleDefines.MIN_WORDS_IN_MOVE_DESC) return;
 
-        ctx.described = true;
+        final FighterContext actor = ctx.control == null ? ctx : getContext(ctx.control);
+        actor.described = true;
     }
 }

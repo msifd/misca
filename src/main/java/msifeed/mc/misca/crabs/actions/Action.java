@@ -3,17 +3,17 @@ package msifeed.mc.misca.crabs.actions;
 import msifeed.mc.misca.crabs.rules.Effect;
 import msifeed.mc.misca.crabs.rules.Roll;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class Action {
     public String name;
     public Type type;
-    public LinkedList<Roll> rolls = new LinkedList<>();
-    public LinkedList<Effect> target_effects = new LinkedList<>();
-    public LinkedList<Effect> self_effects = new LinkedList<>();
-    public LinkedList<String> tags = new LinkedList<>();
+    public ArrayList<Roll> rolls = new ArrayList<>();
+    public ArrayList<Effect> target_effects = new ArrayList<>();
+    public ArrayList<Effect> self_effects = new ArrayList<>();
+    public ArrayList<String> tags = new ArrayList<>();
 
     public Action(String name, Type type) {
         this.name = name;

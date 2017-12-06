@@ -13,32 +13,31 @@ public class FighterContext implements Serializable {
     public long lastStateChange;
     public UUID control = null;
 
-    public Stage stage;
-    public Action action;
     public boolean described;
     public UUID target;
+    public float damageDealt;
 
-    public transient EntityLivingBase entity;
+    public transient EntityLivingBase entity; // Находится по uuid'у
+    public transient Action action; // Сериализуется как название действия
 
-    public FighterContext(EntityLivingBase entity) {
+    FighterContext(EntityLivingBase entity) {
         this.uuid = EntityUtils.getUuid(entity);
         this.entity = entity;
-        updateStatus(Status.IDLE);
-        resetMove();
+        reset();
     }
 
-    public void resetMove() {
-        this.stage = Stage.ACT;
+    public void reset() {
+        updateStatus(Status.ACT);
+        this.control = null;
         this.action = null;
         this.described = false;
         this.target = null;
+        this.damageDealt = 0;
     }
 
     public void updateStatus(Status status) {
         this.status = status;
         this.lastStateChange = System.currentTimeMillis() / 1000;
-
-        resetMove();
     }
 
     public void updateAction(Action action) {
@@ -47,19 +46,10 @@ public class FighterContext implements Serializable {
     }
 
     public boolean canAttack() {
-        return action != null && described && stage != Stage.WAIT;
-    }
-
-    public boolean canLeaveNow() {
-        final long now = System.currentTimeMillis() / 1000;
-        return status == Status.LEAVING && (now - lastStateChange > BattleDefines.SECS_BEFORE_LEAVE_BATTLE);
+        return action != null && described && status != Status.WAIT;
     }
 
     public enum Status {
-        IDLE, ACTIVE, KO_ED, MISSING, LEAVING;
-    }
-
-    public enum Stage {
-        ACT, DEAL_DAMAGE, WAIT
+        ACT, DEAL_DAMAGE, WAIT, KO_ED, LEAVING, REMOVED
     }
 }

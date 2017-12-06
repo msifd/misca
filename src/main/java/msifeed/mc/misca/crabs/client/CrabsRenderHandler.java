@@ -78,8 +78,6 @@ public class CrabsRenderHandler extends Gui {
         GL11.glScalef(-f1, -f1, f1);
 
         GL11.glDisable(GL11.GL_LIGHTING);
-//        GL11.glDisable(GL11.GL_DEPTH_TEST);
-//        GL11.glDepthMask(false);
         GL11.glEnable(GL11.GL_BLEND);
         OpenGlHelper.glBlendFunc(770, 771, 1, 0);
         GL11.glDisable(GL11.GL_TEXTURE_2D);
@@ -89,7 +87,6 @@ public class CrabsRenderHandler extends Gui {
         Tessellator tessellator = Tessellator.instance;
         tessellator.startDrawingQuads();
         tessellator.setColorRGBA_I(color, 200);
-//        tessellator.setColorRGBA_F(0.5F, 0.1F, 0.1F, 0.8F);
         tessellator.addVertex(-icon_half, -icon_half, 0.0D);
         tessellator.addVertex(-icon_half, icon_half, 0.0D);
         tessellator.addVertex(icon_half, icon_half, 0.0D);
@@ -98,8 +95,6 @@ public class CrabsRenderHandler extends Gui {
 
         GL11.glEnable(GL11.GL_TEXTURE_2D);
         GL11.glDisable(GL11.GL_BLEND);
-//        GL11.glEnable(GL11.GL_DEPTH_TEST);
-//        GL11.glDepthMask(true);
         GL11.glEnable(GL11.GL_LIGHTING);
 
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);

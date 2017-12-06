@@ -13,7 +13,7 @@ misca.crabs.action.magic=Магия
 misca.calculator.window.custom_dice=Бросить d10 + MOD
 
 item.battle_stick.name=Палка битвы
-item.battle_stick.desc=Воздействует на существо:\nЛКМ - драться!\nShift+Right-click - покурить.\nRight-click - взять/отпустить управление.
+item.battle_stick.desc=Воздействует на существо:\nЛКМ - выйти раз на раз\nShift+ЛКМ - уточнить мотивы бойца\nПКМ - переключение командования\nShift+ПКМ - отпустить покурить
 
 misca.lobby.gui.create_lobby=Создать лобби
 misca.lobby.msg.you_are_already_in_lobby=Вы уже в лобби!

@@ -2,8 +2,8 @@ package msifeed.mc.misca.crabs.tools;
 
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.registry.LanguageRegistry;
-import msifeed.mc.misca.crabs.EntityUtils;
 import msifeed.mc.misca.crabs.battle.BattleManager;
+import msifeed.mc.misca.crabs.battle.FighterContext;
 import msifeed.mc.misca.things.MiscaThings;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
@@ -17,7 +17,6 @@ import org.apache.commons.lang3.StringEscapeUtils;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.UUID;
 
 public class ItemBattleStick extends Item {
     public ItemBattleStick() {
@@ -48,12 +47,18 @@ public class ItemBattleStick extends Item {
     @Override
     public boolean onLeftClickEntity(ItemStack stack, EntityPlayer player, Entity target) {
         // Обработка только на сервере
-        // ЛКМ палкой по существу - добавление в битву
+        // ЛКМ палкой по существу: со сником - сброс, без - добавление в битву
         if (player.worldObj.isRemote || !(target instanceof EntityLivingBase)) return false;
 
-        EntityLivingBase entity = (EntityLivingBase) target;
-        if (entity instanceof EntityLiving) ((EntityLiving) entity).playLivingSound();
-        BattleManager.INSTANCE.joinBattle(entity);
+        final EntityLivingBase entity = (EntityLivingBase) target;
+
+        if (player.isSneaking()) {
+            BattleManager.INSTANCE.resetFighter(entity);
+        }
+        else {
+            if (entity instanceof EntityLiving) ((EntityLiving) entity).playLivingSound();
+            BattleManager.INSTANCE.joinBattle(entity);
+        }
 
         return true;
     }
@@ -64,7 +69,7 @@ public class ItemBattleStick extends Item {
         // ПКМ палкой по существу:  со сником - исключение из битвы, без - контроль действий
         if (event.entityPlayer.worldObj.isRemote || !(event.target instanceof EntityLivingBase)) return;
 
-        ItemStack itemStack = event.entityPlayer.getHeldItem();
+        final ItemStack itemStack = event.entityPlayer.getHeldItem();
         if (itemStack == null || !(itemStack.getItem() instanceof ItemBattleStick)) return;
 
         if (event.entityPlayer.isSneaking()) {

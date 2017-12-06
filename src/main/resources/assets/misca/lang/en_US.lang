@@ -13,7 +13,7 @@ misca.crabs.action.magic=Магия
 misca.calculator.window.custom_dice=Бросить d10 + MOD
 
 item.battle_stick.name=Battle stick
-item.battle_stick.desc=Effects clicked entity:\nLeft-click - battle on.\nShift+Right-click - battle off.\nRight-click - take/release control.
+item.battle_stick.desc=Effects clicked entity:\nLeft-click - battle on\nShift+Left-click - reset fighter\nRight-click - take/release control\nShift+Right-click - battle off
 
 misca.lobby.gui.create_lobby=Create lobby
 misca.lobby.msg.you_are_already_in_lobby=You are already in lobby!
