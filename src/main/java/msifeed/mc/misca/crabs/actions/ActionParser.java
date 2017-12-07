@@ -2,7 +2,7 @@ package msifeed.mc.misca.crabs.actions;
 
 import msifeed.mc.misca.crabs.character.Stats;
 import msifeed.mc.misca.crabs.rules.Effect;
-import msifeed.mc.misca.crabs.rules.Roll;
+import msifeed.mc.misca.crabs.rules.Modifier;
 
 import java.util.Arrays;
 import java.util.stream.Collectors;
@@ -14,22 +14,22 @@ public class ActionParser {
         if (parts.length != 6) throw new ParseException("Liner action missing blocks!");
 
         Action act = new Action(parts[0], Action.Type.valueOf(parts[1].toUpperCase()));
-        act.rolls.addAll(Stream.of(parts[2].split(",")).map(ActionParser::parseRoll).collect(Collectors.toList()));
-        act.rolls.addAll(Stream.of(parts[3].split(",")).map(ActionParser::parseRoll).collect(Collectors.toList()));
-        act.rolls.addAll(Stream.of(parts[4].split(",")).map(ActionParser::parseRoll).collect(Collectors.toList()));
+        act.modifiers.addAll(Stream.of(parts[2].split(",")).map(ActionParser::parseRoll).collect(Collectors.toList()));
+        act.modifiers.addAll(Stream.of(parts[3].split(",")).map(ActionParser::parseRoll).collect(Collectors.toList()));
+        act.modifiers.addAll(Stream.of(parts[4].split(",")).map(ActionParser::parseRoll).collect(Collectors.toList()));
         act.tags.addAll(Arrays.asList(parts[5].split(",")));
 
         return act;
     }
 
-    public static Roll parseRoll(String str) {
+    public static Modifier parseRoll(String str) {
         switch (str.toLowerCase()) {
             case "g30":
-                return new Roll.DiceG30();
+                return new Modifier.DiceG30();
             case "g30+":
-                return new Roll.DiceG30Plus();
+                return new Modifier.DiceG30Plus();
             case "g30-":
-                return new Roll.DiceG30Minus();
+                return new Modifier.DiceG30Minus();
 
             case "str":
             case "ref":
@@ -37,11 +37,11 @@ public class ActionParser {
             case "det":
             case "int":
             case "mag":
-                return new Roll.Stat(Stats.valueOf(str.toUpperCase()));
+                return new Modifier.Stat(Stats.valueOf(str.toUpperCase()));
 
             default:
                 try {
-                    return new Roll.Const(Integer.parseInt(str));
+                    return new Modifier.Const(Integer.parseInt(str));
                 } catch (NumberFormatException e) {
                     throw new ParseException("Unknown Roll: '" + str + "'!");
                 }

@@ -4,11 +4,12 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import msifeed.mc.gui.im.ImGui;
-import msifeed.mc.misca.crabs.EntityUtils;
+import msifeed.mc.misca.crabs.actions.Actions;
 import msifeed.mc.misca.crabs.battle.BattleManager;
 import msifeed.mc.misca.crabs.battle.BattleNetwork;
-import msifeed.mc.misca.crabs.battle.FighterAction;
 import msifeed.mc.misca.crabs.battle.FighterContext;
+import msifeed.mc.misca.crabs.battle.FighterMessage;
+import msifeed.mc.misca.crabs.character.Stats;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.renderer.OpenGlHelper;
@@ -37,13 +38,19 @@ public class CrabsRenderHandler extends Gui {
         imgui.newFrame();
 
         if (imgui.button(inBattle ? "Stop fight" : "Start fight", 5, 5)) {
-            FighterAction action = new FighterAction(inBattle ? FighterAction.Type.LEAVE : FighterAction.Type.JOIN);
-            BattleNetwork.INSTANCE.notifyServer(action);
+            FighterMessage message = new FighterMessage(inBattle ? FighterMessage.Type.LEAVE : FighterMessage.Type.JOIN);
+            BattleNetwork.INSTANCE.notifyServer(message);
         }
 
         if (inBattle) {
             if (imgui.button("Punch", 5, 30)) {
-                BattleNetwork.INSTANCE.notifyServer(new FighterAction(FighterAction.Type.MOVE));
+                BattleNetwork.INSTANCE.notifyServer(new FighterMessage(Actions.test_punch));
+            }
+            if (imgui.button("Fireball", 5, 55)) {
+                BattleNetwork.INSTANCE.notifyServer(new FighterMessage(Actions.test_fireball));
+            }
+            if (imgui.button("Roll ERP", 5, 80)) {
+                BattleNetwork.INSTANCE.notifyServer(new FighterMessage(Stats.DET));
             }
         }
 

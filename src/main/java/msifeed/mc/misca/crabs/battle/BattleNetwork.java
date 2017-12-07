@@ -15,7 +15,7 @@ public enum BattleNetwork {
 
     public void onInit(FMLInitializationEvent event) {
         network.registerMessage(FighterContextMessage.class, FighterContextMessage.class, 0, Side.CLIENT);
-        network.registerMessage(FighterActionMessage.class, FighterActionMessage.class, 1, Side.SERVER);
+        network.registerMessage(FighterMessage.class, FighterMessage.class, 1, Side.SERVER);
     }
 
     public void syncPlayer(EntityPlayerMP playerMP, Collection<FighterContext> toSync) {
@@ -27,7 +27,7 @@ public enum BattleNetwork {
     }
 
     @SideOnly(Side.CLIENT)
-    public void notifyServer(FighterAction action) {
-        network.sendToServer(new FighterActionMessage(action));
+    public void notifyServer(FighterMessage message) {
+        network.sendToServer(message);
     }
 }

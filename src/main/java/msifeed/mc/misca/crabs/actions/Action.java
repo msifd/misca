@@ -1,7 +1,7 @@
 package msifeed.mc.misca.crabs.actions;
 
 import msifeed.mc.misca.crabs.rules.Effect;
-import msifeed.mc.misca.crabs.rules.Roll;
+import msifeed.mc.misca.crabs.rules.Modifier;
 
 import java.util.ArrayList;
 import java.util.stream.Collectors;
@@ -10,7 +10,7 @@ import java.util.stream.Stream;
 public class Action {
     public String name;
     public Type type;
-    public ArrayList<Roll> rolls = new ArrayList<>();
+    public ArrayList<Modifier> modifiers = new ArrayList<>();
     public ArrayList<Effect> target_effects = new ArrayList<>();
     public ArrayList<Effect> self_effects = new ArrayList<>();
     public ArrayList<String> tags = new ArrayList<>();
@@ -26,7 +26,7 @@ public class Action {
         Action act = (Action) obj;
         return this.name.equals(act.name)
                 && this.type.equals(act.type)
-                && this.rolls.equals(act.rolls)
+                && this.modifiers.equals(act.modifiers)
                 && this.target_effects.equals(act.target_effects)
                 && this.self_effects.equals(act.self_effects)
                 && this.tags.equals(act.tags);
@@ -34,7 +34,7 @@ public class Action {
 
     @Override
     public String toString() {
-        String rolls = this.rolls.stream().map(Object::toString).collect(Collectors.joining(","));
+        String rolls = this.modifiers.stream().map(Object::toString).collect(Collectors.joining(","));
         String teffs = this.target_effects.stream().map(Object::toString).collect(Collectors.joining(","));
         String seffs = this.self_effects.stream().map(Object::toString).collect(Collectors.joining(","));
         String tags = this.tags.stream().collect(Collectors.joining(","));

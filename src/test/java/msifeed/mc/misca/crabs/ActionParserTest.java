@@ -9,7 +9,7 @@ import msifeed.mc.misca.crabs.actions.ActionJsonDeserializer;
 import msifeed.mc.misca.crabs.actions.ActionParser;
 import msifeed.mc.misca.crabs.character.Stats;
 import msifeed.mc.misca.crabs.rules.Effect;
-import msifeed.mc.misca.crabs.rules.Roll;
+import msifeed.mc.misca.crabs.rules.Modifier;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -22,12 +22,12 @@ import static org.junit.Assert.assertEquals;
 public class ActionParserTest {
     private static Action getPointHitAction() {
         Action act = new Action("point_hit", Action.Type.MELEE);
-        Collections.addAll(act.rolls,
-                new Roll.DiceG30Plus(),
-                new Roll.Stat(Stats.STR),
-                new Roll.Stat(Stats.PER),
-                new Roll.Stat(Stats.INT),
-                new Roll.Const(-5));
+        Collections.addAll(act.modifiers,
+                new Modifier.DiceG30Plus(),
+                new Modifier.Stat(Stats.STR),
+                new Modifier.Stat(Stats.PER),
+                new Modifier.Stat(Stats.INT),
+                new Modifier.Const(-5));
         Collections.addAll(act.target_effects,
                 new Effect.Damage());
         return act;

@@ -13,6 +13,7 @@ public class FighterContext implements Serializable {
     public long lastStateChange;
     public UUID control = null;
 
+    public String action_name;
     public boolean described;
     public UUID target;
     public float damageDealt;
@@ -30,6 +31,7 @@ public class FighterContext implements Serializable {
         updateStatus(Status.ACT);
         this.control = null;
         this.action = null;
+        this.action_name = null;
         this.described = false;
         this.target = null;
         this.damageDealt = 0;
@@ -42,6 +44,7 @@ public class FighterContext implements Serializable {
 
     public void updateAction(Action action) {
         this.action = action;
+        this.action_name = action.name;
         this.described = false;
     }
 

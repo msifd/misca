@@ -4,18 +4,11 @@ import msifeed.mc.misca.crabs.calc.DiceMath;
 import msifeed.mc.misca.crabs.character.Character;
 import msifeed.mc.misca.crabs.character.Stats;
 
-public abstract class Roll {
-    private int cache;
-
-    protected abstract int value(Character c);
-
-    public int roll(Character c) {
-        return this.cache = value(c);
+public abstract class Modifier {
+    Modifier() {
     }
 
-    public int getRoll() {
-        return cache;
-    }
+    public abstract int mod(Character c);
 
     public boolean isDice() {
         return false;
@@ -28,8 +21,9 @@ public abstract class Roll {
 
     // // // // // // // //
 
-    public static class DiceG30 extends Roll {
-        protected int value(Character c) {
+    public static class DiceG30 extends Modifier {
+        @Override
+        public int mod(Character c) {
             return DiceMath.g30();
         }
 
@@ -45,7 +39,7 @@ public abstract class Roll {
     }
 
     public static class DiceG30Plus extends DiceG30 {
-        protected int value(Character c) {
+        public int mod(Character c) {
             return DiceMath.g30_plus();
         }
 
@@ -56,7 +50,8 @@ public abstract class Roll {
     }
 
     public static class DiceG30Minus extends DiceG30 {
-        protected int value(Character c) {
+        @Override
+        public int mod(Character c) {
             return DiceMath.g30_minus();
         }
 
@@ -66,7 +61,7 @@ public abstract class Roll {
         }
     }
 
-    public static class Stat extends Roll {
+    public static class Stat extends Modifier {
         private final Stats stat;
 
         public Stat(Stats stat) {
@@ -74,7 +69,7 @@ public abstract class Roll {
         }
 
         @Override
-        protected int value(Character c) {
+        public int mod(Character c) {
             return c.stat(stat);
         }
 
@@ -89,7 +84,7 @@ public abstract class Roll {
         }
     }
 
-    public static class Const extends Roll {
+    public static class Const extends Modifier {
         private final int constant;
 
         public Const(int c) {
@@ -97,7 +92,7 @@ public abstract class Roll {
         }
 
         @Override
-        protected int value(Character c) {
+        public int mod(Character c) {
             return constant;
         }
 

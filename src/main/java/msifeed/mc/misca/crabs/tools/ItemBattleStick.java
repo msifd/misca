@@ -3,7 +3,6 @@ package msifeed.mc.misca.crabs.tools;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.registry.LanguageRegistry;
 import msifeed.mc.misca.crabs.battle.BattleManager;
-import msifeed.mc.misca.crabs.battle.FighterContext;
 import msifeed.mc.misca.things.MiscaThings;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
@@ -54,8 +53,7 @@ public class ItemBattleStick extends Item {
 
         if (player.isSneaking()) {
             BattleManager.INSTANCE.resetFighter(entity);
-        }
-        else {
+        } else {
             if (entity instanceof EntityLiving) ((EntityLiving) entity).playLivingSound();
             BattleManager.INSTANCE.joinBattle(entity);
         }
@@ -74,8 +72,7 @@ public class ItemBattleStick extends Item {
 
         if (event.entityPlayer.isSneaking()) {
             BattleManager.INSTANCE.leaveBattle((EntityLivingBase) event.target, true);
-        }
-        else {
+        } else {
             BattleManager.INSTANCE.toggleControl(event.entityPlayer, (EntityLivingBase) event.target);
         }
     }

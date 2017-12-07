@@ -7,8 +7,6 @@ import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.PlayerEvent;
 import cpw.mods.fml.common.gameevent.TickEvent;
 import msifeed.mc.misca.crabs.EntityUtils;
-import msifeed.mc.misca.crabs.actions.ActionManager;
-import msifeed.mc.misca.crabs.actions.Actions;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -97,16 +95,30 @@ public enum BattleManager {
         final FighterContext ctx = BattleManager.INSTANCE.getContext(entity);
         if (ctx == null) return;
 
+        unbindFighter(ctx.uuid);
         ctx.reset();
         toSync.add(ctx);
         logger.info("{} has been reseted.", ctx.entity.getCommandSenderName());
+    }
+
+    private void unbindFighter(UUID fighter) {
+        for (FighterContext ctx : uuidToContext.values()) {
+            if (ctx.control == fighter) {
+                ctx.control = null;
+                toSync.add(ctx);
+            }
+            if (ctx.target == fighter) {
+                ctx.target = null;
+                toSync.add(ctx);
+            }
+        }
     }
 
     private void removeFromBattle(FighterContext ctx) {
         ctx.updateStatus(FighterContext.Status.REMOVED);
         uuidToContext.remove(ctx.uuid);
 
-        // TODO unbind targets, controlls
+        unbindFighter(ctx.uuid);
 
         toSync.add(ctx);
         logger.info("{} removed from the battle.", ctx.entity.getCommandSenderName());
@@ -118,18 +130,21 @@ public enum BattleManager {
         toSync.clear();
     }
 
-    void onActionFromClient(EntityPlayerMP player, FighterAction action) {
+    void onMessageFromClient(EntityPlayerMP player, FighterMessage message) {
         FighterContext ctx = uuidToContext.get(player.getUniqueID());
 
         if (ctx == null) {
-            if (action.type == FighterAction.Type.JOIN) joinBattle(player);
+            if (message.type == FighterMessage.Type.JOIN) joinBattle(player);
             return;
         }
 
-        switch (action.type) {
-            case MOVE:
+        switch (message.type) {
+            case ACTION:
                 FighterContext actor = ctx.control == null ? ctx : getContext(ctx.control);
-                actor.updateAction(Actions.point_hit);
+                actor.updateAction(message.action);
+                break;
+            case CALC:
+                // TODO
                 break;
             case LEAVE:
                 if (ctx.status != FighterContext.Status.LEAVING) leaveBattle(player, false);

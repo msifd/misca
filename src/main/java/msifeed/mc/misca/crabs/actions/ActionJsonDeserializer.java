@@ -15,7 +15,7 @@ public class ActionJsonDeserializer implements JsonDeserializer<Action> {
         RawAction raw = context.deserialize(json, RawAction.class);
 
         Action act = new Action(raw.name, Action.Type.valueOf(raw.type.toUpperCase()));
-        act.rolls.addAll(raw.rolls.stream().map(ActionParser::parseRoll).collect(Collectors.toList()));
+        act.modifiers.addAll(raw.rolls.stream().map(ActionParser::parseRoll).collect(Collectors.toList()));
         act.target_effects.addAll(raw.target_effects.stream().map(ActionParser::parseEffect).collect(Collectors.toList()));
         act.self_effects.addAll(raw.self_effects.stream().map(ActionParser::parseEffect).collect(Collectors.toList()));
         act.tags.addAll(raw.tags);
