@@ -7,6 +7,7 @@ import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.PlayerEvent;
 import cpw.mods.fml.common.gameevent.TickEvent;
 import msifeed.mc.misca.crabs.EntityUtils;
+import msifeed.mc.misca.crabs.rules.Rules;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -144,7 +145,8 @@ public enum BattleManager {
                 actor.updateAction(message.action);
                 break;
             case CALC:
-                // TODO
+                // FIXME modifier
+                Rules.rollSingleStat(player, message.stat, 0);
                 break;
             case LEAVE:
                 if (ctx.status != FighterContext.Status.LEAVING) leaveBattle(player, false);

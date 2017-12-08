@@ -1,6 +1,6 @@
 package msifeed.mc.misca.crabs;
 
-import msifeed.mc.misca.crabs.calc.DiceMath;
+import msifeed.mc.misca.crabs.rules.DiceMath;
 import org.junit.Ignore;
 import org.junit.Test;
 

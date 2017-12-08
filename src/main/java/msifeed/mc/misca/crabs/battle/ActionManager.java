@@ -1,10 +1,10 @@
 package msifeed.mc.misca.crabs.battle;
 
-import msifeed.mc.misca.crabs.character.Character;
+import msifeed.mc.misca.crabs.EntityUtils;
 import msifeed.mc.misca.crabs.rules.ActionResult;
 import msifeed.mc.misca.crabs.rules.Effect;
+import msifeed.mc.misca.crabs.rules.Rules;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EntityDamageSource;
 import org.apache.logging.log4j.LogManager;
@@ -20,7 +20,8 @@ public enum ActionManager {
 
     private Logger logger = LogManager.getLogger("Crabs.Actions");
 
-    private HashMap<UUID, Move> activeMoves = new HashMap<>();
+    // uuid защищяющегося -> ход атаковавшего
+    private HashMap<UUID, Move> pendingMoves = new HashMap<>();
     private ArrayList<Move> completeMoves = new ArrayList<>();
 
     public void dealDamage(FighterContext actor, FighterContext target, EntityDamageSource damageSource, float amount) {
@@ -38,17 +39,17 @@ public enum ActionManager {
     public void stopDealingDamage(FighterContext actor) {
         actor.updateStatus(FighterContext.Status.WAIT);
 
-        Move move = activeMoves.get(actor.uuid);
+        Move move = pendingMoves.get(actor.uuid);
 
         if (move == null) { // Боец атаковал
             move = new Move();
             move.attacker = actor;
-            activeMoves.put(actor.target, move); // Сверхлогика
+            pendingMoves.put(actor.target, move); // Сверхлогика
         } else { // Боец отвечал
             // TODO мультитаргет для остановки побега?
             move.defender = actor;
             completeMoves.add(move);
-            activeMoves.remove(actor.uuid);
+            pendingMoves.remove(actor.uuid);
         }
     }
 
@@ -58,21 +59,13 @@ public enum ActionManager {
     }
 
     private void finalizeMove(FighterContext attacker, FighterContext defender) {
-        // TODO do
         // TODO плавающее ограничение на получаемый урон чтобы стимулировать нокауты
-
-        Character character = new Character();
-        character.fill(5, 5, 5, 5, 5, 5);
 
         final ActionResult attack = new ActionResult(attacker);
         final ActionResult defence = new ActionResult(defender);
-        do {
-            attack.throwDices(character);
-            defence.throwDices(character);
-        } while (attack.totalSum == defence.totalSum);
 
-        final ActionResult winner = attack.totalSum > defence.totalSum ? attack : defence;
-        final ActionResult looser = attack.totalSum > defence.totalSum ? defence : attack;
+        final ActionResult winner = Rules.computeWinner(attack, defence);
+        final ActionResult looser = (winner == attack ? defence : attack);
 
         for (Effect eff : attack.action.target_effects) eff.apply(winner.ctx, looser.ctx);
         for (Effect eff : attack.action.self_effects) eff.apply(winner.ctx, winner.ctx);
@@ -85,31 +78,14 @@ public enum ActionManager {
     }
 
     private void notifyMoveResult(ActionResult winner, ActionResult looser) {
-        ChatComponentText msg = formatMessage(winner, looser);
+        String msg = ActionFormatter.formatActionResults(winner, looser);
         EntityLivingBase we = winner.ctx.entity, le = looser.ctx.entity;
         Stream.concat(
-                (Stream<EntityPlayerMP>) we.worldObj.playerEntities.stream(),
-                (Stream<EntityPlayerMP>) le.worldObj.playerEntities.stream())
+                EntityUtils.getPlayersAround(we, BattleDefines.NOTIFICATION_RADIUS),
+                EntityUtils.getPlayersAround(le, BattleDefines.NOTIFICATION_RADIUS)
+        )
                 .distinct()
-                .filter(player -> player.getDistanceToEntity(we) <= BattleDefines.NOTIFICATION_RADIUS
-                        || player.getDistanceToEntity(le) <= BattleDefines.NOTIFICATION_RADIUS
-                )
-                .forEach(player -> player.addChatMessage(msg));
-    }
-
-    private ChatComponentText formatMessage(ActionResult winner, ActionResult looser) {
-        EntityLivingBase we = winner.ctx.entity, le = looser.ctx.entity;
-        String s = "\u00A76[\u00A72"
-                + we.getCommandSenderName()
-                + "\u00A76>\u00A74"
-                + le.getCommandSenderName()
-                + "\u00A76]:\u00A7r "
-                + winner.toChatString()
-                + " \u00A76>\u00A7r "
-                + looser.toChatString()
-                + " \u00A76:\u00A7r "
-                + winner.action.name;
-        return new ChatComponentText(s);
+                .forEach(player -> player.addChatMessage(new ChatComponentText(msg)));
     }
 
     private static class Move {

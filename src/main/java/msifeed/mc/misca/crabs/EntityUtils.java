@@ -7,10 +7,12 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.World;
 
 import java.util.UUID;
+import java.util.stream.Stream;
 
 public class EntityUtils {
     public static UUID getUuid(Entity e) {
@@ -37,5 +39,10 @@ public class EntityUtils {
         }
 
         return null;
+    }
+
+    public static Stream<EntityPlayerMP> getPlayersAround(EntityLivingBase center, int distance) {
+        return ((Stream<EntityPlayerMP>) center.worldObj.playerEntities.stream())
+                .filter(player -> player.getDistanceToEntity(center) <= distance);
     }
 }

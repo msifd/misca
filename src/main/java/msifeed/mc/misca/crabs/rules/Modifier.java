@@ -1,6 +1,5 @@
 package msifeed.mc.misca.crabs.rules;
 
-import msifeed.mc.misca.crabs.calc.DiceMath;
 import msifeed.mc.misca.crabs.character.Character;
 import msifeed.mc.misca.crabs.character.Stats;
 

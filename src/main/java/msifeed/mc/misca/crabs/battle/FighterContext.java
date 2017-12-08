@@ -16,6 +16,8 @@ public class FighterContext implements Serializable {
     public String action_name;
     public boolean described;
     public UUID target;
+    public int modifier;
+
     public float damageDealt;
 
     public transient EntityLivingBase entity; // Находится по uuid'у
@@ -34,6 +36,7 @@ public class FighterContext implements Serializable {
         this.action_name = null;
         this.described = false;
         this.target = null;
+        this.modifier = 0;
         this.damageDealt = 0;
     }
 

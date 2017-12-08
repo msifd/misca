@@ -1,4 +1,4 @@
-package msifeed.mc.misca.crabs.calc;
+package msifeed.mc.misca.crabs.rules;
 
 import java.util.Random;
 
@@ -33,6 +33,10 @@ public final class DiceMath {
             if (roll >= 28) return LUCK;
             else if (roll <= 3) return FAIL;
             else return REGULAR;
+        }
+
+        public boolean beats(DiceRank other) {
+            return (this == LUCK && other != LUCK) || (other == FAIL && this != FAIL);
         }
     }
 }
