@@ -12,7 +12,7 @@ public final class Rules {
         do {
             a.throwDices(a.character);
             b.throwDices(b.character);
-        } while (a.compareTo(b) != 0);
+        } while (a.compareTo(b) == 0);
         return a.compareTo(b) > 0 ? a : b;
     }
 

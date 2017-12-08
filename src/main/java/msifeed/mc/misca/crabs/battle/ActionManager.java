@@ -67,8 +67,8 @@ public enum ActionManager {
         final ActionResult winner = Rules.computeWinner(attack, defence);
         final ActionResult looser = (winner == attack ? defence : attack);
 
-        for (Effect eff : attack.action.target_effects) eff.apply(winner.ctx, looser.ctx);
-        for (Effect eff : attack.action.self_effects) eff.apply(winner.ctx, winner.ctx);
+        for (Effect eff : winner.action.target_effects) eff.apply(winner.ctx, looser.ctx);
+        for (Effect eff : winner.action.self_effects) eff.apply(winner.ctx, winner.ctx);
         // TODO handle some tags
 
         notifyMoveResult(winner, looser);
