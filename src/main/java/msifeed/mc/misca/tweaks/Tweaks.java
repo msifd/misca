@@ -1,6 +1,7 @@
 package msifeed.mc.misca.tweaks;
 
 import com.google.common.eventbus.Subscribe;
+import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLServerStartingEvent;
 import cpw.mods.fml.common.network.simpleimpl.SimpleNetworkWrapper;
@@ -20,6 +21,7 @@ public class Tweaks {
     private DeathToll deathToll = new DeathToll();
     private HealthNotification healthNotification = new HealthNotification();
     private BanEntities banEntities = new BanEntities();
+    private DRM drm = new DRM();
 
     @Subscribe
     public void onInit(FMLInitializationEvent event) {
@@ -27,6 +29,7 @@ public class Tweaks {
         MinecraftForge.EVENT_BUS.register(deathToll);
         MinecraftForge.EVENT_BUS.register(healthNotification);
         MinecraftForge.EVENT_BUS.register(banEntities);
+        FMLCommonHandler.instance().bus().register(drm);
 
         if (event.getSide().isServer()) {
             MinecraftForge.EVENT_BUS.register(offtopFormat);
