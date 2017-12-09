@@ -270,13 +270,13 @@ public class StringCache
         /** Bit flag used with renderStyle to request the strikethrough style */
         public static final byte STRIKETHROUGH = 2;
 
-        /** The index into the original string (i.e. with color codes) for the location of this color code. */
+        /** The index into the original string (i.e. with color codes) for the location of this colorBg code. */
         public int stringIndex;
 
-        /** The index into the stripped string (i.e. with no color codes) of where this color code would have appeared */
+        /** The index into the stripped string (i.e. with no color codes) of where this colorBg code would have appeared */
         public int stripIndex;
 
-        /** The numeric color code (i.e. index into the colorCode[] array); -1 to reset default color */
+        /** The numeric color code (i.e. index into the colorCode[] array); -1 to reset default colorBg */
         public byte colorCode;
 
         /** Combination of Font.PLAIN, Font.BOLD, and Font.ITALIC specifying font specific syles */
@@ -397,7 +397,7 @@ public class StringCache
      * @param str the string being rendered; it can contain color codes
      * @param startX the x coordinate to draw at
      * @param startY the y coordinate to draw at
-     * @param initialColor the initial RGBA color to use when drawing the string; embedded color codes can override the RGB component
+     * @param initialColor the initial RGBA color to use when drawing the string; embedded colorBg codes can override the RGB component
      * @param shadowFlag if true, color codes are replaces by a darker version used for drop shadows
      * @return the total advance (horizontal distance) of this string
      *
@@ -454,9 +454,9 @@ public class StringCache
         for(int glyphIndex = 0, colorIndex = 0; glyphIndex < entry.glyphs.length; glyphIndex++)
         {
             /*
-             * If the original string had a color code at this glyph's position, then change the current GL color that gets added
-             * to the vertex array. Note that only the RGB component of the color is replaced by a color code; the alpha component
-             * of the original color passed into this function will remain. The while loop handles multiple consecutive color codes,
+             * If the original string had a color code at this glyph's position, then change the current GL colorBg that gets added
+             * to the vertex array. Note that only the RGB component of the color is replaced by a colorBg code; the alpha component
+             * of the original color passed into this function will remain. The while loop handles multiple consecutive colorBg codes,
              * in which case only the last such color code takes effect.
              */
             while(colorIndex < entry.colors.length && entry.glyphs[glyphIndex].stringIndex >= entry.colors[colorIndex].stringIndex)
@@ -521,7 +521,7 @@ public class StringCache
         {
             int renderStyle = 0;
 
-            /* Use initial color passed to renderString(); disable texturing to draw solid color lines */
+            /* Use initial color passed to renderString(); disable texturing to draw solid colorBg lines */
             color = initialColor;
             GL11.glDisable(GL11.GL_TEXTURE_2D);
             tessellator.startDrawingQuads();
@@ -530,7 +530,7 @@ public class StringCache
             for(int glyphIndex = 0, colorIndex = 0; glyphIndex < entry.glyphs.length; glyphIndex++)
             {
                 /*
-                 * If the original string had a color code at this glyph's position, then change the current GL color that gets added
+                 * If the original string had a color code at this glyph's position, then change the current GL colorBg that gets added
                  * to the vertex array. The while loop handles multiple consecutive color codes, in which case only the last such
                  * color code takes effect.
                  */
@@ -708,17 +708,17 @@ public class StringCache
     }
 
     /**
-     * Apply a new vertex color to the Tessellator instance based on the numeric chat color code. Only the RGB component of the
-     * color is replaced by a color code; the alpha component of the original default color will remain.
+     * Apply a new vertex color to the Tessellator instance based on the numeric chat colorBg code. Only the RGB component of the
+     * color is replaced by a colorBg code; the alpha component of the original default colorBg will remain.
      *
-     * @param colorCode the chat color code as a number 0-15 or -1 to reset the default color
+     * @param colorCode the chat color code as a number 0-15 or -1 to reset the default colorBg
      * @param color the default color used when the colorCode is -1
-     * @param shadowFlag ir true, the color code will select a darker version of the color suitable for drop shadows
+     * @param shadowFlag ir true, the color code will select a darker version of the colorBg suitable for drop shadows
      * @return the new RGBA color set by this function
      */
     private int applyColorCode(int colorCode, int color, boolean shadowFlag)
     {
-        /* A -1 color code indicates a reset to the initial color passed into renderString() */
+        /* A -1 color code indicates a reset to the initial colorBg passed into renderString() */
         if(colorCode != -1)
         {
             colorCode = shadowFlag ? colorCode + 16 : colorCode;
@@ -844,7 +844,7 @@ public class StringCache
 
     /**
      * Remove all color codes from the string by shifting data in the text[] array over so it overwrites them. The value of each
-     * color code and its position (relative to the new stripped text[]) is also recorded in a separate array. The color codes must
+     * color code and its position (relative to the new stripped text[]) is also recorded in a separate array. The colorBg codes must
      * be removed for a font's context sensitive glyph substitution to work (like Arabic letter middle form).
      *
      * @param cacheEntry each color change in the string will add a new ColorCode object to this list

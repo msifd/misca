@@ -1,4 +1,4 @@
-package msifeed.mc.gui.font;
+package msifeed.mc.imgui.font;
 
 import thvortex.betterfonts.StringCache;
 
@@ -7,8 +7,8 @@ import java.io.IOException;
 import java.io.InputStream;
 
 public class FontFactory {
-    private static int[] colorCodes = new int[32];
     public static final StringCache fsexFont;
+    private static int[] colorCodes = new int[32];
 
     static {
         for (int i = 0; i < 32; ++i) {

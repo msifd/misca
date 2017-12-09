@@ -142,7 +142,7 @@ public enum BattleManager {
         switch (message.type) {
             case ACTION:
                 FighterContext actor = ctx.control == null ? ctx : getContext(ctx.control);
-                actor.updateAction(message.action);
+                ActionManager.INSTANCE.selectAction(actor, message.action);
                 break;
             case CALC:
                 // FIXME modifier
@@ -268,6 +268,6 @@ public enum BattleManager {
         if (words < BattleDefines.MIN_WORDS_IN_MOVE_DESC) return;
 
         final FighterContext actor = ctx.control == null ? ctx : getContext(ctx.control);
-        actor.described = true;
+        ActionManager.INSTANCE.describeAction(actor);
     }
 }

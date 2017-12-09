@@ -1,4 +1,4 @@
-package msifeed.mc.gui.im;
+package msifeed.mc.imgui.input;
 
 import org.lwjgl.input.Keyboard;
 

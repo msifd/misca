@@ -20,6 +20,17 @@ public class Action {
         this.type = type;
     }
 
+    public boolean hasNoTarget() {
+        switch (this.type) {
+            case USE:
+            case MOVE:
+            case NONE:
+                return true;
+            default:
+                return false;
+        }
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (!Action.class.isAssignableFrom(obj.getClass())) return false;

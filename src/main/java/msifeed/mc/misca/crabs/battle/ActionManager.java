@@ -1,6 +1,7 @@
 package msifeed.mc.misca.crabs.battle;
 
 import msifeed.mc.misca.crabs.EntityUtils;
+import msifeed.mc.misca.crabs.actions.Action;
 import msifeed.mc.misca.crabs.rules.ActionResult;
 import msifeed.mc.misca.crabs.rules.Effect;
 import msifeed.mc.misca.crabs.rules.Rules;
@@ -23,6 +24,17 @@ public enum ActionManager {
     // uuid защищяющегося -> ход атаковавшего
     private HashMap<UUID, Move> pendingMoves = new HashMap<>();
     private ArrayList<Move> completeMoves = new ArrayList<>();
+
+    public void selectAction(FighterContext actor, Action action) {
+        actor.updateAction(action);
+    }
+
+    public void describeAction(FighterContext actor) {
+        actor.described = true;
+        if (actor.action.hasNoTarget()) {
+            // TODO something
+        }
+    }
 
     public void dealDamage(FighterContext actor, FighterContext target, EntityDamageSource damageSource, float amount) {
         // Первый удар
