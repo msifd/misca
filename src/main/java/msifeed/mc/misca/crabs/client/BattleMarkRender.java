@@ -1,65 +1,19 @@
 package msifeed.mc.misca.crabs.client;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import msifeed.mc.gui.im.ImGui;
-import msifeed.mc.misca.crabs.actions.Actions;
 import msifeed.mc.misca.crabs.battle.BattleManager;
-import msifeed.mc.misca.crabs.battle.BattleNetwork;
 import msifeed.mc.misca.crabs.battle.FighterContext;
-import msifeed.mc.misca.crabs.battle.FighterMessage;
-import msifeed.mc.misca.crabs.character.Stats;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderLivingEvent;
 import org.lwjgl.opengl.GL11;
 
-public class CrabsRenderHandler extends Gui {
-    public static final CrabsRenderHandler INSTANCE = new CrabsRenderHandler();
-
-    @SubscribeEvent
-    public void onRenderGui(RenderGameOverlayEvent.Post event) {
-        if (event.type != RenderGameOverlayEvent.ElementType.ALL) return;
-
-        final Minecraft mc = Minecraft.getMinecraft();
-        final EntityPlayer player = mc.thePlayer;
-        final BattleManager bm = BattleManager.INSTANCE;
-        final FighterContext context = bm.getContext(player.getUniqueID());
-
-        final boolean inBattle = context != null;
-
-        ImGui imgui = ImGui.INSTANCE;
-        imgui.newFrame();
-
-        if (imgui.button(inBattle ? "Stop fight" : "Start fight", 5, 5)) {
-            FighterMessage message = new FighterMessage(inBattle ? FighterMessage.Type.LEAVE : FighterMessage.Type.JOIN);
-            BattleNetwork.INSTANCE.notifyServer(message);
-        }
-
-        if (inBattle) {
-            if (imgui.button("Punch", 5, 30)) {
-                BattleNetwork.INSTANCE.notifyServer(new FighterMessage(Actions.test_punch));
-            }
-            if (imgui.button("Fireball", 5, 55)) {
-                BattleNetwork.INSTANCE.notifyServer(new FighterMessage(Actions.test_fireball));
-            }
-            if (imgui.button("Roll ERP", 5, 80)) {
-                BattleNetwork.INSTANCE.notifyServer(new FighterMessage(Stats.DET));
-            }
-        }
-
-        Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        String contextStr = gson.toJson(BattleManager.INSTANCE.getContexts());
-
-        String debugInfo = String.format("inBattle: %b\nme: %s\ncontexts: %s", inBattle, player.getUniqueID(), contextStr);
-        imgui.labelMultiline(debugInfo, 120, 5);
-    }
+public enum BattleMarkRender {
+    INSTANCE;
 
     @SubscribeEvent
     public void onRenderLiving(RenderLivingEvent.Post event) {
