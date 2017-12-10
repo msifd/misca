@@ -1,6 +1,6 @@
-package msifeed.mc.imgui.parts;
+package msifeed.mc.gui.im;
 
-import msifeed.mc.imgui.font.FontFactory;
+import msifeed.mc.gui.font.FontFactory;
 import net.minecraft.client.Minecraft;
 import net.minecraft.profiler.Profiler;
 import thvortex.betterfonts.StringCache;

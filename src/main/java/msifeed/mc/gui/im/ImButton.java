@@ -1,9 +1,10 @@
-package msifeed.mc.imgui.parts;
+package msifeed.mc.gui.im;
 
-import msifeed.mc.imgui.ImGui;
-import msifeed.mc.imgui.input.MouseTracker;
-import msifeed.mc.imgui.render.DrawPrimitives;
-import msifeed.mc.imgui.render.TextureInfo;
+import msifeed.mc.gui.ImGui;
+import msifeed.mc.gui.ImStyle;
+import msifeed.mc.gui.input.MouseTracker;
+import msifeed.mc.gui.render.DrawPrimitives;
+import msifeed.mc.gui.render.TextureInfo;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.PositionedSoundRecord;
 import net.minecraft.profiler.Profiler;
@@ -14,6 +15,7 @@ public class ImButton {
         final ImGui imgui = ImGui.INSTANCE;
         final ImStyle st = imgui.imStyle;
         final Profiler profiler = Minecraft.getMinecraft().mcProfiler;
+        profiler.startSection("ImButton");
 
         final int spacingWidth = st.buttonSpacingX * 2;
         final boolean inRect = MouseTracker.isInRect(x, y, width, height);
@@ -24,20 +26,21 @@ public class ImButton {
                 : st.buttonColorHovered)
                 : st.buttonColor;
 
-        profiler.startSection("ImButton");
-        DrawPrimitives.drawRect(x, y, x + width, y + height, color);
-        profiler.endSection();
-
         if (label instanceof String) {
+            DrawPrimitives.drawRect(x, y, x + width, y + height, color);
             imgui.imLabel.label((String) label, x + st.buttonSpacingX, y, width + spacingWidth, height, st.buttonTitleColor, true, true);
         } else if (label instanceof TextureInfo) {
-            DrawPrimitives.drawTexture((TextureInfo) label, x + st.buttonSpacingX, y, 0);
+            final TextureInfo tex = (TextureInfo) label;
+            DrawPrimitives.drawTexture(tex, x + st.buttonSpacingX, y, 0, inRect ? tex.height : 0);
         }
 
-        if (inRect && MouseTracker.clickStatus == MouseTracker.ClickStatus.RELEASE) {
+        profiler.endSection();
+
+        if (inRect && MouseTracker.released()) {
             playClickSound();
             return true;
         }
+
         return false;
     }
 

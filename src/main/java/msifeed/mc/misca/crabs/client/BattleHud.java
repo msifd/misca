@@ -1,15 +1,12 @@
 package msifeed.mc.misca.crabs.client;
 
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import msifeed.mc.imgui.ImGui;
-import msifeed.mc.imgui.input.KeyTracker;
-import msifeed.mc.imgui.parts.ImWindow;
-import msifeed.mc.misca.crabs.actions.Actions;
+import msifeed.mc.gui.ImGui;
+import msifeed.mc.gui.input.KeyTracker;
+import msifeed.mc.gui.nim.NimText;
+import msifeed.mc.gui.nim.NimWindow;
 import msifeed.mc.misca.crabs.battle.BattleManager;
-import msifeed.mc.misca.crabs.battle.BattleNetwork;
 import msifeed.mc.misca.crabs.battle.FighterContext;
-import msifeed.mc.misca.crabs.battle.FighterMessage;
-import msifeed.mc.misca.crabs.character.Stats;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
@@ -18,14 +15,22 @@ public enum BattleHud {
     INSTANCE;
 
     private Boolean shouldDisplay = false;
-    private ImWindow battleWindow = new ImWindow("Battle", () -> shouldDisplay = !shouldDisplay);
+
+    private NimWindow battleWindow = new NimWindow("Battle", () -> shouldDisplay = !shouldDisplay);
+    private NimText textField = new NimText();
 
     @SubscribeEvent
     public void onRenderGui(RenderGameOverlayEvent.Post event) {
         if (event.type != RenderGameOverlayEvent.ElementType.ALL) return;
 
-        if (KeyTracker.isTapped(CrabsKeyBinds.battleHud.getKeyCode()))
+        if (KeyTracker.isTapped(CrabsKeyBinds.battleHud.getKeyCode())) {
             shouldDisplay = !shouldDisplay;
+
+//            // Display cursor
+//            final Minecraft mc = Minecraft.getMinecraft();
+//            if (shouldDisplay) mc.displayGuiScreen(EmptyGuiScreen.INSTANCE);
+//            else mc.displayGuiScreen(null);
+        }
 
         if (shouldDisplay)
             render();
@@ -48,55 +53,48 @@ public enum BattleHud {
 
         final boolean inBattle = context != null;
 
-        ImGui imgui = ImGui.INSTANCE;
+        final ImGui imgui = ImGui.INSTANCE;
         imgui.newFrame();
 
         {
             imgui.beginWindow(battleWindow);
 
-            if (imgui.button(inBattle ? "Stop fight" : "Start fight")) {
-                FighterMessage message = new FighterMessage(inBattle ? FighterMessage.Type.LEAVE : FighterMessage.Type.JOIN);
-                BattleNetwork.INSTANCE.notifyServer(message);
-            }
-
-            imgui.label("foobar baby!!!!");
-
-            if (inBattle) {
-                if (imgui.button("Punch")) {
-                    BattleNetwork.INSTANCE.notifyServer(new FighterMessage(Actions.test_punch));
-                }
-                if (imgui.button("Fireball")) {
-                    BattleNetwork.INSTANCE.notifyServer(new FighterMessage(Actions.test_fireball));
-                }
-                if (imgui.button("Roll ERP")) {
-                    BattleNetwork.INSTANCE.notifyServer(new FighterMessage(Stats.DET));
-                }
-            }
+            imgui.label("Test text field:");
+            imgui.nim(textField);
+            imgui.label("> " + textField.getText());
 
             imgui.endWindow();
         }
 
-//        if (imgui.button(inBattle ? "Stop fight" : "Start fight", 5, 5)) {
-//            FighterMessage message = new FighterMessage(inBattle ? FighterMessage.Type.LEAVE : FighterMessage.Type.JOIN);
-//            BattleNetwork.INSTANCE.notifyServer(message);
+//        final ImGui imgui = ImGui.INSTANCE;
+//        imgui.newFrame();
+//
+//        {
+//            imgui.beginWindow(battleWindow);
+//
+//            if (imgui.button(inBattle ? "Stop fight" : "Start fight")) {
+//                FighterMessage message = new FighterMessage(inBattle ? FighterMessage.Type.LEAVE : FighterMessage.Type.JOIN);
+//                BattleNetwork.INSTANCE.notifyServer(message);
+//            }
+//
+//            imgui.label("foobar baby!!!!");
+//
+//            if (inBattle) {
+//                if (imgui.button("Punch")) {
+//                    BattleNetwork.INSTANCE.notifyServer(new FighterMessage(Actions.test_punch));
+//                }
+//                if (imgui.button("Fireball")) {
+//                    BattleNetwork.INSTANCE.notifyServer(new FighterMessage(Actions.test_fireball));
+//                }
+//
+////                imgui.nimText.textField(textField, 100, 100, 100);
+//
+//                if (imgui.button("Roll ERP")) {
+//                    BattleNetwork.INSTANCE.notifyServer(new FighterMessage(Stats.DET));
+//                }
+//            }
+//
+//            imgui.endWindow();
 //        }
-//
-//        if (inBattle) {
-//            if (imgui.button("Punch", 5, 30)) {
-//                BattleNetwork.INSTANCE.notifyServer(new FighterMessage(Actions.test_punch));
-//            }
-//            if (imgui.button("Fireball", 5, 55)) {
-//                BattleNetwork.INSTANCE.notifyServer(new FighterMessage(Actions.test_fireball));
-//            }
-//            if (imgui.button("Roll ERP", 5, 80)) {
-//                BattleNetwork.INSTANCE.notifyServer(new FighterMessage(Stats.DET));
-//            }
-//        }
-//
-//        Gson gson = new GsonBuilder().setPrettyPrinting().create();
-//        String contextStr = gson.toJson(BattleManager.INSTANCE.getContexts());
-//
-//        String debugInfo = String.format("inBattle: %b\nme: %s\ncontexts: %s", inBattle, player.getUniqueID(), contextStr);
-//        imgui.labelMultiline(debugInfo, 120, 5);
     }
 }

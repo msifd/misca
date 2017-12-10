@@ -1,4 +1,4 @@
-package msifeed.mc.imgui.render;
+package msifeed.mc.gui.render;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.MathHelper;

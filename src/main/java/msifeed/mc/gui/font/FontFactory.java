@@ -1,4 +1,4 @@
-package msifeed.mc.imgui.font;
+package msifeed.mc.gui.font;
 
 import thvortex.betterfonts.StringCache;
 

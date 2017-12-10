@@ -1,6 +1,6 @@
-package msifeed.mc.imgui.input;
+package msifeed.mc.gui.input;
 
-import msifeed.mc.imgui.render.ScalingHelper;
+import msifeed.mc.gui.render.ScalingHelper;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.util.Point;
@@ -36,19 +36,25 @@ public class MouseTracker {
     }
 
     public static Point pos() {
-//        return new Point(Mouse.getX(), Display.getHeight() - Mouse.getY());
         int[] pos = ScalingHelper.scale(Mouse.getX(), Display.getHeight() - Mouse.getY());
         return new Point(pos[0], pos[1]);
     }
 
-    public static boolean pressed() {
-        return clickStatus == MouseTracker.ClickStatus.PRESS;
+    public static boolean hovered() {
+        return clickStatus == ClickStatus.HOVER;
     }
 
-    public static int[] delta() {
-//        return new int[]{Mouse.getDX(), -Mouse.getDY()};
-        return ScalingHelper.scale(Mouse.getDX(), -Mouse.getDY());
+    public static boolean pressed() {
+        return clickStatus == ClickStatus.PRESS;
     }
+
+    public static boolean released() {
+        return clickStatus == ClickStatus.RELEASE;
+    }
+
+//    public static int[] delta() {
+//        return ScalingHelper.scale(Mouse.getDX(), -Mouse.getDY());
+//    }
 
     public enum ClickStatus {
         NONE, HOVER, PRESS, RELEASE
