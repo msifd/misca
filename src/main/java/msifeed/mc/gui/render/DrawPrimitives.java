@@ -44,9 +44,7 @@ public class DrawPrimitives {
     }
 
     public static void drawTexture(TextureInfo tex, int x, int y, double z) {
-        Minecraft.getMinecraft().getTextureManager().bindTexture(tex.resource);
-        GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-        drawTexturedRect(x, y, z, tex.u, tex.v, tex.width, tex.height);
+        drawTexture(tex, x, y, z, 0);
     }
 
     public static void drawTexture(TextureInfo tex, int x, int y, double z, int offsetV) {
@@ -55,33 +53,25 @@ public class DrawPrimitives {
         drawTexturedRect(x, y, z, tex.u, tex.v + offsetV, tex.width, tex.height);
     }
 
-    public static void drawRepeatedTexture(TextureInfo tex, int x, int y, double z, int width, int height) {
+    public static void drawScaledTexture(TextureInfo tex, int x, int y, double z, int width, int height) {
+        drawScaledTexture(tex, x, y, z, width, height, 0);
+    }
+
+    public static void drawScaledTexture(TextureInfo tex, int x, int y, double z, int width, int height, int offsetV) {
         Minecraft.getMinecraft().getTextureManager().bindTexture(tex.resource);
-
-//        GL11.glEnable(GL11.GL_BLEND);
-//        OpenGlHelper.glBlendFunc(770, 771, 1, 0);
-//        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-
-        GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-        GL11.glEnable(GL11.GL_TEXTURE_2D);
-        GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, GL11.GL_REPEAT);
-        GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, GL11.GL_REPEAT);
 
         final double f = 0.00390625F;
         final double f1 = 0.00390625F;
+        final int v = tex.v + offsetV;
+
+        GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
         Tessellator tessellator = Tessellator.instance;
         tessellator.startDrawingQuads();
-        tessellator.addVertexWithUV((double) (x + 0), (double) (y + height), z, (float) (tex.u + 0) * f, (float) (tex.v + tex.height) * f1);
-        tessellator.addVertexWithUV((double) (x + width), (double) (y + height), z, (float) (tex.u + tex.width) * f, (float) (tex.v + tex.height) * f1);
-        tessellator.addVertexWithUV((double) (x + width), (double) (y + 0), z, (float) (tex.u + tex.width) * f, (float) (tex.v + 0) * f1);
-        tessellator.addVertexWithUV((double) (x + 0), (double) (y + 0), z, (float) (tex.u + 0) * f, (float) (tex.v + 0) * f1);
+        tessellator.addVertexWithUV((double) (x + 0), (double) (y + height), z, (float) (tex.u + 0) * f, (float) (v + tex.height) * f1);
+        tessellator.addVertexWithUV((double) (x + width), (double) (y + height), z, (float) (tex.u + tex.width) * f, (float) (v + tex.height) * f1);
+        tessellator.addVertexWithUV((double) (x + width), (double) (y + 0), z, (float) (tex.u + tex.width) * f, (float) (v + 0) * f1);
+        tessellator.addVertexWithUV((double) (x + 0), (double) (y + 0), z, (float) (tex.u + 0) * f, (float) (v + 0) * f1);
         tessellator.draw();
-
-        GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, GL11.GL_CLAMP);
-        GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, GL11.GL_CLAMP);
-
-//        GL11.glDisable(GL11.GL_BLEND);
-//        GL11.glDisable(GL11.GL_TEXTURE_2D);
     }
 
     public static void drawTexturedRect(int x, int y, double z, int u, int v, int width, int height) {

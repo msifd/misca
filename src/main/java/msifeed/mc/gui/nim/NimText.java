@@ -1,10 +1,11 @@
 package msifeed.mc.gui.nim;
 
 import msifeed.mc.gui.ImGui;
-import msifeed.mc.gui.im.ImLabel;
 import msifeed.mc.gui.ImStyle;
+import msifeed.mc.gui.im.ImLabel;
 import msifeed.mc.gui.input.MouseTracker;
 import msifeed.mc.gui.render.DrawPrimitives;
+import msifeed.mc.gui.render.DrawTexbox;
 import net.minecraft.client.Minecraft;
 import net.minecraft.profiler.Profiler;
 import net.minecraft.util.ChatAllowedCharacters;
@@ -14,7 +15,7 @@ import org.lwjgl.util.Point;
 import java.util.function.Function;
 
 public class NimText extends NimPart {
-    private static final int MS_TO_REPEAT = 1000;
+    private static final int MS_TO_REPEAT = 500;
 
     protected ImStyle st = ImStyle.DEFAULT;
     protected String text = "";
@@ -25,7 +26,7 @@ public class NimText extends NimPart {
     private int scrollOffset = 0;
     private int frameCounter = 0; // For cursor blinking
 
-    private int pressedKey = 0;
+    private int pressedKey = -1;
     private long pressedTime = 0; // For key repeating
 
     public NimText() {
@@ -46,7 +47,7 @@ public class NimText extends NimPart {
 
         // Lazy init because fonts are not loaded when the mod inits
         if (height <= 0) {
-            height = imLabel.labelHeight() + st.textSpacingY * 2;
+            height = imLabel.labelHeight() + st.textLabelOffset.getY() * 2;
         }
 
         final boolean inRect = MouseTracker.isInRect(posX, posY, width, height);
@@ -54,7 +55,7 @@ public class NimText extends NimPart {
             takeFocus();
 
             final Point pos = MouseTracker.pos();
-            final int curX = pos.getX() - (posX + st.textSpacingX);
+            final int curX = pos.getX() - (posX + st.textLabelOffset.getX());
             final String strScrolled = text.substring(scrollOffset);
             final String strBeforeCursor = imLabel.font.trimStringToWidth(strScrolled, curX, false);
             setCursor(strBeforeCursor.length() + scrollOffset);
@@ -63,8 +64,20 @@ public class NimText extends NimPart {
             releaseFocus();
         }
 
-        renderBackground();
-        renderText();
+        // Render background
+        {
+            final int vOffset = (inRect ? 1 : 0) * st.textLeftTexture.height;
+            DrawTexbox.threeParted(
+                    st.textLeftTexture, st.textMiddleTexture, st.textRightTexture,
+                    posX, posY, width, height, vOffset);
+        }
+
+        // Render text
+        {
+            ImGui.INSTANCE.imLabel.label(text,
+                    posX + st.textLabelOffset.getX(), posY,
+                    width, height, st.textLabelColor, false, true);
+        }
         renderCursor();
 
         checkKeyEvent();
@@ -72,22 +85,14 @@ public class NimText extends NimPart {
         profiler.endSection();
     }
 
-    protected void renderBackground() {
-        DrawPrimitives.drawRect(posX, posY, posX + width, posY + height, st.textBackgroundColor);
-    }
-
-    protected void renderText() {
-        ImGui.INSTANCE.imLabel.label(text, posX, posY, width, height, st.textTextColor, false, true);
-    }
-
     protected void renderCursor() {
         if (inFocus() && frameCounter / 16 % 2 == 0) {
             final ImLabel imLabel = ImGui.INSTANCE.imLabel;
             final String beforeCurText = text.substring(scrollOffset, scrollOffset + cursor);
             final int beforeCurTextLen = imLabel.font.getStringWidth(beforeCurText);
-            final int curX = posX + st.textSpacingX + beforeCurTextLen;
-            final int curY = posY + st.textSpacingY;
-            DrawPrimitives.drawInvertedRect(curX, curY, posZ, 1, imLabel.labelHeight(), 0xFFFFFFFF);
+            final int curX = posX + st.textLabelOffset.getX() + beforeCurTextLen;
+            final int curY = posY + st.textLabelOffset.getY();
+            DrawPrimitives.drawInvertedRect(curX, curY, posZ, 1, st.textCursorHeight, 0xFFFFFFFF);
         }
     }
 
@@ -97,7 +102,7 @@ public class NimText extends NimPart {
         // Handle key press, not release
         final boolean state = Keyboard.getEventKeyState();
         if (!state) {
-            pressedKey = 0;
+            pressedKey = -1;
             pressedTime = 0;
             return;
         }
@@ -108,7 +113,7 @@ public class NimText extends NimPart {
         // Repeating
         final long now = System.currentTimeMillis();
         if (key == pressedKey && now - pressedTime < MS_TO_REPEAT) return;
-        if (key == 0) {
+        if (pressedKey == -1) {
             pressedKey = key;
             pressedTime = now;
         }

@@ -4,6 +4,7 @@ import msifeed.mc.gui.ImGui;
 import msifeed.mc.gui.ImStyle;
 import msifeed.mc.gui.input.MouseTracker;
 import msifeed.mc.gui.render.DrawPrimitives;
+import msifeed.mc.gui.render.DrawTexbox;
 import msifeed.mc.gui.render.TextureInfo;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.PositionedSoundRecord;
@@ -20,15 +21,21 @@ public class ImButton {
         final int spacingWidth = st.buttonSpacingX * 2;
         final boolean inRect = MouseTracker.isInRect(x, y, width, height);
 
-        final int color = inRect
-                ? (MouseTracker.pressed()
-                ? st.buttonColorPressed
-                : st.buttonColorHovered)
-                : st.buttonColor;
-
         if (label instanceof String) {
-            DrawPrimitives.drawRect(x, y, x + width, y + height, color);
-            imgui.imLabel.label((String) label, x + st.buttonSpacingX, y, width + spacingWidth, height, st.buttonTitleColor, true, true);
+            final int textureVMod = inRect
+                    ? (MouseTracker.pressed()
+                    ? 2
+                    : 1)
+                    : 0;
+            final int vOffset = textureVMod * st.buttonLeftTexture.height;
+            DrawTexbox.threeParted(
+                    st.buttonLeftTexture, st.buttonMiddleTexture, st.buttonRightTexture,
+                    x, y, width, height, vOffset);
+
+            imgui.imLabel.label((String) label,
+                    x, y + st.buttonTitleOffset.getY(),
+                    width + spacingWidth, height,
+                    st.buttonTitleColor, true, true);
         } else if (label instanceof TextureInfo) {
             final TextureInfo tex = (TextureInfo) label;
             DrawPrimitives.drawTexture(tex, x + st.buttonSpacingX, y, 0, inRect ? tex.height : 0);

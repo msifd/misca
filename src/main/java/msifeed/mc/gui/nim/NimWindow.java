@@ -13,8 +13,7 @@ import org.lwjgl.util.Rectangle;
 public class NimWindow {
     public String title;
     public Rectangle rect = new Rectangle(5, 5, 0, 0);
-    public Alignment alignment = Alignment.VERTICAL;
-    public Point groupSize = new Point();
+//    public Alignment alignment = Alignment.VERTICAL;
 
     public Runnable onCrossBtn;
 
@@ -33,8 +32,7 @@ public class NimWindow {
 
     public void begin() {
         final ImStyle st = ImGui.INSTANCE.imStyle;
-        rect.setSize(st.windowSpacingX, st.windowHeaderHeight + st.windowSpacingY);
-//        bodySize.setLocation(0, 0);
+        rect.setSize(st.windowPadding.getX(), st.windowHeaderHeight + st.windowSpacing.getY());
     }
 
     public void end() {
@@ -43,51 +41,25 @@ public class NimWindow {
     }
 
     public void setAlignment(Alignment alignment) {
-        this.alignment = alignment;
+//        this.alignment = alignment;
     }
 
     public void consume(int x, int y, int width, int height) {
         final ImStyle st = ImGui.INSTANCE.imStyle;
-        int nextWidth = x - rect.getX() + width + st.windowSpacingX;
-        int nextHeight = y - rect.getY() + height + st.windowSpacingY;
-
-//        int nextWidth = x - rect.getX();
-//        int nextHeight = y - rect.getY();
-//        switch (alignment) {
-//            default:
-//            case VERTICAL:
-//                nextHeight += height + st.windowSpacingX;
-//                break;
-//            case HORIZONTAL:
-//                nextWidth += width + st.windowSpacingY;
-//                break;
-//        }
+        int nextWidth = x - rect.getX() + width + st.windowSpacing.getX();
+        int nextHeight = y - rect.getY() + height + st.windowSpacing.getY();
         if (rect.getWidth() < nextWidth) rect.setWidth(nextWidth);
         if (rect.getHeight() < nextHeight) rect.setHeight(nextHeight);
     }
 
     public int getNextX() {
         final ImStyle st = ImGui.INSTANCE.imStyle;
-//        return rect.getX() + rect.getWidth();
-        switch (alignment) {
-            default:
-            case VERTICAL:
-                return rect.getX() + st.windowSpacingX;
-            case HORIZONTAL:
-                return rect.getX() + rect.getWidth();
-        }
+        return rect.getX() + st.windowPadding.getX();
     }
 
     public int getNextY() {
         final ImStyle st = ImGui.INSTANCE.imStyle;
         return rect.getY() + rect.getHeight();
-//        switch (alignment) {
-//            default:
-//            case VERTICAL:
-//                return rect.getY() + rect.getHeight() + st.windowSpacingY;
-//            case HORIZONTAL:
-//                return rect.getY() + st.windowSpacingY;
-//        }
     }
 
     public void renderWindow() {
@@ -95,7 +67,9 @@ public class NimWindow {
         final ImStyle st = imgui.imStyle;
         final Profiler profiler = Minecraft.getMinecraft().mcProfiler;
 
-        final int x = rect.getX(), y = rect.getY(), width = rect.getWidth(), height = rect.getHeight();
+        final int x = rect.getX(), y = rect.getY();
+        final int width = rect.getWidth() + st.windowPadding.getX() - st.windowSpacing.getX(); // ???
+        final int height = rect.getHeight() + st.windowPadding.getY();
 
         // Draw header title and buttons, calc min width
         int minWidth = 0;
@@ -104,7 +78,6 @@ public class NimWindow {
             minWidth += imgui.imLabel.label(title, x + titleOffset.getX(), y + titleOffset.getY(), width, st.windowHeaderHeight, st.windowTitleColor, false, false);
         }
 
-
         if (onCrossBtn != null) {
             final TextureInfo tex = st.windowCloseBtnTexture;
             final int cbX = x + width - tex.width + st.windowCloseBtnOffset.getX();
@@ -112,7 +85,7 @@ public class NimWindow {
             if (imgui.imButton.button(tex, cbX, cbY, tex.width, tex.height)) {
                 onCrossBtn.run();
             }
-            minWidth += st.windowSpacingX + tex.width;
+            minWidth += st.windowSpacing.getX() + tex.width;
         }
 
         if (rect.getWidth() < minWidth) rect.setWidth(minWidth);
@@ -130,7 +103,7 @@ public class NimWindow {
             Point diff = MouseTracker.pos();
             diff.untranslate(dragStart);
             rect.setLocation(diff.getX() + windowStart.getX(), diff.getY() + windowStart.getY());
-            if (!MouseTracker.pressed()) {
+            if (inHeader && !MouseTracker.pressed()) {
                 dragStart = null;
                 windowStart = null;
             }
@@ -145,7 +118,7 @@ public class NimWindow {
         final int farOffsetY = y + height - st.windowTopLeftTexture.height;
         // Top
         DrawPrimitives.drawTexture(st.windowTopLeftTexture, x, y, -0.1);
-        DrawPrimitives.drawRepeatedTexture(
+        DrawPrimitives.drawScaledTexture(
                 st.windowTopMiddleTexture,
                 x + st.windowTopLeftTexture.width, y, -0.1,
                 midWidth,
@@ -153,19 +126,19 @@ public class NimWindow {
         );
         DrawPrimitives.drawTexture(st.windowTopRightTexture, farOffsetX, y, -0.1);
         // Middle
-        DrawPrimitives.drawRepeatedTexture(
+        DrawPrimitives.drawScaledTexture(
                 st.windowMiddleLeftTexture,
                 x, y + st.windowTopLeftTexture.height, -0.1,
                 st.windowMiddleLeftTexture.width,
                 midHeight
         );
-        DrawPrimitives.drawRepeatedTexture(
+        DrawPrimitives.drawScaledTexture(
                 st.windowMiddleMiddleTexture,
                 x + st.windowMiddleLeftTexture.width, y + st.windowTopLeftTexture.height, -0.1,
                 midWidth,
                 midHeight
         );
-        DrawPrimitives.drawRepeatedTexture(
+        DrawPrimitives.drawScaledTexture(
                 st.windowMiddleRightTexture,
                 farOffsetX, y + st.windowTopLeftTexture.height, -0.1,
                 st.windowMiddleRightTexture.width,
@@ -174,7 +147,7 @@ public class NimWindow {
         // Bottom
         DrawPrimitives.drawTexture(st.windowBottomLeftTexture,
                 x, farOffsetY, -0.1);
-        DrawPrimitives.drawRepeatedTexture(
+        DrawPrimitives.drawScaledTexture(
                 st.windowBottomMiddleTexture,
                 x + st.windowTopLeftTexture.width, farOffsetY, -0.1,
                 midWidth,
