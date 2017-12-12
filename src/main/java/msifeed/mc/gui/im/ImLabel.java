@@ -1,5 +1,7 @@
 package msifeed.mc.gui.im;
 
+import msifeed.mc.gui.ImGui;
+import msifeed.mc.gui.ImStyle;
 import msifeed.mc.gui.font.FontFactory;
 import net.minecraft.client.Minecraft;
 import net.minecraft.profiler.Profiler;
@@ -14,6 +16,7 @@ public class ImLabel {
      * @return width
      */
     public int label(String label, int x, int y, int color, boolean shadow) {
+        final ImStyle st = ImGui.INSTANCE.imStyle;
         Profiler profiler = Minecraft.getMinecraft().mcProfiler;
         profiler.startSection("ImLabel");
         final int width = font.renderString(label, x, y - 1, color, shadow); // y - 1 slightly fixes ypos

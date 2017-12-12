@@ -8,18 +8,22 @@ import msifeed.mc.gui.render.TextureInfo;
 import net.minecraft.client.Minecraft;
 import net.minecraft.profiler.Profiler;
 import org.lwjgl.util.Point;
-import org.lwjgl.util.Rectangle;
 
 public class NimWindow {
     public String title;
-    public Rectangle rect = new Rectangle(5, 5, 0, 0);
-//    public Alignment alignment = Alignment.VERTICAL;
-
+    public final Point pos = new Point(5, 5);
+    public final Point size = new Point(0, 0);
     public Runnable onCrossBtn;
 
     // Dragging
-    private Point dragStart = null;
-    private Point windowStart = null;
+    protected boolean dragging = false;
+    protected final Point dragStart = new Point();
+    protected final Point windowStart = new Point();
+
+    // Alignment
+    protected Alignment alignment = Alignment.VERTICAL;
+    protected final Point prevBlock = new Point();
+    protected final Point currBlock = new Point();
 
     public NimWindow(String title) {
         this(title, null);
@@ -32,34 +36,51 @@ public class NimWindow {
 
     public void begin() {
         final ImStyle st = ImGui.INSTANCE.imStyle;
-        rect.setSize(st.windowPadding.getX(), st.windowHeaderHeight + st.windowSpacing.getY());
+        size.setLocation(0, 0);
+        alignment = Alignment.VERTICAL;
+        currBlock.setLocation(0, st.windowHeaderHeight);
+        pushAlignmentBlock(Alignment.VERTICAL);
     }
 
     public void end() {
-        setAlignment(Alignment.VERTICAL);
+        final ImStyle st = ImGui.INSTANCE.imStyle;
+        pushAlignmentBlock(Alignment.VERTICAL);
+//        size.translate(st.windowSpacing);
         renderWindow();
     }
 
-    public void setAlignment(Alignment alignment) {
-//        this.alignment = alignment;
+    public void pushAlignmentBlock(Alignment alignment) {
+        // Window eats block
+        final ImStyle st = ImGui.INSTANCE.imStyle;
+        if (size.getX() < currBlock.getX()) size.setX(currBlock.getX());
+        if (size.getY() < currBlock.getY()) size.setY(currBlock.getY());
+        prevBlock.setLocation(currBlock);
+        currBlock.setLocation(st.windowPadding.getX(), prevBlock.getY());
+        this.alignment = alignment;
     }
 
     public void consume(int x, int y, int width, int height) {
+        // Block eats element
         final ImStyle st = ImGui.INSTANCE.imStyle;
-        int nextWidth = x - rect.getX() + width + st.windowSpacing.getX();
-        int nextHeight = y - rect.getY() + height + st.windowSpacing.getY();
-        if (rect.getWidth() < nextWidth) rect.setWidth(nextWidth);
-        if (rect.getHeight() < nextHeight) rect.setHeight(nextHeight);
+        int widthWithOffset = x - pos.getX() + width + st.windowSpacing.getX();
+        int heightWithOffset = y - pos.getY() + height + st.windowSpacing.getY();
+        if (currBlock.getX() < widthWithOffset) currBlock.setX(widthWithOffset);
+        if (currBlock.getY() < heightWithOffset) currBlock.setY(heightWithOffset);
     }
 
-    public int getNextX() {
+    public int nextElemX() {
         final ImStyle st = ImGui.INSTANCE.imStyle;
-        return rect.getX() + st.windowPadding.getX();
+        return pos.getX()
+                + (alignment == Alignment.HORIZONTAL
+                ? currBlock.getX()
+                : st.windowPadding.getX());
     }
 
-    public int getNextY() {
-        final ImStyle st = ImGui.INSTANCE.imStyle;
-        return rect.getY() + rect.getHeight();
+    public int nextElemY() {
+        return pos.getY()
+                + (alignment == Alignment.HORIZONTAL
+                ? prevBlock.getY()
+                : currBlock.getY());
     }
 
     public void renderWindow() {
@@ -67,9 +88,10 @@ public class NimWindow {
         final ImStyle st = imgui.imStyle;
         final Profiler profiler = Minecraft.getMinecraft().mcProfiler;
 
-        final int x = rect.getX(), y = rect.getY();
-        final int width = rect.getWidth() + st.windowPadding.getX() - st.windowSpacing.getX(); // ???
-        final int height = rect.getHeight() + st.windowPadding.getY();
+        final int x = pos.getX(), y = pos.getY();
+        // Spacing added after the last element, remove it
+        final int width = size.getX() + st.windowPadding.getX() - st.windowSpacing.getX();
+        final int height = size.getY() + st.windowPadding.getY() - st.windowSpacing.getY();
 
         // Draw header title and buttons, calc min width
         int minWidth = 0;
@@ -88,24 +110,25 @@ public class NimWindow {
             minWidth += st.windowSpacing.getX() + tex.width;
         }
 
-        if (rect.getWidth() < minWidth) rect.setWidth(minWidth);
+        if (currBlock.getX() < minWidth) currBlock.setX(minWidth);
 
         // Handling header pressing after cross button
-        final boolean inHeader = MouseTracker.isInRect(x, y, width, st.windowHeaderHeight);
+        final boolean inHeader = MouseTracker.isInRect(x, y,
+                width - st.windowCloseBtnTexture.width + st.windowCloseBtnOffset.getX(), st.windowHeaderHeight);
 
         // Dragging
-        if (dragStart == null) {
+        if (!dragging) {
             if (inHeader && MouseTracker.pressed()) {
-                dragStart = MouseTracker.pos();
-                windowStart = new Point(rect.getX(), rect.getY());
+                dragging = true;
+                dragStart.setLocation(MouseTracker.pos());
+                windowStart.setLocation(pos.getX(), pos.getY());
             }
         } else {
             Point diff = MouseTracker.pos();
             diff.untranslate(dragStart);
-            rect.setLocation(diff.getX() + windowStart.getX(), diff.getY() + windowStart.getY());
+            pos.setLocation(diff.getX() + windowStart.getX(), diff.getY() + windowStart.getY());
             if (inHeader && !MouseTracker.pressed()) {
-                dragStart = null;
-                windowStart = null;
+                dragging = false;
             }
         }
 
@@ -114,8 +137,8 @@ public class NimWindow {
         // Draw background
         final int midWidth = width - st.windowTopLeftTexture.width - st.windowTopRightTexture.width;
         final int midHeight = height - st.windowTopLeftTexture.height - st.windowBottomLeftTexture.height;
-        final int farOffsetX = x + width - st.windowTopRightTexture.width;
-        final int farOffsetY = y + height - st.windowTopLeftTexture.height;
+        final int farOffsetX = x + width - st.windowBottomRightTexture.width;
+        final int farOffsetY = y + height - st.windowBottomLeftTexture.height;
         // Top
         DrawPrimitives.drawTexture(st.windowTopLeftTexture, x, y, -0.1);
         DrawPrimitives.drawScaledTexture(
@@ -160,6 +183,11 @@ public class NimWindow {
 //        DrawPrimitives.drawRect(x, y + st.windowHeaderHeight, x + width, y + height, -0.1, st.windowBgColor);
         profiler.endSection();
     }
+
+//    protected void expand(Point expandable, int width, int height) {
+//        if (expandable.getX() < width) expandable.setX(width);
+//        if (expandable.getY() < height) expandable.setY(height);
+//    }
 
     public enum Alignment {
         VERTICAL, HORIZONTAL

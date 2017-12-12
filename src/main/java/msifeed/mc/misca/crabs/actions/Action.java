@@ -13,7 +13,7 @@ public class Action {
     public ArrayList<Modifier> modifiers = new ArrayList<>();
     public ArrayList<Effect> target_effects = new ArrayList<>();
     public ArrayList<Effect> self_effects = new ArrayList<>();
-    public ArrayList<String> tags = new ArrayList<>();
+    public ArrayList<String> tags = new ArrayList<>(); // По большей части сейчас не используется
 
     public Action(String name, Type type) {
         this.name = name;

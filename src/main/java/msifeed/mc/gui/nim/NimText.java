@@ -20,7 +20,7 @@ public class NimText extends NimPart {
     protected ImStyle st = ImStyle.DEFAULT;
     protected String text = "";
 
-    public Function<String, Boolean> onTextUpdate = s -> true;
+    public Function<String, Boolean> validateText = s -> true;
 
     private int cursor = 0;
     private int scrollOffset = 0;
@@ -34,28 +34,32 @@ public class NimText extends NimPart {
     }
 
     public NimText(int width) {
-        resize(width, 0);
+        resize(width, ImGui.INSTANCE.imStyle.textDefaultHeight);
+    }
+
+    public NimText(int width, int height) {
+        resize(width, height);
     }
 
     @Override
-    public void render() {
+    public void render(int x, int y) {
         frameCounter++;
 
         final ImLabel imLabel = ImGui.INSTANCE.imLabel;
         final Profiler profiler = Minecraft.getMinecraft().mcProfiler;
         profiler.startSection("NimText");
 
-        // Lazy init because fonts are not loaded when the mod inits
-        if (height <= 0) {
-            height = imLabel.labelHeight() + st.textLabelOffset.getY() * 2;
-        }
+//        // Lazy init because fonts are not loaded when the mod inits
+//        if (height <= 0) {
+//            height = imLabel.labelHeight() + st.textLabelOffset.getY() * 2;
+//        }
 
-        final boolean inRect = MouseTracker.isInRect(posX, posY, width, height);
+        final boolean inRect = MouseTracker.isInRect(x, y, width, height);
         if (inRect && !MouseTracker.hovered()) {
             takeFocus();
 
             final Point pos = MouseTracker.pos();
-            final int curX = pos.getX() - (posX + st.textLabelOffset.getX());
+            final int curX = pos.getX() - (x + st.textLabelOffset.getX());
             final String strScrolled = text.substring(scrollOffset);
             final String strBeforeCursor = imLabel.font.trimStringToWidth(strScrolled, curX, false);
             setCursor(strBeforeCursor.length() + scrollOffset);
@@ -69,31 +73,28 @@ public class NimText extends NimPart {
             final int vOffset = (inRect ? 1 : 0) * st.textLeftTexture.height;
             DrawTexbox.threeParted(
                     st.textLeftTexture, st.textMiddleTexture, st.textRightTexture,
-                    posX, posY, width, height, vOffset);
+                    x, y, width, height, vOffset);
         }
 
         // Render text
         {
             ImGui.INSTANCE.imLabel.label(text,
-                    posX + st.textLabelOffset.getX(), posY,
+                    x + st.textLabelOffset.getX(), y,
                     width, height, st.textLabelColor, false, true);
         }
-        renderCursor();
+
+        // Render cursor
+        if (inFocus() && frameCounter / 16 % 2 == 0) {
+            final String beforeCurText = text.substring(scrollOffset, scrollOffset + cursor);
+            final int beforeCurTextLen = imLabel.font.getStringWidth(beforeCurText);
+            final int curX = x + st.textLabelOffset.getX() + beforeCurTextLen;
+            final int curY = y + st.textLabelOffset.getY() + 1;
+            DrawPrimitives.drawInvertedRect(curX, curY, posZ, 1, st.textCursorHeight, 0xFFFFFFFF);
+        }
 
         checkKeyEvent();
 
         profiler.endSection();
-    }
-
-    protected void renderCursor() {
-        if (inFocus() && frameCounter / 16 % 2 == 0) {
-            final ImLabel imLabel = ImGui.INSTANCE.imLabel;
-            final String beforeCurText = text.substring(scrollOffset, scrollOffset + cursor);
-            final int beforeCurTextLen = imLabel.font.getStringWidth(beforeCurText);
-            final int curX = posX + st.textLabelOffset.getX() + beforeCurTextLen;
-            final int curY = posY + st.textLabelOffset.getY();
-            DrawPrimitives.drawInvertedRect(curX, curY, posZ, 1, st.textCursorHeight, 0xFFFFFFFF);
-        }
     }
 
     public void checkKeyEvent() {
@@ -112,8 +113,8 @@ public class NimText extends NimPart {
 
         // Repeating
         final long now = System.currentTimeMillis();
-        if (key == pressedKey && now - pressedTime < MS_TO_REPEAT) return;
-        if (pressedKey == -1) {
+        if (now - pressedTime < MS_TO_REPEAT) return;
+        if (pressedKey != key) {
             pressedKey = key;
             pressedTime = now;
         }
@@ -149,7 +150,7 @@ public class NimText extends NimPart {
     }
 
     public void setText(String text) {
-        if (onTextUpdate.apply(text)) {
+        if (validateText.apply(text)) {
             this.text = text;
             this.cursor = text.length();
         }
@@ -163,7 +164,7 @@ public class NimText extends NimPart {
 
     public void addCharAtCursor(char c) {
         String newText = new StringBuilder(this.text).insert(cursor, c).toString();
-        if (onTextUpdate.apply(newText)) {
+        if (validateText.apply(newText)) {
             this.text = newText;
             this.cursor++;
         }
@@ -175,7 +176,7 @@ public class NimText extends NimPart {
         String newtext;
         if (relative < 0) newtext = this.text.substring(0, rel) + this.text.substring(cursor);
         else newtext = this.text.substring(0, cursor) + this.text.substring(rel);
-        if (onTextUpdate.apply(newtext)) {
+        if (validateText.apply(newtext)) {
             this.text = newtext;
             if (relative < 0) this.cursor = rel;
         }

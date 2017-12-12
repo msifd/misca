@@ -6,8 +6,8 @@ import org.lwjgl.util.Point;
 public class ImStyle {
     public static final ImStyle DEFAULT = new ImStyle();
 
-    public int windowHeaderHeight = 10;
-    public Point windowPadding = new Point(4, 3);
+    public int windowHeaderHeight = 11; // With top padding
+    public Point windowPadding = new Point(4, 4); // Side and bottom padding
     public Point windowSpacing = new Point(2, 2);
     public int windowTitleColor = 0xFF6b4c16;
     public Point windowTitleOffset = new Point(4, 1);
@@ -22,6 +22,15 @@ public class ImStyle {
     public TextureInfo windowBottomMiddleTexture = new TextureInfo(windowTexture, 10, 16, 4, 9);
     public TextureInfo windowBottomRightTexture = new TextureInfo(windowTexture, 15, 16, 9, 9);
     public TextureInfo windowCloseBtnTexture = new TextureInfo(windowTexture, 24, 0, 6, 6);
+
+    public int textLabelColor = 0xFFf2c399;
+    public Point textLabelOffset = new Point(2, 0);
+    public int textCursorHeight = 6;
+    public int textDefaultHeight = 8;
+    public String textTexture = "misca:textures/gui/imgui.png";
+    public TextureInfo textLeftTexture = new TextureInfo(textTexture, 80, 0, 4, 8);
+    public TextureInfo textMiddleTexture = new TextureInfo(textTexture, 85, 0, 1, 8);
+    public TextureInfo textRightTexture = new TextureInfo(textTexture, 87, 0, 4, 8);
     public Point windowCloseBtnOffset = new Point(-4, 3);
 
     public int buttonSpacingX = 1;
@@ -32,14 +41,6 @@ public class ImStyle {
     public TextureInfo buttonLeftTexture = new TextureInfo(buttonTexture, 50, 0, 4, 12);
     public TextureInfo buttonMiddleTexture = new TextureInfo(buttonTexture, 55, 0, 2, 12);
     public TextureInfo buttonRightTexture = new TextureInfo(buttonTexture, 58, 0, 4, 12);
-
-    public int textLabelColor = 0xFFf2c399;
-    public Point textLabelOffset = new Point(2, 0);
-    public int textCursorHeight = 6;
-    public String textTexture = "misca:textures/gui/imgui.png";
-    public TextureInfo textLeftTexture = new TextureInfo(textTexture, 80, 0, 4, 8);
-    public TextureInfo textMiddleTexture = new TextureInfo(textTexture, 85, 0, 1, 8);
-    public TextureInfo textRightTexture = new TextureInfo(textTexture, 87, 0, 4, 8);
 
     public int labelColor = 0xFFf2c399;
 }

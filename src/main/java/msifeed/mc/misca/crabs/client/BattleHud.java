@@ -19,9 +19,18 @@ public enum BattleHud {
     INSTANCE;
 
     private NimWindow battleWindow = new NimWindow("Battle", this::toggleHud);
-    private NimText textField = new NimText();
+    private NimText[] textFields = new NimText[6];
 
     private Boolean shouldDisplay = false;
+
+    BattleHud() {
+        final int width = 16;
+        for (int i = 0; i < textFields.length; i++) {
+            final NimText t = new NimText(width);
+//            t.locate(i * width, 0);
+            textFields[i] = t;
+        }
+    }
 
     @SubscribeEvent
     public void onRenderGui(RenderGameOverlayEvent.Post event) {
@@ -58,10 +67,24 @@ public enum BattleHud {
         {
             imgui.beginWindow(battleWindow);
 
-            imgui.label("Test text field:");
-            imgui.nim(textField);
-            imgui.label("> " + textField.getText());
+            imgui.horizontalBlock();
+            for (int i = 0; i < textFields.length; i++) {
+                imgui.nim(textFields[i]);
+            }
 
+            imgui.verticalBlock();
+            imgui.label("the text below");
+
+            imgui.verticalBlock();
+            imgui.label("line the first");
+            imgui.label("line the second");
+
+            imgui.horizontalBlock();
+            for (int i = 0; i < textFields.length; i++) {
+                imgui.nim(textFields[i]);
+            }
+
+            imgui.verticalBlock();
             if (imgui.button(inBattle ? "Stop fight" : "Start fight")) {
                 FighterMessage message = new FighterMessage(inBattle ? FighterMessage.Type.LEAVE : FighterMessage.Type.JOIN);
                 BattleNetwork.INSTANCE.notifyServer(message);
