@@ -10,7 +10,7 @@ public class ImStyle {
     public Point windowPadding = new Point(4, 4); // Side and bottom padding
     public Point windowSpacing = new Point(2, 2);
     public int windowTitleColor = 0xFF6b4c16;
-    public Point windowTitleOffset = new Point(4, 1);
+    public Point windowTitleOffset = new Point(4, 0);
     public String windowTexture = "misca:textures/gui/imgui.png";
     public TextureInfo windowTopLeftTexture = new TextureInfo(windowTexture, 0, 0, 9, 10);
     public TextureInfo windowTopMiddleTexture = new TextureInfo(windowTexture, 10, 0, 4, 10);
@@ -24,7 +24,7 @@ public class ImStyle {
     public TextureInfo windowCloseBtnTexture = new TextureInfo(windowTexture, 24, 0, 6, 6);
 
     public int textLabelColor = 0xFFf2c399;
-    public Point textLabelOffset = new Point(2, 0);
+    public int textLabelOffsetX = 2;
     public int textCursorHeight = 6;
     public int textDefaultHeight = 8;
     public String textTexture = "misca:textures/gui/imgui.png";
@@ -33,8 +33,8 @@ public class ImStyle {
     public TextureInfo textRightTexture = new TextureInfo(textTexture, 87, 0, 4, 8);
     public Point windowCloseBtnOffset = new Point(-4, 3);
 
-    public int buttonSpacingX = 1;
-    public int buttonSpacingY = 1;
+    public Point buttonDefaultSize = new Point(80, 12);
+    public int buttonPaddingX = 1;
     public int buttonTitleColor = 0xFFedb47d;
     public Point buttonTitleOffset = new Point(0, 0);
     public String buttonTexture = "misca:textures/gui/imgui.png";

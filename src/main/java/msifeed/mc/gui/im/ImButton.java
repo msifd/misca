@@ -18,7 +18,7 @@ public class ImButton {
         final Profiler profiler = Minecraft.getMinecraft().mcProfiler;
         profiler.startSection("ImButton");
 
-        final int spacingWidth = st.buttonSpacingX * 2;
+        final int spacingWidth = st.buttonPaddingX * 2;
         final boolean inRect = MouseTracker.isInRect(x, y, width, height);
 
         if (label instanceof String) {
@@ -38,7 +38,7 @@ public class ImButton {
                     st.buttonTitleColor, true, true);
         } else if (label instanceof TextureInfo) {
             final TextureInfo tex = (TextureInfo) label;
-            DrawPrimitives.drawTexture(tex, x + st.buttonSpacingX, y, 0, inRect ? tex.height : 0);
+            DrawPrimitives.drawTexture(tex, x + st.buttonPaddingX, y, 0, inRect ? tex.height : 0);
         }
 
         profiler.endSection();

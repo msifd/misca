@@ -13,7 +13,8 @@ public class NimWindow {
     public String title;
     public final Point pos = new Point(5, 5);
     public final Point size = new Point(0, 0);
-    public Runnable onCrossBtn;
+    public Runnable onCrossBtn = () -> {
+    };
 
     // Dragging
     protected boolean dragging = false;
@@ -83,6 +84,11 @@ public class NimWindow {
                 : currBlock.getY());
     }
 
+    public int getBlockContentWidth() {
+        final ImStyle st = ImGui.INSTANCE.imStyle;
+        return currBlock.getX() - st.windowSpacing.getX() - st.windowPadding.getX();
+    }
+
     public void renderWindow() {
         final ImGui imgui = ImGui.INSTANCE;
         final ImStyle st = imgui.imStyle;
@@ -94,13 +100,11 @@ public class NimWindow {
         final int height = size.getY() + st.windowPadding.getY() - st.windowSpacing.getY();
 
         // Draw header title and buttons, calc min width
-        int minWidth = 0;
         {
+            int minWidth = 0;
             final Point titleOffset = st.windowTitleOffset;
             minWidth += imgui.imLabel.label(title, x + titleOffset.getX(), y + titleOffset.getY(), width, st.windowHeaderHeight, st.windowTitleColor, false, false);
-        }
 
-        if (onCrossBtn != null) {
             final TextureInfo tex = st.windowCloseBtnTexture;
             final int cbX = x + width - tex.width + st.windowCloseBtnOffset.getX();
             final int cbY = y + st.windowCloseBtnOffset.getY();
@@ -108,9 +112,9 @@ public class NimWindow {
                 onCrossBtn.run();
             }
             minWidth += st.windowSpacing.getX() + tex.width;
-        }
 
-        if (currBlock.getX() < minWidth) currBlock.setX(minWidth);
+            if (currBlock.getX() < minWidth) currBlock.setX(minWidth);
+        }
 
         // Handling header pressing after cross button
         final boolean inHeader = MouseTracker.isInRect(x, y,

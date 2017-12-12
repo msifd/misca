@@ -64,5 +64,9 @@ public abstract class NimPart {
         focus = null;
     }
 
+    public static boolean focused() {
+        return focus != null;
+    }
+
     public abstract void render(int x, int y);
 }

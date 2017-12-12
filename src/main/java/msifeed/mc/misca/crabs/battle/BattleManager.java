@@ -6,6 +6,7 @@ import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.PlayerEvent;
 import cpw.mods.fml.common.gameevent.TickEvent;
+import msifeed.mc.misca.crabs.CrabsNetwork;
 import msifeed.mc.misca.crabs.EntityUtils;
 import msifeed.mc.misca.crabs.rules.Rules;
 import net.minecraft.entity.EntityLivingBase;
@@ -34,8 +35,7 @@ public enum BattleManager {
     private long lastUpdate = 0;
     private ArrayList<FighterContext> toSync = new ArrayList<>();
 
-    public void onInit(FMLInitializationEvent event) {
-        BattleNetwork.INSTANCE.onInit(event);
+    public void onInit() {
         MinecraftForge.EVENT_BUS.register(INSTANCE);
         FMLCommonHandler.instance().bus().register(INSTANCE);
     }
@@ -127,7 +127,7 @@ public enum BattleManager {
 
     private void syncBattleList() {
         if (toSync.isEmpty()) return;
-        BattleNetwork.INSTANCE.syncAll(toSync);
+        CrabsNetwork.INSTANCE.syncAll(toSync);
         toSync.clear();
     }
 
@@ -240,7 +240,7 @@ public enum BattleManager {
         context.entity = event.player;
 
         if (event.player instanceof EntityPlayerMP)
-            BattleNetwork.INSTANCE.syncPlayer((EntityPlayerMP) event.player, uuidToContext.values());
+            CrabsNetwork.INSTANCE.syncPlayer((EntityPlayerMP) event.player, uuidToContext.values());
     }
 
     @SubscribeEvent

@@ -49,22 +49,17 @@ public class NimText extends NimPart {
         final Profiler profiler = Minecraft.getMinecraft().mcProfiler;
         profiler.startSection("NimText");
 
-//        // Lazy init because fonts are not loaded when the mod inits
-//        if (height <= 0) {
-//            height = imLabel.labelHeight() + st.textLabelOffset.getY() * 2;
-//        }
-
         final boolean inRect = MouseTracker.isInRect(x, y, width, height);
         if (inRect && !MouseTracker.hovered()) {
             takeFocus();
 
             final Point pos = MouseTracker.pos();
-            final int curX = pos.getX() - (x + st.textLabelOffset.getX());
+            final int curX = pos.getX() - (x + st.textLabelOffsetX);
             final String strScrolled = text.substring(scrollOffset);
             final String strBeforeCursor = imLabel.font.trimStringToWidth(strScrolled, curX, false);
             setCursor(strBeforeCursor.length() + scrollOffset);
         }
-        if (!inRect && MouseTracker.released() && inFocus()) {
+        if (!inRect && MouseTracker.pressed() && inFocus()) {
             releaseFocus();
         }
 
@@ -79,7 +74,7 @@ public class NimText extends NimPart {
         // Render text
         {
             ImGui.INSTANCE.imLabel.label(text,
-                    x + st.textLabelOffset.getX(), y,
+                    x + st.textLabelOffsetX, y,
                     width, height, st.textLabelColor, false, true);
         }
 
@@ -87,8 +82,8 @@ public class NimText extends NimPart {
         if (inFocus() && frameCounter / 16 % 2 == 0) {
             final String beforeCurText = text.substring(scrollOffset, scrollOffset + cursor);
             final int beforeCurTextLen = imLabel.font.getStringWidth(beforeCurText);
-            final int curX = x + st.textLabelOffset.getX() + beforeCurTextLen;
-            final int curY = y + st.textLabelOffset.getY() + 1;
+            final int curX = x + st.textLabelOffsetX + beforeCurTextLen;
+            final int curY = y + 1;
             DrawPrimitives.drawInvertedRect(curX, curY, posZ, 1, st.textCursorHeight, 0xFFFFFFFF);
         }
 

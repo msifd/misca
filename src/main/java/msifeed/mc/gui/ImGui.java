@@ -51,18 +51,20 @@ public class ImGui {
         final int x = cw.nextElemX() + offsetX
                 , y = cw.nextElemY() + offsetY;
         final int lw = imLabel.label(label, x, y, imStyle.labelColor, false);
-        cw.consume(x, y, lw, 8);
+        cw.consume(x, y, lw, imLabel.labelHeight());
     }
 
-//    public void label(String label, int x, int y, int width, int height) {
-//        label(label, x, y, width, height, 0xFFFFFFFF, true, false);
-//    }
-//
-//    public void label(String label, int x, int y, int width, int height, int color, boolean centerWidth, boolean trim) {
-//        final ImWindow cw = currentWindow;
-//        final int lw = imLabel.label(label, x, y, width, height, color, centerWidth, trim);
-//        cw.consume(lw, imLabel.labelHeight());
-//    }
+    public void label(String label, int width) {
+        label(label, 0, 0, width, imLabel.labelHeight(), true, false);
+    }
+
+    public void label(String label, int offsetX, int offsetY, int width, int height, boolean centerWidth, boolean trim) {
+        final NimWindow cw = currentWindow;
+        final int x = cw.nextElemX() + offsetX
+                , y = cw.nextElemY() + offsetY;
+        imLabel.label(label, x, y, width, height, imStyle.labelColor, centerWidth, trim);
+        cw.consume(x, y, width, height);
+    }
 
     public void labelMultiline(String label, int offsetX, int offsetY) {
         final NimWindow cw = currentWindow;
@@ -76,8 +78,12 @@ public class ImGui {
         return button(label, 0, 0);
     }
 
+    public boolean button(String label, int width) {
+        return button(label, 0, 0, width, imStyle.buttonDefaultSize.getY());
+    }
+
     public boolean button(String label, int offsetX, int offsetY) {
-        return button(label, offsetX, offsetY, 80, 12);
+        return button(label, offsetX, offsetY, imStyle.buttonDefaultSize.getX(), imStyle.buttonDefaultSize.getY());
     }
 
     public boolean button(String label, int offsetX, int offsetY, int width, int height) {

@@ -16,7 +16,9 @@ public class Crabs {
 
     @Subscribe
     public void init(FMLInitializationEvent event) {
-        BattleManager.INSTANCE.onInit(event);
+        CrabsNetwork.INSTANCE.onInit();
+        BattleManager.INSTANCE.onInit();
+        CharacterManager.INSTANCE.onInit();
         MinecraftForge.EVENT_BUS.register(CharacterManager.INSTANCE);
 
         ItemBattleStick battleStick = new ItemBattleStick();

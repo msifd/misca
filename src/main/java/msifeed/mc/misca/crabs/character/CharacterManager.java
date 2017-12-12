@@ -11,15 +11,15 @@ import java.util.UUID;
 public enum CharacterManager {
     INSTANCE;
 
+    private static final Character GENERIC_CHAR = new Character(8, 8, 8, 8, 8, 8);
     private HashMap<UUID, Character> uuidToChar = new HashMap<>();
 
     public Character get(UUID uuid) {
-        // TODO заменить поиском по настоящей базе игроков
-        Character test = new Character();
-        test.fill(1, 2, 3, 15, 5, 6);
-        return test;
+        return uuidToChar.getOrDefault(uuid, GENERIC_CHAR);
+    }
 
-//        return uuidToChar.get(uuid);
+    public void onMessageFromClient(CharacterMessage message) {
+
     }
 
     @SubscribeEvent
@@ -27,5 +27,8 @@ public enum CharacterManager {
         // Удаляем энтити из базы, т.к. они одноразовые
         if (event.entity instanceof EntityPlayer) return;
         uuidToChar.remove(EntityUtils.getUuid(event.entity));
+    }
+
+    public void onInit() {
     }
 }
