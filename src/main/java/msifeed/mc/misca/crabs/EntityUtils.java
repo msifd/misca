@@ -15,7 +15,7 @@ import java.util.UUID;
 import java.util.stream.Stream;
 
 public class EntityUtils {
-    public static UUID getUuid(Entity e) {
+    public static UUID getUuid(EntityLivingBase e) {
         if (e instanceof EntityPlayer) return e.getUniqueID();
         else {
             final byte[] worldSalt = Ints.toByteArray(e.worldObj.provider.dimensionId);

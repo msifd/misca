@@ -7,9 +7,10 @@ import msifeed.mc.gui.nim.NimPart;
 import msifeed.mc.gui.nim.NimText;
 import msifeed.mc.gui.nim.NimWindow;
 import msifeed.mc.misca.crabs.CrabsNetwork;
+import msifeed.mc.misca.crabs.actions.Actions;
 import msifeed.mc.misca.crabs.battle.BattleManager;
 import msifeed.mc.misca.crabs.battle.FighterContext;
-import msifeed.mc.misca.crabs.character.CharacterMessage;
+import msifeed.mc.misca.crabs.battle.FighterMessage;
 import msifeed.mc.misca.crabs.character.Stats;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
@@ -21,7 +22,7 @@ public enum BattleHud {
     INSTANCE;
 
     private final NimWindow battleWindow = new NimWindow("Battle", this::toggleHud);
-    private final int statTextWidth = 12;
+    private final int statTextWidth = 16;
     private final NimText[] statTexts = new NimText[Stats.values().length];
 
     private Boolean shouldDisplay = false;
@@ -31,6 +32,7 @@ public enum BattleHud {
         for (int i = 0; i < statTexts.length; i++) {
             final NimText t = new NimText(statTextWidth);
             t.validateText = validator;
+            t.centerByWidth = true;
             statTexts[i] = t;
         }
     }
@@ -48,15 +50,6 @@ public enum BattleHud {
     }
 
     protected void render() {
-        /*
-        ЕРП-характеристики !!!!!!
-
-        кнопки выбора действия
-        другой худ: параметры харок
-
-        типы: MELEE, RANGED, DEFENCE, SUPPORT, ADDITIONAL, MAGIC, USE, ?MOVE?, NONE;
-         */
-
         final Minecraft mc = Minecraft.getMinecraft();
         final EntityPlayer player = mc.thePlayer;
         final BattleManager bm = BattleManager.INSTANCE;
@@ -70,51 +63,23 @@ public enum BattleHud {
         {
             imgui.beginWindow(battleWindow);
 
-            imgui.horizontalBlock();
-            for (int i = 0; i < statTexts.length; i++) {
-                imgui.label(Stats.values()[i].toString(), statTextWidth);
-            }
-
-            imgui.horizontalBlock();
-            for (int i = 0; i < statTexts.length; i++) {
-                imgui.nim(statTexts[i]);
-            }
-
-            final int inputWidth = battleWindow.getBlockContentWidth();
             imgui.verticalBlock();
-            if (imgui.button("Update character", inputWidth)) {
-                try {
-                    byte[] stats = new byte[statTexts.length];
-                    for (int i = 0; i < stats.length; i++) {
-                        stats[i] = Byte.parseByte(statTexts[i].getText());
-                    }
-                    final CharacterMessage msg = new CharacterMessage(stats);
-                    CrabsNetwork.INSTANCE.notifyServer(msg);
-                } catch (NumberFormatException e) {
-                    Minecraft.getMinecraft().thePlayer.sendChatMessage("Fill all stats");
-                }
-
-//                FighterMessage message = new FighterMessage(inBattle ? FighterMessage.Type.LEAVE : FighterMessage.Type.JOIN);
-//                CrabsNetwork.INSTANCE.notifyServer(message);
+            if (imgui.button(inBattle ? "Stop fight" : "Start fight")) {
+                FighterMessage message = new FighterMessage(inBattle ? FighterMessage.Type.LEAVE : FighterMessage.Type.JOIN);
+                CrabsNetwork.INSTANCE.sendToServer(message);
             }
 
-//            imgui.verticalBlock();
-//            if (imgui.button(inBattle ? "Stop fight" : "Start fight")) {
-//                FighterMessage message = new FighterMessage(inBattle ? FighterMessage.Type.LEAVE : FighterMessage.Type.JOIN);
-//                BattleNetwork.INSTANCE.notifyServer(message);
-//            }
-//
-//            if (inBattle) {
-//                if (imgui.button("Punch")) {
-//                    BattleNetwork.INSTANCE.notifyServer(new FighterMessage(Actions.test_punch));
-//                }
-//                if (imgui.button("Fireball")) {
-//                    BattleNetwork.INSTANCE.notifyServer(new FighterMessage(Actions.test_fireball));
-//                }
-//                if (imgui.button("Roll ERP")) {
-//                    BattleNetwork.INSTANCE.notifyServer(new FighterMessage(Stats.DET));
-//                }
-//            }
+            if (inBattle) {
+                if (imgui.button("Punch")) {
+                    CrabsNetwork.INSTANCE.sendToServer(new FighterMessage(Actions.test_punch));
+                }
+                if (imgui.button("Fireball")) {
+                    CrabsNetwork.INSTANCE.sendToServer(new FighterMessage(Actions.test_fireball));
+                }
+                if (imgui.button("Roll ERP")) {
+                    CrabsNetwork.INSTANCE.sendToServer(new FighterMessage(Stats.DET));
+                }
+            }
 
             imgui.endWindow();
         }

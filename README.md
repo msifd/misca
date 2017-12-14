@@ -1,4 +1,5 @@
-### To-do
+[![Build Status](https://travis-ci.org/msifd/misca.svg?branch=master)](https://travis-ci.org/msifd/misca)
+
 Логика:
 * [x] Режим боя. Вход и выход из него
 * [x] Сеть. Основные пакеты и стаб для обработки

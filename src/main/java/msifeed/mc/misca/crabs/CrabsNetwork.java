@@ -33,7 +33,7 @@ public enum CrabsNetwork {
     }
 
     @SideOnly(Side.CLIENT)
-    public void notifyServer(IMessage message) {
+    public void sendToServer(IMessage message) {
         network.sendToServer(message);
     }
 }

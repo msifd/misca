@@ -7,6 +7,10 @@ import java.util.HashSet;
 public class KeyTracker {
     private static HashSet<Integer> pressedKeys = new HashSet<>();
 
+    public static boolean isPressed(int key) {
+        return Keyboard.isKeyDown(key);
+    }
+
     public static boolean isTapped(int key) {
         boolean wasPressed = pressedKeys.contains(key);
         if (Keyboard.isKeyDown(key)) {

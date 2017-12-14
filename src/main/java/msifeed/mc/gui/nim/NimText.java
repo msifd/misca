@@ -3,6 +3,7 @@ package msifeed.mc.gui.nim;
 import msifeed.mc.gui.ImGui;
 import msifeed.mc.gui.ImStyle;
 import msifeed.mc.gui.im.ImLabel;
+import msifeed.mc.gui.input.KeyTracker;
 import msifeed.mc.gui.input.MouseTracker;
 import msifeed.mc.gui.render.DrawPrimitives;
 import msifeed.mc.gui.render.DrawTexbox;
@@ -21,6 +22,7 @@ public class NimText extends NimPart {
     protected String text = "";
 
     public Function<String, Boolean> validateText = s -> true;
+    public boolean centerByWidth = false;
 
     private int cursor = 0;
     private int scrollOffset = 0;
@@ -59,7 +61,7 @@ public class NimText extends NimPart {
             final String strBeforeCursor = imLabel.font.trimStringToWidth(strScrolled, curX, false);
             setCursor(strBeforeCursor.length() + scrollOffset);
         }
-        if (!inRect && MouseTracker.pressed() && inFocus()) {
+        if (inFocus() && (KeyTracker.isPressed(Keyboard.KEY_ESCAPE) || !inRect && MouseTracker.pressed())) {
             releaseFocus();
         }
 
@@ -71,10 +73,13 @@ public class NimText extends NimPart {
                     x, y, width, height, vOffset);
         }
 
+        final int labelX = x + (centerByWidth
+                ? (width - ImGui.INSTANCE.imLabel.font.getStringWidth(text)) / 2
+                : st.textLabelOffsetX);
+
         // Render text
         {
-            ImGui.INSTANCE.imLabel.label(text,
-                    x + st.textLabelOffsetX, y,
+            ImGui.INSTANCE.imLabel.label(text, labelX, y,
                     width, height, st.textLabelColor, false, true);
         }
 
@@ -82,7 +87,7 @@ public class NimText extends NimPart {
         if (inFocus() && frameCounter / 16 % 2 == 0) {
             final String beforeCurText = text.substring(scrollOffset, scrollOffset + cursor);
             final int beforeCurTextLen = imLabel.font.getStringWidth(beforeCurText);
-            final int curX = x + st.textLabelOffsetX + beforeCurTextLen;
+            final int curX = labelX + beforeCurTextLen;
             final int curY = y + 1;
             DrawPrimitives.drawInvertedRect(curX, curY, posZ, 1, st.textCursorHeight, 0xFFFFFFFF);
         }

@@ -43,13 +43,13 @@ public class ImLabel {
      *
      * @param trim label to fit in rect
      */
-    public int label(String label, int x, int y, int width, int height, int color, boolean centerWidth, boolean trim) {
+    public int label(String label, int x, int y, int width, int height, int color, boolean centerByWidth, boolean trim) {
         final String str;
         if (trim) str = font.trimStringToWidth(label, width, false);
         else str = label;
         final int labelWidth = font.getStringWidth(str), labelHeight = labelHeight();
-        final int paddingX = centerWidth ? (width - labelWidth) / 2 : 0, paddingY = (height - labelHeight) / 2;
-
+        final int paddingX = centerByWidth ? (width - labelWidth) / 2 : 0;
+        final int paddingY = (height - labelHeight) / 2;
         return label(str, x + paddingX, y + paddingY, color, false);
     }
 
