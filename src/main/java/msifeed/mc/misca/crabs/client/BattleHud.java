@@ -21,11 +21,10 @@ import java.util.function.Function;
 public enum BattleHud {
     INSTANCE;
 
-    private final NimWindow battleWindow = new NimWindow("Battle", this::toggleHud);
     private final int statTextWidth = 16;
     private final NimText[] statTexts = new NimText[Stats.values().length];
-
     private Boolean shouldDisplay = false;
+    private final NimWindow battleWindow = new NimWindow("Battle", this::toggleHud);
 
     BattleHud() {
         final Function<String, Boolean> validator = s -> s.matches("\\d{0,2}");

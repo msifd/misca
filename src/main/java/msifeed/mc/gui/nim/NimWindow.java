@@ -10,21 +10,19 @@ import net.minecraft.profiler.Profiler;
 import org.lwjgl.util.Point;
 
 public class NimWindow {
-    public String title;
     public final Point pos = new Point(5, 5);
     public final Point size = new Point(0, 0);
-    public Runnable onCrossBtn = () -> {
-    };
-
-    // Dragging
-    protected boolean dragging = false;
     protected final Point dragStart = new Point();
     protected final Point windowStart = new Point();
-
-    // Alignment
-    protected Alignment alignment = Alignment.VERTICAL;
     protected final Point prevBlock = new Point();
     protected final Point currBlock = new Point();
+    public String title;
+    public Runnable onCrossBtn = () -> {
+    };
+    // Dragging
+    protected boolean dragging = false;
+    // Alignment
+    protected Alignment alignment = Alignment.VERTICAL;
 
     public NimWindow(String title) {
         this(title, null);

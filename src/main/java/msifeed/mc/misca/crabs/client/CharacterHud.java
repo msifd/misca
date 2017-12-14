@@ -6,29 +6,29 @@ import msifeed.mc.gui.input.KeyTracker;
 import msifeed.mc.gui.nim.NimPart;
 import msifeed.mc.gui.nim.NimText;
 import msifeed.mc.gui.nim.NimWindow;
-import msifeed.mc.misca.crabs.CrabsNetwork;
-import msifeed.mc.misca.crabs.actions.Actions;
 import msifeed.mc.misca.crabs.battle.BattleManager;
-import msifeed.mc.misca.crabs.battle.FighterContext;
-import msifeed.mc.misca.crabs.battle.FighterMessage;
-import msifeed.mc.misca.crabs.character.CharacterMessage;
+import msifeed.mc.misca.crabs.character.Character;
+import msifeed.mc.misca.crabs.character.CharacterManager;
 import msifeed.mc.misca.crabs.character.Stats;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 
+import java.util.UUID;
 import java.util.function.Function;
 
-public enum BattleHud {
+public enum CharacterHud {
     INSTANCE;
 
-    private final NimWindow battleWindow = new NimWindow("Battle", this::toggleHud);
     private final int statTextWidth = 16;
     private final NimText[] statTexts = new NimText[Stats.values().length];
-
     private Boolean shouldDisplay = false;
+    private UUID latestCharUuid;
+    private Character character;
+    private boolean fetching = false;
+    private final NimWindow window = new NimWindow("Character", this::toggleHud);
 
-    BattleHud() {
+    CharacterHud() {
         final Function<String, Boolean> validator = s -> s.matches("\\d{0,2}");
         for (int i = 0; i < statTexts.length; i++) {
             final NimText t = new NimText(statTextWidth);
@@ -51,73 +51,66 @@ public enum BattleHud {
     }
 
     protected void render() {
-        /*
-        ЕРП-характеристики !!!!!!
-
-        кнопки выбора действия
-        другой худ: параметры харок
-
-        типы: MELEE, RANGED, DEFENCE, SUPPORT, ADDITIONAL, MAGIC, USE, ?MOVE?, NONE;
-         */
-
         final Minecraft mc = Minecraft.getMinecraft();
         final EntityPlayer player = mc.thePlayer;
-        final BattleManager bm = BattleManager.INSTANCE;
-        final FighterContext context = bm.getContext(player.getUniqueID());
 
-        final boolean inBattle = context != null;
+        if (BattleManager.INSTANCE.isBattling(player)) {
+            toggleHud();
+            return;
+        }
+
+        latestCharUuid = player.getUniqueID();
+        final CharacterManager cm = CharacterManager.INSTANCE;
+        final Character characterResponse = cm.get(latestCharUuid);
 
         final ImGui imgui = ImGui.INSTANCE;
         imgui.newFrame();
 
-        {
-            imgui.beginWindow(battleWindow);
+        imgui.beginWindow(window);
 
-            imgui.horizontalBlock();
-            for (int i = 0; i < statTexts.length; i++) {
-                imgui.label(Stats.values()[i].toString(), statTextWidth);
+        // Fetch char
+        if (characterResponse == null && character == null) {
+            if (!fetching) {
+                fetching = true;
+                cm.request(latestCharUuid);
             }
-
-            imgui.horizontalBlock();
-            for (int i = 0; i < statTexts.length; i++) {
-                imgui.nim(statTexts[i]);
-            }
-
-            final int inputWidth = battleWindow.getBlockContentWidth();
-            imgui.verticalBlock();
-            if (imgui.button("Update character", inputWidth)) {
-                try {
-                    byte[] stats = new byte[statTexts.length];
-                    for (int i = 0; i < stats.length; i++) {
-                        stats[i] = Byte.parseByte(statTexts[i].getText());
-                    }
-                    final CharacterMessage msg = new CharacterMessage(stats);
-                    CrabsNetwork.INSTANCE.notifyServer(msg);
-                } catch (NumberFormatException e) {
-                    Minecraft.getMinecraft().thePlayer.sendChatMessage("Fill all stats");
-                }
-            }
-
-//            imgui.verticalBlock();
-//            if (imgui.button(inBattle ? "Stop fight" : "Start fight")) {
-//                FighterMessage message = new FighterMessage(inBattle ? FighterMessage.Type.LEAVE : FighterMessage.Type.JOIN);
-//                CrabsNetwork.INSTANCE.notifyServer(message);
-//            }
-//
-//            if (inBattle) {
-//                if (imgui.button("Punch")) {
-//                    CrabsNetwork.INSTANCE.notifyServer(new FighterMessage(Actions.test_punch));
-//                }
-//                if (imgui.button("Fireball")) {
-//                    CrabsNetwork.INSTANCE.notifyServer(new FighterMessage(Actions.test_fireball));
-//                }
-//                if (imgui.button("Roll ERP")) {
-//                    CrabsNetwork.INSTANCE.notifyServer(new FighterMessage(Stats.DET));
-//                }
-//            }
-
+            imgui.label("Fetching...");
             imgui.endWindow();
+            return;
         }
+
+        // Got char, fill inputs
+        final Stats[] statValues = Stats.values();
+        if (characterResponse != null && character != characterResponse) {
+            character = characterResponse;
+            for (int i = 0; i < statValues.length; i++)
+                statTexts[i].setText(Integer.toString(character.stat(statValues[i])));
+        }
+
+        imgui.horizontalBlock();
+        for (int i = 0; i < statTexts.length; i++) {
+            imgui.label(statValues[i].toString(), statTextWidth);
+        }
+
+        imgui.horizontalBlock();
+        for (NimText statText : statTexts) {
+            imgui.nim(statText);
+        }
+
+        final int inputWidth = window.getBlockContentWidth();
+        imgui.verticalBlock();
+        if (imgui.button("Update character", inputWidth)) {
+            try {
+                int[] stats = new int[statTexts.length];
+                for (int i = 0; i < stats.length; i++) stats[i] = Byte.parseByte(statTexts[i].getText());
+                character.fill(stats);
+                CharacterManager.INSTANCE.requestUpdate(player.getUniqueID(), character);
+            } catch (NumberFormatException e) {
+                Minecraft.getMinecraft().thePlayer.sendChatMessage("Fill all stats");
+            }
+        }
+
+        imgui.endWindow();
     }
 
     private void toggleHud() {
@@ -127,5 +120,11 @@ public enum BattleHud {
         final Minecraft mc = Minecraft.getMinecraft();
         if (shouldDisplay) mc.displayGuiScreen(EmptyGuiScreen.INSTANCE);
         else if (mc.currentScreen == EmptyGuiScreen.INSTANCE) mc.displayGuiScreen(null);
+
+        if (!shouldDisplay) {
+            latestCharUuid = null;
+            character = null;
+            fetching = false;
+        }
     }
 }

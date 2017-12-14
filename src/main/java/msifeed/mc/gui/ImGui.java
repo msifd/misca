@@ -5,7 +5,6 @@ import msifeed.mc.gui.im.ImLabel;
 import msifeed.mc.gui.input.MouseTracker;
 import msifeed.mc.gui.nim.NimPart;
 import msifeed.mc.gui.nim.NimWindow;
-import org.lwjgl.util.Point;
 
 public class ImGui {
     public static ImGui INSTANCE = new ImGui();
@@ -48,8 +47,7 @@ public class ImGui {
 
     public void label(String label, int offsetX, int offsetY) {
         final NimWindow cw = currentWindow;
-        final int x = cw.nextElemX() + offsetX
-                , y = cw.nextElemY() + offsetY;
+        final int x = cw.nextElemX() + offsetX, y = cw.nextElemY() + offsetY;
         final int lw = imLabel.label(label, x, y, imStyle.labelColor, false);
         cw.consume(x, y, lw, imLabel.labelHeight());
     }
@@ -60,16 +58,14 @@ public class ImGui {
 
     public void label(String label, int offsetX, int offsetY, int width, int height, boolean centerWidth, boolean trim) {
         final NimWindow cw = currentWindow;
-        final int x = cw.nextElemX() + offsetX
-                , y = cw.nextElemY() + offsetY;
+        final int x = cw.nextElemX() + offsetX, y = cw.nextElemY() + offsetY;
         imLabel.label(label, x, y, width, height, imStyle.labelColor, centerWidth, trim);
         cw.consume(x, y, width, height);
     }
 
     public void labelMultiline(String label, int offsetX, int offsetY) {
         final NimWindow cw = currentWindow;
-        final int x = cw.nextElemX() + offsetX
-                , y = cw.nextElemY() + offsetY;
+        final int x = cw.nextElemX() + offsetX, y = cw.nextElemY() + offsetY;
         final int[] size = imLabel.multiline(label, x, y, imStyle.labelColor, false);
         cw.consume(x, y, size[0], size[1]);
     }
@@ -88,8 +84,7 @@ public class ImGui {
 
     public boolean button(String label, int offsetX, int offsetY, int width, int height) {
         final NimWindow cw = currentWindow;
-        final int x = cw.nextElemX() + offsetX
-                , y = cw.nextElemY() + offsetY;
+        final int x = cw.nextElemX() + offsetX, y = cw.nextElemY() + offsetY;
         boolean pressed = imButton.button(label, x, y, width, height);
         currentWindow.consume(x, y, width, height);
         return pressed;
@@ -97,8 +92,7 @@ public class ImGui {
 
     public void nim(NimPart nim) {
         final NimWindow cw = currentWindow;
-        final int x = cw.nextElemX() + nim.getX()
-                , y = cw.nextElemY() + nim.getY();
+        final int x = cw.nextElemX() + nim.getX(), y = cw.nextElemY() + nim.getY();
         nim.render(x, y);
         currentWindow.consume(x, y, nim.getWidth(), nim.getHeight());
     }

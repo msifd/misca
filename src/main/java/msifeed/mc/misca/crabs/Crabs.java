@@ -13,7 +13,7 @@ import net.minecraftforge.common.MinecraftForge;
 public class Crabs {
     @Subscribe
     public void preInit(FMLPreInitializationEvent event) {
-        CharacterProvider.INSTANCE.preInit(event);
+        CharacterProvider.INSTANCE.preInit();
     }
 
     @Subscribe

@@ -34,7 +34,7 @@ public class Action {
     @Override
     public boolean equals(Object obj) {
         if (!Action.class.isAssignableFrom(obj.getClass())) return false;
-        Action act = (Action) obj;
+        final Action act = (Action) obj;
         return this.name.equals(act.name)
                 && this.type.equals(act.type)
                 && this.modifiers.equals(act.modifiers)
@@ -45,11 +45,10 @@ public class Action {
 
     @Override
     public String toString() {
-        String rolls = this.modifiers.stream().map(Object::toString).collect(Collectors.joining(","));
-        String teffs = this.target_effects.stream().map(Object::toString).collect(Collectors.joining(","));
-        String seffs = this.self_effects.stream().map(Object::toString).collect(Collectors.joining(","));
-        String tags = this.tags.stream().collect(Collectors.joining(","));
-
+        final String rolls = this.modifiers.stream().map(Object::toString).collect(Collectors.joining(","));
+        final String teffs = this.target_effects.stream().map(Object::toString).collect(Collectors.joining(","));
+        final String seffs = this.self_effects.stream().map(Object::toString).collect(Collectors.joining(","));
+        final String tags = this.tags.stream().collect(Collectors.joining(","));
         return Stream.of(name, type.toString(), rolls, teffs, seffs, tags)
                 .collect(Collectors.joining(":"));
     }

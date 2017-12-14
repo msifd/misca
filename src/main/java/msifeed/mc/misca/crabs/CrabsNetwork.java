@@ -1,6 +1,5 @@
 package msifeed.mc.misca.crabs;
 
-import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import cpw.mods.fml.relauncher.Side;
@@ -19,9 +18,10 @@ public enum CrabsNetwork {
     private SimpleNetworkWrapper network = new SimpleNetworkWrapper("misca.crabs");
 
     public void onInit() {
-        network.registerMessage(CharacterMessage.class, CharacterMessage.class, 1, Side.SERVER);
-        network.registerMessage(FighterMessage.class, FighterMessage.class, 2, Side.SERVER);
-        network.registerMessage(FighterContextMessage.class, FighterContextMessage.class, 3, Side.CLIENT);
+        network.registerMessage(CharacterMessage.class, CharacterMessage.class, 0x00, Side.SERVER);
+        network.registerMessage(CharacterMessage.class, CharacterMessage.class, 0x01, Side.CLIENT);
+        network.registerMessage(FighterMessage.class, FighterMessage.class, 0x10, Side.SERVER);
+        network.registerMessage(FighterContextMessage.class, FighterContextMessage.class, 0x11, Side.CLIENT);
     }
 
     public void syncPlayer(EntityPlayerMP playerMP, Collection<FighterContext> toSync) {

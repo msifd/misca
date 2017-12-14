@@ -17,13 +17,10 @@ import java.util.function.Function;
 
 public class NimText extends NimPart {
     private static final int MS_TO_REPEAT = 500;
-
-    protected ImStyle st = ImStyle.DEFAULT;
-    protected String text = "";
-
     public Function<String, Boolean> validateText = s -> true;
     public boolean centerByWidth = false;
-
+    protected ImStyle st = ImStyle.DEFAULT;
+    protected String text = "";
     private int cursor = 0;
     private int scrollOffset = 0;
     private int frameCounter = 0; // For cursor blinking

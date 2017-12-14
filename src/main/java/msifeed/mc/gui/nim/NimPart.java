@@ -6,24 +6,28 @@ public abstract class NimPart {
     protected int posX, posY, posZ;
     protected int width, height;
 
+    public static boolean focused() {
+        return focus != null;
+    }
+
     public int getX() {
         return posX;
-    }
-
-    public int getY() {
-        return posY;
-    }
-
-    public int getZ() {
-        return posZ;
     }
 
     public void setX(int posX) {
         this.posX = posX;
     }
 
+    public int getY() {
+        return posY;
+    }
+
     public void setY(int posY) {
         this.posY = posY;
+    }
+
+    public int getZ() {
+        return posZ;
     }
 
     public int getWidth() {
@@ -62,10 +66,6 @@ public abstract class NimPart {
 
     public void releaseFocus() {
         focus = null;
-    }
-
-    public static boolean focused() {
-        return focus != null;
     }
 
     public abstract void render(int x, int y);

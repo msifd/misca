@@ -8,7 +8,7 @@ import io.netty.buffer.ByteBuf;
 
 import java.util.UUID;
 
-public class CharacterMessage implements IMessage, IMessageHandler<CharacterMessage, IMessage> {
+public class CharacterMessage implements IMessage, IMessageHandler<CharacterMessage, CharacterMessage> {
     Type type;
     UUID uuid;
     Character character;
@@ -57,9 +57,17 @@ public class CharacterMessage implements IMessage, IMessageHandler<CharacterMess
     }
 
     @Override
-    public IMessage onMessage(CharacterMessage message, MessageContext ctx) {
-        CharacterManager.INSTANCE.onCharacterReceive(message);
-        return null;
+    public CharacterMessage onMessage(CharacterMessage message, MessageContext ctx) {
+        switch (message.type) {
+            case REQUEST:
+                final Character c = CharacterManager.INSTANCE.get(message.uuid);
+                return new CharacterMessage(message.uuid, c);
+            case RESPONSE:
+                if (ctx.side.isServer()) CharacterManager.INSTANCE.onServerReceive(message);
+                else CharacterManager.INSTANCE.onClientReceive(message);
+            default:
+                return null;
+        }
     }
 
     private enum Type {
