@@ -17,12 +17,12 @@ public class CharacterMessage implements IMessage, IMessageHandler<CharacterMess
     }
 
     public CharacterMessage(UUID uuid) {
-        this.type = Type.REQUEST;
+        this.type = Type.FETCH;
         this.uuid = uuid;
     }
 
     public CharacterMessage(UUID uuid, Character character) {
-        this.type = Type.RESPONSE;
+        this.type = Type.CHARACTER;
         this.uuid = uuid;
         this.character = character;
     }
@@ -35,7 +35,7 @@ public class CharacterMessage implements IMessage, IMessageHandler<CharacterMess
         final String uuidStr = new String(buf.readBytes(uuidStrLen).array());
         uuid = UUID.fromString(uuidStr);
 
-        if (type == Type.REQUEST) return;
+        if (type == Type.FETCH) return;
         character = new Character();
         for (Stats s : Stats.values()) {
             character.stats.put(s, (int) buf.readByte());
@@ -50,7 +50,7 @@ public class CharacterMessage implements IMessage, IMessageHandler<CharacterMess
         buf.writeByte(uuidStr.length());
         buf.writeBytes(uuidStr.getBytes(Charsets.UTF_8));
 
-        if (type == Type.REQUEST) return;
+        if (type == Type.FETCH) return;
         for (Stats s : Stats.values()) {
             buf.writeByte(character.stat(s));
         }
@@ -59,18 +59,18 @@ public class CharacterMessage implements IMessage, IMessageHandler<CharacterMess
     @Override
     public CharacterMessage onMessage(CharacterMessage message, MessageContext ctx) {
         switch (message.type) {
-            case REQUEST:
+            case FETCH:
                 final Character c = CharacterManager.INSTANCE.get(message.uuid);
                 return new CharacterMessage(message.uuid, c);
-            case RESPONSE:
+            case CHARACTER:
                 if (ctx.side.isServer()) CharacterManager.INSTANCE.onServerReceive(message);
-                else CharacterManager.INSTANCE.onClientReceive(message);
+                else CharacterManager.INSTANCE.onFetchResponse(message);
             default:
                 return null;
         }
     }
 
     private enum Type {
-        REQUEST, RESPONSE
+        FETCH, CHARACTER
     }
 }

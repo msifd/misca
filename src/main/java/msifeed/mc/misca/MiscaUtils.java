@@ -8,12 +8,12 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.management.ServerConfigurationManager;
 
 public class MiscaUtils {
-    public static String l10n(String raw) {
-        return LanguageRegistry.instance().getStringLocalization(raw);
+    public static String l10n(String key) {
+        return LanguageRegistry.instance().getStringLocalization(key);
     }
 
-    public static String l10n(String fmt, Object... args) {
-        return String.format(LanguageRegistry.instance().getStringLocalization(fmt), args);
+    public static String l10n(String key, Object... args) {
+        return String.format(LanguageRegistry.instance().getStringLocalization(key), args);
     }
 
     public static boolean isOp(ICommandSender sender) {

@@ -6,6 +6,9 @@ public class Character {
     public String name = "";
     public EnumMap<Stats, Integer> stats = new EnumMap<>(Stats.class);
 
+    // Используется только при сохранении стат, отсеивая не-игроков
+    transient boolean isPlayer = true;
+
     Character() {
 
     }

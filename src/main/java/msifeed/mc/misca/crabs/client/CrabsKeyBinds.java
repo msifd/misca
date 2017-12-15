@@ -12,7 +12,7 @@ public final class CrabsKeyBinds {
 
     public static void register() {
         Minecraft.getMinecraft().gameSettings.keyBindings = ArrayUtils.addAll(
-                new KeyBinding[]{battleHud},
+                new KeyBinding[]{charHud, battleHud},
                 Minecraft.getMinecraft().gameSettings.keyBindings);
     }
 }

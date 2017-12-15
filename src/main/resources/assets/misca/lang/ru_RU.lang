@@ -2,7 +2,8 @@ itemGroup.misca=Миска
 
 key.misca=Misca
 key.misca.char=Characters
-key.misca.battle_hud=Калькулятор
+key.misca.char_hud=Стат-о-матик
+key.misca.battle_hud=Битв-о-матик
 
 misca.crabs.calc=§6Калькулон
 
@@ -14,6 +15,8 @@ misca.calculator.window.custom_dice=Бросить d10 + MOD
 
 item.battle_stick.name=Палка битвы
 item.battle_stick.desc=Воздействует на существо:\nЛКМ - выйти раз на раз\nShift+ЛКМ - уточнить мотивы бойца\nПКМ - переключение командования\nShift+ПКМ - отпустить покурить
+item.char_sheet.name=Чар листок
+item.char_sheet.desc=ПКМ по существу для редакт. чаршита
 
 misca.lobby.gui.create_lobby=Создать лобби
 misca.lobby.msg.you_are_already_in_lobby=Вы уже в лобби!

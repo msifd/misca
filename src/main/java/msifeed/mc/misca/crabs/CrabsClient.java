@@ -3,6 +3,7 @@ package msifeed.mc.misca.crabs;
 import com.google.common.eventbus.Subscribe;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
+import msifeed.mc.misca.crabs.client.BattleHud;
 import msifeed.mc.misca.crabs.client.BattleMarkRender;
 import msifeed.mc.misca.crabs.client.CharacterHud;
 import msifeed.mc.misca.crabs.client.CrabsKeyBinds;
@@ -21,6 +22,7 @@ public class CrabsClient extends Crabs {
         super.init(event);
         MinecraftForge.EVENT_BUS.register(BattleMarkRender.INSTANCE);
         MinecraftForge.EVENT_BUS.register(CharacterHud.INSTANCE);
+        MinecraftForge.EVENT_BUS.register(BattleHud.INSTANCE);
 
         CrabsKeyBinds.register();
     }

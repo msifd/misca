@@ -8,6 +8,7 @@ import msifeed.mc.misca.crabs.battle.BattleManager;
 import msifeed.mc.misca.crabs.character.CharacterManager;
 import msifeed.mc.misca.crabs.character.CharacterProvider;
 import msifeed.mc.misca.crabs.tools.ItemBattleStick;
+import msifeed.mc.misca.crabs.tools.ItemCharSheet;
 import net.minecraftforge.common.MinecraftForge;
 
 public class Crabs {
@@ -25,5 +26,9 @@ public class Crabs {
         ItemBattleStick battleStick = new ItemBattleStick();
         MinecraftForge.EVENT_BUS.register(battleStick);
         GameRegistry.registerItem(battleStick, "battle_stick");
+
+        ItemCharSheet charSheet = new ItemCharSheet();
+        MinecraftForge.EVENT_BUS.register(charSheet);
+        GameRegistry.registerItem(charSheet, "char_sheet");
     }
 }
