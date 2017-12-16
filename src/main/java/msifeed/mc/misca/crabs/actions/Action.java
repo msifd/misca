@@ -45,6 +45,10 @@ public class Action {
                 && this.tags.equals(act.tags);
     }
 
+    public String signature() {
+        return name + ":" + type.toString();
+    }
+
     @Override
     public String toString() {
         final String rolls = this.modifiers.stream().map(Object::toString).collect(Collectors.joining(","));

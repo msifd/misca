@@ -3,7 +3,7 @@ package msifeed.mc.misca.crabs.battle;
 import cpw.mods.fml.common.network.simpleimpl.MessageContext;
 import io.netty.buffer.ByteBuf;
 import msifeed.mc.misca.crabs.actions.Action;
-import msifeed.mc.misca.crabs.actions.Actions;
+import msifeed.mc.misca.crabs.actions.ActionManager;
 import msifeed.mc.misca.crabs.character.Stats;
 import msifeed.mc.misca.utils.AbstractMessage;
 
@@ -38,7 +38,7 @@ public class FighterMessage extends AbstractMessage<FighterMessage> {
         switch (type) {
             case ACTION:
                 final String name = readShortString(buf);
-                action = Actions.INSTANCE.lookup(name);
+                action = ActionManager.INSTANCE.lookup(name);
                 if (action == null) malformed = true;
                 break;
             case CALC:

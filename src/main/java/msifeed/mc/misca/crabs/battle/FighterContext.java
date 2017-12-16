@@ -1,7 +1,7 @@
 package msifeed.mc.misca.crabs.battle;
 
-import msifeed.mc.misca.utils.EntityUtils;
 import msifeed.mc.misca.crabs.actions.Action;
+import msifeed.mc.misca.utils.EntityUtils;
 import net.minecraft.entity.EntityLivingBase;
 
 import java.io.Serializable;

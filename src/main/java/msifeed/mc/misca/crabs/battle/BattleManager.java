@@ -6,8 +6,8 @@ import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.PlayerEvent;
 import cpw.mods.fml.common.gameevent.TickEvent;
 import msifeed.mc.misca.crabs.CrabsNetwork;
-import msifeed.mc.misca.utils.EntityUtils;
 import msifeed.mc.misca.crabs.rules.Rules;
+import msifeed.mc.misca.utils.EntityUtils;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -126,7 +126,7 @@ public enum BattleManager {
 
     private void syncBattleList() {
         if (toSync.isEmpty()) return;
-        CrabsNetwork.INSTANCE.syncAll(toSync);
+        CrabsNetwork.INSTANCE.sendToAll(new FighterContextMessage(toSync));
         toSync.clear();
     }
 
@@ -239,8 +239,10 @@ public enum BattleManager {
 
         context.entity = event.player;
 
-        if (event.player instanceof EntityPlayerMP)
-            CrabsNetwork.INSTANCE.syncPlayer((EntityPlayerMP) event.player, uuidToContext.values());
+        if (event.player instanceof EntityPlayerMP) {
+            final FighterContextMessage msg = new FighterContextMessage(uuidToContext.values());
+            CrabsNetwork.INSTANCE.sendToPlayer((EntityPlayerMP) event.player, msg);
+        }
     }
 
     @SubscribeEvent

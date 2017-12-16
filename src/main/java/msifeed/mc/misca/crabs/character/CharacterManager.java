@@ -23,8 +23,6 @@ public enum CharacterManager {
 
     private static final Character GENERIC_CHAR = new Character(new int[]{8, 8, 8, 8, 8, 8});
     private HashMap<UUID, Character> uuidToChar = new HashMap<>();
-
-    @SideOnly(Side.CLIENT)
     private HashMap<UUID, Consumer<Character>> requests = new HashMap<>();
 
     public void onInit() {

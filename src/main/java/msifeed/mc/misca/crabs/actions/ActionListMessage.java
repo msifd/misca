@@ -7,17 +7,17 @@ import msifeed.mc.misca.utils.AbstractMessage;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 public class ActionListMessage extends AbstractMessage<ActionListMessage> {
-    private Collection<String> actions;
+    private ArrayList<String> actions = new ArrayList<>();
 
-    ActionListMessage() {
+    public ActionListMessage() {
 
     }
 
-    ActionListMessage(Collection<String> actions) {
-        this.actions = actions;
+    public ActionListMessage(Collection<Action> actions) {
+        for (Action a : actions)
+            this.actions.add(a.signature());
     }
 
     @Override
@@ -39,6 +39,7 @@ public class ActionListMessage extends AbstractMessage<ActionListMessage> {
 
     @Override
     public IMessage onMessage(ActionListMessage message, MessageContext ctx) {
+        ActionManager.INSTANCE.onReceiveActionSignatures(message.actions);
         return null;
     }
 }

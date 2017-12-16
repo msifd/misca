@@ -6,7 +6,6 @@ import msifeed.mc.misca.crabs.rules.Modifier;
 import msifeed.mc.misca.crabs.rules.Rules;
 
 import java.lang.reflect.Type;
-import java.util.LinkedList;
 import java.util.List;
 
 public class ActionJsonSerializer implements JsonSerializer<Action>, JsonDeserializer<Action> {

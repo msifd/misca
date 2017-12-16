@@ -7,7 +7,6 @@ import msifeed.mc.gui.nim.NimPart;
 import msifeed.mc.gui.nim.NimText;
 import msifeed.mc.gui.nim.NimWindow;
 import msifeed.mc.misca.crabs.CrabsNetwork;
-import msifeed.mc.misca.crabs.actions.Actions;
 import msifeed.mc.misca.crabs.battle.BattleManager;
 import msifeed.mc.misca.crabs.battle.FighterContext;
 import msifeed.mc.misca.crabs.battle.FighterMessage;

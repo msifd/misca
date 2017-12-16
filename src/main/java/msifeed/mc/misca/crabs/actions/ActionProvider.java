@@ -7,7 +7,6 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import msifeed.mc.misca.config.ConfigManager;
 import msifeed.mc.misca.crabs.rules.Rules;
-import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.File;
@@ -21,7 +20,7 @@ import java.util.List;
 public enum ActionProvider {
     INSTANCE;
 
-    private static Logger logger = LogManager.getLogger("Crabs.Actions");
+    private static Logger logger = ActionManager.logger;
     private final Type contentType = new TypeToken<List<Action>>() {
     }.getType();
     private final Gson gson = new GsonBuilder()

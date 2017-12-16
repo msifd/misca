@@ -4,8 +4,8 @@ import com.google.common.eventbus.Subscribe;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.registry.GameRegistry;
+import msifeed.mc.misca.crabs.actions.ActionManager;
 import msifeed.mc.misca.crabs.actions.ActionProvider;
-import msifeed.mc.misca.crabs.actions.Actions;
 import msifeed.mc.misca.crabs.battle.BattleManager;
 import msifeed.mc.misca.crabs.character.CharacterManager;
 import msifeed.mc.misca.crabs.character.CharacterProvider;
@@ -24,7 +24,7 @@ public class Crabs {
     public void init(FMLInitializationEvent event) {
         CrabsNetwork.INSTANCE.onInit();
         CharacterManager.INSTANCE.onInit();
-        Actions.INSTANCE.onInit();
+        ActionManager.INSTANCE.onInit();
         BattleManager.INSTANCE.onInit();
 
         ItemBattleStick battleStick = new ItemBattleStick();

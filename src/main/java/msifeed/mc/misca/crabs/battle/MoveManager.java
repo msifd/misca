@@ -1,12 +1,10 @@
 package msifeed.mc.misca.crabs.battle;
 
-import msifeed.mc.misca.utils.EntityUtils;
 import msifeed.mc.misca.crabs.actions.Action;
 import msifeed.mc.misca.crabs.rules.ActionResult;
 import msifeed.mc.misca.crabs.rules.Effect;
 import msifeed.mc.misca.crabs.rules.Rules;
 import msifeed.mc.misca.utils.MiscaUtils;
-import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EntityDamageSource;
 import org.apache.logging.log4j.LogManager;
@@ -15,7 +13,6 @@ import org.apache.logging.log4j.Logger;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.UUID;
-import java.util.stream.Stream;
 
 public enum MoveManager {
     INSTANCE;
