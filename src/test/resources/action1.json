@@ -1,7 +1,8 @@
 {
   "name": "point_hit",
+  "title": ".point_hit",
   "type": "melee",
-  "rolls": [
+  "modifiers": [
     "g30+",
     "str",
     "per",
