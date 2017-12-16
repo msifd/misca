@@ -6,7 +6,7 @@ import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.PlayerEvent;
 import cpw.mods.fml.common.gameevent.TickEvent;
 import msifeed.mc.misca.crabs.CrabsNetwork;
-import msifeed.mc.misca.crabs.EntityUtils;
+import msifeed.mc.misca.utils.EntityUtils;
 import msifeed.mc.misca.crabs.rules.Rules;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;

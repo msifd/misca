@@ -4,13 +4,10 @@ import java.util.EnumMap;
 
 public class Character {
     public String name = "";
+    public boolean isPlayer = false; // Используется только при сохранении стат, отсеивая не-игроков
     public EnumMap<Stats, Integer> stats = new EnumMap<>(Stats.class);
 
-    // Используется только при сохранении стат, отсеивая не-игроков
-    transient boolean isPlayer = true;
-
     Character() {
-
     }
 
     public Character(int[] stats) {

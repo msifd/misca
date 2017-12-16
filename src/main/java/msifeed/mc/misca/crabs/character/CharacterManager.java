@@ -7,7 +7,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 import msifeed.mc.misca.config.ConfigEvent;
 import msifeed.mc.misca.config.ConfigManager;
 import msifeed.mc.misca.crabs.CrabsNetwork;
-import msifeed.mc.misca.crabs.EntityUtils;
+import msifeed.mc.misca.utils.EntityUtils;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
@@ -38,10 +38,9 @@ public enum CharacterManager {
     }
 
     public void onServerReceive(CharacterMessage message) {
-        message.character.isPlayer = EntityUtils.lookupPlayer(message.uuid) != null;
         uuidToChar.put(message.uuid, message.character);
 
-        if (message.character.isPlayer) return;
+        if (!message.character.isPlayer) return;
         new Thread(() -> {
             final Map<UUID, Character> players = new LinkedHashMap<>();
             for (Map.Entry<UUID, Character> e : uuidToChar.entrySet())

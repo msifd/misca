@@ -6,7 +6,7 @@ import msifeed.mc.gui.input.KeyTracker;
 import msifeed.mc.gui.nim.NimPart;
 import msifeed.mc.gui.nim.NimText;
 import msifeed.mc.gui.nim.NimWindow;
-import msifeed.mc.misca.crabs.EntityUtils;
+import msifeed.mc.misca.utils.EntityUtils;
 import msifeed.mc.misca.crabs.battle.BattleManager;
 import msifeed.mc.misca.crabs.character.Character;
 import msifeed.mc.misca.crabs.character.CharacterManager;
@@ -53,6 +53,7 @@ public enum CharacterHud {
         CharacterManager.INSTANCE.fetch(entityUuid, c -> {
             character = c;
             character.name = entity.getCommandSenderName(); // Называем чара только при редактировании
+            character.isPlayer = entity instanceof EntityPlayer; // Чары по-умолчанию не игроки, исправляем
             final Stats[] statValues = Stats.values();
             for (int i = 0; i < statValues.length; i++)
                 statTexts[i].setText(Integer.toString(character.stat(statValues[i])));
@@ -98,7 +99,6 @@ public enum CharacterHud {
         }
 
         final ImGui imgui = ImGui.INSTANCE;
-        imgui.newFrame();
         imgui.beginWindow(window);
 
         // Ждем получения чара

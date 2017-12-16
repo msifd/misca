@@ -1,10 +1,14 @@
 package msifeed.mc.gui;
 
+import cpw.mods.fml.common.eventhandler.EventPriority;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import msifeed.mc.gui.im.ImButton;
 import msifeed.mc.gui.im.ImLabel;
 import msifeed.mc.gui.input.MouseTracker;
 import msifeed.mc.gui.nim.NimPart;
 import msifeed.mc.gui.nim.NimWindow;
+import net.minecraftforge.client.event.RenderGameOverlayEvent;
+import net.minecraftforge.common.MinecraftForge;
 
 public class ImGui {
     public static ImGui INSTANCE = new ImGui();
@@ -15,12 +19,14 @@ public class ImGui {
     public NimWindow debugWindow = new NimWindow("Debug window");
     public NimWindow currentWindow = debugWindow;
 
-    public ImGui() {
-        newFrame();
+    static {
+        activate(INSTANCE);
     }
 
-    public void newFrame() {
-        MouseTracker.newFrame();
+    public static void activate(ImGui imGui) {
+        INSTANCE = imGui;
+        MinecraftForge.EVENT_BUS.unregister(INSTANCE);
+        MinecraftForge.EVENT_BUS.register(INSTANCE);
     }
 
     public void beginWindow(NimWindow window) {
@@ -95,5 +101,15 @@ public class ImGui {
         final int x = cw.nextElemX() + nim.getX(), y = cw.nextElemY() + nim.getY();
         nim.render(x, y);
         currentWindow.consume(x, y, nim.getWidth(), nim.getHeight());
+    }
+
+    @SubscribeEvent(priority = EventPriority.HIGHEST)
+    public void onFrameBegin(RenderGameOverlayEvent.Pre event) {
+        if (event.type != RenderGameOverlayEvent.ElementType.ALL) return;
+        MouseTracker.newFrame();
+    }
+
+    @SubscribeEvent(priority = EventPriority.LOWEST)
+    public void onFrameEnd(RenderGameOverlayEvent.Post event) {
     }
 }

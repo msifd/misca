@@ -1,4 +1,4 @@
-package msifeed.mc.misca;
+package msifeed.mc.misca.utils;
 
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.registry.LanguageRegistry;

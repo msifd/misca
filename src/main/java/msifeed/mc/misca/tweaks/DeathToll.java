@@ -2,7 +2,7 @@ package msifeed.mc.misca.tweaks;
 
 import com.google.common.base.Charsets;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import msifeed.mc.misca.MiscaUtils;
+import msifeed.mc.misca.utils.MiscaUtils;
 import msifeed.mc.misca.config.ConfigManager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ChatComponentText;

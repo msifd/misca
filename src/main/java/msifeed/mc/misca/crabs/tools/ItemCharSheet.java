@@ -1,7 +1,7 @@
 package msifeed.mc.misca.crabs.tools;
 
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import msifeed.mc.misca.MiscaUtils;
+import msifeed.mc.misca.utils.MiscaUtils;
 import msifeed.mc.misca.crabs.client.CharacterHud;
 import msifeed.mc.misca.things.MiscaThings;
 import net.minecraft.entity.Entity;

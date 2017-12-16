@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 public class FighterContextMessage implements IMessage, IMessageHandler<FighterContextMessage, IMessage> {
-    public ArrayList<FighterContext> vctx = new ArrayList<>();
+    private ArrayList<FighterContext> vctx = new ArrayList<>();
 
     public FighterContextMessage() {
 

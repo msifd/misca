@@ -57,31 +57,27 @@ public enum BattleHud {
         final boolean inBattle = context != null;
 
         final ImGui imgui = ImGui.INSTANCE;
-        imgui.newFrame();
+        imgui.beginWindow(battleWindow);
 
-        {
-            imgui.beginWindow(battleWindow);
-
-            imgui.verticalBlock();
-            if (imgui.button(inBattle ? "Stop fight" : "Start fight")) {
-                FighterMessage message = new FighterMessage(inBattle ? FighterMessage.Type.LEAVE : FighterMessage.Type.JOIN);
-                CrabsNetwork.INSTANCE.sendToServer(message);
-            }
-
-            if (inBattle) {
-                if (imgui.button("Punch")) {
-                    CrabsNetwork.INSTANCE.sendToServer(new FighterMessage(Actions.test_punch));
-                }
-                if (imgui.button("Fireball")) {
-                    CrabsNetwork.INSTANCE.sendToServer(new FighterMessage(Actions.test_fireball));
-                }
-                if (imgui.button("Roll ERP")) {
-                    CrabsNetwork.INSTANCE.sendToServer(new FighterMessage(Stats.DET));
-                }
-            }
-
-            imgui.endWindow();
+        imgui.verticalBlock();
+        if (imgui.button(inBattle ? "Stop fight" : "Start fight")) {
+            FighterMessage message = new FighterMessage(inBattle ? FighterMessage.Type.LEAVE : FighterMessage.Type.JOIN);
+            CrabsNetwork.INSTANCE.sendToServer(message);
         }
+
+        if (inBattle) {
+            if (imgui.button("Punch")) {
+                CrabsNetwork.INSTANCE.sendToServer(new FighterMessage(Actions.test_punch));
+            }
+            if (imgui.button("Fireball")) {
+                CrabsNetwork.INSTANCE.sendToServer(new FighterMessage(Actions.test_fireball));
+            }
+            if (imgui.button("Roll ERP")) {
+                CrabsNetwork.INSTANCE.sendToServer(new FighterMessage(Stats.DET));
+            }
+        }
+
+        imgui.endWindow();
     }
 
     private void toggleHud() {

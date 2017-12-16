@@ -1,4 +1,4 @@
-package msifeed.mc.misca.crabs;
+package msifeed.mc.misca.utils;
 
 import com.google.common.primitives.Bytes;
 import com.google.common.primitives.Ints;

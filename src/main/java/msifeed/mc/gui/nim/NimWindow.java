@@ -181,15 +181,8 @@ public class NimWindow {
         DrawPrimitives.drawTexture(st.windowBottomRightTexture,
                 farOffsetX, farOffsetY, -0.1);
 
-//        DrawPrimitives.drawRect(x, y, x + width, y + st.windowHeaderHeight, -0.1, headerColor);
-//        DrawPrimitives.drawRect(x, y + st.windowHeaderHeight, x + width, y + height, -0.1, st.windowBgColor);
         profiler.endSection();
     }
-
-//    protected void expand(Point expandable, int width, int height) {
-//        if (expandable.getX() < width) expandable.setX(width);
-//        if (expandable.getY() < height) expandable.setY(height);
-//    }
 
     public enum Alignment {
         VERTICAL, HORIZONTAL

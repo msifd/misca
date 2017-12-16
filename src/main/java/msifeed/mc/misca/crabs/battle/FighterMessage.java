@@ -1,6 +1,5 @@
 package msifeed.mc.misca.crabs.battle;
 
-import com.google.common.base.Charsets;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
 import cpw.mods.fml.common.network.simpleimpl.MessageContext;
@@ -8,6 +7,7 @@ import io.netty.buffer.ByteBuf;
 import msifeed.mc.misca.crabs.actions.Action;
 import msifeed.mc.misca.crabs.actions.Actions;
 import msifeed.mc.misca.crabs.character.Stats;
+import msifeed.mc.misca.utils.NetUtils;
 
 public class FighterMessage implements IMessage, IMessageHandler<FighterMessage, IMessage> {
     Type type;
@@ -38,8 +38,7 @@ public class FighterMessage implements IMessage, IMessageHandler<FighterMessage,
         type = Type.values()[buf.readByte()];
         switch (type) {
             case ACTION:
-                byte len = buf.readByte();
-                String name = new String(buf.readBytes(len).array(), Charsets.UTF_8);
+                final String name = NetUtils.readString(buf);
                 action = Actions.lookup(name);
                 if (action == null) malformed = true;
                 break;
@@ -56,9 +55,7 @@ public class FighterMessage implements IMessage, IMessageHandler<FighterMessage,
         buf.writeByte(type.ordinal());
         switch (type) {
             case ACTION:
-                String name = action.name;
-                buf.writeByte(name.length());
-                buf.writeBytes(name.getBytes(Charsets.UTF_8));
+                NetUtils.writeString(buf, action.name);
                 break;
             case CALC:
                 buf.writeByte(stat.ordinal());

@@ -1,6 +1,6 @@
 package msifeed.mc.misca.crabs.battle;
 
-import msifeed.mc.misca.crabs.EntityUtils;
+import msifeed.mc.misca.utils.EntityUtils;
 import msifeed.mc.misca.crabs.actions.Action;
 import msifeed.mc.misca.crabs.rules.ActionResult;
 import msifeed.mc.misca.crabs.rules.Effect;
