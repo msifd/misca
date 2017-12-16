@@ -1,14 +1,12 @@
 package msifeed.mc.misca.crabs.character;
 
-import cpw.mods.fml.common.network.simpleimpl.IMessage;
-import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
 import cpw.mods.fml.common.network.simpleimpl.MessageContext;
 import io.netty.buffer.ByteBuf;
-import msifeed.mc.misca.utils.NetUtils;
+import msifeed.mc.misca.utils.AbstractMessage;
 
 import java.util.UUID;
 
-public class CharacterMessage implements IMessage, IMessageHandler<CharacterMessage, CharacterMessage> {
+public class CharacterMessage extends AbstractMessage<CharacterMessage> {
     private Type type;
     UUID uuid;
     Character character;
@@ -30,11 +28,11 @@ public class CharacterMessage implements IMessage, IMessageHandler<CharacterMess
     @Override
     public void fromBytes(ByteBuf buf) {
         type = Type.values()[buf.readByte()];
-        uuid = UUID.fromString(NetUtils.readString(buf));
+        uuid = UUID.fromString(readShortString(buf));
 
         if (type != Type.CHARACTER) return;
         character = new Character();
-        character.name = NetUtils.readString(buf);
+        character.name = readShortString(buf);
         character.isPlayer = buf.readBoolean();
         for (Stats s : Stats.values()) {
             character.stats.put(s, (int) buf.readByte());
@@ -44,10 +42,10 @@ public class CharacterMessage implements IMessage, IMessageHandler<CharacterMess
     @Override
     public void toBytes(ByteBuf buf) {
         buf.writeByte(type.ordinal());
-        NetUtils.writeString(buf, uuid.toString());
+        writeShortString(buf, uuid.toString());
 
         if (type != Type.CHARACTER) return;
-        NetUtils.writeString(buf, character.name);
+        writeShortString(buf, character.name);
         buf.writeBoolean(character.isPlayer);
         for (Stats s : Stats.values()) {
             buf.writeByte(character.stat(s));

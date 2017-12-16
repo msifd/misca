@@ -75,7 +75,7 @@ public enum CharacterManager {
     }
 
     @Subscribe
-    public void onCollectEvent(ConfigEvent.ReloadDone event) {
+    public void onMiscaReload(ConfigEvent.ReloadDone event) {
         uuidToChar.putAll(CharacterProvider.INSTANCE.load());
     }
 }

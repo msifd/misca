@@ -8,15 +8,17 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class Action {
-    public String name;
-    public Type type;
+    public final String name;
+    public final String title;
+    public final Type type;
     public ArrayList<Modifier> modifiers = new ArrayList<>();
     public ArrayList<Effect> target_effects = new ArrayList<>();
     public ArrayList<Effect> self_effects = new ArrayList<>();
     public ArrayList<String> tags = new ArrayList<>(); // По большей части сейчас не используется
 
-    public Action(String name, Type type) {
+    Action(String name, String title, Type type) {
         this.name = name;
+        this.title = title;
         this.type = type;
     }
 
@@ -49,7 +51,7 @@ public class Action {
         final String teffs = this.target_effects.stream().map(Object::toString).collect(Collectors.joining(","));
         final String seffs = this.self_effects.stream().map(Object::toString).collect(Collectors.joining(","));
         final String tags = this.tags.stream().collect(Collectors.joining(","));
-        return Stream.of(name, type.toString(), rolls, teffs, seffs, tags)
+        return Stream.of(name, title, type.toString(), rolls, teffs, seffs, tags)
                 .collect(Collectors.joining(":"));
     }
 

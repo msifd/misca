@@ -5,18 +5,14 @@ key.misca.char=Characters
 key.misca.char_hud=Stat-o-matic
 key.misca.battle_hud=Battle-o-matic
 
-misca.crabs.calc=§6Calculon
-
-misca.crabs.action.hit=Удар
-misca.crabs.action.shoot=Выстрел
-misca.crabs.action.defence=Защита
-misca.crabs.action.magic=Магия
-misca.calculator.window.custom_dice=Бросить d10 + MOD
-
 item.battle_stick.name=Battle stick
 item.battle_stick.desc=Effects clicked entity:\nLeft-click - battle on\nShift+Left-click - reset fighter\nRight-click - take/release control\nShift+Right-click - battle off
 item.char_sheet.name=Char sheet
 item.char_sheet.desc=RMB on entity to edit its charsheet
+
+death.attack.crabs=%1$s was killed in battle
+
+misca.crabs.action.point_hit=Point hit
 
 misca.lobby.gui.create_lobby=Create lobby
 misca.lobby.msg.you_are_already_in_lobby=You are already in lobby!

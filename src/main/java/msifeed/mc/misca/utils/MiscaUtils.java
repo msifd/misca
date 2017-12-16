@@ -3,9 +3,13 @@ package msifeed.mc.misca.utils;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.registry.LanguageRegistry;
 import net.minecraft.command.ICommandSender;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.management.ServerConfigurationManager;
+import net.minecraft.util.IChatComponent;
+
+import java.util.stream.Stream;
 
 public class MiscaUtils {
     public static String l10n(String key) {
@@ -27,5 +31,18 @@ public class MiscaUtils {
             return true;
         }
         return false;
+    }
+
+    public static void notifyAround(EntityLivingBase center, int radius, IChatComponent msg) {
+        EntityUtils.getPlayersAround(center, radius).forEach(player -> player.addChatMessage(msg));
+    }
+
+    public static void notifyAround(EntityLivingBase center1, EntityLivingBase center2, int radius, IChatComponent msg) {
+        Stream.concat(
+                EntityUtils.getPlayersAround(center1, radius),
+                EntityUtils.getPlayersAround(center2, radius)
+        )
+                .distinct()
+                .forEach(player -> player.addChatMessage(msg));
     }
 }

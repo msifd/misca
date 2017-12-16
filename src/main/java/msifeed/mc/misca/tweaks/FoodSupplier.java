@@ -14,7 +14,8 @@ public class FoodSupplier {
         if (!(event.entityLiving instanceof EntityPlayer)) return;
         final FoodStats stats = ((EntityPlayer) event.entityLiving).getFoodStats();
         final int currLevel = stats.getFoodLevel();
-        stats.addStats(TARGET_FOOD_LEVEL - currLevel, 0);
+        if (currLevel != TARGET_FOOD_LEVEL)
+            stats.addStats(TARGET_FOOD_LEVEL - currLevel, 0);
     }
 
     @SubscribeEvent

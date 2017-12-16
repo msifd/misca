@@ -5,6 +5,7 @@ import msifeed.mc.misca.crabs.actions.Action;
 import msifeed.mc.misca.crabs.rules.ActionResult;
 import msifeed.mc.misca.crabs.rules.Effect;
 import msifeed.mc.misca.crabs.rules.Rules;
+import msifeed.mc.misca.utils.MiscaUtils;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EntityDamageSource;
@@ -16,7 +17,7 @@ import java.util.HashMap;
 import java.util.UUID;
 import java.util.stream.Stream;
 
-public enum ActionManager {
+public enum MoveManager {
     INSTANCE;
 
     private Logger logger = LogManager.getLogger("Crabs.Actions");
@@ -83,21 +84,14 @@ public enum ActionManager {
         for (Effect eff : winner.action.self_effects) eff.apply(winner.ctx, winner.ctx);
         // TODO handle some tags
 
-        notifyMoveResult(winner, looser);
+        MiscaUtils.notifyAround(
+                winner.ctx.entity, looser.ctx.entity,
+                BattleDefines.NOTIFICATION_RADIUS,
+                new ChatComponentText(MoveFormatter.formatActionResults(winner, looser))
+        );
 
         attacker.reset();
         defender.reset();
-    }
-
-    private void notifyMoveResult(ActionResult winner, ActionResult looser) {
-        String msg = ActionFormatter.formatActionResults(winner, looser);
-        EntityLivingBase we = winner.ctx.entity, le = looser.ctx.entity;
-        Stream.concat(
-                EntityUtils.getPlayersAround(we, BattleDefines.NOTIFICATION_RADIUS),
-                EntityUtils.getPlayersAround(le, BattleDefines.NOTIFICATION_RADIUS)
-        )
-                .distinct()
-                .forEach(player -> player.addChatMessage(new ChatComponentText(msg)));
     }
 
     private static class Move {

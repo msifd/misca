@@ -141,14 +141,15 @@ public enum BattleManager {
         switch (message.type) {
             case ACTION:
                 FighterContext actor = ctx.control == null ? ctx : getContext(ctx.control);
-                ActionManager.INSTANCE.selectAction(actor, message.action);
+                MoveManager.INSTANCE.selectAction(actor, message.action);
                 break;
             case CALC:
                 // FIXME modifier
                 Rules.rollSingleStat(player, message.stat, 0);
                 break;
             case LEAVE:
-                if (ctx.status != FighterContext.Status.LEAVING) leaveBattle(player, false);
+                if (ctx.status == FighterContext.Status.LEAVING) resetFighter(player);
+                else leaveBattle(player, false);
                 break;
         }
     }
@@ -177,7 +178,7 @@ public enum BattleManager {
         if (now - lastUpdate < UPDATE_DELTA_MS) return;
         lastUpdate = now;
 
-        ActionManager.INSTANCE.finalizeMoves();
+        MoveManager.INSTANCE.finalizeMoves();
         syncBattleList();
     }
 
@@ -194,7 +195,7 @@ public enum BattleManager {
                 if (statusAge >= BattleDefines.SECS_BEFORE_LEAVE_BATTLE) removeFromBattle(ctx);
                 break;
             case DEAL_DAMAGE:
-                if (statusAge >= BattleDefines.SECS_TO_DEAL_DAMAGE) ActionManager.INSTANCE.stopDealingDamage(ctx);
+                if (statusAge >= BattleDefines.SECS_TO_DEAL_DAMAGE) MoveManager.INSTANCE.stopDealingDamage(ctx);
                 break;
         }
     }
@@ -228,7 +229,7 @@ public enum BattleManager {
         // После того как цель определена можно атаковать только её
         if (actor.target != null && actor.target != target_ctx.uuid) return;
 
-        ActionManager.INSTANCE.dealDamage(actor, target_ctx, damage, event.ammount);
+        MoveManager.INSTANCE.dealDamage(actor, target_ctx, damage, event.ammount);
     }
 
     @SubscribeEvent
@@ -267,6 +268,6 @@ public enum BattleManager {
         if (words < BattleDefines.MIN_WORDS_IN_MOVE_DESC) return;
 
         final FighterContext actor = ctx.control == null ? ctx : getContext(ctx.control);
-        ActionManager.INSTANCE.describeAction(actor);
+        MoveManager.INSTANCE.describeAction(actor);
     }
 }

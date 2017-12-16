@@ -1,12 +1,9 @@
-package msifeed.mc.misca.crabs;
+package msifeed.mc.misca.crabs.actions;
 
 import com.google.common.base.Charsets;
 import com.google.common.io.Resources;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import msifeed.mc.misca.crabs.actions.Action;
-import msifeed.mc.misca.crabs.actions.ActionJsonDeserializer;
-import msifeed.mc.misca.crabs.actions.ActionParser;
 import msifeed.mc.misca.crabs.character.Stats;
 import msifeed.mc.misca.crabs.rules.Effect;
 import msifeed.mc.misca.crabs.rules.Modifier;
@@ -21,7 +18,7 @@ import static org.junit.Assert.assertEquals;
 
 public class ActionParserTest {
     private static Action getPointHitAction() {
-        Action act = new Action("point_hit", Action.Type.MELEE);
+        Action act = new Action("point_hit", "Point hit", Action.Type.MELEE);
         Collections.addAll(act.modifiers,
                 new Modifier.DiceG30Plus(),
                 new Modifier.Stat(Stats.STR),
@@ -46,7 +43,7 @@ public class ActionParserTest {
         String res = Resources.toString(url, Charsets.UTF_8);
 
         Gson gson = new GsonBuilder()
-                .registerTypeAdapter(Action.class, new ActionJsonDeserializer())
+                .registerTypeAdapter(Action.class, new ActionJsonSerializer())
                 .create();
 
         Action act = gson.fromJson(res, Action.class);

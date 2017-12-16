@@ -53,9 +53,11 @@ public enum CharacterProvider {
             logger.info("Loading characters...");
             try {
                 final String json = new String(Files.readAllBytes(charsFile.toPath()), Charsets.UTF_8);
-                return gson.fromJson(json, contentType);
-            } catch (IOException e) {
-                e.printStackTrace();
+                final Map<UUID, Character> chars = gson.fromJson(json, contentType);
+                logger.info("Loaded {} characters!", chars.size());
+                return chars;
+            } catch (Exception e) {
+                logger.error("Failed to load characters! Cause: `{}`", e.getMessage());
             }
         } else {
             logger.info("Characters file is not exists. Skip.");

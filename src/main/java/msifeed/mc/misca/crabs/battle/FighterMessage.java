@@ -1,18 +1,17 @@
 package msifeed.mc.misca.crabs.battle;
 
-import cpw.mods.fml.common.network.simpleimpl.IMessage;
-import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
 import cpw.mods.fml.common.network.simpleimpl.MessageContext;
 import io.netty.buffer.ByteBuf;
 import msifeed.mc.misca.crabs.actions.Action;
 import msifeed.mc.misca.crabs.actions.Actions;
 import msifeed.mc.misca.crabs.character.Stats;
-import msifeed.mc.misca.utils.NetUtils;
+import msifeed.mc.misca.utils.AbstractMessage;
 
-public class FighterMessage implements IMessage, IMessageHandler<FighterMessage, IMessage> {
+public class FighterMessage extends AbstractMessage<FighterMessage> {
     Type type;
-    Action action;
     Stats stat;
+    Action action;
+    private String actionName;
 
     private boolean malformed = false;
 
@@ -23,9 +22,9 @@ public class FighterMessage implements IMessage, IMessageHandler<FighterMessage,
         this.type = type;
     }
 
-    public FighterMessage(Action action) {
+    public FighterMessage(String actionName) {
         this.type = Type.ACTION;
-        this.action = action;
+        this.actionName = actionName;
     }
 
     public FighterMessage(Stats stat) {
@@ -38,12 +37,12 @@ public class FighterMessage implements IMessage, IMessageHandler<FighterMessage,
         type = Type.values()[buf.readByte()];
         switch (type) {
             case ACTION:
-                final String name = NetUtils.readString(buf);
-                action = Actions.lookup(name);
+                final String name = readShortString(buf);
+                action = Actions.INSTANCE.lookup(name);
                 if (action == null) malformed = true;
                 break;
             case CALC:
-                byte ord = buf.readByte();
+                final byte ord = buf.readByte();
                 if (ord < Stats.values().length) stat = Stats.values()[ord];
                 else malformed = true;
                 break;
@@ -55,7 +54,7 @@ public class FighterMessage implements IMessage, IMessageHandler<FighterMessage,
         buf.writeByte(type.ordinal());
         switch (type) {
             case ACTION:
-                NetUtils.writeString(buf, action.name);
+                writeShortString(buf, actionName);
                 break;
             case CALC:
                 buf.writeByte(stat.ordinal());
@@ -64,9 +63,9 @@ public class FighterMessage implements IMessage, IMessageHandler<FighterMessage,
     }
 
     @Override
-    public IMessage onMessage(FighterMessage message, MessageContext ctx) {
-        if (message.malformed) return null;
-        BattleManager.INSTANCE.onMessageFromClient(ctx.getServerHandler().playerEntity, message);
+    public FighterMessage onMessage(FighterMessage message, MessageContext ctx) {
+        if (!message.malformed)
+            BattleManager.INSTANCE.onMessageFromClient(ctx.getServerHandler().playerEntity, message);
         return null;
     }
 

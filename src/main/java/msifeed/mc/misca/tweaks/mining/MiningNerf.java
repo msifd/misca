@@ -117,7 +117,7 @@ public class MiningNerf {
         ConfigSection config = this.config.get();
 
         // Ахуеть как можно! Жджава уосемь уууху!
-        Boolean is_ore = oreBlocksCache.computeIfAbsent(block, b -> oreBlocks.contains(b));
+        Boolean is_ore = oreBlocksCache.computeIfAbsent(block, oreBlocks::contains);
         if (!is_ore) return true;
 
         String name = player.getDisplayName().toLowerCase();

@@ -1,15 +1,14 @@
 package msifeed.mc.misca.crabs.battle;
 
-import cpw.mods.fml.common.network.simpleimpl.IMessage;
-import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
 import cpw.mods.fml.common.network.simpleimpl.MessageContext;
 import io.netty.buffer.ByteBuf;
+import msifeed.mc.misca.utils.AbstractMessage;
 
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Collection;
 
-public class FighterContextMessage implements IMessage, IMessageHandler<FighterContextMessage, IMessage> {
+public class FighterContextMessage extends AbstractMessage<FighterContextMessage> {
     private ArrayList<FighterContext> vctx = new ArrayList<>();
 
     public FighterContextMessage() {
@@ -50,7 +49,7 @@ public class FighterContextMessage implements IMessage, IMessageHandler<FighterC
     }
 
     @Override
-    public IMessage onMessage(FighterContextMessage message, MessageContext ctx) {
+    public FighterContextMessage onMessage(FighterContextMessage message, MessageContext ctx) {
         BattleManager.INSTANCE.onUpdateFromServer(message.vctx);
         return null;
     }

@@ -1,11 +1,13 @@
 package msifeed.mc.misca.crabs.battle;
 
+import msifeed.mc.misca.crabs.character.Character;
 import msifeed.mc.misca.crabs.character.Stats;
 import msifeed.mc.misca.crabs.rules.ActionResult;
 import msifeed.mc.misca.crabs.rules.DiceMath;
+import msifeed.mc.misca.utils.MiscaUtils;
 import net.minecraft.entity.EntityLivingBase;
 
-public final class ActionFormatter {
+public final class MoveFormatter {
     public static String formatActionResults(ActionResult winner, ActionResult looser) {
         EntityLivingBase we = winner.ctx.entity, le = looser.ctx.entity;
         return "\u00A76[\u00A72"
@@ -19,8 +21,13 @@ public final class ActionFormatter {
     }
 
     public static String formatAction(ActionResult action) {
+        // Абилки начинающиеся с точки получают локализованный заголовок
+        final String rawTitle = action.action.title;
+        final String title = rawTitle.length() > 1 && rawTitle.charAt(0) == '.'
+                ? MiscaUtils.l10n("misca.crabs.action." + rawTitle.substring(1))
+                : rawTitle;
         String s = "\u00A76"
-                + action.action.name
+                + title
                 + ": "
                 + "["
                 + diceRankColor(action.diceRank)
@@ -38,10 +45,13 @@ public final class ActionFormatter {
         return s;
     }
 
-    public static String formatStatRoll(Stats stat, int roll, int statValue, int mod) {
+    public static String formatStatRoll(Character character, Stats stat, int roll, int mod) {
+        final int statValue = character.stat(stat);
         String s = "\u00A76["
+                + character.name
+                + "] "
                 + stat.toString()
-                + "]: ["
+                + ": ["
                 + diceRankColor(DiceMath.DiceRank.of(roll))
                 + roll
                 + "\u00A76]+\u00A7r"

@@ -67,10 +67,7 @@ public enum BattleHud {
 
         if (inBattle) {
             if (imgui.button("Punch")) {
-                CrabsNetwork.INSTANCE.sendToServer(new FighterMessage(Actions.test_punch));
-            }
-            if (imgui.button("Fireball")) {
-                CrabsNetwork.INSTANCE.sendToServer(new FighterMessage(Actions.test_fireball));
+                CrabsNetwork.INSTANCE.sendToServer(new FighterMessage("point_hit"));
             }
             if (imgui.button("Roll ERP")) {
                 CrabsNetwork.INSTANCE.sendToServer(new FighterMessage(Stats.DET));
