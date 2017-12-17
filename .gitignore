@@ -1,11 +1,9 @@
-.gradle/**
-.idea/**
-build/**
-classes/**
-out/**
-eclipse/**
-logs/**
+.gradle/
+.idea/
+build/
+classes/
+out/
+eclipse/
+logs/
 
 *.iml
-
-src/old/**

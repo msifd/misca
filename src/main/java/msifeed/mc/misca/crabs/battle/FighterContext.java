@@ -52,7 +52,7 @@ public class FighterContext implements Serializable {
     }
 
     public boolean canAttack() {
-        return action != null && described && status != Status.WAIT;
+        return action != null && described && (status == Status.ACT || status == Status.DEAL_DAMAGE);
     }
 
     public enum Status {

@@ -84,11 +84,18 @@ public enum BattleManager {
         // Энтити выходят из боя мгновенно
         if (instant || !(ctx.entity instanceof EntityPlayer)) {
             removeFromBattle(ctx);
+            return;
+        }
+
+        if (ctx.status == FighterContext.Status.LEAVING) {
+            // Отмена выхода из боя
+            ctx.updateStatus(FighterContext.Status.ACT);
+            logger.info("{} is not leaving battle anymore.", ctx.entity.getCommandSenderName());
         } else {
             ctx.updateStatus(FighterContext.Status.LEAVING);
-            toSync.add(ctx);
-            logger.info("{} is leaving the battle.", ctx.entity.getCommandSenderName());
+            logger.info("{} is leaving battle.", ctx.entity.getCommandSenderName());
         }
+        toSync.add(ctx);
     }
 
     public void resetFighter(EntityLivingBase entity) {
@@ -148,8 +155,7 @@ public enum BattleManager {
                 Rules.rollSingleStat(player, message.stat, 0);
                 break;
             case LEAVE:
-                if (ctx.status == FighterContext.Status.LEAVING) resetFighter(player);
-                else leaveBattle(player, false);
+                leaveBattle(player, false);
                 break;
         }
     }
@@ -213,6 +219,9 @@ public enum BattleManager {
 
         // Пришел урон по результатам хода
         if (damage instanceof CrabsDamage) return;
+
+        // Бить бойцов покидающих бой можно!
+        if (target_ctx != null && target_ctx.status == FighterContext.Status.LEAVING) return;
 
         // Отменяем получение урона. Его мы вернем после хода... может быть
         event.setCanceled(true);

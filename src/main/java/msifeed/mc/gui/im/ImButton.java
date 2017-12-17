@@ -1,6 +1,6 @@
 package msifeed.mc.gui.im;
 
-import msifeed.mc.gui.ImGui;
+import msifeed.mc.gui.NimGui;
 import msifeed.mc.gui.ImStyle;
 import msifeed.mc.gui.input.MouseTracker;
 import msifeed.mc.gui.render.DrawPrimitives;
@@ -13,12 +13,11 @@ import net.minecraft.util.ResourceLocation;
 
 public class ImButton {
     public boolean button(Object label, int x, int y, int width, int height) {
-        final ImGui imgui = ImGui.INSTANCE;
-        final ImStyle st = imgui.imStyle;
+        final NimGui nimgui = NimGui.INSTANCE;
+        final ImStyle st = nimgui.imStyle;
         final Profiler profiler = Minecraft.getMinecraft().mcProfiler;
         profiler.startSection("ImButton");
 
-        final int spacingWidth = st.buttonPaddingX * 2;
         final boolean inRect = MouseTracker.isInRect(x, y, width, height);
 
         if (label instanceof String) {
@@ -32,9 +31,9 @@ public class ImButton {
                     st.buttonLeftTexture, st.buttonMiddleTexture, st.buttonRightTexture,
                     x, y, width, height, vOffset);
 
-            imgui.imLabel.label((String) label,
-                    x, y + st.buttonTitleOffset.getY(),
-                    width + spacingWidth, height,
+            nimgui.imLabel.label((String) label,
+                    x + st.buttonPaddingX, y + st.buttonTitleOffset.getY(),
+                    width - st.buttonPaddingX * 2, height,
                     st.buttonTitleColor, true, true);
         } else if (label instanceof TextureInfo) {
             final TextureInfo tex = (TextureInfo) label;

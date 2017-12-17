@@ -16,6 +16,8 @@ public class ActionJsonSerializer implements JsonSerializer<Action>, JsonDeseria
         root.addProperty("title", action.title);
         root.addProperty("type", action.type.toString());
 
+        if (action.deal_no_damage) root.addProperty("deal_no_damage", true);
+
         root.add("modifiers", serializeToStrings(action.modifiers));
         if (!action.target_effects.isEmpty()) root.add("target_effects", serializeToStrings(action.target_effects));
         if (!action.self_effects.isEmpty()) root.add("self_effects", serializeToStrings(action.self_effects));
@@ -28,12 +30,16 @@ public class ActionJsonSerializer implements JsonSerializer<Action>, JsonDeseria
     public Action deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
         final JsonObject root = (JsonObject) json;
 
-        final String name = root.getAsJsonPrimitive("name").getAsString();
-        final String title = root.getAsJsonPrimitive("title").getAsString();
-        final String typeName = root.getAsJsonPrimitive("type").getAsString();
+        final String name = root.get("name").getAsString();
+        final String title = root.get("title").getAsString();
+        final String typeName = root.get("type").getAsString();
         final Action.Type type = Action.Type.valueOf(typeName.toUpperCase());
 
         final Action action = new Action(name, title, type);
+
+        final JsonElement deal_no_damage = root.get("deal_no_damage");
+        if (deal_no_damage != null) action.deal_no_damage = deal_no_damage.getAsBoolean();
+
         for (JsonElement e : root.getAsJsonArray("modifiers")) {
             final Modifier m = Rules.mod(e.getAsString().toLowerCase());
             if (m == null) throw new JsonParseException("Unknown modifier: " + e.toString());

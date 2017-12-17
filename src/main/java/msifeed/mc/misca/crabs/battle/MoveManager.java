@@ -17,8 +17,6 @@ import java.util.UUID;
 public enum MoveManager {
     INSTANCE;
 
-    private Logger logger = LogManager.getLogger("Crabs.Actions");
-
     // uuid защищяющегося -> ход атаковавшего
     private HashMap<UUID, Move> pendingMoves = new HashMap<>();
     private ArrayList<Move> completeMoves = new ArrayList<>();
@@ -29,8 +27,10 @@ public enum MoveManager {
 
     public void describeAction(FighterContext actor) {
         actor.described = true;
-        if (actor.action.hasNoTarget()) {
-            // TODO something
+
+        // Действия не требующие атаки завершаются сразу после отписи
+        if (actor.action.dealNoDamage()){
+            stopDealingDamage(actor);
         }
     }
 

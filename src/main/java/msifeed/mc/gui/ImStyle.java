@@ -33,7 +33,7 @@ public class ImStyle {
     public TextureInfo textRightTexture = new TextureInfo(textTexture, 87, 0, 4, 8);
     public Point windowCloseBtnOffset = new Point(-4, 3);
 
-    public Point buttonDefaultSize = new Point(80, 12);
+    public Point buttonDefaultSize = new Point(70, 12);
     public int buttonPaddingX = 1;
     public int buttonTitleColor = 0xFFedb47d;
     public Point buttonTitleOffset = new Point(0, 0);

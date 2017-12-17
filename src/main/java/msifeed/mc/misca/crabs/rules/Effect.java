@@ -21,8 +21,14 @@ public abstract class Effect {
     public static class Damage extends Effect {
         @Override
         public void apply(FighterContext self, FighterContext target) {
+            final float currentHealth = target.entity.getHealth();
+            final boolean isFatal = currentHealth <= self.damageDealt;
+            final float damageToDeal = isFatal && target.status != FighterContext.Status.KO_ED
+                    ? self.damageDealt
+                    : 1;
+
             target.entity.attackEntityFrom(new CrabsDamage(self.entity), self.damageDealt);
-            logger.info("Damage {} with {}", target.entity.getCommandSenderName(), self.damageDealt);
+            logger.info("Damaged {} with {} from {}", target.entity.getCommandSenderName(), self.damageDealt, self.entity.getCommandSenderName());
         }
 
         @Override
@@ -31,12 +37,12 @@ public abstract class Effect {
         }
     }
 
-    public static class Fire extends Effect {
+    public static class Fire extends Damage {
         @Override
         public void apply(FighterContext self, FighterContext target) {
+            super.apply(self, target);
             target.entity.setFire(2);
-            target.entity.attackEntityFrom(new CrabsDamage(self.entity), self.damageDealt);
-            logger.info("Damage {} with {}", target.entity.getCommandSenderName(), self.damageDealt);
+            logger.info("Fired {} with {}", target.entity.getCommandSenderName(), self.damageDealt);
         }
 
         @Override

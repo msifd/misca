@@ -10,8 +10,8 @@ import msifeed.mc.gui.nim.NimWindow;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.common.MinecraftForge;
 
-public class ImGui {
-    public static ImGui INSTANCE = new ImGui();
+public class NimGui {
+    public static NimGui INSTANCE = new NimGui();
     public ImStyle imStyle = new ImStyle();
     public ImButton imButton = new ImButton();
     public ImLabel imLabel = new ImLabel();
@@ -23,8 +23,8 @@ public class ImGui {
         activate(INSTANCE);
     }
 
-    public static void activate(ImGui imGui) {
-        INSTANCE = imGui;
+    public static void activate(NimGui nimGui) {
+        INSTANCE = nimGui;
         MinecraftForge.EVENT_BUS.unregister(INSTANCE);
         MinecraftForge.EVENT_BUS.register(INSTANCE);
     }

@@ -1,7 +1,7 @@
 package msifeed.mc.misca.crabs.client;
 
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import msifeed.mc.gui.ImGui;
+import msifeed.mc.gui.NimGui;
 import msifeed.mc.gui.input.KeyTracker;
 import msifeed.mc.gui.nim.NimPart;
 import msifeed.mc.gui.nim.NimText;
@@ -80,48 +80,47 @@ public enum CharacterHud {
     public void onRenderGui(RenderGameOverlayEvent.Post event) {
         if (event.type != RenderGameOverlayEvent.ElementType.ALL) return;
 
+        // Во время боя изменять самому себе статы нельзя.
+        // Распологается здесь чтобы окошко закрывалось при входе в бой.
+        final EntityPlayer player = Minecraft.getMinecraft().thePlayer;
+        if (entity == player && BattleManager.INSTANCE.isBattling(player)) {
+            close();
+            return;
+        }
+
         if (!NimPart.focused() && KeyTracker.isTapped(CrabsKeyBinds.charHud.getKeyCode())) {
             if (isOpened) close();
-            else open(Minecraft.getMinecraft().thePlayer);
+            else open(player);
         }
 
         if (isOpened) render();
     }
 
     protected void render() {
-        // Во время боя изменять самому себе статы нельзя
-        {
-            final EntityPlayer player = Minecraft.getMinecraft().thePlayer;
-            if (entity == player && BattleManager.INSTANCE.isBattling(player)) {
-                close();
-                return;
-            }
-        }
-
-        final ImGui imgui = ImGui.INSTANCE;
-        imgui.beginWindow(window);
+        final NimGui nimgui = NimGui.INSTANCE;
+        nimgui.beginWindow(window);
 
         // Ждем получения чара
         if (character == null) {
-            imgui.label("Fetching...");
-            imgui.endWindow();
+            nimgui.label("Fetching...");
+            nimgui.endWindow();
             return;
         }
 
-        imgui.horizontalBlock();
+        nimgui.horizontalBlock();
         final Stats[] statValues = Stats.values();
         for (int i = 0; i < statTexts.length; i++) {
-            imgui.label(statValues[i].toString(), statTextWidth);
+            nimgui.label(statValues[i].toString(), statTextWidth);
         }
 
-        imgui.horizontalBlock();
+        nimgui.horizontalBlock();
         for (NimText statText : statTexts) {
-            imgui.nim(statText);
+            nimgui.nim(statText);
         }
 
         final int inputWidth = window.getBlockContentWidth();
-        imgui.verticalBlock();
-        if (imgui.button("Update character", inputWidth)) {
+        nimgui.verticalBlock();
+        if (nimgui.button("Update character", inputWidth)) {
             try {
                 int[] stats = new int[statTexts.length];
                 for (int i = 0; i < stats.length; i++) stats[i] = Byte.parseByte(statTexts[i].getText());
@@ -132,6 +131,6 @@ public enum CharacterHud {
             }
         }
 
-        imgui.endWindow();
+        nimgui.endWindow();
     }
 }

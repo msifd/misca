@@ -21,13 +21,8 @@ public final class MoveFormatter {
     }
 
     public static String formatActionResult(ActionResult action) {
-        // Абилки начинающиеся с точки получают локализованный заголовок
-        final String rawTitle = action.action.title;
-        final String title = rawTitle.length() > 1 && rawTitle.charAt(0) == '.'
-                ? MiscaUtils.l10n("misca.crabs.action." + rawTitle.substring(1))
-                : rawTitle;
         String s = "\u00A76"
-                + title
+                + action.action.pretty()
                 + ": "
                 + "["
                 + diceRankColor(action.diceRank)

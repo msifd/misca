@@ -1,6 +1,6 @@
 package msifeed.mc.gui.nim;
 
-import msifeed.mc.gui.ImGui;
+import msifeed.mc.gui.NimGui;
 import msifeed.mc.gui.ImStyle;
 import msifeed.mc.gui.im.ImLabel;
 import msifeed.mc.gui.input.KeyTracker;
@@ -33,7 +33,7 @@ public class NimText extends NimPart {
     }
 
     public NimText(int width) {
-        resize(width, ImGui.INSTANCE.imStyle.textDefaultHeight);
+        resize(width, NimGui.INSTANCE.imStyle.textDefaultHeight);
     }
 
     public NimText(int width, int height) {
@@ -44,7 +44,7 @@ public class NimText extends NimPart {
     public void render(int x, int y) {
         frameCounter++;
 
-        final ImLabel imLabel = ImGui.INSTANCE.imLabel;
+        final ImLabel imLabel = NimGui.INSTANCE.imLabel;
         final Profiler profiler = Minecraft.getMinecraft().mcProfiler;
         profiler.startSection("NimText");
 
@@ -71,12 +71,12 @@ public class NimText extends NimPart {
         }
 
         final int labelX = x + (centerByWidth
-                ? (width - ImGui.INSTANCE.imLabel.font.getStringWidth(text)) / 2
+                ? (width - NimGui.INSTANCE.imLabel.font.getStringWidth(text)) / 2
                 : st.textLabelOffsetX);
 
         // Render text
         {
-            ImGui.INSTANCE.imLabel.label(text, labelX, y,
+            NimGui.INSTANCE.imLabel.label(text, labelX, y,
                     width, height, st.textLabelColor, false, true);
         }
 

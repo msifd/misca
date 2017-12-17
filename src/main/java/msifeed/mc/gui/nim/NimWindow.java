@@ -1,6 +1,6 @@
 package msifeed.mc.gui.nim;
 
-import msifeed.mc.gui.ImGui;
+import msifeed.mc.gui.NimGui;
 import msifeed.mc.gui.ImStyle;
 import msifeed.mc.gui.input.MouseTracker;
 import msifeed.mc.gui.render.DrawPrimitives;
@@ -34,7 +34,7 @@ public class NimWindow {
     }
 
     public void begin() {
-        final ImStyle st = ImGui.INSTANCE.imStyle;
+        final ImStyle st = NimGui.INSTANCE.imStyle;
         size.setLocation(0, 0);
         alignment = Alignment.VERTICAL;
         currBlock.setLocation(0, st.windowHeaderHeight);
@@ -42,7 +42,7 @@ public class NimWindow {
     }
 
     public void end() {
-        final ImStyle st = ImGui.INSTANCE.imStyle;
+        final ImStyle st = NimGui.INSTANCE.imStyle;
         pushAlignmentBlock(Alignment.VERTICAL);
 //        size.translate(st.windowSpacing);
         renderWindow();
@@ -50,7 +50,7 @@ public class NimWindow {
 
     public void pushAlignmentBlock(Alignment alignment) {
         // Window eats block
-        final ImStyle st = ImGui.INSTANCE.imStyle;
+        final ImStyle st = NimGui.INSTANCE.imStyle;
         if (size.getX() < currBlock.getX()) size.setX(currBlock.getX());
         if (size.getY() < currBlock.getY()) size.setY(currBlock.getY());
         prevBlock.setLocation(currBlock);
@@ -60,7 +60,7 @@ public class NimWindow {
 
     public void consume(int x, int y, int width, int height) {
         // Block eats element
-        final ImStyle st = ImGui.INSTANCE.imStyle;
+        final ImStyle st = NimGui.INSTANCE.imStyle;
         int widthWithOffset = x - pos.getX() + width + st.windowSpacing.getX();
         int heightWithOffset = y - pos.getY() + height + st.windowSpacing.getY();
         if (currBlock.getX() < widthWithOffset) currBlock.setX(widthWithOffset);
@@ -68,7 +68,7 @@ public class NimWindow {
     }
 
     public int nextElemX() {
-        final ImStyle st = ImGui.INSTANCE.imStyle;
+        final ImStyle st = NimGui.INSTANCE.imStyle;
         return pos.getX()
                 + (alignment == Alignment.HORIZONTAL
                 ? currBlock.getX()
@@ -83,13 +83,13 @@ public class NimWindow {
     }
 
     public int getBlockContentWidth() {
-        final ImStyle st = ImGui.INSTANCE.imStyle;
+        final ImStyle st = NimGui.INSTANCE.imStyle;
         return currBlock.getX() - st.windowSpacing.getX() - st.windowPadding.getX();
     }
 
     public void renderWindow() {
-        final ImGui imgui = ImGui.INSTANCE;
-        final ImStyle st = imgui.imStyle;
+        final NimGui nimgui = NimGui.INSTANCE;
+        final ImStyle st = nimgui.imStyle;
         final Profiler profiler = Minecraft.getMinecraft().mcProfiler;
 
         final int x = pos.getX(), y = pos.getY();
@@ -101,12 +101,12 @@ public class NimWindow {
         {
             int minWidth = 0;
             final Point titleOffset = st.windowTitleOffset;
-            minWidth += imgui.imLabel.label(title, x + titleOffset.getX(), y + titleOffset.getY(), width, st.windowHeaderHeight, st.windowTitleColor, false, false);
+            minWidth += nimgui.imLabel.label(title, x + titleOffset.getX(), y + titleOffset.getY(), width, st.windowHeaderHeight, st.windowTitleColor, false, false);
 
             final TextureInfo tex = st.windowCloseBtnTexture;
             final int cbX = x + width - tex.width + st.windowCloseBtnOffset.getX();
             final int cbY = y + st.windowCloseBtnOffset.getY();
-            if (imgui.imButton.button(tex, cbX, cbY, tex.width, tex.height)) {
+            if (nimgui.imButton.button(tex, cbX, cbY, tex.width, tex.height)) {
                 onCrossBtn.run();
             }
             minWidth += st.windowSpacing.getX() + tex.width;

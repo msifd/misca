@@ -19,13 +19,14 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 public enum ActionManager {
     INSTANCE;
 
     static Logger logger = LogManager.getLogger("Crabs.Actions");
     private final Map<String, Action> actions = new HashMap<>();
-    private final Multimap<Action.Type, String> typeToActions = HashMultimap.create();
+    private final Multimap<Action.Type, Action> typeToActionStubs = HashMultimap.create();
     private boolean shouldSync = false;
 
     public void onInit() {
@@ -35,8 +36,8 @@ public enum ActionManager {
         onMiscaReload(null); // Load actions
     }
 
-    public Collection<Action> actions() {
-        return actions.values();
+    public Multimap<Action.Type, Action> stubs() {
+        return typeToActionStubs;
     }
 
     public Action lookup(String name) {
@@ -45,11 +46,15 @@ public enum ActionManager {
 
     public void onReceiveActionSignatures(Collection<String> signatures) {
         logger.info("Got {} Crabs actions!", signatures.size());
-        typeToActions.clear();
-        for (String sig : signatures) {
-            final String[] parts = sig.split(":");
-            final Action.Type type = Action.Type.valueOf(parts[1].toUpperCase());
-            typeToActions.put(type, parts[0]);
+        typeToActionStubs.clear();
+        try {
+            for (String sig : signatures) {
+                final String[] parts = sig.split("/");
+                final Action.Type type = Action.Type.valueOf(parts[2].toUpperCase());
+                typeToActionStubs.put(type, new Action(parts[0], parts[1], type));
+            }
+        } catch (Exception e) {
+            logger.error("Failed to sync remote actions! Cause: {}", e.getMessage());
         }
     }
 
@@ -59,6 +64,13 @@ public enum ActionManager {
         if (newActions.isEmpty()) return;
         actions.clear();
         for (Action a : newActions) actions.put(a.name, a);
+
+        // Ultra default actions
+        Stream.of(
+                new Action("throw", ".throw", Action.Type.OTHER),
+                new Action("use", ".use", Action.Type.OTHER),
+                new Action("none", ".none", Action.Type.OTHER)
+        ).forEach(a -> actions.put(a.name, a));
 
         shouldSync = true;
     }
