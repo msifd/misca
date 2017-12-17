@@ -46,10 +46,10 @@ public final class Rules {
     }
 
     public static ActionResult computeWinner(ActionResult a, ActionResult b) {
-        do {
+        while (a.compareTo(b) == 0) {
             a.throwDices(a.character);
             b.throwDices(b.character);
-        } while (a.compareTo(b) == 0);
+        }
         return a.compareTo(b) > 0 ? a : b;
     }
 

@@ -14,10 +14,15 @@ public final class MoveFormatter {
                 + we.getCommandSenderName()
                 + "\u00A76>\u00A74"
                 + le.getCommandSenderName()
-                + "\u00A76]:\u00A7r "
+                + "\u00A76]\u00A7r "
                 + formatActionResult(winner)
                 + " \u00A76>\u00A7r "
                 + formatActionResult(looser);
+    }
+
+    public static String formatFatalityResult(EntityLivingBase winner, EntityLivingBase victim) {
+        return "\u00A76[\u00A74FATALITY\u00A76] "
+                + MiscaUtils.l10n("misca.crabs.finished", winner.getCommandSenderName(), victim.getCommandSenderName());
     }
 
     public static String formatActionResult(ActionResult action) {

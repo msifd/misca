@@ -67,9 +67,9 @@ public enum ActionManager {
 
         // Ultra default actions
         Stream.of(
-                new Action("throw", ".throw", Action.Type.OTHER),
-                new Action("use", ".use", Action.Type.OTHER),
-                new Action("none", ".none", Action.Type.OTHER)
+                new Action("throw", ".throw", Action.Type.PASSIVE),
+                new Action("use", ".use", Action.Type.PASSIVE),
+                Action.ACTION_NONE
         ).forEach(a -> actions.put(a.name, a));
 
         shouldSync = true;

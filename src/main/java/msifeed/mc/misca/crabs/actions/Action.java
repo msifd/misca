@@ -9,6 +9,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class Action {
+    public static final Action ACTION_NONE = new Action("none", ".none", Type.PASSIVE);
+
     public final String name;
     public final String title;
     public final Type type;
@@ -27,7 +29,7 @@ public class Action {
     public boolean dealNoDamage() {
         if (deal_no_damage) return true;
         switch (type) {
-            case OTHER:
+            case PASSIVE:
                 return true;
             default:
                 return false;
@@ -67,7 +69,7 @@ public class Action {
     }
 
     public enum Type {
-        MELEE, RANGED, MAGIC, DEFENCE, SUPPORT, OTHER;
+        MELEE, RANGED, MAGIC, DEFENCE, SUPPORT, PASSIVE;
 
         @Override
         public String toString() {

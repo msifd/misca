@@ -78,8 +78,14 @@ public enum BattleHud {
                     : bm.getContext(context.control);
 
             renderStatus(nimgui, actor);
-            renderActionTabs(nimgui);
-            renderActions(nimgui);
+
+            if (actor.canSelectAction()) {
+                renderActionTabs(nimgui);
+                renderActions(nimgui);
+                renderPlayerModifier(nimgui);
+            } else {
+                // TODO display selected action
+            }
         }
 
         nimgui.endWindow();
@@ -116,6 +122,10 @@ public enum BattleHud {
                 CrabsNetwork.INSTANCE.sendToServer(new FighterMessage(action.name));
             }
         }
+    }
+
+    private void renderPlayerModifier(NimGui nimgui) {
+
     }
 
     private void toggleHud() {

@@ -24,11 +24,12 @@ public abstract class Effect {
             final float currentHealth = target.entity.getHealth();
             final boolean isFatal = currentHealth <= self.damageDealt;
             final float damageToDeal = isFatal && target.status != FighterContext.Status.KO_ED
-                    ? self.damageDealt
-                    : 1;
+                    ? currentHealth - 1
+                    : self.damageDealt;
 
-            target.entity.attackEntityFrom(new CrabsDamage(self.entity), self.damageDealt);
-            logger.info("Damaged {} with {} from {}", target.entity.getCommandSenderName(), self.damageDealt, self.entity.getCommandSenderName());
+            target.entity.attackEntityFrom(new CrabsDamage(self.entity), damageToDeal);
+            if (isFatal) target.updateStatus(FighterContext.Status.KO_ED);
+            logger.info("Damaged {} with {} from {}", target.entity.getCommandSenderName(), damageToDeal, self.entity.getCommandSenderName());
         }
 
         @Override

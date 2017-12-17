@@ -103,7 +103,7 @@ public enum BattleManager {
         if (ctx == null) return;
 
         unbindFighter(ctx.uuid);
-        ctx.reset();
+        ctx.reset(true);
         toSync.add(ctx);
         logger.info("{} has been reseted.", ctx.entity.getCommandSenderName());
     }
@@ -273,10 +273,10 @@ public enum BattleManager {
         final FighterContext ctx = uuidToContext.get(event.player.getUniqueID());
         if (ctx == null) return;
 
-        // Удаляем все что не буква, цифра или пробел
-        final String cleanedMsg = event.message.replaceAll("[^\\w\\d\\s]", "");
-        final int words = cleanedMsg.split("\\s+").length;
-        if (words < BattleDefines.MIN_WORDS_IN_MOVE_DESC) return;
+//        // Удаляем все что не буква, цифра или пробел
+//        final String cleanedMsg = event.message.replaceAll("[^\\w\\d\\s]", "");
+        final int words = event.message.split("\\s+").length;
+        if (words < BattleDefines.MIN_WORDS_IN_ACTION_DESC) return;
 
         final FighterContext actor = ctx.control == null ? ctx : getContext(ctx.control);
         MoveManager.INSTANCE.describeAction(actor);

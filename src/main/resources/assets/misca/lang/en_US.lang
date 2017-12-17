@@ -12,12 +12,19 @@ item.char_sheet.desc=RMB on entity to edit its charsheet
 
 death.attack.crabs=%1$s was killed in battle
 
+misca.crabs.join_battle=Join battle
+misca.crabs.leave_battle=Leave battle
+misca.crabs.cancel=Cancel
+
+misca.crabs.knocked_out=%s knocked out!
+misca.crabs.finished=§r%s§6 finished §r%s§6!
+
 misca.crabs.action_type.melee=Melee
 misca.crabs.action_type.ranged=Ranged
+misca.crabs.action_type.magic=Magic
 misca.crabs.action_type.defence=Defence
 misca.crabs.action_type.support=Support
-misca.crabs.action_type.magic=Magic
-misca.crabs.action_type.other=Other
+misca.crabs.action_type.passive=Passive
 
 misca.crabs.action.point_hit=Point hit
 misca.crabs.action.flurry_hit=Flurry hit

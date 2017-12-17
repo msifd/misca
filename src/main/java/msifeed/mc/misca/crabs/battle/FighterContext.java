@@ -26,11 +26,11 @@ public class FighterContext implements Serializable {
     FighterContext(EntityLivingBase entity) {
         this.uuid = EntityUtils.getUuid(entity);
         this.entity = entity;
-        reset();
+        reset(true);
     }
 
-    public void reset() {
-        updateStatus(Status.ACT);
+    public void reset(boolean resetStatus) {
+        if (resetStatus) updateStatus(Status.ACT);
         this.control = null;
         this.action = null;
         this.action_name = null;
@@ -49,6 +49,10 @@ public class FighterContext implements Serializable {
         this.action = action;
         this.action_name = action.name;
         this.described = false;
+    }
+
+    public boolean canSelectAction() {
+        return status == Status.ACT;
     }
 
     public boolean canAttack() {

@@ -16,12 +16,15 @@ misca.crabs.join_battle=Войти в бой
 misca.crabs.leave_battle=Выйти из боя
 misca.crabs.cancel=Отмена
 
+misca.crabs.knocked_out=%s нокаутирован!
+misca.crabs.finished=§r%s§6 прикончил §r%s§6!
+
 misca.crabs.action_type.melee=Ближний
 misca.crabs.action_type.ranged=Дальний
 misca.crabs.action_type.magic=Магия
 misca.crabs.action_type.defence=Защита
 misca.crabs.action_type.support=Поддержка
-misca.crabs.action_type.other=Другое
+misca.crabs.action_type.passive=Пассивное
 
 misca.crabs.action.point_hit=Точечный удар
 misca.crabs.action.flurry_hit=Шквал
@@ -35,11 +38,11 @@ misca.crabs.action.parry=Парирование
 misca.crabs.action.kick=Пинок
 misca.crabs.action.punch=Удар кулаком
 misca.crabs.action.feint=Финт
-misca.crabs.action.attack_spell=Атакующее
+misca.crabs.action.attack_spell=Маготака
 misca.crabs.action.support_spell=Вспомогательное
 misca.crabs.action.counterspell=Контрзаклинание
-misca.crabs.action.throw=Бросить
-misca.crabs.action.use=Использовать
+misca.crabs.action.throw=Бросок
+misca.crabs.action.use=Использование
 misca.crabs.action.none=Ничего
 
 misca.mining_stamina.msg=Ваших сил осталось примерно на %d секунд
