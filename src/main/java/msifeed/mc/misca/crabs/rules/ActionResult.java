@@ -21,7 +21,7 @@ public final class ActionResult {
     }
 
     public void throwDices(Character c) {
-        reset();
+        reset(); // Also adds playerMod
         for (Modifier m : ctx.action.modifiers) {
             final int result = m.mod(c);
             if (m.isDice()) {

@@ -15,12 +15,12 @@ public final class MoveFormatter {
                 + "\u00A76>\u00A74"
                 + le.getCommandSenderName()
                 + "\u00A76]:\u00A7r "
-                + formatAction(winner)
+                + formatActionResult(winner)
                 + " \u00A76>\u00A7r "
-                + formatAction(looser);
+                + formatActionResult(looser);
     }
 
-    public static String formatAction(ActionResult action) {
+    public static String formatActionResult(ActionResult action) {
         // Абилки начинающиеся с точки получают локализованный заголовок
         final String rawTitle = action.action.title;
         final String title = rawTitle.length() > 1 && rawTitle.charAt(0) == '.'
@@ -31,16 +31,16 @@ public final class MoveFormatter {
                 + ": "
                 + "["
                 + diceRankColor(action.diceRank)
-                + action.diceSum
-                + "\u00A76]+\u00A7r"
-                + action.statSum;
+                + (action.totalSum - action.playerMod);
 
-        if (action.modSum != 0)
-            s += action.modSum > 0 ? "\u00A76+\u00A7r" : "\u00A76-\u00A7r" + Math.abs(action.modSum);
-        if (action.playerMod != 0)
-            s += action.playerMod > 0 ? "\u00A76+\u00A7r" : "\u00A76-\u00A7r" + Math.abs(action.playerMod);
+        if (action.playerMod != 0) {
+            s += "\u00A76"
+                    + (action.playerMod > 0 ? "+" : "-")
+                    + "\u00A7r"
+                    + Math.abs(action.playerMod);
+        }
 
-        s += "\u00A76=" + diceRankColor(action.diceRank) + action.totalSum;
+        s += "\u00A76]\u00A7r";
 
         return s;
     }
