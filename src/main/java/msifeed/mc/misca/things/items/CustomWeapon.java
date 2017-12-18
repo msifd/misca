@@ -1,7 +1,5 @@
 package msifeed.mc.misca.things.items;
 
-import msifeed.mc.misca.things.items.ItemCustomWeapon;
-import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.registry.GameRegistry;
 import net.minecraft.item.Item;
 import net.minecraft.creativetab.CreativeTabs;
@@ -17,33 +15,36 @@ public class CustomWeapon {
     public static final Item.ToolMaterial weaponType4 = EnumHelper.addToolMaterial("weaponMaterial4", 0, -1, 1.0F, 4.0F, 10);
     public static final Item.ToolMaterial weaponType5 = EnumHelper.addToolMaterial("weaponMaterial5", 0, -1, 1.0F, 5.0F, 10);
 
-    public void onInit(FMLInitializationEvent event, CreativeTabs tab) {
-
+    public CustomWeapon(CreativeTabs tab) {
         IntStream.range(1, 6).forEach(i -> {
-            String itemName = "weapon_type1_" + i;
-            GameRegistry.registerItem(new ItemCustomWeapon(weaponType1, itemName,  "misca:" + itemName, tab), itemName);
+            final String itemName = "weapon_type1_" + i;
+            final ItemCustomWeapon item = new ItemCustomWeapon(weaponType1, itemName, "misca:" + itemName, tab);
+            GameRegistry.registerItem(item, itemName);
         });
 
         IntStream.range(1, 6).forEach(i -> {
-            String itemName = "weapon_type2_" + i;
-            GameRegistry.registerItem(new ItemCustomWeapon(weaponType2, itemName, "misca:" + itemName, tab), itemName);
+            final String itemName = "weapon_type2_" + i;
+            final ItemCustomWeapon item = new ItemCustomWeapon(weaponType2, itemName, "misca:" + itemName, tab);
+            GameRegistry.registerItem(item, itemName);
         });
 
         IntStream.range(1, 6).forEach(i -> {
-            String itemName = "weapon_type3_" + i;
-            GameRegistry.registerItem(new ItemCustomWeapon(weaponType3, itemName, "misca:" + itemName, tab), itemName);
+            final String itemName = "weapon_type3_" + i;
+            final ItemCustomWeapon item = new ItemCustomWeapon(weaponType3, itemName, "misca:" + itemName, tab);
+            GameRegistry.registerItem(item, itemName);
         });
 
         IntStream.range(1, 6).forEach(i -> {
-            String itemName = "weapon_type4_" + i;
-            GameRegistry.registerItem(new ItemCustomWeapon(weaponType4, itemName, "misca:" + itemName, tab), itemName);
+            final String itemName = "weapon_type4_" + i;
+            final ItemCustomWeapon item = new ItemCustomWeapon(weaponType4, itemName, "misca:" + itemName, tab);
+            GameRegistry.registerItem(item, itemName);
         });
 
         IntStream.range(1, 6).forEach(i -> {
-            String itemName = "weapon_type5_" + i;
-            GameRegistry.registerItem(new ItemCustomWeapon(weaponType5, itemName, "misca:" + itemName, tab), itemName);
+            final String itemName = "weapon_type5_" + i;
+            final ItemCustomWeapon item = new ItemCustomWeapon(weaponType5, itemName, "misca:" + itemName, tab);
+            GameRegistry.registerItem(item, itemName);
         });
-
     }
 
 }

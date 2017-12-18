@@ -13,9 +13,9 @@ public class MiscaThings {
     public static final MiscaCreativeTab tab = new MiscaCreativeTab();
     public static final MisochkaCreativeTab itemTab = new MisochkaCreativeTab();
 
-    public static CustomWeapon customWeapon = new CustomWeapon();
-    public static CustomFood customFood = new CustomFood();
-    public static Miscellaneous miscellaneous = new Miscellaneous();
+    public static CustomWeapon customWeapon;
+    public static CustomFood customFood;
+    public static Miscellaneous miscellaneous;
 
     @Subscribe
     public void onInit(FMLInitializationEvent event) {
@@ -125,9 +125,9 @@ public class MiscaThings {
             GameRegistry.registerBlock(block, id_base + i);
         }
 
-        customWeapon.onInit(event, itemTab);
-        customFood.onInit(event, itemTab);
-        miscellaneous.onInit(event, itemTab);
+        customWeapon = new CustomWeapon(itemTab);
+        customFood = new CustomFood(itemTab);
+        miscellaneous = new Miscellaneous(itemTab);
 
         GameRegistry.registerBlock(new TransparentBlock(), TransparentBlock.NAME_BASE);
         GameRegistry.registerBlock(new DripsBlock(), DripsBlock.NAME_BASE);
