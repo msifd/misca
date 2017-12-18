@@ -1,6 +1,5 @@
 package msifeed.mc.misca.crabs;
 
-import com.google.common.eventbus.Subscribe;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.registry.GameRegistry;
@@ -14,13 +13,11 @@ import msifeed.mc.misca.crabs.tools.ItemCharSheet;
 import net.minecraftforge.common.MinecraftForge;
 
 public class Crabs {
-    @Subscribe
     public void preInit(FMLPreInitializationEvent event) {
         CharacterProvider.INSTANCE.preInit();
         ActionProvider.INSTANCE.preInit();
     }
 
-    @Subscribe
     public void init(FMLInitializationEvent event) {
         CrabsNetwork.INSTANCE.onInit();
         CharacterManager.INSTANCE.onInit();

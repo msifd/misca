@@ -1,6 +1,5 @@
 package msifeed.mc.misca.tweaks.mining;
 
-import com.google.common.eventbus.Subscribe;
 import cpw.mods.fml.common.event.*;
 import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
@@ -37,7 +36,6 @@ public class MiningNerf {
     private File stamina_file;
     private long last_stamina_write = System.currentTimeMillis();
 
-    @Subscribe
     public void preInit(FMLPreInitializationEvent event) {
         stamina_file = new File(ConfigManager.config_dir, "mining_stamina.dat");
 
@@ -51,12 +49,10 @@ public class MiningNerf {
         }
     }
 
-    @Subscribe
     public void onInit(FMLInitializationEvent event) {
         MinecraftForge.EVENT_BUS.register(this);
     }
 
-    @Subscribe
     public void onPostInit(FMLPostInitializationEvent event) {
         // Bake ore set
         try {
@@ -80,12 +76,10 @@ public class MiningNerf {
         Tweaks.logger.info("MiningNerf initialized");
     }
 
-    @Subscribe
     public void onServerStart(FMLServerStartingEvent event) {
         event.registerServerCommand(commandStamina);
     }
 
-    @Subscribe
     public void onServerStop(FMLServerStoppingEvent event) {
         writeStaminaFile();
     }

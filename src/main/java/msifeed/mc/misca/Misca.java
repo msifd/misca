@@ -1,6 +1,5 @@
 package msifeed.mc.misca;
 
-import com.google.common.eventbus.EventBus;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
@@ -18,7 +17,8 @@ import org.apache.logging.log4j.Logger;
 
 @Mod(modid = "misca", version = "@VERSION@")
 public class Misca {
-    public static final EventBus eventbus = new EventBus();
+    private static Logger logger = LogManager.getLogger("Misca");
+
     @SidedProxy(
             serverSide = "msifeed.mc.misca.crabs.Crabs",
             clientSide = "msifeed.mc.misca.crabs.CrabsClient"
@@ -28,55 +28,48 @@ public class Misca {
             serverSide = "msifeed.mc.misca.things.MiscaThings",
             clientSide = "msifeed.mc.misca.things.MiscaThingsClient"
     )
-    public static MiscaThings miscaThings;
+    public static MiscaThings things;
     public static Tweaks tweaks = new Tweaks();
-    private static Logger logger = LogManager.getLogger("Misca");
     private MiningNerf miningNerf = new MiningNerf();
 
     @EventHandler
     public void preInit(FMLPreInitializationEvent event) {
         ConfigManager.INSTANCE.init(event);
+        ConfigManager.INSTANCE.reloadConfig();
 
-        eventbus.register(tweaks);
-        eventbus.register(miscaThings);
-        eventbus.register(crabs);
-
-        eventbus.register(miningNerf);
-
-//        eventbus.register(MiscaGuiHandler.instance);
-//        eventbus.register(walkieTalkie);
-//        eventbus.register(toolbox);
-//        eventbus.register(chatChannels);
-//        eventbus.register(charsheets);
+        crabs.preInit(event);
+        miningNerf.preInit(event);
 
         if (FMLCommonHandler.instance().getSide().isServer()) {
-            eventbus.register(DBHandler.INSTANCE);
+            DBHandler.INSTANCE.onPreInit(event);
         }
-
-        ConfigManager.INSTANCE.reloadConfig();
-        eventbus.post(event);
     }
 
     @EventHandler
     public void init(FMLInitializationEvent event) {
-        eventbus.post(event);
+        crabs.init(event);
+        things.onInit(event);
+        tweaks.onInit(event);
+        miningNerf.onInit(event);
     }
 
     @EventHandler
     public void serverStart(FMLServerStartingEvent event) {
         event.registerServerCommand(new CommandMiscaCommon());
 
-        eventbus.post(event);
+        tweaks.onServerStart(event);
+        miningNerf.onServerStart(event);
     }
 
     @EventHandler
     public void serverStop(FMLServerStoppingEvent event) {
-        eventbus.post(event);
+        miningNerf.onServerStop(event);
     }
 
     @EventHandler
     public void postInit(FMLPostInitializationEvent event) {
-        eventbus.post(event);
+        miningNerf.onPostInit(event);
+
         logger.info("Misca is fully loaded! Bon appetit!");
     }
 }

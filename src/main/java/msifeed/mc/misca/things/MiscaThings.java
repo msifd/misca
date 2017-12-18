@@ -1,6 +1,5 @@
 package msifeed.mc.misca.things;
 
-import com.google.common.eventbus.Subscribe;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.registry.GameRegistry;
 import net.minecraft.block.Block;
@@ -9,7 +8,6 @@ import net.minecraft.block.material.Material;
 public class MiscaThings {
     public static final MiscaCreativeTab tab = new MiscaCreativeTab();
 
-    @Subscribe
     public void onInit(FMLInitializationEvent event) {
         GameRegistry.registerTileEntity(RegularChest.ChestEntity.class, "misca.ariadna_chest");
 
