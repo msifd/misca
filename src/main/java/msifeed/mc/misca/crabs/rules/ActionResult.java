@@ -40,6 +40,8 @@ public final class ActionResult {
     public int compareTo(ActionResult other) {
         if (diceRank.beats(other.diceRank)) return 1;
         else if (other.diceRank.beats(diceRank)) return -1;
+        else if (other.action.type == Action.Type.PASSIVE) return 1;
+        else if (this.action.type == Action.Type.PASSIVE) return -1;
         else return totalSum - other.totalSum;
     }
 

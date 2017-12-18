@@ -10,6 +10,10 @@ public abstract class NimPart {
         return focus != null;
     }
 
+    public static void releaseFocus() {
+        focus = null;
+    }
+
     public int getX() {
         return posX;
     }
@@ -62,10 +66,6 @@ public abstract class NimPart {
 
     public void takeFocus() {
         focus = this;
-    }
-
-    public void releaseFocus() {
-        focus = null;
     }
 
     public abstract void render(int x, int y);

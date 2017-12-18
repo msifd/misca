@@ -1,7 +1,7 @@
 package msifeed.mc.gui.nim;
 
-import msifeed.mc.gui.NimGui;
 import msifeed.mc.gui.ImStyle;
+import msifeed.mc.gui.NimGui;
 import msifeed.mc.gui.input.MouseTracker;
 import msifeed.mc.gui.render.DrawPrimitives;
 import msifeed.mc.gui.render.TextureInfo;

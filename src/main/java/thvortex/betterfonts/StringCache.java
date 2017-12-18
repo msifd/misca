@@ -19,18 +19,17 @@
 
 package thvortex.betterfonts;
 
-import java.lang.ref.WeakReference;
-import java.util.WeakHashMap;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Arrays;
-import java.awt.font.GlyphVector;
-import java.awt.Font;
-import java.awt.Point;
-import java.text.Bidi;
-
 import net.minecraft.client.renderer.Tessellator;
 import org.lwjgl.opengl.GL11;
+
+import java.awt.*;
+import java.awt.font.GlyphVector;
+import java.lang.ref.WeakReference;
+import java.text.Bidi;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.WeakHashMap;
 
 /**
  * The StringCache is the public interface for rendering of all Unicode strings using OpenType fonts. It caches the glyph layout

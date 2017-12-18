@@ -1,6 +1,6 @@
 package msifeed.mc.misca.crabs.actions;
 
-import com.google.common.collect.HashMultimap;
+import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.eventbus.Subscribe;
 import cpw.mods.fml.common.FMLCommonHandler;
@@ -26,7 +26,7 @@ public enum ActionManager {
 
     static Logger logger = LogManager.getLogger("Crabs.Actions");
     private final Map<String, Action> actions = new HashMap<>();
-    private final Multimap<Action.Type, Action> typeToActionStubs = HashMultimap.create();
+    private final Multimap<Action.Type, Action> typeToActionStubs = LinkedHashMultimap.create();
     private boolean shouldSync = false;
 
     public void onInit() {
@@ -67,7 +67,6 @@ public enum ActionManager {
 
         // Ultra default actions
         Stream.of(
-                new Action("throw", ".throw", Action.Type.PASSIVE),
                 new Action("use", ".use", Action.Type.PASSIVE),
                 Action.ACTION_NONE
         ).forEach(a -> actions.put(a.name, a));

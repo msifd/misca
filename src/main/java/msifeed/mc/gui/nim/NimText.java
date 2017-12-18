@@ -1,7 +1,7 @@
 package msifeed.mc.gui.nim;
 
-import msifeed.mc.gui.NimGui;
 import msifeed.mc.gui.ImStyle;
+import msifeed.mc.gui.NimGui;
 import msifeed.mc.gui.im.ImLabel;
 import msifeed.mc.gui.input.KeyTracker;
 import msifeed.mc.gui.input.MouseTracker;
@@ -29,7 +29,7 @@ public class NimText extends NimPart {
     private long pressedTime = 0; // For key repeating
 
     public NimText() {
-        this(80);
+        this(70);
     }
 
     public NimText(int width) {

@@ -1,9 +1,6 @@
 package msifeed.mc.misca.crabs.client;
 
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import msifeed.mc.gui.NimGui;
-import msifeed.mc.gui.input.KeyTracker;
-import msifeed.mc.gui.nim.NimPart;
 import msifeed.mc.gui.nim.NimText;
 import msifeed.mc.gui.nim.NimWindow;
 import msifeed.mc.misca.crabs.CrabsNetwork;
@@ -12,48 +9,40 @@ import msifeed.mc.misca.crabs.actions.ActionManager;
 import msifeed.mc.misca.crabs.battle.BattleManager;
 import msifeed.mc.misca.crabs.battle.FighterContext;
 import msifeed.mc.misca.crabs.battle.FighterMessage;
-import msifeed.mc.misca.crabs.character.Stats;
 import msifeed.mc.misca.utils.MiscaUtils;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraftforge.client.event.RenderGameOverlayEvent;
 
 import java.util.Collection;
-import java.util.function.Function;
 
-public enum BattleHud {
-    INSTANCE;
+public class BattleHud extends AbstractHudWindow {
+    public static final BattleHud INSTANCE = new BattleHud();
 
-    private final int statTextWidth = 16;
-    private final NimText[] statTexts = new NimText[Stats.values().length];
-    private Boolean shouldDisplay = false;
-    private final NimWindow battleWindow = new NimWindow("Battle", this::toggleHud);
+    private final NimWindow battleWindow = new NimWindow(MiscaUtils.l10n("misca.crabs.battle"), () -> HudManager.INSTANCE.closeHud(INSTANCE));
+    private final NimText modText = new NimText(20);
 
     private Action.Type currActionTab = Action.Type.MELEE;
 
-    BattleHud() {
-        final Function<String, Boolean> validator = s -> s.matches("\\d{0,2}");
-        for (int i = 0; i < statTexts.length; i++) {
-            final NimText t = new NimText(statTextWidth);
-            t.validateText = validator;
-            t.centerByWidth = true;
-            statTexts[i] = t;
-        }
+    private BattleHud() {
+        modText.validateText = s -> s.matches("-?\\d{0,3}");
     }
 
-    @SubscribeEvent
-    public void onRenderGui(RenderGameOverlayEvent.Post event) {
-        if (event.type != RenderGameOverlayEvent.ElementType.ALL) return;
-
-        if (!NimPart.focused() && KeyTracker.isTapped(CrabsKeyBinds.battleHud.getKeyCode())) {
-            toggleHud();
-        }
-
-        if (shouldDisplay)
-            render();
+    @Override
+    KeyBinding getKeyBind() {
+        return CrabsKeyBinds.battleHud;
     }
 
-    protected void render() {
+    @Override
+    void open() {
+    }
+
+    @Override
+    void close() {
+    }
+
+    @Override
+    void render() {
         final Minecraft mc = Minecraft.getMinecraft();
         final EntityPlayer player = mc.thePlayer;
         final BattleManager bm = BattleManager.INSTANCE;
@@ -76,11 +65,12 @@ public enum BattleHud {
             final FighterContext actor = context.control == null
                     ? context
                     : bm.getContext(context.control);
+            final boolean isAttack = actor.status == FighterContext.Status.ACT && actor.target == null;
 
             renderStatus(nimgui, actor);
 
             if (actor.canSelectAction()) {
-                renderActionTabs(nimgui);
+                renderActionTabs(nimgui, isAttack);
                 renderActions(nimgui);
                 renderPlayerModifier(nimgui);
             } else {
@@ -91,10 +81,11 @@ public enum BattleHud {
         nimgui.endWindow();
     }
 
-    private void renderActionTabs(NimGui nimgui) {
+    private void renderActionTabs(NimGui nimgui, boolean isAttack) {
         final Action.Type[] types = Action.Type.values();
         for (int i = 0; i < types.length; i++) {
             if (i % 3 == 0) nimgui.horizontalBlock();
+            if (types[i] == Action.Type.PASSIVE && isAttack) continue;
             if (nimgui.button(types[i].pretty())) {
                 currActionTab = types[i];
             }
@@ -119,21 +110,21 @@ public enum BattleHud {
         nimgui.horizontalBlock();
         for (Action action : stubs) {
             if (nimgui.button(action.pretty())) {
-                CrabsNetwork.INSTANCE.sendToServer(new FighterMessage(action.name));
+                try {
+                    final String modStr = modText.getText();
+                    final int mod = (modStr.isEmpty() || modStr.equals("-"))
+                            ? 0
+                            : Integer.parseInt(modStr);
+                    CrabsNetwork.INSTANCE.sendToServer(new FighterMessage(action.name, mod));
+                } catch (NumberFormatException ignore) {
+                }
             }
         }
     }
 
     private void renderPlayerModifier(NimGui nimgui) {
-
-    }
-
-    private void toggleHud() {
-        shouldDisplay = !shouldDisplay;
-
-        // Display empty screen with cursor
-        final Minecraft mc = Minecraft.getMinecraft();
-        if (shouldDisplay) mc.displayGuiScreen(EmptyGuiScreen.INSTANCE);
-        else if (mc.currentScreen == EmptyGuiScreen.INSTANCE) mc.displayGuiScreen(null);
+        nimgui.horizontalBlock();
+        nimgui.label(MiscaUtils.l10n("misca.crabs.player_mod"));
+        nimgui.nim(modText);
     }
 }

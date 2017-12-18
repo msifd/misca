@@ -3,15 +3,11 @@ package msifeed.mc.misca.crabs;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 import msifeed.mc.misca.crabs.actions.ActionListMessage;
-import msifeed.mc.misca.crabs.battle.FighterContext;
 import msifeed.mc.misca.crabs.battle.FighterContextMessage;
 import msifeed.mc.misca.crabs.battle.FighterMessage;
 import msifeed.mc.misca.crabs.character.CharacterMessage;
 import net.minecraft.entity.player.EntityPlayerMP;
-
-import java.util.Collection;
 
 public enum CrabsNetwork {
     INSTANCE;

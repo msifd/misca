@@ -19,10 +19,11 @@ public enum MoveManager {
     private HashMap<UUID, Move> pendingMoves = new HashMap<>();
     private ArrayList<Move> completeMoves = new ArrayList<>();
 
-    public void selectAction(FighterContext actor, Action action) {
+    public void selectAction(FighterContext actor, Action action, int mod) {
         // Выбирать пассивные действия можно только при защите
         if (!actor.canSelectAction() || actor.target == null && action.type == Action.Type.PASSIVE) return;
         actor.updateAction(action);
+        actor.modifier = mod;
     }
 
     public void describeAction(FighterContext actor) {

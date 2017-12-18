@@ -8,13 +8,19 @@ key.misca.battle_hud=Битв-о-матик
 item.battle_stick.name=Палка битвы
 item.battle_stick.desc=Воздействует на существо:\nЛКМ - выйти раз на раз\nShift+ЛКМ - уточнить мотивы бойца\nПКМ - переключение командования\nShift+ПКМ - отпустить покурить
 item.char_sheet.name=Чар листок
-item.char_sheet.desc=ПКМ по существу для редакт. чаршита
+item.char_sheet.desc=ПКМ по существу редактирует его характеристики
 
 death.attack.crabs=%1$s был убит в бою
 
+misca.crabs.character=Персонаж:
+misca.crabs.update_char=Обновить персонажа
+misca.crabs.fill_all_stats=Заполни все поля!
+
+misca.crabs.battle=Бой
 misca.crabs.join_battle=Войти в бой
 misca.crabs.leave_battle=Выйти из боя
 misca.crabs.cancel=Отмена
+misca.crabs.player_mod=Модифификатор:
 
 misca.crabs.knocked_out=%s нокаутирован!
 misca.crabs.finished=§r%s§6 прикончил §r%s§6!

@@ -11,6 +11,7 @@ public class FighterMessage extends AbstractMessage<FighterMessage> {
     Type type;
     Stats stat;
     Action action;
+    int mod;
     private String actionName;
 
     private boolean malformed = false;
@@ -22,8 +23,9 @@ public class FighterMessage extends AbstractMessage<FighterMessage> {
         this.type = type;
     }
 
-    public FighterMessage(String actionName) {
+    public FighterMessage(String actionName, int mod) {
         this.type = Type.ACTION;
+        this.mod = mod;
         this.actionName = actionName;
     }
 
@@ -39,6 +41,7 @@ public class FighterMessage extends AbstractMessage<FighterMessage> {
             case ACTION:
                 final String name = readShortString(buf);
                 action = ActionManager.INSTANCE.lookup(name);
+                mod = buf.readInt();
                 if (action == null) malformed = true;
                 break;
             case CALC:
@@ -55,6 +58,7 @@ public class FighterMessage extends AbstractMessage<FighterMessage> {
         switch (type) {
             case ACTION:
                 writeShortString(buf, actionName);
+                buf.writeInt(mod);
                 break;
             case CALC:
                 buf.writeByte(stat.ordinal());

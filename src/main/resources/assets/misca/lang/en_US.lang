@@ -12,9 +12,15 @@ item.char_sheet.desc=RMB on entity to edit its charsheet
 
 death.attack.crabs=%1$s was killed in battle
 
+misca.crabs.character=Character:
+misca.crabs.update_char=Update character
+misca.crabs.fill_all_stats=Fill all stats!
+
+misca.crabs.battle=Battle
 misca.crabs.join_battle=Join battle
 misca.crabs.leave_battle=Leave battle
 misca.crabs.cancel=Cancel
+misca.crabs.player_mod=Modifier:
 
 misca.crabs.knocked_out=%s knocked out!
 misca.crabs.finished=§r%s§6 finished §r%s§6!

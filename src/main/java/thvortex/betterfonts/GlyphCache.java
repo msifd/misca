@@ -19,29 +19,20 @@
 
 package thvortex.betterfonts;
 
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.nio.IntBuffer;
-import java.nio.ByteOrder;
-import java.nio.ByteBuffer;
-import java.awt.image.BufferedImage;
-import java.awt.font.FontRenderContext;
-import java.awt.font.GlyphVector;
-import java.awt.geom.Point2D;
-import java.awt.Graphics2D;
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.RenderingHints;
-import java.awt.Rectangle;
-import java.awt.AlphaComposite;
-import java.awt.GraphicsEnvironment;
-
 import net.minecraft.client.renderer.GLAllocation;
 import net.minecraft.client.renderer.texture.TextureUtil;
 import org.lwjgl.opengl.GL11;
+
+import java.awt.*;
+import java.awt.font.FontRenderContext;
+import java.awt.font.GlyphVector;
+import java.awt.geom.Point2D;
+import java.awt.image.BufferedImage;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.IntBuffer;
+import java.util.*;
+import java.util.List;
 
 /**
  * The GlyphCache class is responsible for caching pre-rendered images of every glyph using OpenGL textures. This class is also

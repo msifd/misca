@@ -148,11 +148,11 @@ public enum BattleManager {
         switch (message.type) {
             case ACTION:
                 FighterContext actor = ctx.control == null ? ctx : getContext(ctx.control);
-                MoveManager.INSTANCE.selectAction(actor, message.action);
+                MoveManager.INSTANCE.selectAction(actor, message.action, message.mod);
                 break;
             case CALC:
                 // FIXME modifier
-                Rules.rollSingleStat(player, message.stat, 0);
+                Rules.rollSingleStat(player, message.stat, message.mod);
                 break;
             case LEAVE:
                 leaveBattle(player, false);

@@ -1,8 +1,6 @@
 package msifeed.mc.misca.crabs.client;
 
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import msifeed.mc.gui.NimGui;
-import msifeed.mc.gui.input.KeyTracker;
 import msifeed.mc.gui.nim.NimPart;
 import msifeed.mc.gui.nim.NimText;
 import msifeed.mc.gui.nim.NimWindow;
@@ -11,27 +9,27 @@ import msifeed.mc.misca.crabs.character.Character;
 import msifeed.mc.misca.crabs.character.CharacterManager;
 import msifeed.mc.misca.crabs.character.Stats;
 import msifeed.mc.misca.utils.EntityUtils;
+import msifeed.mc.misca.utils.MiscaUtils;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraftforge.client.event.RenderGameOverlayEvent;
 
 import java.util.UUID;
 import java.util.function.Function;
 
-public enum CharacterHud {
-    INSTANCE;
+public class CharacterHud extends AbstractHudWindow {
+    public static final CharacterHud INSTANCE = new CharacterHud();
 
-    private boolean isOpened = false;
     private final int statTextWidth = 16;
     private final NimText[] statTexts = new NimText[Stats.values().length];
-    private final NimWindow window = new NimWindow("Character", this::close);
+    private final NimWindow window = new NimWindow("", () -> HudManager.INSTANCE.closeHud(INSTANCE));
 
     private EntityLivingBase entity;
     private UUID entityUuid;
     private Character character;
 
-    CharacterHud() {
+    private CharacterHud() {
         final Function<String, Boolean> validator = s -> s.matches("\\d{0,2}");
         for (int i = 0; i < statTexts.length; i++) {
             final NimText t = new NimText(statTextWidth);
@@ -41,13 +39,11 @@ public enum CharacterHud {
         }
     }
 
-    public void open(EntityLivingBase entity) {
-        isOpened = true;
-        window.title = "Character: " + entity.getCommandSenderName();
-
+    public void setEntity(EntityLivingBase entity) {
         this.entity = entity;
         this.entityUuid = EntityUtils.getUuid(entity);
         this.character = null; // Сбрасываем перед запросом
+        this.window.title = MiscaUtils.l10n("misca.crabs.character") + ' ' + entity.getCommandSenderName();
 
         // Просим чара, после чего заполняем поля для ввода
         CharacterManager.INSTANCE.fetch(entityUuid, c -> {
@@ -58,45 +54,38 @@ public enum CharacterHud {
             for (int i = 0; i < statValues.length; i++)
                 statTexts[i].setText(Integer.toString(character.stat(statValues[i])));
         });
-
-        // Если никакого экрана не открыто, то открываем свой пустой
-        final Minecraft mc = Minecraft.getMinecraft();
-        if (mc.currentScreen == null) mc.displayGuiScreen(EmptyGuiScreen.INSTANCE);
     }
 
-    public void close() {
-        isOpened = false;
+    @Override
+    KeyBinding getKeyBind() {
+        return CrabsKeyBinds.charHud;
+    }
+
+    @Override
+    void open() {
+        if (entity == null)
+            setEntity(Minecraft.getMinecraft().thePlayer);
+    }
+
+    @Override
+    void close() {
+        entity = null;
 
         // Manually release inputs' focus to be able use hotkey again
         for (NimText t : statTexts)
-            if (t.inFocus()) t.releaseFocus();
-
-        // Close special empty screen if it active
-        final Minecraft mc = Minecraft.getMinecraft();
-        if (mc.currentScreen == EmptyGuiScreen.INSTANCE) mc.displayGuiScreen(null);
+            if (t.inFocus()) NimPart.releaseFocus();
     }
 
-    @SubscribeEvent
-    public void onRenderGui(RenderGameOverlayEvent.Post event) {
-        if (event.type != RenderGameOverlayEvent.ElementType.ALL) return;
-
+    @Override
+    void render() {
         // Во время боя изменять самому себе статы нельзя.
         // Распологается здесь чтобы окошко закрывалось при входе в бой.
         final EntityPlayer player = Minecraft.getMinecraft().thePlayer;
         if (entity == player && BattleManager.INSTANCE.isBattling(player)) {
-            close();
+            HudManager.INSTANCE.closeHud(INSTANCE);
             return;
         }
 
-        if (!NimPart.focused() && KeyTracker.isTapped(CrabsKeyBinds.charHud.getKeyCode())) {
-            if (isOpened) close();
-            else open(player);
-        }
-
-        if (isOpened) render();
-    }
-
-    protected void render() {
         final NimGui nimgui = NimGui.INSTANCE;
         nimgui.beginWindow(window);
 
@@ -120,14 +109,14 @@ public enum CharacterHud {
 
         final int inputWidth = window.getBlockContentWidth();
         nimgui.verticalBlock();
-        if (nimgui.button("Update character", inputWidth)) {
+        if (nimgui.button(MiscaUtils.l10n("misca.crabs.update_char"), inputWidth)) {
             try {
                 int[] stats = new int[statTexts.length];
                 for (int i = 0; i < stats.length; i++) stats[i] = Byte.parseByte(statTexts[i].getText());
                 character.fill(stats);
                 CharacterManager.INSTANCE.requestUpdate(entityUuid, character);
             } catch (NumberFormatException e) {
-                Minecraft.getMinecraft().thePlayer.sendChatMessage("Fill all stats");
+                Minecraft.getMinecraft().thePlayer.sendChatMessage(MiscaUtils.l10n("misca.crabs.fill_all_stats"));
             }
         }
 
