@@ -2,11 +2,19 @@ package msifeed.mc.misca.things;
 
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.registry.GameRegistry;
+import msifeed.mc.misca.things.items.CustomFood;
+import msifeed.mc.misca.things.items.CustomWeapon;
+import msifeed.mc.misca.things.items.Miscellaneous;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 
 public class MiscaThings {
     public static final MiscaCreativeTab tab = new MiscaCreativeTab();
+    public static final MisochkaCreativeTab itemTab = new MisochkaCreativeTab();
+
+    public static CustomWeapon customWeapon;
+    public static CustomFood customFood;
+    public static Miscellaneous miscellaneous;
 
     public void onInit(FMLInitializationEvent event) {
         GameRegistry.registerTileEntity(RegularChest.ChestEntity.class, "misca.ariadna_chest");
@@ -114,6 +122,10 @@ public class MiscaThings {
             RegularTrapdoor block = new RegularTrapdoor(id_base, i);
             GameRegistry.registerBlock(block, id_base + i);
         }
+
+        customWeapon = new CustomWeapon(itemTab);
+        customFood = new CustomFood(itemTab);
+        miscellaneous = new Miscellaneous(itemTab);
 
         GameRegistry.registerBlock(new TransparentBlock(), TransparentBlock.NAME_BASE);
         GameRegistry.registerBlock(new DripsBlock(), DripsBlock.NAME_BASE);
