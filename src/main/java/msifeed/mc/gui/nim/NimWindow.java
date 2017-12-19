@@ -2,11 +2,13 @@ package msifeed.mc.gui.nim;
 
 import msifeed.mc.gui.ImStyle;
 import msifeed.mc.gui.NimGui;
+import msifeed.mc.gui.input.KeyTracker;
 import msifeed.mc.gui.input.MouseTracker;
 import msifeed.mc.gui.render.DrawPrimitives;
 import msifeed.mc.gui.render.TextureInfo;
 import net.minecraft.client.Minecraft;
 import net.minecraft.profiler.Profiler;
+import org.lwjgl.input.Keyboard;
 import org.lwjgl.util.Point;
 
 public class NimWindow {
@@ -119,7 +121,7 @@ public class NimWindow {
                 width - st.windowCloseBtnTexture.width + st.windowCloseBtnOffset.getX(), st.windowHeaderHeight);
 
         // Dragging
-        if (!dragging) {
+        if (!dragging && !KeyTracker.isPressed(Keyboard.KEY_ESCAPE)) {
             if (inHeader && MouseTracker.pressed()) {
                 dragging = true;
                 dragStart.setLocation(MouseTracker.pos());

@@ -41,6 +41,8 @@ public enum MoveManager {
             actor.target = target.uuid;
             actor.updateStatus(FighterContext.Status.DEAL_DAMAGE);
             target.target = actor.uuid;
+
+            BattleManager.INSTANCE.syncContext(actor);
         }
 
         // TODO ограничение на скорость ударов (при текущей отмене урона они не ограничиваются)
@@ -49,6 +51,7 @@ public enum MoveManager {
 
     public void stopDealingDamage(FighterContext actor) {
         actor.updateStatus(FighterContext.Status.WAIT);
+        BattleManager.INSTANCE.syncContext(actor);
 
         Move move = pendingMoves.get(actor.uuid);
 
@@ -126,6 +129,9 @@ public enum MoveManager {
 
         attacker.reset(true);
         defender.reset(!justKnockedOut);
+
+        BattleManager.INSTANCE.syncContext(attacker);
+        BattleManager.INSTANCE.syncContext(defender);
     }
 
     private static class Move {

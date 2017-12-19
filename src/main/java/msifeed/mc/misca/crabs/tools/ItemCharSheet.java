@@ -1,6 +1,8 @@
 package msifeed.mc.misca.crabs.tools;
 
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import msifeed.mc.misca.crabs.client.CharacterHud;
 import msifeed.mc.misca.crabs.client.HudManager;
 import msifeed.mc.misca.things.MiscaThings;
@@ -44,10 +46,10 @@ public class ItemCharSheet extends Item {
     }
 
     @SubscribeEvent
+    @SideOnly(Side.CLIENT)
     public void onEntityInteract(EntityInteractEvent event) {
-        // Обработка только на сервере
         // ПКМ листком по существу для редактирования его стат
-        if (event.entityPlayer.worldObj.isRemote || !(event.target instanceof EntityLivingBase)) return;
+        if (!(event.target instanceof EntityLivingBase)) return;
 
         final ItemStack itemStack = event.entityPlayer.getHeldItem();
         if (itemStack == null || !(itemStack.getItem() instanceof ItemCharSheet)) return;

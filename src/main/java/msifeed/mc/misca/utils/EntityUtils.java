@@ -32,7 +32,7 @@ public class EntityUtils {
             for (Object o : w.loadedEntityList) {
                 if (o instanceof EntityLivingBase) {
                     final EntityLivingBase e = (EntityLivingBase) o;
-                    if (e.getPersistentID() == uuid) return e;
+                    if (getUuid(e).equals(uuid)) return e;
                 }
             }
         }

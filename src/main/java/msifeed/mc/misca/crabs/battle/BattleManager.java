@@ -1,5 +1,6 @@
 package msifeed.mc.misca.crabs.battle;
 
+import com.google.common.collect.ImmutableList;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
@@ -20,10 +21,7 @@ import net.minecraftforge.event.entity.living.LivingEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.UUID;
+import java.util.*;
 
 public enum BattleManager {
     INSTANCE;
@@ -32,7 +30,7 @@ public enum BattleManager {
     private HashMap<UUID, FighterContext> uuidToContext = new HashMap<>();
 
     private long lastUpdate = 0;
-    private ArrayList<FighterContext> toSync = new ArrayList<>();
+    private Set<FighterContext> toSync = new HashSet<>();
 
     public void onInit() {
         MinecraftForge.EVENT_BUS.register(INSTANCE);
@@ -55,6 +53,10 @@ public enum BattleManager {
         return uuidToContext.values();
     }
 
+    protected void syncContext(FighterContext ctx) {
+        toSync.add(ctx);
+    }
+
     public void joinBattle(EntityLivingBase entity) {
         if (isBattling(entity)) return;
 
@@ -75,6 +77,11 @@ public enum BattleManager {
 
         // Выключаем контроль при повторном вызове или устанавливаем новую марионетку
         controller.control = (controller.control == actor.uuid) ? null : actor.uuid;
+
+        if (player instanceof EntityPlayerMP) {
+            final FighterContextMessage msg = new FighterContextMessage(ImmutableList.of(controller, actor));
+            CrabsNetwork.INSTANCE.sendToPlayer((EntityPlayerMP) player, msg);
+        }
     }
 
     public void leaveBattle(EntityLivingBase entity, boolean instant) {
@@ -151,7 +158,6 @@ public enum BattleManager {
                 MoveManager.INSTANCE.selectAction(actor, message.action, message.mod);
                 break;
             case CALC:
-                // FIXME modifier
                 Rules.rollSingleStat(player, message.stat, message.mod);
                 break;
             case LEAVE:
@@ -170,6 +176,8 @@ public enum BattleManager {
             final FighterContext oldCtx = uuidToContext.get(ctx.uuid);
             if (oldCtx != null && oldCtx.entity != null) ctx.entity = oldCtx.entity;
             else ctx.entity = EntityUtils.lookupPlayer(ctx.uuid);
+
+            if (ctx.entity == null) throw new RuntimeException("Missing entity: " + ctx.uuid);
 
             uuidToContext.put(ctx.uuid, ctx);
         }
