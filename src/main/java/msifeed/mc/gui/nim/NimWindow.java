@@ -121,7 +121,7 @@ public class NimWindow {
                 width - st.windowCloseBtnTexture.width + st.windowCloseBtnOffset.getX(), st.windowHeaderHeight);
 
         // Dragging
-        if (!dragging && !KeyTracker.isPressed(Keyboard.KEY_ESCAPE)) {
+        if (!dragging) {
             if (inHeader && MouseTracker.pressed()) {
                 dragging = true;
                 dragStart.setLocation(MouseTracker.pos());
@@ -131,7 +131,7 @@ public class NimWindow {
             Point diff = MouseTracker.pos();
             diff.untranslate(dragStart);
             pos.setLocation(diff.getX() + windowStart.getX(), diff.getY() + windowStart.getY());
-            if (inHeader && !MouseTracker.pressed()) {
+            if ((inHeader && !MouseTracker.pressed()) || KeyTracker.isPressed(Keyboard.KEY_ESCAPE)) {
                 dragging = false;
             }
         }
