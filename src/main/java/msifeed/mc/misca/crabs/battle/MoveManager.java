@@ -27,6 +27,8 @@ public enum MoveManager {
     }
 
     public void describeAction(FighterContext actor) {
+        if (actor.action == null) return;
+
         actor.described = true;
 
         // Действия не требующие атаки завершаются сразу после отписи
@@ -103,8 +105,8 @@ public enum MoveManager {
             looser = (winner == attack ? defence : attack);
         }
 
-        for (Effect eff : winner.action.target_effects) eff.apply(winner.ctx, looser.ctx);
-        for (Effect eff : winner.action.self_effects) eff.apply(winner.ctx, winner.ctx);
+        for (Effect eff : winner.action.target_effects) eff.apply(winner, looser);
+        for (Effect eff : winner.action.self_effects) eff.apply(winner, winner);
         // TODO handle some tags
 
         final String resultMsg = isFatality

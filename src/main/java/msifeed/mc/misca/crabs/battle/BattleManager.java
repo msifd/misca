@@ -6,6 +6,9 @@ import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.PlayerEvent;
 import cpw.mods.fml.common.gameevent.TickEvent;
+import cpw.mods.fml.common.network.FMLNetworkEvent;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import msifeed.mc.misca.crabs.CrabsNetwork;
 import msifeed.mc.misca.crabs.rules.Rules;
 import msifeed.mc.misca.utils.EntityUtils;
@@ -280,13 +283,18 @@ public enum BattleManager {
     public void onChatMessage(ServerChatEvent event) {
         final FighterContext ctx = uuidToContext.get(event.player.getUniqueID());
         if (ctx == null) return;
+        if (ctx.described) return;
 
-//        // Удаляем все что не буква, цифра или пробел
-//        final String cleanedMsg = event.message.replaceAll("[^\\w\\d\\s]", "");
         final int words = event.message.split("\\s+").length;
         if (words < BattleDefines.MIN_WORDS_IN_ACTION_DESC) return;
 
         final FighterContext actor = ctx.control == null ? ctx : getContext(ctx.control);
         MoveManager.INSTANCE.describeAction(actor);
+    }
+
+    @SubscribeEvent
+    @SideOnly(Side.CLIENT)
+    public void onClientDisconnect(FMLNetworkEvent.ClientDisconnectionFromServerEvent event) {
+        uuidToContext.clear();
     }
 }

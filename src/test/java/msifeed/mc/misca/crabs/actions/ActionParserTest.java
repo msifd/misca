@@ -5,8 +5,11 @@ import com.google.common.io.Resources;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import msifeed.mc.misca.crabs.character.Stats;
+import msifeed.mc.misca.crabs.rules.Buff;
+import msifeed.mc.misca.crabs.rules.DynamicEffect;
 import msifeed.mc.misca.crabs.rules.Effect;
 import msifeed.mc.misca.crabs.rules.Modifier;
+import msifeed.mc.misca.crabs.rules.Rules;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -15,6 +18,8 @@ import java.net.URL;
 import java.util.Collections;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 public class ActionParserTest {
     private static Action getPointHitAction() {
@@ -50,5 +55,25 @@ public class ActionParserTest {
         Action exp = getPointHitAction();
 
         assertEquals(exp, act);
+    }
+
+    @Test
+    public void dynamicEffect() {
+        final String src = "score:+5";
+        final DynamicEffect.Score effect = (DynamicEffect.Score) Rules.effect(src);
+
+        assertNotNull(effect);
+        assertEquals(effect.name(), "score");
+        assertEquals(effect.value, 5);
+    }
+
+    @Test
+    public void buff() {
+        final String src = "buff:0:0:score:+5";
+        final Buff buff = (Buff) Rules.effect(src);
+
+        assertNotNull(buff);
+        assertTrue(buff.enabled());
+        assertEquals(buff.effect, Rules.effect("score:+5"));
     }
 }

@@ -18,6 +18,8 @@ public abstract class Modifier {
         return this.getClass().equals(obj.getClass());
     }
 
+    public abstract String name();
+
     // // // // // // // //
 
     public static class DiceG30 extends Modifier {
@@ -32,7 +34,7 @@ public abstract class Modifier {
         }
 
         @Override
-        public String toString() {
+        public String name() {
             return "g30";
         }
     }
@@ -43,7 +45,7 @@ public abstract class Modifier {
         }
 
         @Override
-        public String toString() {
+        public String name() {
             return "g30+";
         }
     }
@@ -55,7 +57,7 @@ public abstract class Modifier {
         }
 
         @Override
-        public String toString() {
+        public String name() {
             return "g30-";
         }
     }
@@ -73,7 +75,7 @@ public abstract class Modifier {
         }
 
         @Override
-        public String toString() {
+        public String name() {
             return stat.toString();
         }
 
@@ -96,7 +98,7 @@ public abstract class Modifier {
         }
 
         @Override
-        public String toString() {
+        public String name() {
             return Integer.toString(constant);
         }
 
