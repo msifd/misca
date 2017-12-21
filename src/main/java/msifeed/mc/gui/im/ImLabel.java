@@ -16,7 +16,7 @@ public class ImLabel {
     public int label(String label, int x, int y, int color, boolean shadow) {
         Profiler profiler = Minecraft.getMinecraft().mcProfiler;
         profiler.startSection("ImLabel");
-        final int width = font.renderString(label, x, y - 1, color, shadow); // y - 1 slightly fixes ypos
+        final int width = font.renderString(label, x, y - 1, 0.01, color, shadow); // y - 1 slightly fixes ypos
         profiler.endSection();
         return width;
     }

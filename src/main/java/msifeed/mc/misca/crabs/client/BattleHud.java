@@ -9,6 +9,7 @@ import msifeed.mc.misca.crabs.actions.ActionManager;
 import msifeed.mc.misca.crabs.battle.BattleManager;
 import msifeed.mc.misca.crabs.battle.FighterContext;
 import msifeed.mc.misca.crabs.battle.FighterMessage;
+import msifeed.mc.misca.crabs.character.Stats;
 import msifeed.mc.misca.utils.MiscaUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.settings.KeyBinding;
@@ -22,7 +23,10 @@ public class BattleHud extends AbstractHudWindow {
     private final NimWindow battleWindow = new NimWindow(MiscaUtils.l10n("misca.crabs.battle"), () -> HudManager.INSTANCE.closeHud(INSTANCE));
     private final NimText modText = new NimText(20);
 
+    private boolean statRollsMode = false;
     private Action.Type currActionTab = Action.Type.MELEE;
+
+    private long lastRollTime = System.currentTimeMillis();
 
     private BattleHud() {
         modText.validateText = s -> s.matches("-?\\d{0,3}");
@@ -62,6 +66,16 @@ public class BattleHud extends AbstractHudWindow {
         }
 
         if (inBattle) {
+            final String modeTitle = statRollsMode
+                    ? MiscaUtils.l10n("misca.crabs.battle")
+                    : MiscaUtils.l10n("misca.crabs.stats");
+            if (nimgui.button(modeTitle)) {
+                statRollsMode = !statRollsMode;
+            }
+        }
+
+        if (inBattle && !statRollsMode) {
+
             final FighterContext actor = context.control == null
                     ? context
                     : bm.getContext(context.control);
@@ -76,18 +90,24 @@ public class BattleHud extends AbstractHudWindow {
             } else {
                 // TODO display selected action
             }
+        } else {
+            renderStatRolls(nimgui);
+            renderPlayerModifier(nimgui);
         }
 
         nimgui.endWindow();
     }
 
-    private void renderActionTabs(NimGui nimgui, boolean isAttack) {
-        final Action.Type[] types = Action.Type.values();
-        for (int i = 0; i < types.length; i++) {
+    private void renderStatRolls(NimGui nimgui) {
+        final Stats[] stats = Stats.values();
+        for (int i = 0; i < stats.length; i++) {
             if (i % 3 == 0) nimgui.horizontalBlock();
-            if (types[i] == Action.Type.PASSIVE && isAttack) continue;
-            if (nimgui.button(types[i].pretty())) {
-                currActionTab = types[i];
+            if (nimgui.button(stats[i].toString())) {
+                final long now = System.currentTimeMillis();
+                if (now - lastRollTime > 2000) {
+                    lastRollTime = now;
+                    CrabsNetwork.INSTANCE.sendToServer(new FighterMessage(stats[i], getModifierInput()));
+                }
             }
         }
     }
@@ -101,23 +121,32 @@ public class BattleHud extends AbstractHudWindow {
         nimgui.label(status, 0, 2);
     }
 
+    private void renderActionTabs(NimGui nimgui, boolean isAttack) {
+        // Пробел после переключателей режимов
+        nimgui.horizontalBlock();
+        battleWindow.consume(0, battleWindow.nextElemY(), 0, 1);
+
+        // Горизонтальные блоки задаются в цикле
+        final Action.Type[] types = Action.Type.values();
+        for (int i = 0; i < types.length; i++) {
+            if (i % 3 == 0) nimgui.horizontalBlock();
+            if (types[i] == Action.Type.PASSIVE && isAttack) continue;
+            if (nimgui.button(types[i].pretty())) {
+                currActionTab = types[i];
+            }
+        }
+    }
+
     private void renderActions(NimGui nimgui) {
         final Collection<Action> stubs = ActionManager.INSTANCE.stubs().get(currActionTab);
         // Пробел между категориями и экшнами
         nimgui.horizontalBlock();
-        battleWindow.consume(0, battleWindow.nextElemY(), 0, 2);
+        battleWindow.consume(0, battleWindow.nextElemY(), 0, 1);
 
         nimgui.horizontalBlock();
         for (Action action : stubs) {
             if (nimgui.button(action.pretty())) {
-                try {
-                    final String modStr = modText.getText();
-                    final int mod = (modStr.isEmpty() || modStr.equals("-"))
-                            ? 0
-                            : Integer.parseInt(modStr);
-                    CrabsNetwork.INSTANCE.sendToServer(new FighterMessage(action.name, mod));
-                } catch (NumberFormatException ignore) {
-                }
+                CrabsNetwork.INSTANCE.sendToServer(new FighterMessage(action.name, getModifierInput()));
             }
         }
     }
@@ -126,5 +155,16 @@ public class BattleHud extends AbstractHudWindow {
         nimgui.horizontalBlock();
         nimgui.label(MiscaUtils.l10n("misca.crabs.player_mod"));
         nimgui.nim(modText);
+    }
+
+    private int getModifierInput() {
+        try {
+            final String modStr = modText.getText();
+            return (modStr.isEmpty() || modStr.equals("-"))
+                    ? 0
+                    : Integer.parseInt(modStr);
+        } catch (NumberFormatException ignore) {
+            return 0;
+        }
     }
 }

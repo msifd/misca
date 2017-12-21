@@ -144,44 +144,44 @@ public class NimWindow {
         final int farOffsetX = x + width - st.windowBottomRightTexture.width;
         final int farOffsetY = y + height - st.windowBottomLeftTexture.height;
         // Top
-        DrawPrimitives.drawTexture(st.windowTopLeftTexture, x, y, -0.1);
+        DrawPrimitives.drawTexture(st.windowTopLeftTexture, x, y, 0.001);
         DrawPrimitives.drawScaledTexture(
                 st.windowTopMiddleTexture,
-                x + st.windowTopLeftTexture.width, y, -0.1,
+                x + st.windowTopLeftTexture.width, y, 0.001,
                 midWidth,
                 st.windowTopMiddleTexture.height
         );
-        DrawPrimitives.drawTexture(st.windowTopRightTexture, farOffsetX, y, -0.1);
+        DrawPrimitives.drawTexture(st.windowTopRightTexture, farOffsetX, y, 0.001);
         // Middle
         DrawPrimitives.drawScaledTexture(
                 st.windowMiddleLeftTexture,
-                x, y + st.windowTopLeftTexture.height, -0.1,
+                x, y + st.windowTopLeftTexture.height, 0.001,
                 st.windowMiddleLeftTexture.width,
                 midHeight
         );
         DrawPrimitives.drawScaledTexture(
                 st.windowMiddleMiddleTexture,
-                x + st.windowMiddleLeftTexture.width, y + st.windowTopLeftTexture.height, -0.1,
+                x + st.windowMiddleLeftTexture.width, y + st.windowTopLeftTexture.height, 0.001,
                 midWidth,
                 midHeight
         );
         DrawPrimitives.drawScaledTexture(
                 st.windowMiddleRightTexture,
-                farOffsetX, y + st.windowTopLeftTexture.height, -0.1,
+                farOffsetX, y + st.windowTopLeftTexture.height, 0.001,
                 st.windowMiddleRightTexture.width,
                 midHeight
         );
         // Bottom
         DrawPrimitives.drawTexture(st.windowBottomLeftTexture,
-                x, farOffsetY, -0.1);
+                x, farOffsetY, 0.001);
         DrawPrimitives.drawScaledTexture(
                 st.windowBottomMiddleTexture,
-                x + st.windowTopLeftTexture.width, farOffsetY, -0.1,
+                x + st.windowTopLeftTexture.width, farOffsetY, 0.001,
                 midWidth,
                 st.windowBottomMiddleTexture.height
         );
         DrawPrimitives.drawTexture(st.windowBottomRightTexture,
-                farOffsetX, farOffsetY, -0.1);
+                farOffsetX, farOffsetY, 0.001);
 
         profiler.endSection();
     }

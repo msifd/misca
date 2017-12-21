@@ -13,8 +13,9 @@ public abstract class AbstractMessage<SELF extends AbstractMessage<SELF>> implem
     }
 
     public void writeShortString(ByteBuf buf, String str) {
-        buf.writeByte(str.length());
-        buf.writeBytes(str.getBytes(Charsets.UTF_8));
+        final byte[] bytes = str.getBytes(Charsets.UTF_8);
+        buf.writeByte(bytes.length);
+        buf.writeBytes(bytes);
     }
 
     public String readString(ByteBuf buf) {
@@ -23,7 +24,8 @@ public abstract class AbstractMessage<SELF extends AbstractMessage<SELF>> implem
     }
 
     public void writeString(ByteBuf buf, String str) {
-        buf.writeInt(str.length());
-        buf.writeBytes(str.getBytes(Charsets.UTF_8));
+        final byte[] bytes = str.getBytes(Charsets.UTF_8);
+        buf.writeInt(bytes.length);
+        buf.writeBytes(bytes);
     }
 }

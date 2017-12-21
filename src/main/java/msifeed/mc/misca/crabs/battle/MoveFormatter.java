@@ -58,7 +58,7 @@ public final class MoveFormatter {
                 + statValue;
 
         if (mod != 0)
-            s += mod > 0 ? "\u00A76+\u00A7r" : "\u00A76-\u00A7r" + Math.abs(mod);
+            s += (mod > 0 ? "\u00A76+\u00A7r" : "\u00A76-\u00A7r") + Math.abs(mod);
 
         s += "\u00A76=\u00A7r" + (roll + statValue + mod);
 

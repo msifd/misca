@@ -2,6 +2,7 @@ package msifeed.mc.misca.tweaks;
 
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
+import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.event.FMLServerStartingEvent;
 import cpw.mods.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import cpw.mods.fml.relauncher.Side;
@@ -22,6 +23,10 @@ public class Tweaks {
     private BanEntities banEntities = new BanEntities();
     private FoodSupplier foodSupplier = new FoodSupplier();
     private DRM drm = new DRM();
+
+    public void preInit(FMLPreInitializationEvent event) {
+        deathToll.preInit();
+    }
 
     public void onInit(FMLInitializationEvent event) {
         MinecraftForge.EVENT_BUS.register(disableSomeCraftingTables);

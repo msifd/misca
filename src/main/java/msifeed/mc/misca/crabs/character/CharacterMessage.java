@@ -15,12 +15,12 @@ public class CharacterMessage extends AbstractMessage<CharacterMessage> {
     }
 
     public CharacterMessage(UUID uuid) {
-        this.type = Type.FETCH;
+        this.type = Type.GET;
         this.uuid = uuid;
     }
 
     public CharacterMessage(UUID uuid, Character character) {
-        this.type = Type.CHARACTER;
+        this.type = Type.POST;
         this.uuid = uuid;
         this.character = character;
     }
@@ -30,12 +30,12 @@ public class CharacterMessage extends AbstractMessage<CharacterMessage> {
         type = Type.values()[buf.readByte()];
         uuid = UUID.fromString(readShortString(buf));
 
-        if (type != Type.CHARACTER) return;
-        character = new Character();
-        character.name = readShortString(buf);
-        character.isPlayer = buf.readBoolean();
-        for (Stats s : Stats.values()) {
-            character.stats.put(s, (int) buf.readByte());
+        if (type == Type.POST) {
+            character = new Character();
+            character.name = readShortString(buf);
+            character.isPlayer = buf.readBoolean();
+            for (Stats s : Stats.values())
+                character.stats.put(s, (int) buf.readByte());
         }
     }
 
@@ -44,22 +44,22 @@ public class CharacterMessage extends AbstractMessage<CharacterMessage> {
         buf.writeByte(type.ordinal());
         writeShortString(buf, uuid.toString());
 
-        if (type != Type.CHARACTER) return;
-        writeShortString(buf, character.name);
-        buf.writeBoolean(character.isPlayer);
-        for (Stats s : Stats.values()) {
-            buf.writeByte(character.stat(s));
+        if (type == Type.POST) {
+            writeShortString(buf, character.name);
+            buf.writeBoolean(character.isPlayer);
+            for (Stats s : Stats.values())
+                buf.writeByte(character.stat(s));
         }
     }
 
     @Override
     public CharacterMessage onMessage(CharacterMessage message, MessageContext ctx) {
         switch (message.type) {
-            case FETCH:
+            case GET:
                 final Character c = CharacterManager.INSTANCE.get(message.uuid);
                 return new CharacterMessage(message.uuid, c);
-            case CHARACTER:
-                if (ctx.side.isServer()) CharacterManager.INSTANCE.onServerReceive(message);
+            case POST:
+                if (ctx.side.isServer()) CharacterManager.INSTANCE.onServerReceive(ctx.getServerHandler().playerEntity, message);
                 else CharacterManager.INSTANCE.onFetchResponse(message);
             default:
                 return null;
@@ -67,6 +67,6 @@ public class CharacterMessage extends AbstractMessage<CharacterMessage> {
     }
 
     private enum Type {
-        FETCH, CHARACTER
+        GET, POST
     }
 }

@@ -9,6 +9,7 @@ import msifeed.mc.misca.config.ConfigManager;
 import msifeed.mc.misca.crabs.CrabsNetwork;
 import msifeed.mc.misca.utils.EntityUtils;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 
@@ -35,7 +36,21 @@ public enum CharacterManager {
         return uuidToChar.getOrDefault(uuid, GENERIC_CHAR);
     }
 
-    public void onServerReceive(CharacterMessage message) {
+    public Character getNullable(UUID uuid) {
+        return uuidToChar.get(uuid);
+    }
+
+    public void onServerReceive(EntityPlayerMP sender, CharacterMessage message) {
+        if (message == null || message.uuid == null || message.character == null) return;
+
+        final Character old = get(message.uuid);
+        if (old == null || message.character.equals(old)) return;
+
+        // Оповещаем спецслужбы...
+        if (message.character.isPlayer) {
+            new Thread(() -> CharacterProvider.INSTANCE.logCharChange(sender, old, message.character)).start();
+        }
+
         uuidToChar.put(message.uuid, message.character);
 
         if (!message.character.isPlayer) return;

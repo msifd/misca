@@ -148,23 +148,24 @@ public enum BattleManager {
     }
 
     void onMessageFromClient(EntityPlayerMP player, FighterMessage message) {
-        FighterContext ctx = uuidToContext.get(player.getUniqueID());
-
-        if (ctx == null) {
-            if (message.type == FighterMessage.Type.JOIN) joinBattle(player);
-            return;
-        }
-
         switch (message.type) {
-            case ACTION:
-                FighterContext actor = ctx.control == null ? ctx : getContext(ctx.control);
-                MoveManager.INSTANCE.selectAction(actor, message.action, message.mod);
-                break;
-            case CALC:
-                Rules.rollSingleStat(player, message.stat, message.mod);
+            case JOIN:
+                joinBattle(player);
                 break;
             case LEAVE:
                 leaveBattle(player, false);
+                break;
+        }
+
+        final FighterContext ctx = uuidToContext.get(player.getUniqueID());
+        switch (message.type) {
+            case ACTION:
+                final FighterContext actor = ctx == null || ctx.control == null ? ctx : getContext(ctx.control);
+                if (actor != null)
+                    MoveManager.INSTANCE.selectAction(actor, message.action, message.mod);
+                break;
+            case CALC:
+                Rules.rollSingleStat(player, ctx, message.stat, message.mod);
                 break;
         }
     }

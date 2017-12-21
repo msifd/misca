@@ -405,7 +405,7 @@ public class StringCache
      * @todo Pre-sort by texture to minimize binds; can store colors per glyph in string cache
      * @todo Optimize the underline/strikethrough drawing to draw a single line for each run
      */
-    public int renderString(String str, int startX, int startY, int initialColor, boolean shadowFlag)
+    public int renderString(String str, int startX, int startY, double z, int initialColor, boolean shadowFlag)
     {
         /* Check for invalid arguments */
         if(str == null || str.isEmpty())
@@ -506,10 +506,10 @@ public class StringCache
             float y1 = startY + (glyph.y) / 2.0F;
             float y2 = startY + (glyph.y + texture.height) / 2.0F;
 
-            tessellator.addVertexWithUV(x1, y1, 0, texture.u1, texture.v1);
-            tessellator.addVertexWithUV(x1, y2, 0, texture.u1, texture.v2);
-            tessellator.addVertexWithUV(x2, y2, 0, texture.u2, texture.v2);
-            tessellator.addVertexWithUV(x2, y1, 0, texture.u2, texture.v1);
+            tessellator.addVertexWithUV(x1, y1, z, texture.u1, texture.v1);
+            tessellator.addVertexWithUV(x1, y2, z, texture.u1, texture.v2);
+            tessellator.addVertexWithUV(x2, y2, z, texture.u2, texture.v2);
+            tessellator.addVertexWithUV(x2, y1, z, texture.u2, texture.v1);
         }
 
         /* Draw any remaining glyphs in the Tessellator's vertex array (there should be at least one glyph pending) */
@@ -555,10 +555,10 @@ public class StringCache
                     float y1 = startY + (UNDERLINE_OFFSET) / 2.0F;
                     float y2 = startY + (UNDERLINE_OFFSET + UNDERLINE_THICKNESS) / 2.0F;
 
-                    tessellator.addVertex(x1, y1, 0);
-                    tessellator.addVertex(x1, y2, 0);
-                    tessellator.addVertex(x2, y2, 0);
-                    tessellator.addVertex(x2, y1, 0);
+                    tessellator.addVertex(x1, y1, z);
+                    tessellator.addVertex(x1, y2, z);
+                    tessellator.addVertex(x2, y2, z);
+                    tessellator.addVertex(x2, y1, z);
                 }
 
                 /* Draw strikethrough in the middle of glyph if the style is enabled */
@@ -570,10 +570,10 @@ public class StringCache
                     float y1 = startY + (STRIKETHROUGH_OFFSET) / 2.0F;
                     float y2 = startY + (STRIKETHROUGH_OFFSET + STRIKETHROUGH_THICKNESS) / 2.0F;
 
-                    tessellator.addVertex(x1, y1, 0);
-                    tessellator.addVertex(x1, y2, 0);
-                    tessellator.addVertex(x2, y2, 0);
-                    tessellator.addVertex(x2, y1, 0);
+                    tessellator.addVertex(x1, y1, z);
+                    tessellator.addVertex(x1, y2, z);
+                    tessellator.addVertex(x2, y2, z);
+                    tessellator.addVertex(x2, y1, z);
                 }
             }
 

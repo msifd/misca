@@ -26,6 +26,16 @@ public class Character {
         return stats.getOrDefault(s, 0);
     }
 
+    public String compactStats() {
+        final StringBuilder sb = new StringBuilder();
+        final Stats[] sv = Stats.values();
+        for (Stats s : sv) {
+            sb.append(stats.getOrDefault(s, 0));
+            sb.append(' ');
+        }
+        return sb.substring(0, sb.length() - 1);
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (!(obj instanceof Character)) return false;

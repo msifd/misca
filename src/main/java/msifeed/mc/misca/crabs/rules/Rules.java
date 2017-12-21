@@ -1,11 +1,13 @@
 package msifeed.mc.misca.crabs.rules;
 
 import msifeed.mc.misca.crabs.battle.BattleDefines;
+import msifeed.mc.misca.crabs.battle.FighterContext;
 import msifeed.mc.misca.crabs.battle.MoveFormatter;
 import msifeed.mc.misca.crabs.character.Character;
 import msifeed.mc.misca.crabs.character.CharacterManager;
 import msifeed.mc.misca.crabs.character.Stats;
 import msifeed.mc.misca.utils.MiscaUtils;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.ChatComponentText;
 import org.apache.logging.log4j.LogManager;
@@ -15,6 +17,7 @@ import java.lang.reflect.Constructor;
 import java.text.ParseException;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.UUID;
 import java.util.stream.Stream;
 
 public final class Rules {
@@ -124,9 +127,16 @@ public final class Rules {
         return a.compareTo(b) > 0 ? a : b;
     }
 
-    public static void rollSingleStat(EntityPlayerMP player, Stats stat, int mod) {
-        final Character c = CharacterManager.INSTANCE.get(player.getUniqueID());
-        if (c == null) return;
+    public static void rollSingleStat(EntityPlayerMP player, FighterContext ctx, Stats stat, int mod) {
+        final UUID actor = ctx != null
+                ? ctx.control != null ? ctx.control : ctx.uuid
+                : player.getUniqueID();
+
+        final Character c = CharacterManager.INSTANCE.getNullable(actor);
+        if (c == null) {
+            player.addChatMessage(new ChatComponentText("Update stats at first."));
+            return;
+        }
 
         final int roll = DiceMath.g30();
         final String msg = MoveFormatter.formatStatRoll(c, stat, roll, mod);

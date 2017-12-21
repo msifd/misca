@@ -37,7 +37,7 @@ public class ImButton {
                     st.buttonTitleColor, true, true);
         } else if (label instanceof TextureInfo) {
             final TextureInfo tex = (TextureInfo) label;
-            DrawPrimitives.drawTexture(tex, x + st.buttonPaddingX, y, 0, inRect ? tex.height : 0);
+            DrawPrimitives.drawTexture(tex, x + st.buttonPaddingX, y, 0.01, inRect ? tex.height : 0);
         }
 
         profiler.endSection();

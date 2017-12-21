@@ -14,8 +14,6 @@ public class FighterMessage extends AbstractMessage<FighterMessage> {
     int mod;
     private String actionName;
 
-    private boolean malformed = false;
-
     public FighterMessage() {
     }
 
@@ -29,8 +27,9 @@ public class FighterMessage extends AbstractMessage<FighterMessage> {
         this.actionName = actionName;
     }
 
-    public FighterMessage(Stats stat) {
+    public FighterMessage(Stats stat, int mod) {
         this.type = Type.CALC;
+        this.mod = mod;
         this.stat = stat;
     }
 
@@ -39,15 +38,14 @@ public class FighterMessage extends AbstractMessage<FighterMessage> {
         type = Type.values()[buf.readByte()];
         switch (type) {
             case ACTION:
+                mod = buf.readInt();
                 final String name = readShortString(buf);
                 action = ActionManager.INSTANCE.lookup(name);
-                mod = buf.readInt();
-                if (action == null) malformed = true;
                 break;
             case CALC:
+                mod = buf.readInt();
                 final byte ord = buf.readByte();
                 if (ord < Stats.values().length) stat = Stats.values()[ord];
-                else malformed = true;
                 break;
         }
     }
@@ -57,10 +55,11 @@ public class FighterMessage extends AbstractMessage<FighterMessage> {
         buf.writeByte(type.ordinal());
         switch (type) {
             case ACTION:
-                writeShortString(buf, actionName);
                 buf.writeInt(mod);
+                writeShortString(buf, actionName);
                 break;
             case CALC:
+                buf.writeInt(mod);
                 buf.writeByte(stat.ordinal());
                 break;
         }
@@ -68,8 +67,7 @@ public class FighterMessage extends AbstractMessage<FighterMessage> {
 
     @Override
     public FighterMessage onMessage(FighterMessage message, MessageContext ctx) {
-        if (!message.malformed)
-            BattleManager.INSTANCE.onMessageFromClient(ctx.getServerHandler().playerEntity, message);
+        BattleManager.INSTANCE.onMessageFromClient(ctx.getServerHandler().playerEntity, message);
         return null;
     }
 

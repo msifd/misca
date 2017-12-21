@@ -38,6 +38,7 @@ public class Misca {
         ConfigManager.INSTANCE.reloadConfig();
 
         crabs.preInit(event);
+        tweaks.preInit(event);
         miningNerf.preInit(event);
 
         if (FMLCommonHandler.instance().getSide().isServer()) {
