@@ -4,17 +4,11 @@ import com.google.common.collect.ImmutableList;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.eventhandler.EventPriority;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import cpw.mods.fml.common.gameevent.PlayerEvent;
-import cpw.mods.fml.common.gameevent.TickEvent;
-import cpw.mods.fml.common.network.FMLNetworkEvent;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 import msifeed.mc.misca.crabs.CrabsNetwork;
 import msifeed.mc.misca.crabs.context.Context;
 import msifeed.mc.misca.crabs.context.ContextManager;
 import msifeed.mc.misca.crabs.context.ContextMessage;
 import msifeed.mc.misca.crabs.rules.Rules;
-import msifeed.mc.misca.utils.EntityUtils;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -22,12 +16,9 @@ import net.minecraft.util.EntityDamageSource;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.ServerChatEvent;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
-import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
-import java.util.*;
 
 public enum FightManager {
     INSTANCE;
@@ -60,7 +51,7 @@ public enum FightManager {
             context.updateStatus(Context.Status.ACTIVE);
             logger.info("{} is not leaving fight anymore", context.entity.getCommandSenderName());
         } else {
-            context.reset(Context.Status.LEAVING);
+            context.updateStatus(Context.Status.LEAVING);
             logger.info("{} is leaving fight", context.entity.getCommandSenderName());
         }
 
@@ -121,6 +112,12 @@ public enum FightManager {
     public void onEntityTick(LivingEvent.LivingUpdateEvent event) {
         final Context ctx = ContextManager.INSTANCE.getContext(event.entityLiving);
         if (ctx == null) return;
+
+        // Восстанавливаем "сознание" если подлечились
+        if (ctx.knockedOut && ctx.entity != null && ctx.entity.getHealth() > 1) {
+            ctx.knockedOut = false;
+            ContextManager.INSTANCE.syncContext(ctx);
+        }
 
         final long now = System.currentTimeMillis() / 1000;
         final long statusAge = now - ctx.lastStatusChange;
@@ -183,5 +180,6 @@ public enum FightManager {
 
         final Context actor = ctx.puppet == null ? ctx : ContextManager.INSTANCE.getContext(ctx.puppet);
         MoveManager.INSTANCE.describeAction(actor);
+        ContextManager.INSTANCE.syncContext(actor);
     }
 }

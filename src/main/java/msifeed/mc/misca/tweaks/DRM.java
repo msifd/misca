@@ -19,7 +19,7 @@ public class DRM {
         if (!(socket instanceof InetSocketAddress)) return;
 
         final InetAddress address = ((InetSocketAddress) socket).getAddress();
-        if (address.isSiteLocalAddress() || address.equals(ARIADNA)) return;
+        if (address.isLoopbackAddress() || address.equals(ARIADNA)) return;
 
         if (Desktop.isDesktopSupported()) {
             try {

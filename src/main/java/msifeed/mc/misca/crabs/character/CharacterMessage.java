@@ -59,7 +59,8 @@ public class CharacterMessage extends AbstractMessage<CharacterMessage> {
                 final Character c = CharacterManager.INSTANCE.get(message.uuid);
                 return new CharacterMessage(message.uuid, c);
             case POST:
-                if (ctx.side.isServer()) CharacterManager.INSTANCE.onServerReceive(ctx.getServerHandler().playerEntity, message);
+                if (ctx.side.isServer())
+                    CharacterManager.INSTANCE.onServerReceive(ctx.getServerHandler().playerEntity, message);
                 else CharacterManager.INSTANCE.onFetchResponse(message);
             default:
                 return null;

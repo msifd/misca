@@ -1,6 +1,5 @@
 package msifeed.mc.misca.tweaks;
 
-import com.google.common.base.Charsets;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import msifeed.mc.misca.config.ConfigManager;
 import msifeed.mc.misca.utils.MiscaUtils;
@@ -9,11 +8,10 @@ import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.ChunkCoordinates;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
 import java.nio.file.Files;
-import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.Random;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -27,9 +25,9 @@ public class DeathToll {
     public void preInit() {
         illnesses = MiscaUtils.l10n("misca.death_toll.illnesses").split(";");
 
-        final File logsDir = new File(ConfigManager.config_dir,"logs");
+        final File logsDir = new File(ConfigManager.config_dir, "logs");
         logsDir.mkdirs();
-        logFile = new File(logsDir,"player_death.log");
+        logFile = new File(logsDir, "player_death.log");
     }
 
     @SubscribeEvent

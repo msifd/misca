@@ -20,11 +20,12 @@ misca.crabs.battle=Бой
 misca.crabs.join_fight=Войти в бой
 misca.crabs.leave_fight=Выйти из боя
 misca.crabs.cancel=Отмена
-misca.crabs.stats=Статы
+misca.crabs.dices=Дайсы
 misca.crabs.player_mod=Модифификатор:
 
-misca.crabs.knocked_out=%s нокаутирован!
+misca.crabs.knocked_out=§r%s§6 нокаутирован!
 misca.crabs.finished=§r%s§6 прикончил §r%s§6!
+misca.crabs.failed=§6(§4неудачно§6)§r
 
 misca.crabs.action_type.melee=Ближний
 misca.crabs.action_type.ranged=Дальний

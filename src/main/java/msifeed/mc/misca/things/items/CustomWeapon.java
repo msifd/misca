@@ -1,8 +1,8 @@
 package msifeed.mc.misca.things.items;
 
 import cpw.mods.fml.common.registry.GameRegistry;
-import net.minecraft.item.Item;
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.item.Item;
 import net.minecraftforge.common.util.EnumHelper;
 
 import java.util.stream.IntStream;

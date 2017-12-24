@@ -6,7 +6,10 @@ public abstract class AbstractHudWindow {
     boolean isOpened = false;
 
     abstract KeyBinding getKeyBind();
+
     abstract void open();
+
     abstract void close();
+
     abstract void render();
 }

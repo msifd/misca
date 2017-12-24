@@ -1,14 +1,15 @@
 package msifeed.mc.misca.crabs.context;
 
-import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.network.simpleimpl.MessageContext;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import io.netty.buffer.ByteBuf;
 import msifeed.mc.misca.crabs.action.ActionManager;
 import msifeed.mc.misca.utils.AbstractMessage;
 import msifeed.mc.misca.utils.EntityUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.world.WorldServer;
+import net.minecraft.world.World;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -26,18 +27,17 @@ public class ContextMessage extends AbstractMessage<ContextMessage> {
     }
 
     @Override
+    @SideOnly(Side.CLIENT) // Чтобы серевер не валился из-за `mc.theWorld`
     public void fromBytes(ByteBuf buf) {
         final byte len = buf.readByte();
 
         // Поскольку контексты отправляются только клиентам, мы ищем энтити только в их текущем мире
-        final int currentDim = Minecraft.getMinecraft().thePlayer.dimension;
-        WorldServer world = null;
-        for (WorldServer w : FMLCommonHandler.instance().getMinecraftServerInstance().worldServers) {
-            if (w.provider.dimensionId != currentDim) continue;
-            world = w;
-            break;
-        }
-        if (world == null) return;
+        final Minecraft mc = Minecraft.getMinecraft();
+        final int currentDim = mc.thePlayer.dimension;
+        // Фиксит урон по игроку в сингле, т.к. энтити игрока из WorldClient игнорит входящий урон.
+        final World world = mc.isSingleplayer()
+                ? mc.getIntegratedServer().worldServerForDimension(currentDim)
+                : mc.theWorld;
 
         final HashMap<UUID, EntityLivingBase> worldEntities = new HashMap<>();
         for (Object o : world.loadedEntityList)

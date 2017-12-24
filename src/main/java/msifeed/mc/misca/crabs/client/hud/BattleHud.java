@@ -6,12 +6,11 @@ import msifeed.mc.gui.nim.NimWindow;
 import msifeed.mc.misca.crabs.CrabsNetwork;
 import msifeed.mc.misca.crabs.action.Action;
 import msifeed.mc.misca.crabs.action.ActionManager;
-import msifeed.mc.misca.crabs.fight.FightManager;
+import msifeed.mc.misca.crabs.character.Stats;
 import msifeed.mc.misca.crabs.client.CrabsKeyBinds;
 import msifeed.mc.misca.crabs.context.Context;
-import msifeed.mc.misca.crabs.fight.FighterMessage;
-import msifeed.mc.misca.crabs.character.Stats;
 import msifeed.mc.misca.crabs.context.ContextManager;
+import msifeed.mc.misca.crabs.fight.FighterMessage;
 import msifeed.mc.misca.utils.MiscaUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.settings.KeyBinding;
@@ -25,7 +24,7 @@ public class BattleHud extends AbstractHudWindow {
     private final NimWindow battleWindow = new NimWindow(MiscaUtils.l10n("misca.crabs.battle"), () -> HudManager.INSTANCE.closeHud(INSTANCE));
     private final NimText modText = new NimText(20);
 
-    private boolean statRollsMode = false;
+    private boolean diceRollMode = false;
     private Action.Type currActionTab = Action.Type.MELEE;
 
     private long lastRollTime = System.currentTimeMillis();
@@ -55,28 +54,32 @@ public class BattleHud extends AbstractHudWindow {
         final Context context = cm.getContext(player.getUniqueID());
 
         final boolean isFighting = context != null && context.status.isFighting();
-        final boolean isLeaving = isFighting && context.status == Context.Status.LEAVING;
 
         final NimGui nimgui = NimGui.INSTANCE;
         nimgui.beginWindow(battleWindow);
 
-        nimgui.horizontalBlock();
-        final String controlButtonKey = "misca.crabs." + (isFighting ? isLeaving ? "cancel" : "leave_fight" : "join_fight");
-        if (nimgui.button(MiscaUtils.l10n(controlButtonKey))) {
-            FighterMessage message = new FighterMessage(isFighting ? FighterMessage.Type.LEAVE : FighterMessage.Type.JOIN);
-            CrabsNetwork.INSTANCE.sendToServer(message);
-        }
+        // Super кнопка
+        {
+            nimgui.horizontalBlock();
 
-        if (isFighting) {
-            final String modeTitle = statRollsMode
-                    ? MiscaUtils.l10n("misca.crabs.battle")
-                    : MiscaUtils.l10n("misca.crabs.stats");
-            if (nimgui.button(modeTitle)) {
-                statRollsMode = !statRollsMode;
+            final boolean isLeaving = context != null && context.status == Context.Status.LEAVING;
+            final String controlButtonKey = "misca.crabs." + (isFighting ? isLeaving ? "cancel" : "leave_fight" : "join_fight");
+            if (nimgui.button(MiscaUtils.l10n(controlButtonKey))) {
+                FighterMessage message = new FighterMessage(isFighting ? FighterMessage.Type.LEAVE : FighterMessage.Type.JOIN);
+                CrabsNetwork.INSTANCE.sendToServer(message);
             }
         }
 
-        if (isFighting && !statRollsMode) {
+        if (isFighting) {
+            final String modeTitle = diceRollMode
+                    ? MiscaUtils.l10n("misca.crabs.battle")
+                    : MiscaUtils.l10n("misca.crabs.dices");
+            if (nimgui.button(modeTitle)) {
+                diceRollMode = !diceRollMode;
+            }
+        }
+
+        if (isFighting && !diceRollMode) {
             final Context actor = context.puppet == null ? context : cm.getContext(context.puppet);
             // При защите таргет уже указвает на нападающего
             final boolean isAttack = actor.status == Context.Status.ACTIVE && actor.target == null;
@@ -117,7 +120,11 @@ public class BattleHud extends AbstractHudWindow {
     private void renderStatus(NimGui nimgui, Context actor) {
         if (actor.entity == null) return;
 
+        nimgui.horizontalBlock();
         String status = actor.entity.getCommandSenderName() + ": " + actor.status;
+        if (actor.knockedOut) {
+            status += ". Knocked out ";
+        }
         if (actor.target != null) {
             final Context target = ContextManager.INSTANCE.getContext(actor.target);
             if (target.entity != null)
@@ -130,6 +137,9 @@ public class BattleHud extends AbstractHudWindow {
         // Пробел после переключателей режимов
         nimgui.horizontalBlock();
         battleWindow.consume(0, battleWindow.nextElemY(), 0, 1);
+
+        if (currActionTab == Action.Type.PASSIVE && isAttack)
+            currActionTab = Action.Type.MELEE;
 
         // Горизонтальные блоки задаются в цикле
         final Action.Type[] types = Action.Type.values();

@@ -1,6 +1,5 @@
 package msifeed.mc.misca.crabs.character;
 
-import com.google.common.base.Charsets;
 import com.google.common.collect.Maps;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -44,9 +43,9 @@ public enum CharacterProvider {
     public void preInit() {
         charsFile = new File(ConfigManager.config_dir, "characters.json");
 
-        final File logsDir = new File(ConfigManager.config_dir,"logs");
+        final File logsDir = new File(ConfigManager.config_dir, "logs");
         logsDir.mkdirs();
-        charsLogFile = new File(logsDir,"characters.log");
+        charsLogFile = new File(logsDir, "characters.log");
     }
 
     public synchronized void logCharChange(EntityPlayerMP sender, Character old, Character fresh) {

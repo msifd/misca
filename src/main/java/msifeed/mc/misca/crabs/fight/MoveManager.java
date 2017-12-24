@@ -7,8 +7,11 @@ import msifeed.mc.misca.crabs.rules.ActionResult;
 import msifeed.mc.misca.crabs.rules.Effect;
 import msifeed.mc.misca.crabs.rules.Rules;
 import msifeed.mc.misca.utils.MiscaUtils;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EntityDamageSource;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -16,6 +19,8 @@ import java.util.UUID;
 
 public enum MoveManager {
     INSTANCE;
+
+    private static final Logger logger = LogManager.getLogger("Crabs.Move");
 
     // uuid защищяющегося -> ход атаковавшего
     private HashMap<UUID, Move> pendingMoves = new HashMap<>();
@@ -99,6 +104,7 @@ public enum MoveManager {
         }
 
         // TODO плавающее ограничение на получаемый урон чтобы стимулировать нокауты
+        // TODO выяснить что я имел в виду под плавающим ограничением
         final boolean isFatality = defender.knockedOut;
 
         final ActionResult attack = new ActionResult(attacker);
@@ -113,11 +119,30 @@ public enum MoveManager {
             looser = (winner == attack ? defence : attack);
         }
 
-        winner.action.target_effects.forEach(e -> e.apply(Effect.Stage.RESULT, winner, looser));
-        winner.action.self_effects.forEach(e -> e.apply(Effect.Stage.RESULT, winner, looser));
+        if (winner.actionSuccessful) {
+            Rules.applyEffects(winner.action.target_effects, Effect.Stage.RESULT, looser, winner);
+            Rules.applyEffects(winner.action.self_effects, Effect.Stage.RESULT, winner, looser);
+        }
+
         // TODO handle some tags
 
-        final String resultMsg = isFatality
+        if (winner.actionSuccessful) {
+            // Выдаем урон обоим, мало ли какие эффекты...
+            if (winner.damageToReceive > 0) receiveDamage(winner, looser);
+            if (looser.damageToReceive > 0) receiveDamage(looser, winner);
+
+            // Если нокаут появляется после применения эффектов
+            final boolean justKnockedOut = !isFatality && looser.ctx.knockedOut;
+            if (justKnockedOut) {
+                final String msg = MiscaUtils.l10n("misca.crabs.knocked_out", defender.entity.getCommandSenderName());
+                MiscaUtils.notifyAround(
+                        winner.ctx.entity, looser.ctx.entity,
+                        BattleDefines.NOTIFICATION_RADIUS,
+                        new ChatComponentText(msg));
+            }
+        }
+
+        final String resultMsg = isFatality && winner.actionSuccessful
                 ? MoveFormatter.formatFatalityResult(winner.ctx.entity, looser.ctx.entity)
                 : MoveFormatter.formatActionResults(winner, looser);
 
@@ -127,22 +152,29 @@ public enum MoveManager {
                 new ChatComponentText(resultMsg)
         );
 
-        // Если нокаут появляется после применения эффектов
-        final boolean justKnockedOut = !isFatality && looser.ctx.knockedOut;
-        if (justKnockedOut) {
-            final String msg = MiscaUtils.l10n("misca.crabs.knocked_out", defender.entity.getCommandSenderName());
-            MiscaUtils.notifyAround(
-                    winner.ctx.entity, looser.ctx.entity,
-                    BattleDefines.NOTIFICATION_RADIUS,
-                    new ChatComponentText(msg));
-        }
-
         attacker.reset();
         defender.reset();
-        looser.ctx.knockedOut = justKnockedOut;
 
         ContextManager.INSTANCE.syncContext(attacker);
         ContextManager.INSTANCE.syncContext(defender);
+    }
+
+    /**
+     * Тут наносится урон `себе`. Он накапливается от эффектов ранее.
+     */
+    private static void receiveDamage(ActionResult self, ActionResult enemy) {
+        final Context selfCtx = self.ctx;
+        final EntityLivingBase selfEntity = selfCtx.entity;
+        final EntityLivingBase enemyEntity = enemy.ctx.entity;
+
+        final float currentHealth = selfEntity.getHealth();
+        final boolean isFatal = currentHealth <= self.damageToReceive;
+        final float damageToDeal = isFatal && !selfCtx.knockedOut ? currentHealth - 1 : self.damageToReceive;
+
+        selfEntity.attackEntityFrom(new CrabsDamage(enemyEntity), damageToDeal);
+        if (isFatal) selfCtx.knockedOut = true;
+
+        logger.info("`{}` received {} damage from `{}`", selfEntity.getCommandSenderName(), damageToDeal, enemyEntity.getCommandSenderName());
     }
 
     private static class Move {

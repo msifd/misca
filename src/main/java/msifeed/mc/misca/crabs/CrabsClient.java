@@ -2,7 +2,8 @@ package msifeed.mc.misca.crabs;
 
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
-import msifeed.mc.misca.crabs.client.*;
+import msifeed.mc.misca.crabs.client.BattleMarkRender;
+import msifeed.mc.misca.crabs.client.CrabsKeyBinds;
 import msifeed.mc.misca.crabs.client.hud.HudManager;
 import net.minecraftforge.common.MinecraftForge;
 

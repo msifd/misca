@@ -84,27 +84,4 @@ public abstract class Modifier {
             return super.equals(obj) && this.stat.equals(((Stat) obj).stat);
         }
     }
-
-    public static class Const extends Modifier {
-        private final int constant;
-
-        public Const(int c) {
-            this.constant = c;
-        }
-
-        @Override
-        public int mod(Character c) {
-            return constant;
-        }
-
-        @Override
-        public String name() {
-            return Integer.toString(constant);
-        }
-
-        @Override
-        public boolean equals(Object obj) {
-            return super.equals(obj) && this.constant == ((Const) obj).constant;
-        }
-    }
 }

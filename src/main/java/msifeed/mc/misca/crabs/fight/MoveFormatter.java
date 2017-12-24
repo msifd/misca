@@ -42,6 +42,9 @@ public final class MoveFormatter {
 
         s += "\u00A76]\u00A7r";
 
+        if (!action.actionSuccessful)
+            s += " " + MiscaUtils.l10n("misca.crabs.failed");
+
         return s;
     }
 

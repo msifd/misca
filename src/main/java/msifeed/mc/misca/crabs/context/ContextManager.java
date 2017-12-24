@@ -165,6 +165,7 @@ public enum ContextManager {
     public void resetContext(Context context) {
         unbindTargetToContext(context);
         context.reset();
+        context.knockedOut = false; // Нужно ли тут сбрасывать не-лечением?
         toSync.add(context);
         logger.info("{} has been reseted", context.entity.getCommandSenderName());
     }

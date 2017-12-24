@@ -1,11 +1,11 @@
 package msifeed.mc.misca.crabs.rules;
 
-import msifeed.mc.misca.crabs.fight.BattleDefines;
-import msifeed.mc.misca.crabs.context.Context;
-import msifeed.mc.misca.crabs.fight.MoveFormatter;
 import msifeed.mc.misca.crabs.character.Character;
 import msifeed.mc.misca.crabs.character.CharacterManager;
 import msifeed.mc.misca.crabs.character.Stats;
+import msifeed.mc.misca.crabs.context.Context;
+import msifeed.mc.misca.crabs.fight.BattleDefines;
+import msifeed.mc.misca.crabs.fight.MoveFormatter;
 import msifeed.mc.misca.utils.MiscaUtils;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.ChatComponentText;
@@ -14,6 +14,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.lang.reflect.Constructor;
 import java.text.ParseException;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.UUID;
 import java.util.stream.Stream;
@@ -36,8 +37,7 @@ public final class Rules {
                 .forEach(m -> modifiers.put(m.name().toLowerCase(), m));
 
         Stream.of(
-                new Effect.Damage(),
-                new Effect.Fire()
+                new Effect.Damage()
         ).forEach(e -> {
             basicEffects.put(e.name(), e);
             effects.put(e.name(), e.getClass());
@@ -45,15 +45,13 @@ public final class Rules {
 
         effects.put("buff", Buff.class);
         effects.put("score", DynamicEffect.Score.class);
+        effects.put("const_damage", DynamicEffect.ConstDamage.class);
+        effects.put("min_score", DynamicEffect.MinScore.class);
     }
 
     public static Modifier mod(String s) {
         if (modifiers.containsKey(s)) return modifiers.get(s);
-        try {
-            return new Modifier.Const(Integer.parseInt(s));
-        } catch (NumberFormatException e) {
-            return null;
-        }
+        return null;
     }
 
     public static Effect effect(String s) {
@@ -118,11 +116,28 @@ public final class Rules {
     }
 
     public static ActionResult computeWinner(ActionResult a, ActionResult b) {
+        applyEffects(a.action.target_effects, Effect.Stage.BEFORE_MODS, b, a);
+        applyEffects(a.action.self_effects, Effect.Stage.BEFORE_MODS, a, b);
+        applyEffects(b.action.target_effects, Effect.Stage.BEFORE_MODS, a, b);
+        applyEffects(b.action.self_effects, Effect.Stage.BEFORE_MODS, b, a);
+
         do {
             a.throwDices(a.character);
             b.throwDices(b.character);
+
+            // Для таких эффектов как ограничение на минимальные очки
+            // TODO Нужно ли применение эффектов "для цели"?
+            applyEffects(a.action.self_effects, Effect.Stage.AFTER_MODS, a, b);
+            applyEffects(b.action.self_effects, Effect.Stage.AFTER_MODS, b, a);
         } while (a.compareTo(b) == 0);
+
         return a.compareTo(b) > 0 ? a : b;
+    }
+
+    public static void applyEffects(Collection<Effect> effects, Effect.Stage stage, ActionResult target, ActionResult other) {
+        for (final Effect e : effects)
+            if (e.apply(stage, target, other) && e instanceof Buff)
+                ((Buff) e).step();
     }
 
     public static void rollSingleStat(EntityPlayerMP player, Context ctx, Stats stat, int mod) {

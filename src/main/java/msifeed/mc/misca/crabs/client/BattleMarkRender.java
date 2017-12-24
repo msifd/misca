@@ -1,9 +1,8 @@
 package msifeed.mc.misca.crabs.client;
 
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import msifeed.mc.misca.crabs.context.ContextManager;
-import msifeed.mc.misca.crabs.fight.FightManager;
 import msifeed.mc.misca.crabs.context.Context;
+import msifeed.mc.misca.crabs.context.ContextManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.Tessellator;

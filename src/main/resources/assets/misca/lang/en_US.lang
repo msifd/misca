@@ -20,11 +20,12 @@ misca.crabs.battle=Battle
 misca.crabs.join_fight=Join battle
 misca.crabs.leave_fight=Leave battle
 misca.crabs.cancel=Cancel
-misca.crabs.stats=Stats
+misca.crabs.dices=Dices
 misca.crabs.player_mod=Modifier:
 
-misca.crabs.knocked_out=%s knocked out!
+misca.crabs.knocked_out=§r%s§6 knocked out!
 misca.crabs.finished=§r%s§6 finished §r%s§6!
+misca.crabs.failed=§6(§4failed§6)§r
 
 misca.crabs.action_type.melee=Melee
 misca.crabs.action_type.ranged=Ranged

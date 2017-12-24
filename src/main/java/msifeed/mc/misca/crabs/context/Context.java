@@ -40,7 +40,7 @@ public class Context {
         described = false;
         target = null;
         damageDealt = 0;
-        knockedOut = false;
+        knockedOut = false; // TODO сбрасывать нокаут только при повышениии здоровья
     }
 
     public void updateStatus(Status status) {
@@ -65,7 +65,7 @@ public class Context {
         ACTIVE, DEAL_DAMAGE, WAIT, LEAVING, NEUTRAL, DELETE;
 
         public boolean isFighting() {
-            return ordinal() < LEAVING.ordinal();
+            return ordinal() <= LEAVING.ordinal();
         }
     }
 }

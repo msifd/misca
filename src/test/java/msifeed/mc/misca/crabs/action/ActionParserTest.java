@@ -28,8 +28,7 @@ public class ActionParserTest {
                 new Modifier.DiceG30Plus(),
                 new Modifier.Stat(Stats.STR),
                 new Modifier.Stat(Stats.PER),
-                new Modifier.Stat(Stats.INT),
-                new Modifier.Const(-5));
+                new Modifier.Stat(Stats.INT));
         Collections.addAll(act.target_effects,
                 new Effect.Damage());
         return act;
