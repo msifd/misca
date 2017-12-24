@@ -1,4 +1,4 @@
-package msifeed.mc.misca.crabs.battle;
+package msifeed.mc.misca.crabs.fight;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.util.EntityDamageSource;

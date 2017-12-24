@@ -1,13 +1,12 @@
 package msifeed.mc.misca.crabs.rules;
 
-import msifeed.mc.misca.crabs.battle.BattleDefines;
-import msifeed.mc.misca.crabs.battle.FighterContext;
-import msifeed.mc.misca.crabs.battle.MoveFormatter;
+import msifeed.mc.misca.crabs.fight.BattleDefines;
+import msifeed.mc.misca.crabs.context.Context;
+import msifeed.mc.misca.crabs.fight.MoveFormatter;
 import msifeed.mc.misca.crabs.character.Character;
 import msifeed.mc.misca.crabs.character.CharacterManager;
 import msifeed.mc.misca.crabs.character.Stats;
 import msifeed.mc.misca.utils.MiscaUtils;
-import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.ChatComponentText;
 import org.apache.logging.log4j.LogManager;
@@ -15,7 +14,6 @@ import org.apache.logging.log4j.Logger;
 
 import java.lang.reflect.Constructor;
 import java.text.ParseException;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.UUID;
 import java.util.stream.Stream;
@@ -127,9 +125,9 @@ public final class Rules {
         return a.compareTo(b) > 0 ? a : b;
     }
 
-    public static void rollSingleStat(EntityPlayerMP player, FighterContext ctx, Stats stat, int mod) {
+    public static void rollSingleStat(EntityPlayerMP player, Context ctx, Stats stat, int mod) {
         final UUID actor = ctx != null
-                ? ctx.control != null ? ctx.control : ctx.uuid
+                ? ctx.puppet != null ? ctx.puppet : ctx.uuid
                 : player.getUniqueID();
 
         final Character c = CharacterManager.INSTANCE.getNullable(actor);

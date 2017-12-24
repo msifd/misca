@@ -11,7 +11,6 @@ import java.net.SocketAddress;
 import java.net.URI;
 
 public class DRM {
-    private static final InetAddress LOCALHOST = InetAddresses.forString("127.0.0.1");
     private static final InetAddress ARIADNA = InetAddresses.forString("46.105.37.9");
 
     @SubscribeEvent
@@ -20,7 +19,7 @@ public class DRM {
         if (!(socket instanceof InetSocketAddress)) return;
 
         final InetAddress address = ((InetSocketAddress) socket).getAddress();
-        if (address.equals(LOCALHOST) || address.equals(ARIADNA)) return;
+        if (address.isSiteLocalAddress() || address.equals(ARIADNA)) return;
 
         if (Desktop.isDesktopSupported()) {
             try {

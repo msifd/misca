@@ -44,7 +44,7 @@ public enum CharacterManager {
         if (message == null || message.uuid == null || message.character == null) return;
 
         final Character old = get(message.uuid);
-        if (old == null || message.character.equals(old)) return;
+        if (old != GENERIC_CHAR && message.character.equals(old)) return;
 
         // Оповещаем спецслужбы...
         if (message.character.isPlayer) {

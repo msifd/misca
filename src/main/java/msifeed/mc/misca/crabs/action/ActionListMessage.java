@@ -1,4 +1,4 @@
-package msifeed.mc.misca.crabs.actions;
+package msifeed.mc.misca.crabs.action;
 
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.MessageContext;

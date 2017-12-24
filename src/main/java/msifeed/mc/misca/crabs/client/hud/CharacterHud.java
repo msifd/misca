@@ -1,13 +1,15 @@
-package msifeed.mc.misca.crabs.client;
+package msifeed.mc.misca.crabs.client.hud;
 
 import msifeed.mc.gui.NimGui;
 import msifeed.mc.gui.nim.NimPart;
 import msifeed.mc.gui.nim.NimText;
 import msifeed.mc.gui.nim.NimWindow;
-import msifeed.mc.misca.crabs.battle.BattleManager;
 import msifeed.mc.misca.crabs.character.Character;
 import msifeed.mc.misca.crabs.character.CharacterManager;
 import msifeed.mc.misca.crabs.character.Stats;
+import msifeed.mc.misca.crabs.client.CrabsKeyBinds;
+import msifeed.mc.misca.crabs.context.Context;
+import msifeed.mc.misca.crabs.context.ContextManager;
 import msifeed.mc.misca.utils.EntityUtils;
 import msifeed.mc.misca.utils.MiscaUtils;
 import net.minecraft.client.Minecraft;
@@ -78,10 +80,12 @@ public class CharacterHud extends AbstractHudWindow {
 
     @Override
     void render() {
+        final Context context = ContextManager.INSTANCE.getContext(entityUuid);
+
         // Во время боя изменять самому себе статы нельзя.
         // Распологается здесь чтобы окошко закрывалось при входе в бой.
         final EntityPlayer player = Minecraft.getMinecraft().thePlayer;
-        if (entity == player && BattleManager.INSTANCE.isBattling(player)) {
+        if (context == null || (entity == player && context.status.isFighting())) {
             HudManager.INSTANCE.closeHud(INSTANCE);
             return;
         }

@@ -1,20 +1,20 @@
 package msifeed.mc.misca.crabs.rules;
 
-import msifeed.mc.misca.crabs.actions.Action;
-import msifeed.mc.misca.crabs.battle.FighterContext;
+import msifeed.mc.misca.crabs.action.Action;
+import msifeed.mc.misca.crabs.context.Context;
 import msifeed.mc.misca.crabs.character.Character;
 import msifeed.mc.misca.crabs.character.CharacterManager;
 import msifeed.mc.misca.crabs.rules.DiceMath.DiceRank;
 
 public final class ActionResult {
-    public final FighterContext ctx;
+    public final Context ctx;
     public final Character character;
     public final Action action;
 
     public int diceSum, statSum, modSum, playerMod, totalSum;
     public DiceRank diceRank = DiceRank.REGULAR;
 
-    public ActionResult(FighterContext ctx) {
+    public ActionResult(Context ctx) {
         this.ctx = ctx;
         this.character = CharacterManager.INSTANCE.get(ctx.uuid);
         this.action = ctx.action;

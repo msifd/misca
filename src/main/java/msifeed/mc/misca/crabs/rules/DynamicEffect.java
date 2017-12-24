@@ -28,7 +28,7 @@ public abstract class DynamicEffect extends Effect {
         }
 
         @Override
-        public void apply(ActionResult self, ActionResult target) {
+        public void apply(Stage stage, ActionResult self, ActionResult target) {
             self.totalSum += value;
         }
     }

@@ -38,8 +38,8 @@ public class Character {
 
     @Override
     public boolean equals(Object obj) {
-        if (!(obj instanceof Character)) return false;
+        if (obj == null || !(obj instanceof Character)) return false;
         final Character character = (Character) obj;
-        return this.stats.equals(character.stats);
+        return this.name.equals(((Character) obj).name) && this.stats.equals(character.stats);
     }
 }

@@ -1,7 +1,9 @@
 package msifeed.mc.misca.crabs.rules;
 
-import msifeed.mc.misca.crabs.battle.CrabsDamage;
-import msifeed.mc.misca.crabs.battle.FighterContext;
+import cpw.mods.fml.client.FMLClientHandler;
+import cpw.mods.fml.common.FMLCommonHandler;
+import msifeed.mc.misca.crabs.fight.CrabsDamage;
+import msifeed.mc.misca.crabs.context.Context;
 import net.minecraft.entity.EntityLivingBase;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -11,11 +13,7 @@ public abstract class Effect {
 
     public abstract String name();
 
-    public abstract void apply(ActionResult affected, ActionResult other);
-
-    public Stage getStage() {
-        return Stage.RESULT;
-    }
+    public abstract void apply(Stage stage, ActionResult affected, ActionResult other);
 
     @Override
     public String toString() {
@@ -31,20 +29,20 @@ public abstract class Effect {
 
     public static class Damage extends Effect {
         @Override
-        public void apply(ActionResult self, ActionResult target) {
-            final FighterContext selfCtx = self.ctx;
-            final FighterContext targetCtx = target.ctx;
+        public void apply(Stage stage, ActionResult self, ActionResult target) {
+            final Context selfCtx = self.ctx;
+            final Context targetCtx = target.ctx;
             final EntityLivingBase selfEntity = self.ctx.entity;
             final EntityLivingBase targetEntity = target.ctx.entity;
 
             final float currentHealth = targetEntity.getHealth();
             final boolean isFatal = currentHealth <= selfCtx.damageDealt;
-            final float damageToDeal = isFatal && targetCtx.status != FighterContext.Status.KO_ED
+            final float damageToDeal = isFatal && !targetCtx.knockedOut
                     ? currentHealth - 1
                     : selfCtx.damageDealt;
 
             targetEntity.attackEntityFrom(new CrabsDamage(selfEntity), damageToDeal);
-            if (isFatal) targetCtx.updateStatus(FighterContext.Status.KO_ED);
+            if (isFatal) targetCtx.knockedOut = true;
             logger.info("Damaged {} with {} from {}", targetEntity.getCommandSenderName(), damageToDeal, selfEntity.getCommandSenderName());
         }
 
@@ -56,8 +54,8 @@ public abstract class Effect {
 
     public static class Fire extends Damage {
         @Override
-        public void apply(ActionResult self, ActionResult target) {
-            super.apply(self, target);
+        public void apply(Stage stage, ActionResult self, ActionResult target) {
+            super.apply(stage, self, target);
             final EntityLivingBase targetEntity = target.ctx.entity;
             targetEntity.setFire(2);
             logger.info("Fired {} with {}", targetEntity.getCommandSenderName(), self.ctx.damageDealt);

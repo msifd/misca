@@ -1,4 +1,4 @@
-package msifeed.mc.misca.crabs.actions;
+package msifeed.mc.misca.crabs.action;
 
 import msifeed.mc.misca.crabs.rules.Effect;
 import msifeed.mc.misca.crabs.rules.Modifier;

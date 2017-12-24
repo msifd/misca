@@ -1,4 +1,4 @@
-package msifeed.mc.misca.crabs.client;
+package msifeed.mc.misca.crabs.client.hud;
 
 import com.google.common.collect.ImmutableList;
 import cpw.mods.fml.common.FMLCommonHandler;
@@ -7,6 +7,10 @@ import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.InputEvent;
 import msifeed.mc.gui.input.KeyTracker;
 import msifeed.mc.gui.nim.NimPart;
+import msifeed.mc.misca.crabs.client.EmptyGuiScreen;
+import msifeed.mc.misca.crabs.client.hud.AbstractHudWindow;
+import msifeed.mc.misca.crabs.client.hud.BattleHud;
+import msifeed.mc.misca.crabs.client.hud.CharacterHud;
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.common.MinecraftForge;

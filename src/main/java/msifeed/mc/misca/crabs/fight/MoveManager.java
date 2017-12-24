@@ -1,6 +1,8 @@
-package msifeed.mc.misca.crabs.battle;
+package msifeed.mc.misca.crabs.fight;
 
-import msifeed.mc.misca.crabs.actions.Action;
+import msifeed.mc.misca.crabs.action.Action;
+import msifeed.mc.misca.crabs.context.Context;
+import msifeed.mc.misca.crabs.context.ContextManager;
 import msifeed.mc.misca.crabs.rules.ActionResult;
 import msifeed.mc.misca.crabs.rules.Effect;
 import msifeed.mc.misca.crabs.rules.Rules;
@@ -19,14 +21,16 @@ public enum MoveManager {
     private HashMap<UUID, Move> pendingMoves = new HashMap<>();
     private ArrayList<Move> completeMoves = new ArrayList<>();
 
-    public void selectAction(FighterContext actor, Action action, int mod) {
+    public void selectAction(Context actor, Action action, int mod) {
         // Выбирать пассивные действия можно только при защите
         if (!actor.canSelectAction() || actor.target == null && action.type == Action.Type.PASSIVE) return;
         actor.updateAction(action);
         actor.modifier = mod;
+
+        ContextManager.INSTANCE.syncContext(actor);
     }
 
-    public void describeAction(FighterContext actor) {
+    public void describeAction(Context actor) {
         if (actor.action == null) return;
 
         actor.described = true;
@@ -37,23 +41,26 @@ public enum MoveManager {
         }
     }
 
-    public void dealDamage(FighterContext actor, FighterContext target, EntityDamageSource damageSource, float amount) {
+    public void dealDamage(Context actor, Context target, EntityDamageSource damageSource, float amount) {
         // Первый удар
-        if (actor.status == FighterContext.Status.ACT) {
+        if (actor.status == Context.Status.ACTIVE) {
             actor.target = target.uuid;
-            actor.updateStatus(FighterContext.Status.DEAL_DAMAGE);
+            actor.updateStatus(Context.Status.DEAL_DAMAGE);
             target.target = actor.uuid;
-
-            BattleManager.INSTANCE.syncContext(actor);
         }
 
         // TODO ограничение на скорость ударов (при текущей отмене урона они не ограничиваются)
         actor.damageDealt += amount;
+
+        ContextManager.INSTANCE.syncContext(actor);
     }
 
-    public void stopDealingDamage(FighterContext actor) {
-        actor.updateStatus(FighterContext.Status.WAIT);
-        BattleManager.INSTANCE.syncContext(actor);
+    /**
+     * Вызывается когда период атаки заканчивается
+     */
+    public void stopDealingDamage(Context actor) {
+        actor.updateStatus(Context.Status.WAIT);
+        ContextManager.INSTANCE.syncContext(actor);
 
         Move move = pendingMoves.get(actor.uuid);
 
@@ -61,8 +68,9 @@ public enum MoveManager {
             move = new Move();
             move.attacker = actor;
 
-            final FighterContext target = BattleManager.INSTANCE.getContext(actor.target);
-            if (target.status == FighterContext.Status.KO_ED) {
+            final Context target = ContextManager.INSTANCE.getContext(actor.target);
+            if (target.knockedOut) {
+                // Добивать можно без подтверждения
                 target.action = Action.ACTION_NONE;
                 move.defender = target;
                 completeMoves.add(move);
@@ -82,16 +90,16 @@ public enum MoveManager {
         completeMoves.clear();
     }
 
-    private void finalizeMove(FighterContext attacker, FighterContext defender) {
+    private void finalizeMove(Context attacker, Context defender) {
         // Игнорируем бездельников
         if (attacker.action.type == Action.Type.PASSIVE && defender.action.type == Action.Type.PASSIVE) {
-            attacker.reset(true);
-            defender.reset(true);
+            attacker.reset();
+            defender.reset();
             return;
         }
 
         // TODO плавающее ограничение на получаемый урон чтобы стимулировать нокауты
-        final boolean isFatality = defender.status == FighterContext.Status.KO_ED;
+        final boolean isFatality = defender.knockedOut;
 
         final ActionResult attack = new ActionResult(attacker);
         final ActionResult defence = new ActionResult(defender);
@@ -105,8 +113,8 @@ public enum MoveManager {
             looser = (winner == attack ? defence : attack);
         }
 
-        for (Effect eff : winner.action.target_effects) eff.apply(winner, looser);
-        for (Effect eff : winner.action.self_effects) eff.apply(winner, winner);
+        winner.action.target_effects.forEach(e -> e.apply(Effect.Stage.RESULT, winner, looser));
+        winner.action.self_effects.forEach(e -> e.apply(Effect.Stage.RESULT, winner, looser));
         // TODO handle some tags
 
         final String resultMsg = isFatality
@@ -120,7 +128,7 @@ public enum MoveManager {
         );
 
         // Если нокаут появляется после применения эффектов
-        final boolean justKnockedOut = !isFatality && defender.status == FighterContext.Status.KO_ED;
+        final boolean justKnockedOut = !isFatality && looser.ctx.knockedOut;
         if (justKnockedOut) {
             final String msg = MiscaUtils.l10n("misca.crabs.knocked_out", defender.entity.getCommandSenderName());
             MiscaUtils.notifyAround(
@@ -129,14 +137,15 @@ public enum MoveManager {
                     new ChatComponentText(msg));
         }
 
-        attacker.reset(true);
-        defender.reset(!justKnockedOut);
+        attacker.reset();
+        defender.reset();
+        looser.ctx.knockedOut = justKnockedOut;
 
-        BattleManager.INSTANCE.syncContext(attacker);
-        BattleManager.INSTANCE.syncContext(defender);
+        ContextManager.INSTANCE.syncContext(attacker);
+        ContextManager.INSTANCE.syncContext(defender);
     }
 
     private static class Move {
-        FighterContext attacker, defender;
+        Context attacker, defender;
     }
 }

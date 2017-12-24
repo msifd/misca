@@ -86,7 +86,7 @@ public class DrawPrimitives {
         tessellator.draw();
     }
 
-    public static void drawInvertedRect(int x, int y, int z, int width, int height, int color) {
+    public static void drawInvertedRect(int x, int y, double z, int width, int height, int color) {
         final float alpha = (float) (color >> 24 & 255) / 255.0F;
         final float red = (float) (color >> 16 & 255) / 255.0F;
         final float green = (float) (color >> 8 & 255) / 255.0F;

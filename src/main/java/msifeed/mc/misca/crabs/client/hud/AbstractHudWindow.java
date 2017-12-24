@@ -1,4 +1,4 @@
-package msifeed.mc.misca.crabs.client;
+package msifeed.mc.misca.crabs.client.hud;
 
 import net.minecraft.client.settings.KeyBinding;
 

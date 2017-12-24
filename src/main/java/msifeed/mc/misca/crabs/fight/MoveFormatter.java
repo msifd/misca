@@ -1,4 +1,4 @@
-package msifeed.mc.misca.crabs.battle;
+package msifeed.mc.misca.crabs.fight;
 
 import msifeed.mc.misca.crabs.character.Character;
 import msifeed.mc.misca.crabs.character.Stats;
@@ -14,9 +14,9 @@ public final class MoveFormatter {
                 + we.getCommandSenderName()
                 + "\u00A76>\u00A74"
                 + le.getCommandSenderName()
-                + "\u00A76]\u00A7r "
+                + "\u00A76] "
                 + formatActionResult(winner)
-                + " \u00A76>\u00A7r "
+                + " \u00A76> "
                 + formatActionResult(looser);
     }
 

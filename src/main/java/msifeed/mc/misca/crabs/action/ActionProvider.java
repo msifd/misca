@@ -1,4 +1,4 @@
-package msifeed.mc.misca.crabs.actions;
+package msifeed.mc.misca.crabs.action;
 
 import com.google.common.base.Charsets;
 import com.google.common.collect.Lists;

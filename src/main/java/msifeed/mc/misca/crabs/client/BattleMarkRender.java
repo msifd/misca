@@ -1,8 +1,9 @@
 package msifeed.mc.misca.crabs.client;
 
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import msifeed.mc.misca.crabs.battle.BattleManager;
-import msifeed.mc.misca.crabs.battle.FighterContext;
+import msifeed.mc.misca.crabs.context.ContextManager;
+import msifeed.mc.misca.crabs.fight.FightManager;
+import msifeed.mc.misca.crabs.context.Context;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.Tessellator;
@@ -19,11 +20,13 @@ public enum BattleMarkRender {
         EntityPlayer self = Minecraft.getMinecraft().thePlayer;
         if (event.entity == self) return;
 
-        final FighterContext self_ctx = BattleManager.INSTANCE.getContext(self.getUniqueID());
-        final FighterContext entity_ctx = BattleManager.INSTANCE.getContext(event.entity);
-        if (self_ctx == null || entity_ctx == null) return;
+        final Context entityCtx = ContextManager.INSTANCE.getContext(event.entity);
+        if (entityCtx == null || !entityCtx.status.isFighting()) return;
 
-        final boolean isUnderMyControl = self_ctx.control == entity_ctx.uuid;
+        final Context selfCtx = ContextManager.INSTANCE.getContext(self.getUniqueID());
+        if (selfCtx == null || !selfCtx.status.isFighting()) return;
+
+        final boolean isUnderMyControl = selfCtx.puppet != null && selfCtx.puppet.equals(entityCtx.uuid);
         final int color = isUnderMyControl ? 0x808020 : 0x802020;
 
         // Рендер плашки с режимом боя над энтити

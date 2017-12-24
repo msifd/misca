@@ -3,7 +3,8 @@ package msifeed.mc.gui.nim;
 public abstract class NimPart {
     private static NimPart focus = null;
 
-    protected int posX, posY, posZ;
+    protected int posX, posY;
+    protected double posZ = 0.01;
     protected int width, height;
 
     public static boolean focused() {
@@ -30,7 +31,7 @@ public abstract class NimPart {
         this.posY = posY;
     }
 
-    public int getZ() {
+    public double getZ() {
         return posZ;
     }
 

@@ -1,15 +1,17 @@
-package msifeed.mc.misca.crabs.client;
+package msifeed.mc.misca.crabs.client.hud;
 
 import msifeed.mc.gui.NimGui;
 import msifeed.mc.gui.nim.NimText;
 import msifeed.mc.gui.nim.NimWindow;
 import msifeed.mc.misca.crabs.CrabsNetwork;
-import msifeed.mc.misca.crabs.actions.Action;
-import msifeed.mc.misca.crabs.actions.ActionManager;
-import msifeed.mc.misca.crabs.battle.BattleManager;
-import msifeed.mc.misca.crabs.battle.FighterContext;
-import msifeed.mc.misca.crabs.battle.FighterMessage;
+import msifeed.mc.misca.crabs.action.Action;
+import msifeed.mc.misca.crabs.action.ActionManager;
+import msifeed.mc.misca.crabs.fight.FightManager;
+import msifeed.mc.misca.crabs.client.CrabsKeyBinds;
+import msifeed.mc.misca.crabs.context.Context;
+import msifeed.mc.misca.crabs.fight.FighterMessage;
 import msifeed.mc.misca.crabs.character.Stats;
+import msifeed.mc.misca.crabs.context.ContextManager;
 import msifeed.mc.misca.utils.MiscaUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.settings.KeyBinding;
@@ -49,23 +51,23 @@ public class BattleHud extends AbstractHudWindow {
     void render() {
         final Minecraft mc = Minecraft.getMinecraft();
         final EntityPlayer player = mc.thePlayer;
-        final BattleManager bm = BattleManager.INSTANCE;
-        final FighterContext context = bm.getContext(player.getUniqueID());
+        final ContextManager cm = ContextManager.INSTANCE;
+        final Context context = cm.getContext(player.getUniqueID());
 
-        final boolean inBattle = context != null;
-        final boolean isLeaving = inBattle && context.status == FighterContext.Status.LEAVING;
+        final boolean isFighting = context != null && context.status.isFighting();
+        final boolean isLeaving = isFighting && context.status == Context.Status.LEAVING;
 
         final NimGui nimgui = NimGui.INSTANCE;
         nimgui.beginWindow(battleWindow);
 
         nimgui.horizontalBlock();
-        final String controlButtonKey = "misca.crabs." + (inBattle ? isLeaving ? "cancel" : "leave_battle" : "join_battle");
+        final String controlButtonKey = "misca.crabs." + (isFighting ? isLeaving ? "cancel" : "leave_fight" : "join_fight");
         if (nimgui.button(MiscaUtils.l10n(controlButtonKey))) {
-            FighterMessage message = new FighterMessage(inBattle ? FighterMessage.Type.LEAVE : FighterMessage.Type.JOIN);
+            FighterMessage message = new FighterMessage(isFighting ? FighterMessage.Type.LEAVE : FighterMessage.Type.JOIN);
             CrabsNetwork.INSTANCE.sendToServer(message);
         }
 
-        if (inBattle) {
+        if (isFighting) {
             final String modeTitle = statRollsMode
                     ? MiscaUtils.l10n("misca.crabs.battle")
                     : MiscaUtils.l10n("misca.crabs.stats");
@@ -74,12 +76,10 @@ public class BattleHud extends AbstractHudWindow {
             }
         }
 
-        if (inBattle && !statRollsMode) {
-
-            final FighterContext actor = context.control == null
-                    ? context
-                    : bm.getContext(context.control);
-            final boolean isAttack = actor.status == FighterContext.Status.ACT && actor.target == null;
+        if (isFighting && !statRollsMode) {
+            final Context actor = context.puppet == null ? context : cm.getContext(context.puppet);
+            // При защите таргет уже указвает на нападающего
+            final boolean isAttack = actor.status == Context.Status.ACTIVE && actor.target == null;
 
             renderStatus(nimgui, actor);
 
@@ -90,6 +90,8 @@ public class BattleHud extends AbstractHudWindow {
             } else {
                 // TODO display selected action
             }
+
+            renderInfo(nimgui, actor);
         } else {
             renderStatRolls(nimgui);
             renderPlayerModifier(nimgui);
@@ -112,11 +114,14 @@ public class BattleHud extends AbstractHudWindow {
         }
     }
 
-    private void renderStatus(NimGui nimgui, FighterContext actor) {
+    private void renderStatus(NimGui nimgui, Context actor) {
+        if (actor.entity == null) return;
+
         String status = actor.entity.getCommandSenderName() + ": " + actor.status;
         if (actor.target != null) {
-            final FighterContext target = BattleManager.INSTANCE.getContext(actor.target);
-            status += ". Target: " + target.entity.getCommandSenderName();
+            final Context target = ContextManager.INSTANCE.getContext(actor.target);
+            if (target.entity != null)
+                status += ". Target: " + target.entity.getCommandSenderName();
         }
         nimgui.label(status, 0, 2);
     }
@@ -155,6 +160,23 @@ public class BattleHud extends AbstractHudWindow {
         nimgui.horizontalBlock();
         nimgui.label(MiscaUtils.l10n("misca.crabs.player_mod"));
         nimgui.nim(modText);
+    }
+
+    private void renderInfo(NimGui nimgui, Context context) {
+        nimgui.verticalBlock();
+        if (context.action == null) {
+            nimgui.label("1. Action: <not selected>");
+            return;
+        }
+
+        nimgui.label("1. Action: " + context.action.pretty());
+        nimgui.label("2. Describe action: " + context.described);
+
+        if (context.described && !context.action.dealNoDamage())
+            nimgui.label("3. Deal damage: " + context.damageDealt);
+
+        if (context.status == Context.Status.WAIT)
+            nimgui.label("Wait for enemy...");
     }
 
     private int getModifierInput() {

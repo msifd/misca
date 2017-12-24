@@ -14,13 +14,8 @@ public final class Buff extends DynamicEffect {
     }
 
     @Override
-    public Stage getStage() {
-        return effect.getStage();
-    }
-
-    @Override
-    public void apply(ActionResult self, ActionResult target) {
-        if (enabled()) effect.apply(self, target);
+    public void apply(Stage stage, ActionResult self, ActionResult target) {
+        if (enabled()) effect.apply(stage, self, target);
     }
 
     public boolean enabled() {

@@ -3,9 +3,9 @@ package msifeed.mc.misca.crabs;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import cpw.mods.fml.relauncher.Side;
-import msifeed.mc.misca.crabs.actions.ActionListMessage;
-import msifeed.mc.misca.crabs.battle.FighterContextMessage;
-import msifeed.mc.misca.crabs.battle.FighterMessage;
+import msifeed.mc.misca.crabs.action.ActionListMessage;
+import msifeed.mc.misca.crabs.context.ContextMessage;
+import msifeed.mc.misca.crabs.fight.FighterMessage;
 import msifeed.mc.misca.crabs.character.CharacterMessage;
 import net.minecraft.entity.player.EntityPlayerMP;
 
@@ -18,7 +18,7 @@ public enum CrabsNetwork {
         network.registerMessage(CharacterMessage.class, CharacterMessage.class, 0x00, Side.SERVER);
         network.registerMessage(CharacterMessage.class, CharacterMessage.class, 0x01, Side.CLIENT);
         network.registerMessage(FighterMessage.class, FighterMessage.class, 0x10, Side.SERVER);
-        network.registerMessage(FighterContextMessage.class, FighterContextMessage.class, 0x11, Side.CLIENT);
+        network.registerMessage(ContextMessage.class, ContextMessage.class, 0x11, Side.CLIENT);
         network.registerMessage(ActionListMessage.class, ActionListMessage.class, 0x21, Side.CLIENT);
     }
 

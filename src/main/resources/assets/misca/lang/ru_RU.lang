@@ -17,8 +17,8 @@ misca.crabs.update_char=Обновить персонажа
 misca.crabs.fill_all_stats=Заполни все поля!
 
 misca.crabs.battle=Бой
-misca.crabs.join_battle=Войти в бой
-misca.crabs.leave_battle=Выйти из боя
+misca.crabs.join_fight=Войти в бой
+misca.crabs.leave_fight=Выйти из боя
 misca.crabs.cancel=Отмена
 misca.crabs.stats=Статы
 misca.crabs.player_mod=Модифификатор:

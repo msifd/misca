@@ -1,4 +1,4 @@
-package msifeed.mc.misca.crabs.battle;
+package msifeed.mc.misca.crabs.fight;
 
 public class BattleDefines {
     public static final int SECS_BEFORE_LEAVE_BATTLE = 5;

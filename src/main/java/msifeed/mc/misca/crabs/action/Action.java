@@ -1,12 +1,10 @@
-package msifeed.mc.misca.crabs.actions;
+package msifeed.mc.misca.crabs.action;
 
 import msifeed.mc.misca.crabs.rules.Effect;
 import msifeed.mc.misca.crabs.rules.Modifier;
 import msifeed.mc.misca.utils.MiscaUtils;
 
 import java.util.ArrayList;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class Action {
     public static final Action ACTION_NONE = new Action("none", ".none", Type.PASSIVE);
@@ -27,19 +25,20 @@ public class Action {
     }
 
     public boolean dealNoDamage() {
-        if (deal_no_damage) return true;
-        switch (type) {
-            case PASSIVE:
-                return true;
-            default:
-                return false;
-        }
+        return deal_no_damage || type == Type.PASSIVE;
     }
 
+    /**
+     * Используется для отправки клиентам. Они не храният ничего, кроме таких сигнатур.
+     * Заголовок передаем потому что есть кастомные экшны, не прописанные в .lang файлах
+     */
     public String signature() {
         return name + "/" + title + "/" + type.toString();
     }
 
+    /**
+     * Красивый представление для, например, вывода в чат
+     */
     public String pretty() {
         return title.length() > 1 && title.charAt(0) == '.'
                 ? MiscaUtils.l10n("misca.crabs.action." + title.substring(1))
@@ -58,15 +57,15 @@ public class Action {
                 && this.tags.equals(act.tags);
     }
 
-    @Override
-    public String toString() {
-        final String rolls = this.modifiers.stream().map(Object::toString).collect(Collectors.joining(","));
-        final String teffs = this.target_effects.stream().map(Object::toString).collect(Collectors.joining(","));
-        final String seffs = this.self_effects.stream().map(Object::toString).collect(Collectors.joining(","));
-        final String tags = this.tags.stream().collect(Collectors.joining(","));
-        return Stream.of(name, title, type.toString(), rolls, teffs, seffs, tags)
-                .collect(Collectors.joining(":"));
-    }
+//    @Override
+//    public String toString() {
+//        final String rolls = this.modifiers.stream().map(Object::toString).collect(Collectors.joining(","));
+//        final String teffs = this.target_effects.stream().map(Object::toString).collect(Collectors.joining(","));
+//        final String seffs = this.self_effects.stream().map(Object::toString).collect(Collectors.joining(","));
+//        final String tags = this.tags.stream().collect(Collectors.joining(","));
+//        return Stream.of(name, title, type.toString(), rolls, teffs, seffs, tags)
+//                .collect(Collectors.joining(":"));
+//    }
 
     public enum Type {
         MELEE, RANGED, MAGIC, DEFENCE, SUPPORT, PASSIVE;

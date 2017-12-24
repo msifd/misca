@@ -1,9 +1,9 @@
-package msifeed.mc.misca.crabs.battle;
+package msifeed.mc.misca.crabs.fight;
 
 import cpw.mods.fml.common.network.simpleimpl.MessageContext;
 import io.netty.buffer.ByteBuf;
-import msifeed.mc.misca.crabs.actions.Action;
-import msifeed.mc.misca.crabs.actions.ActionManager;
+import msifeed.mc.misca.crabs.action.Action;
+import msifeed.mc.misca.crabs.action.ActionManager;
 import msifeed.mc.misca.crabs.character.Stats;
 import msifeed.mc.misca.utils.AbstractMessage;
 
@@ -67,7 +67,7 @@ public class FighterMessage extends AbstractMessage<FighterMessage> {
 
     @Override
     public FighterMessage onMessage(FighterMessage message, MessageContext ctx) {
-        BattleManager.INSTANCE.onMessageFromClient(ctx.getServerHandler().playerEntity, message);
+        FightManager.INSTANCE.onMessageFromClient(ctx.getServerHandler().playerEntity, message);
         return null;
     }
 
