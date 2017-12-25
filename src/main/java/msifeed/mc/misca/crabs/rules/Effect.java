@@ -34,6 +34,6 @@ public abstract class Effect {
     // // // // // // // //
 
     public enum Stage {
-        BEFORE_MODS, AFTER_MODS, RESULT
+        BEFORE_MODS, AFTER_MODS, RESULT, AFTER_RESULT
     }
 }

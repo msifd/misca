@@ -1,5 +1,6 @@
 package msifeed.mc.misca.crabs.fight;
 
+import msifeed.mc.misca.crabs.action.Action;
 import msifeed.mc.misca.crabs.character.Character;
 import msifeed.mc.misca.crabs.character.Stats;
 import msifeed.mc.misca.crabs.rules.ActionResult;
@@ -42,7 +43,7 @@ public final class MoveFormatter {
 
         s += "\u00A76]\u00A7r";
 
-        if (!action.actionSuccessful)
+        if (!action.actionSuccessful && action.action.type != Action.Type.PASSIVE)
             s += " " + MiscaUtils.l10n("misca.crabs.failed");
 
         return s;

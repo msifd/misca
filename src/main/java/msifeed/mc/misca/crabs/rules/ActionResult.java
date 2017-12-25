@@ -22,6 +22,7 @@ public final class ActionResult {
         this.ctx = ctx;
         this.character = CharacterManager.INSTANCE.get(ctx.uuid);
         this.action = ctx.action;
+        this.playerMod = ctx.modifier;
     }
 
     public void throwDices(Character c) {
@@ -53,14 +54,14 @@ public final class ActionResult {
         else if (actionSuccessful && !other.actionSuccessful) return 1;
         else if (!actionSuccessful && other.actionSuccessful) return -1;
 
-        else if (other.action.type == Action.Type.PASSIVE) return 1;
-        else if (this.action.type == Action.Type.PASSIVE) return -1;
+//        else if (other.action.type == Action.Type.PASSIVE) return 1;
+//        else if (this.action.type == Action.Type.PASSIVE) return -1;
 
         else return totalSum - other.totalSum;
     }
 
     private void reset() {
-        actionSuccessful = true;
+        actionSuccessful = !ctx.knockedOut;
         diceSum = 0;
         statSum = 0;
         modSum = 0;

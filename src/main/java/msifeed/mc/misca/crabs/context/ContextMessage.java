@@ -40,27 +40,25 @@ public class ContextMessage extends AbstractMessage<ContextMessage> {
                 : mc.theWorld;
 
         final HashMap<UUID, EntityLivingBase> worldEntities = new HashMap<>();
-        for (Object o : world.loadedEntityList)
+        for (final Object o : world.getLoadedEntityList().toArray())
             if (o instanceof EntityLivingBase)
                 worldEntities.put(EntityUtils.getUuid((EntityLivingBase) o), (EntityLivingBase) o);
 
         for (int i = 0; i < len; i++) {
-            final Context.Status status = Context.Status.values()[buf.readByte()];
-            final long lastStatusChange = buf.readLong();
-
             final UUID uuid = UUID.fromString(readShortString(buf));
             final Context ctx = new Context(uuid, null);
 
-            ctx.status = status;
-            ctx.lastStatusChange = lastStatusChange;
+            ctx.status = Context.Status.values()[buf.readByte()];
+            ctx.lastStatusChange = buf.readLong();
 
-            if (status == Context.Status.DELETE) {
+            if (ctx.status == Context.Status.DELETE) {
                 contexts.add(ctx);
             }
 
             ctx.entity = worldEntities.get(uuid);
+            ctx.knockedOut = buf.readBoolean();
 
-            if (status.isFighting()) {
+            if (ctx.status.isFighting()) {
                 final String puppetStr = readShortString(buf);
                 ctx.puppet = puppetStr.isEmpty() ? null : UUID.fromString(puppetStr);
                 final String actionStr = readShortString(buf);
@@ -70,7 +68,6 @@ public class ContextMessage extends AbstractMessage<ContextMessage> {
                 final String targetStr = readShortString(buf);
                 ctx.target = targetStr.isEmpty() ? null : UUID.fromString(targetStr);
                 ctx.damageDealt = buf.readFloat();
-                ctx.knockedOut = buf.readBoolean();
             }
 
             contexts.add(ctx);
@@ -82,10 +79,11 @@ public class ContextMessage extends AbstractMessage<ContextMessage> {
         buf.writeByte(contexts.size());
 
         for (Context ctx : contexts) {
+            writeShortString(buf, ctx.uuid.toString());
+
             buf.writeByte(ctx.status.ordinal());
             buf.writeLong(ctx.lastStatusChange);
-
-            writeShortString(buf, ctx.uuid.toString());
+            buf.writeBoolean(ctx.knockedOut);
 
             if (ctx.status.isFighting()) {
                 writeShortString(buf, ctx.puppet == null ? "" : ctx.puppet.toString());
@@ -94,7 +92,6 @@ public class ContextMessage extends AbstractMessage<ContextMessage> {
                 buf.writeBoolean(ctx.described);
                 writeShortString(buf, ctx.target == null ? "" : ctx.target.toString());
                 buf.writeFloat(ctx.damageDealt);
-                buf.writeBoolean(ctx.knockedOut);
             }
         }
     }

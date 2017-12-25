@@ -94,7 +94,7 @@ public class BattleHud extends AbstractHudWindow {
                 // TODO display selected action
             }
 
-            renderInfo(nimgui, actor);
+            renderManual(nimgui, actor);
         } else {
             renderStatRolls(nimgui);
             renderPlayerModifier(nimgui);
@@ -110,7 +110,7 @@ public class BattleHud extends AbstractHudWindow {
             if (nimgui.button(stats[i].toString())) {
                 final long now = System.currentTimeMillis();
                 if (now - lastRollTime > 2000) {
-                    lastRollTime = now;
+//                    lastRollTime = now; // FIXME uncomment
                     CrabsNetwork.INSTANCE.sendToServer(new FighterMessage(stats[i], getModifierInput()));
                 }
             }
@@ -138,14 +138,14 @@ public class BattleHud extends AbstractHudWindow {
         nimgui.horizontalBlock();
         battleWindow.consume(0, battleWindow.nextElemY(), 0, 1);
 
-        if (currActionTab == Action.Type.PASSIVE && isAttack)
+        if (currActionTab.dealNoDamage() && isAttack)
             currActionTab = Action.Type.MELEE;
 
         // Горизонтальные блоки задаются в цикле
         final Action.Type[] types = Action.Type.values();
         for (int i = 0; i < types.length; i++) {
             if (i % 3 == 0) nimgui.horizontalBlock();
-            if (types[i] == Action.Type.PASSIVE && isAttack) continue;
+            if (types[i].dealNoDamage() && isAttack) continue;
             if (nimgui.button(types[i].pretty())) {
                 currActionTab = types[i];
             }
@@ -172,7 +172,9 @@ public class BattleHud extends AbstractHudWindow {
         nimgui.nim(modText);
     }
 
-    private void renderInfo(NimGui nimgui, Context context) {
+    private void renderManual(NimGui nimgui, Context context) {
+        if (context.knockedOut) return;
+
         nimgui.verticalBlock();
         if (context.action == null) {
             nimgui.label("1. Action: <not selected>");

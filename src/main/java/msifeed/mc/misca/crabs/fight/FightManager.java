@@ -113,8 +113,8 @@ public enum FightManager {
         final Context ctx = ContextManager.INSTANCE.getContext(event.entityLiving);
         if (ctx == null) return;
 
-        // Восстанавливаем "сознание" если подлечились
-        if (ctx.knockedOut && ctx.entity != null && ctx.entity.getHealth() > 1) {
+        // Восстанавливаем "сознание" если подлечились до четверти здоровья
+        if (ctx.knockedOut && ctx.entity != null && ctx.entity.getHealth() >= (ctx.entity.getMaxHealth() / 4f)) {
             ctx.knockedOut = false;
             ContextManager.INSTANCE.syncContext(ctx);
         }
@@ -165,7 +165,7 @@ public enum FightManager {
         if (!actor.canAttack()) return;
 
         // После того как цель определена можно атаковать только её
-        if (actor.target != null && actor.target != target.uuid) return;
+        if (actor.target != null && !actor.target.equals(target.uuid)) return;
 
         MoveManager.INSTANCE.dealDamage(actor, target, damage, event.ammount);
     }

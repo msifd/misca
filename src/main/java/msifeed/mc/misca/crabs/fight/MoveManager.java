@@ -4,8 +4,8 @@ import msifeed.mc.misca.crabs.action.Action;
 import msifeed.mc.misca.crabs.context.Context;
 import msifeed.mc.misca.crabs.context.ContextManager;
 import msifeed.mc.misca.crabs.rules.ActionResult;
+import msifeed.mc.misca.crabs.rules.Buff;
 import msifeed.mc.misca.crabs.rules.Effect;
-import msifeed.mc.misca.crabs.rules.Rules;
 import msifeed.mc.misca.utils.MiscaUtils;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.ChatComponentText;
@@ -28,7 +28,7 @@ public enum MoveManager {
 
     public void selectAction(Context actor, Action action, int mod) {
         // Выбирать пассивные действия можно только при защите
-        if (!actor.canSelectAction() || actor.target == null && action.type == Action.Type.PASSIVE) return;
+        if (!actor.canSelectAction() || (actor.target == null && action.dealNoDamage())) return;
         actor.updateAction(action);
         actor.modifier = mod;
 
@@ -95,68 +95,101 @@ public enum MoveManager {
         completeMoves.clear();
     }
 
-    private void finalizeMove(Context attacker, Context defender) {
-        // Игнорируем бездельников
-        if (attacker.action.type == Action.Type.PASSIVE && defender.action.type == Action.Type.PASSIVE) {
-            attacker.reset();
-            defender.reset();
-            return;
-        }
+    private void finalizeMove(Context attackCtx, Context defenceCtx) {
+        // 1. Изначально выполняются действия обоих бойцов
+        // 2. Если фаталити, то действие защищающегося - это "ничего" (присваивается еще при атаке)
+        // 3. Если действие бойца отмечается как неудачное, то оно не выполняется (провал выстрела)
+        // 4. Если действие не наносит прямой урон и оно проиграло по очкам, то оно не выполняется (провал обороны)
 
         // TODO плавающее ограничение на получаемый урон чтобы стимулировать нокауты
         // TODO выяснить что я имел в виду под плавающим ограничением
-        final boolean isFatality = defender.knockedOut;
+        final boolean isFatality = defenceCtx.knockedOut;
 
-        final ActionResult attack = new ActionResult(attacker);
-        final ActionResult defence = new ActionResult(defender);
-        final ActionResult winner;
-        final ActionResult looser;
-        if (isFatality) {
-            winner = attack;
-            looser = defence;
-        } else {
-            winner = Rules.computeWinner(attack, defence);
-            looser = (winner == attack ? defence : attack);
+        final ActionResult higherOne;
+        final ActionResult lowerOne;
+        {
+            final ActionResult attack = new ActionResult(attackCtx);
+            final ActionResult defence = new ActionResult(defenceCtx);
+            higherOne = computeWinner(attack, defence);
+            lowerOne = higherOne == attack ? defence : attack;
         }
 
-        if (winner.actionSuccessful) {
-            Rules.applyEffects(winner.action.target_effects, Effect.Stage.RESULT, looser, winner);
-            Rules.applyEffects(winner.action.self_effects, Effect.Stage.RESULT, winner, looser);
-        }
+        // 4.
+        if (lowerOne.action.dealNoDamage())
+            lowerOne.actionSuccessful = false;
 
-        // TODO handle some tags
+        // 3.
+        applyAction(Effect.Stage.RESULT, higherOne, lowerOne);
+        applyAction(Effect.Stage.RESULT, lowerOne, higherOne);
 
-        if (winner.actionSuccessful) {
-            // Выдаем урон обоим, мало ли какие эффекты...
-            if (winner.damageToReceive > 0) receiveDamage(winner, looser);
-            if (looser.damageToReceive > 0) receiveDamage(looser, winner);
+        // Для манипуляторов уроном, например
+        applyAction(Effect.Stage.AFTER_RESULT, higherOne, lowerOne);
+        applyAction(Effect.Stage.AFTER_RESULT, lowerOne, higherOne);
 
-            // Если нокаут появляется после применения эффектов
-            final boolean justKnockedOut = !isFatality && looser.ctx.knockedOut;
-            if (justKnockedOut) {
-                final String msg = MiscaUtils.l10n("misca.crabs.knocked_out", defender.entity.getCommandSenderName());
-                MiscaUtils.notifyAround(
-                        winner.ctx.entity, looser.ctx.entity,
-                        BattleDefines.NOTIFICATION_RADIUS,
-                        new ChatComponentText(msg));
-            }
-        }
+        // TODO баффы
 
-        final String resultMsg = isFatality && winner.actionSuccessful
-                ? MoveFormatter.formatFatalityResult(winner.ctx.entity, looser.ctx.entity)
-                : MoveFormatter.formatActionResults(winner, looser);
+        // Выдаем урон обоим, мало ли...
+        applyDamage(lowerOne, higherOne);
+        applyDamage(higherOne, lowerOne);
+
+        // Пишем про фаталити только если оно, собственно, удачно
+        final String resultMsg = isFatality && higherOne.actionSuccessful
+                ? MoveFormatter.formatFatalityResult(higherOne.ctx.entity, lowerOne.ctx.entity)
+                : MoveFormatter.formatActionResults(higherOne, lowerOne);
 
         MiscaUtils.notifyAround(
-                winner.ctx.entity, looser.ctx.entity,
+                attackCtx.entity, defenceCtx.entity,
                 BattleDefines.NOTIFICATION_RADIUS,
                 new ChatComponentText(resultMsg)
         );
 
-        attacker.reset();
-        defender.reset();
+        attackCtx.reset();
+        defenceCtx.reset();
 
-        ContextManager.INSTANCE.syncContext(attacker);
-        ContextManager.INSTANCE.syncContext(defender);
+        ContextManager.INSTANCE.syncContext(attackCtx);
+        ContextManager.INSTANCE.syncContext(defenceCtx);
+    }
+
+    private static void applyAction(Effect.Stage stage, ActionResult self, ActionResult target) {
+        if (!self.actionSuccessful) return;
+        for (final Effect e : self.action.target_effects)
+            if (e.apply(stage, target, self) && e instanceof Buff)
+                ((Buff) e).step();
+        for (final Effect e : self.action.self_effects)
+            if (e.apply(stage, self, target) && e instanceof Buff)
+                ((Buff) e).step();
+    }
+
+    private static ActionResult computeWinner(ActionResult a, ActionResult b) {
+        applyAction(Effect.Stage.BEFORE_MODS, a, b);
+        applyAction(Effect.Stage.BEFORE_MODS, b, a);
+
+        do {
+            a.throwDices(a.character);
+            b.throwDices(b.character);
+
+            // Для таких эффектов как ограничение на минимальные очки
+            applyAction(Effect.Stage.AFTER_MODS, a, b);
+            applyAction(Effect.Stage.AFTER_MODS, b, a);
+        } while (a.compareTo(b) == 0);
+
+        return a.compareTo(b) > 0 ? a : b;
+    }
+
+    private static void applyDamage(ActionResult self, ActionResult enemy) {
+        if (self.damageToReceive <= 0) return;
+
+        final boolean wasKnockedOut = self.ctx.knockedOut;
+        receiveDamage(self, enemy);
+
+        // Если нокаут появляется после применения эффектов
+        if (!wasKnockedOut && self.ctx.knockedOut) {
+            final String msg = MiscaUtils.l10n("misca.crabs.knocked_out", self.ctx.entity.getCommandSenderName());
+            MiscaUtils.notifyAround(
+                    self.ctx.entity, enemy.ctx.entity,
+                    BattleDefines.NOTIFICATION_RADIUS,
+                    new ChatComponentText(msg));
+        }
     }
 
     /**
@@ -169,12 +202,14 @@ public enum MoveManager {
 
         final float currentHealth = selfEntity.getHealth();
         final boolean isFatal = currentHealth <= self.damageToReceive;
-        final float damageToDeal = isFatal && !selfCtx.knockedOut ? currentHealth - 1 : self.damageToReceive;
+        final float damageToDeal = isFatal && !selfCtx.knockedOut ? currentHealth - 1.0f : self.damageToReceive;
 
-        selfEntity.attackEntityFrom(new CrabsDamage(enemyEntity), damageToDeal);
         if (isFatal) selfCtx.knockedOut = true;
+        selfEntity.setHealth(currentHealth - damageToDeal);
+        selfEntity.attackEntityFrom(new CrabsDamage(enemyEntity), Float.MIN_VALUE); // Нужно для визуального эффекта урона
 
-        logger.info("`{}` received {} damage from `{}`", selfEntity.getCommandSenderName(), damageToDeal, enemyEntity.getCommandSenderName());
+        final float damageDealt = currentHealth - selfEntity.getHealth();
+        logger.info("`{}` received {} damage from `{}`", selfEntity.getCommandSenderName(), damageDealt, enemyEntity.getCommandSenderName());
     }
 
     private static class Move {

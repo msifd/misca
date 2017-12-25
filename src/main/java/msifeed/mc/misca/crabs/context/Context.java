@@ -6,11 +6,13 @@ import net.minecraft.entity.EntityLivingBase;
 import java.util.UUID;
 
 public class Context {
+    public UUID uuid;
+    public transient EntityLivingBase entity;
+
     public Status status;
     public long lastStatusChange;
 
-    public UUID uuid;
-    public transient EntityLivingBase entity;
+    public boolean knockedOut;
 
     // Штуки для сражений
     public UUID puppet;
@@ -19,7 +21,6 @@ public class Context {
     public boolean described;
     public UUID target;
     public float damageDealt;
-    public boolean knockedOut;
 
     Context(UUID uuid, EntityLivingBase entity) {
         this.uuid = uuid;
@@ -40,7 +41,6 @@ public class Context {
         described = false;
         target = null;
         damageDealt = 0;
-        knockedOut = false; // TODO сбрасывать нокаут только при повышениии здоровья
     }
 
     public void updateStatus(Status status) {

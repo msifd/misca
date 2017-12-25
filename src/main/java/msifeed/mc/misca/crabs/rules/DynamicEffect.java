@@ -1,5 +1,6 @@
 package msifeed.mc.misca.crabs.rules;
 
+import static msifeed.mc.misca.crabs.rules.DynamicEffect.EffectArgs.FLOAT;
 import static msifeed.mc.misca.crabs.rules.DynamicEffect.EffectArgs.INT;
 
 public abstract class DynamicEffect extends Effect {
@@ -87,9 +88,35 @@ public abstract class DynamicEffect extends Effect {
         }
     }
 
+    public static class ReceivedDamageMultiplier extends DynamicEffect {
+        public float value;
+
+        @Override
+        public String name() {
+            return "received_damage_mult";
+        }
+
+        @Override
+        public EffectArgs[] args() {
+            return new EffectArgs[]{FLOAT};
+        }
+
+        @Override
+        public void init(Object[] args) {
+            value = (float) args[0];
+        }
+
+        @Override
+        public boolean apply(Stage stage, ActionResult target, ActionResult other) {
+            if (stage != Stage.AFTER_RESULT) return false;
+            target.damageToReceive *= value;
+            return true;
+        }
+    }
+
     // // // // // // // //
 
     public enum EffectArgs {
-        INT, EFFECT
+        INT, FLOAT, EFFECT
     }
 }

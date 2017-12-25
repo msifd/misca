@@ -22,10 +22,14 @@ public class Action {
         this.name = name;
         this.title = title;
         this.type = type;
+        this.deal_no_damage = type.dealNoDamage();
     }
 
+    /**
+     * Действия без урона приимаются сразу после отписи. Кроме того ими нельзя атаковать.
+     */
     public boolean dealNoDamage() {
-        return deal_no_damage || type == Type.PASSIVE;
+        return deal_no_damage;
     }
 
     /**
@@ -37,7 +41,7 @@ public class Action {
     }
 
     /**
-     * Красивый представление для, например, вывода в чат
+     * Красивое представление для, например, вывода в чат
      */
     public String pretty() {
         return title.length() > 1 && title.charAt(0) == '.'
@@ -57,26 +61,20 @@ public class Action {
                 && this.tags.equals(act.tags);
     }
 
-//    @Override
-//    public String toString() {
-//        final String rolls = this.modifiers.stream().map(Object::toString).collect(Collectors.joining(","));
-//        final String teffs = this.target_effects.stream().map(Object::toString).collect(Collectors.joining(","));
-//        final String seffs = this.self_effects.stream().map(Object::toString).collect(Collectors.joining(","));
-//        final String tags = this.tags.stream().collect(Collectors.joining(","));
-//        return Stream.of(name, title, type.toString(), rolls, teffs, seffs, tags)
-//                .collect(Collectors.joining(":"));
-//    }
-
     public enum Type {
-        MELEE, RANGED, MAGIC, DEFENCE, SUPPORT, PASSIVE;
+        MELEE, RANGED, MAGIC, SUPPORT, DEFENCE, PASSIVE;
 
-        @Override
-        public String toString() {
-            return name().toLowerCase();
+        public boolean dealNoDamage() {
+            return this == DEFENCE || this == PASSIVE;
         }
 
         public String pretty() {
             return MiscaUtils.l10n("misca.crabs.action_type." + toString());
+        }
+
+        @Override
+        public String toString() {
+            return name().toLowerCase();
         }
     }
 }
