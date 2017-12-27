@@ -119,14 +119,12 @@ public enum MoveManager {
             lowerOne.actionSuccessful = false;
 
         // 3.
-        applyAction(Effect.Stage.RESULT, higherOne, lowerOne);
-        applyAction(Effect.Stage.RESULT, lowerOne, higherOne);
+        applyAction(Effect.Stage.ACTION, higherOne, lowerOne);
+        applyAction(Effect.Stage.ACTION, lowerOne, higherOne);
 
         // Для манипуляторов уроном, например
-        applyAction(Effect.Stage.AFTER_RESULT, higherOne, lowerOne);
-        applyAction(Effect.Stage.AFTER_RESULT, lowerOne, higherOne);
-
-        // TODO баффы
+        applyAction(Effect.Stage.AFTER_ACTION, higherOne, lowerOne);
+        applyAction(Effect.Stage.AFTER_ACTION, lowerOne, higherOne);
 
         // Выдаем урон обоим, мало ли...
         applyDamage(lowerOne, higherOne);
@@ -143,21 +141,43 @@ public enum MoveManager {
                 new ChatComponentText(resultMsg)
         );
 
-        attackCtx.reset();
-        defenceCtx.reset();
+        attackCtx.endEffects();
+        defenceCtx.endEffects();
+        attackCtx.softReset();
+        defenceCtx.softReset();
 
         ContextManager.INSTANCE.syncContext(attackCtx);
         ContextManager.INSTANCE.syncContext(defenceCtx);
     }
 
     private static void applyAction(Effect.Stage stage, ActionResult self, ActionResult target) {
+        // Осторожно! Мокрый код!
+
+        // Баффы работают всегда, но ограниченное кол-во раз
+        for (final Buff b : self.ctx.buffs)
+            if (b.shouldApply(stage, self, target))
+                b.apply(stage, self, target);
+
         if (!self.actionSuccessful) return;
+
+        // Раздача пенделей
         for (final Effect e : self.action.target_effects)
-            if (e.apply(stage, target, self) && e instanceof Buff)
-                ((Buff) e).step();
+            if (!(e instanceof Buff) && e.shouldApply(stage, target, self))
+                e.apply(stage, target, self);
         for (final Effect e : self.action.self_effects)
-            if (e.apply(stage, self, target) && e instanceof Buff)
-                ((Buff) e).step();
+            if (!(e instanceof Buff) && e.shouldApply(stage, self, target))
+                e.apply(stage, self, target);
+
+        // Раздача баффов
+        // Здесь, потому что нужно выдавать для каждого успешного действия бойца
+        if (stage == Effect.Stage.ACTION) {
+            for (final Effect e : self.action.target_effects)
+                if (e instanceof Buff)
+                    target.ctx.buffs.add((Buff) e);
+            for (final Effect e : self.action.self_effects)
+                if (e instanceof Buff)
+                    self.ctx.buffs.add((Buff) e);
+        }
     }
 
     private static ActionResult computeWinner(ActionResult a, ActionResult b) {

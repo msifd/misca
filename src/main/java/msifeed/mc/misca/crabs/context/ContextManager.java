@@ -72,7 +72,17 @@ public enum ContextManager {
         final int currentDim = Minecraft.getMinecraft().thePlayer.dimension;
         uuidToContext.values().removeIf(context -> context.entity != null && context.entity.dimension != currentDim);
 
-        for (Context c : contexts) {
+        // Костыль для сингла чтобы баффы не исчезали, т.к. они не отправляются
+        if (Minecraft.getMinecraft().isSingleplayer()) {
+            for (final Context c : contexts) {
+                if (c.status == Context.Status.DELETE) continue;
+                final Context old = uuidToContext.get(c.uuid);
+                if (old != null && !old.buffs.isEmpty())
+                    c.buffs.addAll(old.buffs);
+            }
+        }
+
+        for (final Context c : contexts) {
             if (c.status == Context.Status.DELETE)
                 uuidToContext.remove(c.uuid);
             else
@@ -96,7 +106,7 @@ public enum ContextManager {
             context = new Context(player.getUniqueID(), player);
             uuidToContext.put(context.uuid, context);
         } else {
-            resetContext(context);
+            hardResetContext(context);
             context.entity = player;
         }
 
@@ -129,7 +139,7 @@ public enum ContextManager {
     public void onPlayerLoggedOut(PlayerEvent.PlayerLoggedOutEvent event) {
         final Context context = uuidToContext.get(event.player.getUniqueID());
         if (context == null) return;
-        context.reset();
+        context.softReset();
         toSync.add(context);
     }
 
@@ -141,9 +151,9 @@ public enum ContextManager {
         final Context context = getContext(event.entityLiving);
         if (context == null) return;
         if (event.entity instanceof EntityPlayer) {
-            context.reset(Context.Status.NEUTRAL);
+            context.softReset(Context.Status.NEUTRAL);
         } else {
-            context.reset(Context.Status.DELETE);
+            context.softReset(Context.Status.DELETE);
             uuidToContext.remove(context.uuid);
         }
         toSync.add(context);
@@ -156,18 +166,17 @@ public enum ContextManager {
         for (Context ctx : uuidToContext.values()) {
             if ((ctx.target != null && ctx.target.equals(context.uuid))
                     || (ctx.puppet != null && ctx.puppet.equals(context.uuid))) {
-                ctx.reset();
+                ctx.softReset();
                 toSync.add(ctx);
             }
         }
     }
 
-    public void resetContext(Context context) {
+    public void hardResetContext(Context context) {
         unbindTargetToContext(context);
-        context.reset();
-        context.knockedOut = false; // Нужно ли тут сбрасывать не-лечением?
+        context.hardReset();
         toSync.add(context);
-        logger.info("{} has been reseted", context.entity.getCommandSenderName());
+        logger.info("{} has been hard reseted", context.entity.getCommandSenderName());
     }
 
     private Collection<Context> getLocalContexts(int dimensionId) {

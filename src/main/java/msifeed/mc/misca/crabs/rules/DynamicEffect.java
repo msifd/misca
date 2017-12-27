@@ -11,7 +11,7 @@ public abstract class DynamicEffect extends Effect {
     // // // // // // // //
 
     public static class ConstDamage extends DynamicEffect {
-        public int value;
+        private int value;
 
         @Override
         public String name() {
@@ -29,19 +29,27 @@ public abstract class DynamicEffect extends Effect {
         }
 
         @Override
-        public boolean apply(Stage stage, ActionResult target, ActionResult other) {
-            if (stage != Stage.RESULT) return false;
+        public boolean shouldApply(Stage stage, ActionResult target, ActionResult other) {
+            return stage == Stage.ACTION;
+        }
+
+        @Override
+        public void apply(Stage stage, ActionResult target, ActionResult other) {
             target.damageToReceive += value;
-            return true;
         }
     }
 
     public static class Score extends DynamicEffect {
-        public int value;
+        private int value;
 
         @Override
         public String name() {
             return "score";
+        }
+
+        @Override
+        public String toString() {
+            return name() + ':' + value;
         }
 
         @Override
@@ -55,15 +63,18 @@ public abstract class DynamicEffect extends Effect {
         }
 
         @Override
-        public boolean apply(Stage stage, ActionResult target, ActionResult other) {
-            if (stage != Stage.BEFORE_MODS) return false;
+        public boolean shouldApply(Stage stage, ActionResult target, ActionResult other) {
+            return stage == Stage.BEFORE_MODS;
+        }
+
+        @Override
+        public void apply(Stage stage, ActionResult target, ActionResult other) {
             target.effectMod += value;
-            return true;
         }
     }
 
     public static class MinScore extends DynamicEffect {
-        public int value;
+        private int value;
 
         @Override
         public String name() {
@@ -81,15 +92,18 @@ public abstract class DynamicEffect extends Effect {
         }
 
         @Override
-        public boolean apply(Stage stage, ActionResult target, ActionResult other) {
-            if (stage != Stage.AFTER_MODS) return false;
+        public boolean shouldApply(Stage stage, ActionResult target, ActionResult other) {
+            return stage == Stage.AFTER_MODS;
+        }
+
+        @Override
+        public void apply(Stage stage, ActionResult target, ActionResult other) {
             target.actionSuccessful = target.totalSum >= value;
-            return true;
         }
     }
 
     public static class ReceivedDamageMultiplier extends DynamicEffect {
-        public float value;
+        private float value;
 
         @Override
         public String name() {
@@ -107,10 +121,13 @@ public abstract class DynamicEffect extends Effect {
         }
 
         @Override
-        public boolean apply(Stage stage, ActionResult target, ActionResult other) {
-            if (stage != Stage.AFTER_RESULT) return false;
+        public boolean shouldApply(Stage stage, ActionResult target, ActionResult other) {
+            return stage == Stage.AFTER_ACTION;
+        }
+
+        @Override
+        public void apply(Stage stage, ActionResult target, ActionResult other) {
             target.damageToReceive *= value;
-            return true;
         }
     }
 

@@ -6,8 +6,7 @@
     "g30+",
     "str",
     "per",
-    "int",
-    "-5"
+    "int"
   ],
   "target_effects": [
     "damage"

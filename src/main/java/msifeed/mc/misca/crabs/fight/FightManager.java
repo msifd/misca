@@ -15,8 +15,8 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.EntityDamageSource;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.ServerChatEvent;
-import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
+import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -133,7 +133,7 @@ public enum FightManager {
     }
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
-    public void onDamage(LivingAttackEvent event) {
+    public void onDamage(LivingHurtEvent event) {
         if (!(event.source instanceof EntityDamageSource)) return;
 
         final EntityDamageSource damage = (EntityDamageSource) event.source;
@@ -161,6 +161,9 @@ public enum FightManager {
         // Хотя бить может и закулисье, правила выдачи урона считаются для марионетки
         final Context actor = attacker.puppet == null ? attacker : ContextManager.INSTANCE.getContext(attacker.puppet);
 
+        // Мешаем марионетке избивать саму себя
+        if (actor == target) return;
+
         // Если атакующий еще не должен бить (завершать ход), то игнорим
         if (!actor.canAttack()) return;
 
@@ -172,11 +175,13 @@ public enum FightManager {
 
     @SubscribeEvent
     public void onChatMessage(ServerChatEvent event) {
+        if (event.message.trim().isEmpty()) return;
+
         final Context ctx = ContextManager.INSTANCE.getContext(event.player.getUniqueID());
         if (ctx == null) return;
 
-        final int words = event.message.split("\\s+").length;
-        if (words < BattleDefines.MIN_WORDS_IN_ACTION_DESC) return;
+//        final int words = event.message.split("\\s+").length;
+//        if (words < BattleDefines.MIN_WORDS_IN_ACTION_DESC) return;
 
         final Context actor = ctx.puppet == null ? ctx : ContextManager.INSTANCE.getContext(ctx.puppet);
         MoveManager.INSTANCE.describeAction(actor);

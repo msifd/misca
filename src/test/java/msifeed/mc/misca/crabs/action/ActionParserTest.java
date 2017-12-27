@@ -63,16 +63,31 @@ public class ActionParserTest {
 
         assertNotNull(effect);
         assertEquals(effect.name(), "score");
-        assertEquals(effect.value, 5);
+//        assertEquals(effect.value, 5);
     }
 
     @Test
     public void buff() {
-        final String src = "buff:0:0:score:+5";
+        final String src = "buff:1:1:score:+5";
         final Buff buff = (Buff) Rules.effect(src);
 
         assertNotNull(buff);
-        assertTrue(buff.enabled());
         assertEquals(buff.effect, Rules.effect("score:+5"));
+
+        assertTrue(!buff.active());
+        assertTrue(!buff.started());
+        assertTrue(!buff.ended());
+        buff.step();
+        assertTrue(buff.active());
+        assertTrue(buff.started());
+        assertTrue(!buff.ended());
+        buff.step();
+        assertTrue(buff.active());
+        assertTrue(buff.started());
+        assertTrue(!buff.ended());
+        buff.step();
+        assertTrue(!buff.active());
+        assertTrue(buff.started());
+        assertTrue(buff.ended());
     }
 }

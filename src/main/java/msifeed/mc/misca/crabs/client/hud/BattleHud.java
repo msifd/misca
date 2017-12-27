@@ -120,7 +120,7 @@ public class BattleHud extends AbstractHudWindow {
     private void renderStatus(NimGui nimgui, Context actor) {
         if (actor.entity == null) return;
 
-        nimgui.horizontalBlock();
+        nimgui.verticalBlock();
         String status = actor.entity.getCommandSenderName() + ": " + actor.status;
         if (actor.knockedOut) {
             status += ". Knocked out ";
@@ -131,6 +131,20 @@ public class BattleHud extends AbstractHudWindow {
                 status += ". Target: " + target.entity.getCommandSenderName();
         }
         nimgui.label(status, 0, 2);
+
+        if (!actor.buffNames.isEmpty()) {
+            final StringBuilder buffs = new StringBuilder("Buffs: ");
+
+            buffs.append(actor.buffNames.getFirst());
+            if (actor.buffNames.size() > 1) {
+                actor.buffNames.listIterator(1).forEachRemaining(s -> {
+                    buffs.append(", ");
+                    buffs.append(s);
+                });
+            }
+
+            nimgui.label(buffs.toString());
+        }
     }
 
     private void renderActionTabs(NimGui nimgui, boolean isAttack) {

@@ -1,10 +1,14 @@
 package msifeed.mc.misca.crabs.character;
 
+import msifeed.mc.misca.crabs.rules.Buff;
+
 import java.util.EnumMap;
+import java.util.HashSet;
 
 public class Character {
     public String name = "";
     public EnumMap<Stats, Integer> stats = new EnumMap<>(Stats.class);
+    public HashSet<Buff> const_buffs = new HashSet<>();
 
     public transient boolean isPlayer = false; // Используется только при сохранении стат, отсеивая не-игроков
 

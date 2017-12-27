@@ -55,7 +55,7 @@ public class ItemBattleStick extends Item {
         final Context actor = ContextManager.INSTANCE.getOrCreateContext(entity);
 
         if (player.isSneaking()) {
-            ContextManager.INSTANCE.resetContext(actor);
+            ContextManager.INSTANCE.hardResetContext(actor);
         } else {
             if (entity instanceof EntityLiving) ((EntityLiving) entity).playLivingSound();
             FightManager.INSTANCE.joinFight(actor);

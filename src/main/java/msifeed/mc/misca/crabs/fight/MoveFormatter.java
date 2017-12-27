@@ -32,7 +32,14 @@ public final class MoveFormatter {
                 + ": "
                 + "["
                 + diceRankColor(action.diceRank)
-                + (action.totalSum - action.playerMod);
+                + (action.totalSum - action.effectMod - action.playerMod);
+
+        if (action.effectMod != 0) {
+            s += "\u00A76"
+                    + (action.effectMod > 0 ? "+" : "-")
+                    + "\u00A7r"
+                    + Math.abs(action.effectMod);
+        }
 
         if (action.playerMod != 0) {
             s += "\u00A76"

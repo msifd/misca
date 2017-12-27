@@ -14,15 +14,33 @@ public final class Buff extends DynamicEffect {
     }
 
     @Override
-    public boolean apply(Stage stage, ActionResult target, ActionResult other) {
-        return enabled() && effect.apply(stage, target, other);
+    public String toString() {
+        return "(" + (counter - stopAt) + ")"
+                + effect.toString();
     }
 
-    public boolean enabled() {
-        return counter >= 0 && counter <= stopAt;
+    @Override
+    public boolean shouldApply(Stage stage, ActionResult target, ActionResult other) {
+        return effect.shouldApply(stage, target, other);
     }
 
-    public boolean disabled() {
+    @Override
+    public void apply(Stage stage, ActionResult target, ActionResult other) {
+        if (active()) {
+            effect.apply(stage, target, other);
+            step();
+        }
+    }
+
+    public boolean active() {
+        return started() && !ended();
+    }
+
+    public boolean started() {
+        return counter >= 0;
+    }
+
+    public boolean ended() {
         return counter > stopAt;
     }
 
@@ -30,6 +48,10 @@ public final class Buff extends DynamicEffect {
         counter++;
     }
 
+    /**
+     * [ходов до начала эффекта], [длительность эффекта], [эффект]
+     * Длительность - сколько ходов переживет бафф после активации.
+     */
     @Override
     public EffectArgs[] args() {
         return new EffectArgs[]{INT, INT, EFFECT};
@@ -37,7 +59,7 @@ public final class Buff extends DynamicEffect {
 
     @Override
     public void init(Object[] args) {
-        this.counter = (int) args[0];
+        this.counter = -((int) args[0]); // Негативничаем, т.к. это прямой отсчет до нуля и далее до stopAt
         this.stopAt = (int) args[1];
         this.effect = (Effect) args[2];
     }

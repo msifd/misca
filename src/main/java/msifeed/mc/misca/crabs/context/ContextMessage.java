@@ -5,6 +5,7 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import io.netty.buffer.ByteBuf;
 import msifeed.mc.misca.crabs.action.ActionManager;
+import msifeed.mc.misca.crabs.rules.Buff;
 import msifeed.mc.misca.utils.AbstractMessage;
 import msifeed.mc.misca.utils.EntityUtils;
 import net.minecraft.client.Minecraft;
@@ -58,6 +59,10 @@ public class ContextMessage extends AbstractMessage<ContextMessage> {
             ctx.entity = worldEntities.get(uuid);
             ctx.knockedOut = buf.readBoolean();
 
+            final byte buffsSize = buf.readByte();
+            for (int j = 0; j < buffsSize; j++)
+                ctx.buffNames.add(readShortString(buf));
+
             if (ctx.status.isFighting()) {
                 final String puppetStr = readShortString(buf);
                 ctx.puppet = puppetStr.isEmpty() ? null : UUID.fromString(puppetStr);
@@ -84,6 +89,10 @@ public class ContextMessage extends AbstractMessage<ContextMessage> {
             buf.writeByte(ctx.status.ordinal());
             buf.writeLong(ctx.lastStatusChange);
             buf.writeBoolean(ctx.knockedOut);
+
+            buf.writeByte(ctx.buffs.size());
+            for (Buff b : ctx.buffs)
+                writeShortString(buf, b.toString());
 
             if (ctx.status.isFighting()) {
                 writeShortString(buf, ctx.puppet == null ? "" : ctx.puppet.toString());

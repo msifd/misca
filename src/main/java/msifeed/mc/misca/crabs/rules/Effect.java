@@ -3,7 +3,9 @@ package msifeed.mc.misca.crabs.rules;
 public abstract class Effect {
     public abstract String name();
 
-    public abstract boolean apply(Stage stage, ActionResult target, ActionResult other);
+    public abstract boolean shouldApply(Stage stage, ActionResult target, ActionResult other);
+
+    public abstract void apply(Stage stage, ActionResult target, ActionResult other);
 
     @Override
     public String toString() {
@@ -19,10 +21,13 @@ public abstract class Effect {
 
     public static class Damage extends Effect {
         @Override
-        public boolean apply(Stage stage, ActionResult target, ActionResult other) {
-            if (stage != Stage.RESULT) return false;
+        public boolean shouldApply(Stage stage, ActionResult target, ActionResult other) {
+            return stage == Stage.ACTION;
+        }
+
+        @Override
+        public void apply(Stage stage, ActionResult target, ActionResult other) {
             target.damageToReceive += other.ctx.damageDealt;
-            return true;
         }
 
         @Override
@@ -34,6 +39,6 @@ public abstract class Effect {
     // // // // // // // //
 
     public enum Stage {
-        BEFORE_MODS, AFTER_MODS, RESULT, AFTER_RESULT
+        BEFORE_MODS, AFTER_MODS, ACTION, AFTER_ACTION
     }
 }

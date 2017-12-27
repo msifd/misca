@@ -44,7 +44,8 @@ public final class ActionResult {
             totalSum += result;
         }
 
-        if (diceRank == DiceRank.FAIL) actionSuccessful = false;
+        if (diceRank == DiceRank.FAIL)
+            actionSuccessful = false;
     }
 
     public int compareTo(ActionResult other) {
@@ -53,9 +54,6 @@ public final class ActionResult {
 
         else if (actionSuccessful && !other.actionSuccessful) return 1;
         else if (!actionSuccessful && other.actionSuccessful) return -1;
-
-//        else if (other.action.type == Action.Type.PASSIVE) return 1;
-//        else if (this.action.type == Action.Type.PASSIVE) return -1;
 
         else return totalSum - other.totalSum;
     }
