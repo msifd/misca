@@ -53,6 +53,26 @@ misca.crabs.action.throw=Бросок
 misca.crabs.action.use=Использование
 misca.crabs.action.none=Ничего
 
+misca.crabs.buff.score=Бонус очков: %s
+
+misca.crabs.gui.status.active=В бою
+misca.crabs.gui.status.deal_damage=Нанесение урон
+misca.crabs.gui.status.wait=Ожидание противника
+misca.crabs.gui.status.leaving=Побег из боя
+misca.crabs.gui.status.neutral=Вне боя
+misca.crabs.gui.status.delete=ZALGO
+
+misca.crabs.gui.knocked_out=. Нокаутирован!
+misca.crabs.gui.target=. Цель: %s
+misca.crabs.gui.buffs=Баффы:
+misca.crabs.gui.no_action=1. Выберите действие.
+misca.crabs.gui.action=1. Действие: %s.
+misca.crabs.gui.action_mod=1. Действие: %s, мод.: %d.
+misca.crabs.gui.describe=2. Опишите его в чате.
+misca.crabs.gui.no_damage=3. Наносите урон!
+misca.crabs.gui.damage=3. Урона нанесено: %f.
+misca.crabs.gui.wait=4. Ждите хода противника.
+
 misca.mining_stamina.msg=Ваших сил осталось примерно на %d секунд
 misca.death_toll.intro=Вы заболели
 misca.death_toll.illnesses=мышечными спазмами;немощью;ломкостью;неуклюжестью;нарушением моторики;трясучкой;потерей чувств;неразборчивостью;расфокусировкой;амнезией;технологической слепотой;забывчивостью;бесхребетностью;раболепием;подавлением иммунитета;душевными метаниями;магочувствительностью

@@ -110,7 +110,7 @@ public class BattleHud extends AbstractHudWindow {
             if (nimgui.button(stats[i].toString())) {
                 final long now = System.currentTimeMillis();
                 if (now - lastRollTime > 2000) {
-//                    lastRollTime = now; // FIXME uncomment
+                    lastRollTime = now;
                     CrabsNetwork.INSTANCE.sendToServer(new FighterMessage(stats[i], getModifierInput()));
                 }
             }
@@ -121,19 +121,21 @@ public class BattleHud extends AbstractHudWindow {
         if (actor.entity == null) return;
 
         nimgui.verticalBlock();
-        String status = actor.entity.getCommandSenderName() + ": " + actor.status;
+        String status = actor.entity.getCommandSenderName()
+                + ": " + MiscaUtils.l10n("misca.crabs.gui.status." + actor.status.toString());
+
         if (actor.knockedOut) {
-            status += ". Knocked out ";
-        }
-        if (actor.target != null) {
+            status += MiscaUtils.l10n("misca.crabs.gui.knocked_out");
+        } else if (actor.target != null) {
             final Context target = ContextManager.INSTANCE.getContext(actor.target);
             if (target.entity != null)
-                status += ". Target: " + target.entity.getCommandSenderName();
+                status += MiscaUtils.l10n("misca.crabs.gui.target", target.entity.getCommandSenderName());
         }
         nimgui.label(status, 0, 2);
 
         if (!actor.buffNames.isEmpty()) {
-            final StringBuilder buffs = new StringBuilder("Buffs: ");
+            final StringBuilder buffs = new StringBuilder(MiscaUtils.l10n("misca.crabs.gui.buffs"));
+            buffs.append(' ');
 
             buffs.append(actor.buffNames.getFirst());
             if (actor.buffNames.size() > 1) {
@@ -191,18 +193,25 @@ public class BattleHud extends AbstractHudWindow {
 
         nimgui.verticalBlock();
         if (context.action == null) {
-            nimgui.label("1. Action: <not selected>");
+            nimgui.label(MiscaUtils.l10n("misca.crabs.gui.no_action"));
             return;
         }
 
-        nimgui.label("1. Action: " + context.action.pretty());
-        nimgui.label("2. Describe action: " + context.described);
+        if (context.modifier == 0)
+            nimgui.label(MiscaUtils.l10n("misca.crabs.gui.action", context.action.pretty()));
+        else
+            nimgui.label(MiscaUtils.l10n("misca.crabs.gui.action_mod", context.action.pretty(), context.modifier));
+        nimgui.label(MiscaUtils.l10n("misca.crabs.gui.describe"));
 
-        if (context.described && !context.action.dealNoDamage())
-            nimgui.label("3. Deal damage: " + context.damageDealt);
+        if (context.described && !context.action.dealNoDamage()) {
+            if (context.damageDealt == 0)
+                nimgui.label(MiscaUtils.l10n("misca.crabs.gui.no_damage"));
+            else
+                nimgui.label(MiscaUtils.l10n("misca.crabs.gui.damage", context.damageDealt));
+        }
 
         if (context.status == Context.Status.WAIT)
-            nimgui.label("Wait for enemy...");
+            nimgui.label(MiscaUtils.l10n("misca.crabs.gui.wait"));
     }
 
     private int getModifierInput() {

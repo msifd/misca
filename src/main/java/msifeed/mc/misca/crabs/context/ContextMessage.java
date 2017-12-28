@@ -36,7 +36,8 @@ public class ContextMessage extends AbstractMessage<ContextMessage> {
         final Minecraft mc = Minecraft.getMinecraft();
         final int currentDim = mc.thePlayer.dimension;
         // Фиксит урон по игроку в сингле, т.к. энтити игрока из WorldClient игнорит входящий урон.
-        final World world = mc.isSingleplayer()
+        final boolean singlePlayer = mc.isSingleplayer();
+        final World world = singlePlayer
                 ? mc.getIntegratedServer().worldServerForDimension(currentDim)
                 : mc.theWorld;
 
@@ -67,7 +68,11 @@ public class ContextMessage extends AbstractMessage<ContextMessage> {
                 final String puppetStr = readShortString(buf);
                 ctx.puppet = puppetStr.isEmpty() ? null : UUID.fromString(puppetStr);
                 final String actionStr = readShortString(buf);
-                ctx.action = actionStr.isEmpty() ? null : ActionManager.INSTANCE.lookupStub(actionStr);
+                ctx.action = actionStr.isEmpty() ? null : (
+                        singlePlayer
+                                ? ActionManager.INSTANCE.lookup(actionStr)
+                                : ActionManager.INSTANCE.lookupStub(actionStr)
+                );
                 ctx.modifier = buf.readInt();
                 ctx.described = buf.readBoolean();
                 final String targetStr = readShortString(buf);

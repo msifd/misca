@@ -1,5 +1,7 @@
 package msifeed.mc.misca.crabs.rules;
 
+import msifeed.mc.misca.utils.MiscaUtils;
+
 import static msifeed.mc.misca.crabs.rules.DynamicEffect.EffectArgs.FLOAT;
 import static msifeed.mc.misca.crabs.rules.DynamicEffect.EffectArgs.INT;
 
@@ -49,7 +51,7 @@ public abstract class DynamicEffect extends Effect {
 
         @Override
         public String toString() {
-            return name() + ':' + value;
+            return MiscaUtils.l10n("misca.crabs.buff.score", value);
         }
 
         @Override

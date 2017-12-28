@@ -1,5 +1,7 @@
 package msifeed.mc.misca.crabs.rules;
 
+import msifeed.mc.misca.utils.MiscaUtils;
+
 public abstract class Effect {
     public abstract String name();
 

@@ -83,5 +83,10 @@ public class Context {
         public boolean isFighting() {
             return ordinal() <= LEAVING.ordinal();
         }
+
+        @Override
+        public String toString() {
+            return name().toLowerCase();
+        }
     }
 }
