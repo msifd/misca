@@ -141,6 +141,9 @@ public enum FightManager {
         // Пришел урон по результатам хода
         if (damage instanceof CrabsDamage) return;
 
+        // Умываем руки если никто не атаковал
+        if (damage.getEntity() == null) return;
+
         final Context attacker = ContextManager.INSTANCE.getContext((EntityLivingBase) damage.getEntity());
         final Context target = ContextManager.INSTANCE.getContext(event.entityLiving);
         final boolean attackerFighting = attacker != null && attacker.status.isFighting();

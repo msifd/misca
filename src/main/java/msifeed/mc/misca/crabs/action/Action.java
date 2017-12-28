@@ -18,6 +18,14 @@ public class Action {
     public ArrayList<Effect> self_effects = new ArrayList<>();
     public ArrayList<String> tags = new ArrayList<>(); // По большей части сейчас не используется
 
+    public Action(String signature) {
+        final String[] parts = signature.split("/");
+        this.name = parts[0];
+        this.title = parts[1];
+        this.type = Action.Type.valueOf(parts[2].toUpperCase());
+        this.deal_no_damage = this.type.dealNoDamage();
+    }
+
     Action(String name, String title, Type type) {
         this.name = name;
         this.title = title;

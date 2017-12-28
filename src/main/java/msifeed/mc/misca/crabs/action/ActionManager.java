@@ -26,6 +26,7 @@ public enum ActionManager {
 
     static Logger logger = LogManager.getLogger("Crabs.Actions");
     private final Map<String, Action> actions = new HashMap<>();
+    private final Map<String, Action> actionStubs = new HashMap<>();
     private final Multimap<Action.Type, Action> typeToActionStubs = LinkedHashMultimap.create();
     private boolean shouldSync = false;
 
@@ -44,14 +45,19 @@ public enum ActionManager {
         return actions.get(name);
     }
 
+    public Action lookupStub(String name) {
+        return actionStubs.get(name);
+    }
+
     public void onReceiveActionSignatures(Collection<String> signatures) {
         logger.info("Got {} Crabs actions!", signatures.size());
+        actionStubs.clear();
         typeToActionStubs.clear();
         try {
             for (String sig : signatures) {
-                final String[] parts = sig.split("/");
-                final Action.Type type = Action.Type.valueOf(parts[2].toUpperCase());
-                typeToActionStubs.put(type, new Action(parts[0], parts[1], type));
+                final Action act = new Action(sig);
+                actionStubs.put(act.name, act);
+                typeToActionStubs.put(act.type, act);
             }
         } catch (Exception e) {
             logger.error("Failed to sync remote actions! Cause: {}", e.getMessage());

@@ -49,7 +49,7 @@ public class ItemBattleStick extends Item {
     public boolean onLeftClickEntity(ItemStack stack, EntityPlayer player, Entity target) {
         // Обработка только на сервере
         // ЛКМ палкой по существу: со сником - сброс, без - добавление в битву
-        if (player.worldObj.isRemote || !(target instanceof EntityLivingBase)) return false;
+        if (player.worldObj.isRemote || !(target instanceof EntityLivingBase)) return true;
 
         final EntityLivingBase entity = (EntityLivingBase) target;
         final Context actor = ContextManager.INSTANCE.getOrCreateContext(entity);

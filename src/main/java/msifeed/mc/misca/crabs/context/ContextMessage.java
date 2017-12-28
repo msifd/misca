@@ -67,7 +67,7 @@ public class ContextMessage extends AbstractMessage<ContextMessage> {
                 final String puppetStr = readShortString(buf);
                 ctx.puppet = puppetStr.isEmpty() ? null : UUID.fromString(puppetStr);
                 final String actionStr = readShortString(buf);
-                ctx.action = actionStr.isEmpty() ? null : ActionManager.INSTANCE.lookup(actionStr);
+                ctx.action = actionStr.isEmpty() ? null : ActionManager.INSTANCE.lookupStub(actionStr);
                 ctx.modifier = buf.readInt();
                 ctx.described = buf.readBoolean();
                 final String targetStr = readShortString(buf);

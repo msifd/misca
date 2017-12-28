@@ -54,18 +54,7 @@ public enum ActionProvider {
     }
 
     private void saveDefault() {
-        final Action point_hit = new Action("point_hit", ".point_hit", Action.Type.MELEE);
-        Collections.addAll(point_hit.modifiers,
-                Rules.mod("g30+"),
-                Rules.mod("str"),
-                Rules.mod("per"),
-                Rules.mod("int"),
-                Rules.mod("-5"));
-        Collections.addAll(point_hit.target_effects,
-                Rules.effect("damage"));
-
-        final List<Action> defaultActions = Lists.newArrayList(point_hit);
-
+        final List<Action> defaultActions = Lists.newArrayList();
         try {
             final String json = gson.toJson(defaultActions, contentType);
             Files.write(actionsFile.toPath(), json.getBytes(Charsets.UTF_8));
