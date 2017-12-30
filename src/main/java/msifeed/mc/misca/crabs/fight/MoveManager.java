@@ -31,6 +31,7 @@ public enum MoveManager {
         if (!actor.canSelectAction() || (actor.target == null && action.dealNoDamage())) return;
         actor.updateAction(action);
         actor.modifier = mod;
+        actor.described = false;
 
         ContextManager.INSTANCE.syncContext(actor);
     }
@@ -52,6 +53,8 @@ public enum MoveManager {
             actor.target = target.uuid;
             actor.updateStatus(Context.Status.DEAL_DAMAGE);
             target.target = actor.uuid;
+
+            ContextManager.INSTANCE.syncContext(target);
         }
 
         // TODO ограничение на скорость ударов (при текущей отмене урона они не ограничиваются)
@@ -91,11 +94,12 @@ public enum MoveManager {
     }
 
     public void finalizeMoves() {
-        for (Move m : completeMoves) finalizeMove(m.attacker, m.defender);
-        completeMoves.clear();
+        completeMoves.removeIf(m -> finalizeMove(m.attacker, m.defender));
     }
 
-    private void finalizeMove(Context attackCtx, Context defenceCtx) {
+    private boolean finalizeMove(Context attackCtx, Context defenceCtx) {
+        if (attackCtx.action == null || defenceCtx.action == null) return false;
+
         // 1. Изначально выполняются действия обоих бойцов
         // 2. Если фаталити, то действие защищающегося - это "ничего" (присваивается еще при атаке)
         // 3. Если действие бойца отмечается как неудачное, то оно не выполняется (провал выстрела)
@@ -148,6 +152,8 @@ public enum MoveManager {
 
         ContextManager.INSTANCE.syncContext(attackCtx);
         ContextManager.INSTANCE.syncContext(defenceCtx);
+
+        return true;
     }
 
     private static void applyAction(Effect.Stage stage, ActionResult self, ActionResult target) {
