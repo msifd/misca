@@ -44,7 +44,6 @@ public class Context {
         updateStatus(status);
 
         puppet = null;
-        action = null;
         modifier = 0;
         described = false;
         target = null;

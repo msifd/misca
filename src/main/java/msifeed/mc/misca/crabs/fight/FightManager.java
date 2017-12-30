@@ -54,6 +54,7 @@ public enum FightManager {
             context.updateStatus(Context.Status.LEAVING);
             logger.info("{} is leaving fight", context.entity.getCommandSenderName());
         }
+        ContextManager.INSTANCE.unbindTargetToContext(context);
 
         ContextManager.INSTANCE.syncContext(context);
     }
@@ -96,11 +97,18 @@ public enum FightManager {
             case LEAVE:
                 leaveFight(context, false);
                 break;
-            case ACTION:
+            case ACTION: {
                 final Context actor = context == null || context.puppet == null ? context : ContextManager.INSTANCE.getContext(context.puppet);
                 if (actor != null)
                     MoveManager.INSTANCE.selectAction(actor, message.action, message.mod);
-                break;
+            }
+            break;
+            case MOD: {
+                final Context actor = context == null || context.puppet == null ? context : ContextManager.INSTANCE.getContext(context.puppet);
+                if (actor != null)
+                    MoveManager.INSTANCE.selectMod(actor, message.mod);
+            }
+            break;
             case CALC:
                 Rules.rollSingleStat(player, context, message.stat, message.mod);
                 break;

@@ -64,6 +64,8 @@ public class ContextMessage extends AbstractMessage<ContextMessage> {
             for (int j = 0; j < buffsSize; j++)
                 ctx.buffNames.add(readShortString(buf));
 
+            ctx.modifier = buf.readInt();
+
             if (ctx.status.isFighting()) {
                 final String puppetStr = readShortString(buf);
                 ctx.puppet = puppetStr.isEmpty() ? null : UUID.fromString(puppetStr);
@@ -73,7 +75,6 @@ public class ContextMessage extends AbstractMessage<ContextMessage> {
                                 ? ActionManager.INSTANCE.lookup(actionStr)
                                 : ActionManager.INSTANCE.lookupStub(actionStr)
                 );
-                ctx.modifier = buf.readInt();
                 ctx.described = buf.readBoolean();
                 final String targetStr = readShortString(buf);
                 ctx.target = targetStr.isEmpty() ? null : UUID.fromString(targetStr);
@@ -99,10 +100,11 @@ public class ContextMessage extends AbstractMessage<ContextMessage> {
             for (Buff b : ctx.buffs)
                 writeShortString(buf, b.toString());
 
+            buf.writeInt(ctx.modifier); // Вне боя т.к. броски на стату этого не требуют
+
             if (ctx.status.isFighting()) {
                 writeShortString(buf, ctx.puppet == null ? "" : ctx.puppet.toString());
                 writeShortString(buf, ctx.action == null ? "" : ctx.action.name);
-                buf.writeInt(ctx.modifier);
                 buf.writeBoolean(ctx.described);
                 writeShortString(buf, ctx.target == null ? "" : ctx.target.toString());
                 buf.writeFloat(ctx.damageDealt);

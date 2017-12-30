@@ -48,6 +48,10 @@ public class MouseTracker {
         return clickStatus == ClickStatus.PRESS;
     }
 
+    public static boolean pressedAnyway() {
+        return Mouse.isButtonDown(0);
+    }
+
     public static boolean released() {
         return clickStatus == ClickStatus.RELEASE;
     }

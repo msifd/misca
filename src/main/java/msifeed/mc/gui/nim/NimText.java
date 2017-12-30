@@ -13,20 +13,26 @@ import net.minecraft.util.ChatAllowedCharacters;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.util.Point;
 
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 public class NimText extends NimPart {
     private static final int MS_TO_REPEAT = 500;
     public Function<String, Boolean> validateText = s -> true;
+    public Consumer<String> onUnfocus = s -> {};
     public boolean centerByWidth = false;
+
     protected ImStyle st = ImStyle.DEFAULT;
     protected String text = "";
+
     private int cursor = 0;
     private int scrollOffset = 0;
     private int frameCounter = 0; // For cursor blinking
 
     private int pressedKey = -1;
     private long pressedTime = 0; // For key repeating
+
+    private boolean wasInFocus; // For onUnfocus event
 
     public NimText() {
         this(70);
@@ -58,7 +64,7 @@ public class NimText extends NimPart {
             final String strBeforeCursor = imLabel.font.trimStringToWidth(strScrolled, curX, false);
             setCursor(strBeforeCursor.length() + scrollOffset);
         }
-        if (inFocus() && (KeyTracker.isPressed(Keyboard.KEY_ESCAPE) || !inRect && MouseTracker.pressed())) {
+        if (inFocus() && (KeyTracker.isPressed(Keyboard.KEY_ESCAPE) || !inRect && MouseTracker.pressedAnyway())) {
             releaseFocus();
         }
 
@@ -92,6 +98,11 @@ public class NimText extends NimPart {
         checkKeyEvent();
 
         profiler.endSection();
+
+        final boolean focusLoosed = inFocus() != wasInFocus;
+        if (focusLoosed)
+            onUnfocus.accept(text);
+        wasInFocus = inFocus();
     }
 
     public void checkKeyEvent() {

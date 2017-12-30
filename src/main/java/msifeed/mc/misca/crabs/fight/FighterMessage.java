@@ -33,6 +33,11 @@ public class FighterMessage extends AbstractMessage<FighterMessage> {
         this.stat = stat;
     }
 
+    public FighterMessage(int mod) {
+        this.type = Type.MOD;
+        this.mod = mod;
+    }
+
     @Override
     public void fromBytes(ByteBuf buf) {
         type = Type.values()[buf.readByte()];
@@ -41,6 +46,9 @@ public class FighterMessage extends AbstractMessage<FighterMessage> {
                 mod = buf.readInt();
                 final String name = readShortString(buf);
                 action = ActionManager.INSTANCE.lookup(name);
+                break;
+            case MOD:
+                mod = buf.readInt();
                 break;
             case CALC:
                 mod = buf.readInt();
@@ -58,6 +66,9 @@ public class FighterMessage extends AbstractMessage<FighterMessage> {
                 buf.writeInt(mod);
                 writeShortString(buf, actionName);
                 break;
+            case MOD:
+                buf.writeInt(mod);
+                break;
             case CALC:
                 buf.writeInt(mod);
                 buf.writeByte(stat.ordinal());
@@ -72,6 +83,6 @@ public class FighterMessage extends AbstractMessage<FighterMessage> {
     }
 
     public enum Type {
-        JOIN, ACTION, CALC, LEAVE
+        JOIN, ACTION, MOD, CALC, LEAVE
     }
 }

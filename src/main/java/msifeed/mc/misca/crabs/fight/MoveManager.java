@@ -31,7 +31,14 @@ public enum MoveManager {
         if (!actor.canSelectAction() || (actor.target == null && action.dealNoDamage())) return;
         actor.updateAction(action);
         actor.modifier = mod;
-        actor.described = false;
+
+        ContextManager.INSTANCE.syncContext(actor);
+    }
+
+    public void selectMod(Context actor, int mod) {
+        // Изменять мод. можно также только при защите
+        if (!actor.canSelectAction()) return;
+        actor.modifier = mod;
 
         ContextManager.INSTANCE.syncContext(actor);
     }
@@ -79,7 +86,8 @@ public enum MoveManager {
             final Context target = ContextManager.INSTANCE.getContext(actor.target);
             if (target.knockedOut) {
                 // Добивать можно без подтверждения
-                target.action = Action.ACTION_NONE;
+                target.updateAction(Action.ACTION_NONE);
+                target.described = true;
                 move.defender = target;
                 completeMoves.add(move);
             } else {

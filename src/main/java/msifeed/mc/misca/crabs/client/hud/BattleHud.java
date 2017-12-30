@@ -24,6 +24,7 @@ public class BattleHud extends AbstractHudWindow {
     private final NimWindow battleWindow = new NimWindow(MiscaUtils.l10n("misca.crabs.battle"), () -> HudManager.INSTANCE.closeHud(INSTANCE));
     private final NimText modText = new NimText(20);
 
+    Context context = null;
     private boolean diceRollMode = false;
     private Action.Type currActionTab = Action.Type.MELEE;
 
@@ -31,6 +32,12 @@ public class BattleHud extends AbstractHudWindow {
 
     private BattleHud() {
         modText.validateText = s -> s.matches("-?\\d{0,3}");
+        modText.onUnfocus = s -> {
+            if (context == null) return;
+            final int mod = getModifierInput();
+            if (mod != context.modifier)
+                CrabsNetwork.INSTANCE.sendToServer(new FighterMessage(mod));
+        };
     }
 
     @Override
@@ -51,7 +58,7 @@ public class BattleHud extends AbstractHudWindow {
         final Minecraft mc = Minecraft.getMinecraft();
         final EntityPlayer player = mc.thePlayer;
         final ContextManager cm = ContextManager.INSTANCE;
-        final Context context = cm.getContext(player.getUniqueID());
+        context = cm.getContext(player.getUniqueID());
 
         final boolean isFighting = context != null && context.status.isFighting();
 
