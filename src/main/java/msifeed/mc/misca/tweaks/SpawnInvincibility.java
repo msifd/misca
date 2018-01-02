@@ -7,6 +7,7 @@ import net.minecraft.util.ChunkCoordinates;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
+import net.minecraftforge.event.entity.living.LivingHurtEvent;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -25,6 +26,16 @@ public class SpawnInvincibility {
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onAttack(LivingAttackEvent event) {
+        if (!(event.entity instanceof EntityPlayer)) {
+            return;
+        }
+        if (ignoredPlayers.containsKey(event.entity)) {
+            event.setCanceled(true);
+        }
+    }
+
+    @SubscribeEvent(priority = EventPriority.HIGHEST)
+    public void onHurt(LivingHurtEvent event) {
         if (!(event.entity instanceof EntityPlayer)) {
             return;
         }
