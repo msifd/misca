@@ -27,10 +27,15 @@ public enum MoveManager {
     private ArrayList<Move> completeMoves = new ArrayList<>();
 
     public void selectAction(Context actor, Action action, int mod) {
-        // Выбирать пассивные действия можно только при защите
-        if (!actor.canSelectAction() || (actor.target == null && action.dealNoDamage())) return;
-        actor.updateAction(action);
-        actor.modifier = mod;
+        // Сбрасывать можно всегда
+        if (actor.action != null && actor.action.name.equals(action.name)) {
+            actor.updateAction(null);
+        } else {
+            // Выбирать пассивные действия можно только при защите
+            if (!actor.canSelectAction() || (actor.target == null && action.dealNoDamage())) return;
+            actor.updateAction(action);
+            actor.modifier = mod;
+        }
 
         ContextManager.INSTANCE.syncContext(actor);
     }
@@ -44,14 +49,16 @@ public enum MoveManager {
     }
 
     public void describeAction(Context actor) {
-        if (actor.action == null) return;
+        if (!actor.canSelectAction() && actor.action == null) return;
 
         actor.described = true;
 
         // Действия не требующие атаки завершаются сразу после отписи
-        if (actor.action.dealNoDamage()) {
+        if (actor.target != null && actor.action.dealNoDamage()) {
             stopDealingDamage(actor);
         }
+
+        ContextManager.INSTANCE.syncContext(actor);
     }
 
     public void dealDamage(Context actor, Context target, EntityDamageSource damageSource, float amount) {

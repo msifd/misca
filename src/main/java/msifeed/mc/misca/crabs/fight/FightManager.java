@@ -60,8 +60,9 @@ public enum FightManager {
     }
 
     private void removeFromFight(Context context) {
-        context.updateStatus(Context.Status.NEUTRAL);
         ContextManager.INSTANCE.unbindTargetToContext(context);
+        context.softReset(Context.Status.NEUTRAL);
+
         ContextManager.INSTANCE.syncContext(context);
         logger.info("{} removed from the fight", context.entity.getCommandSenderName());
     }
@@ -191,11 +192,7 @@ public enum FightManager {
         final Context ctx = ContextManager.INSTANCE.getContext(event.player.getUniqueID());
         if (ctx == null) return;
 
-//        final int words = event.message.split("\\s+").length;
-//        if (words < BattleDefines.MIN_WORDS_IN_ACTION_DESC) return;
-
         final Context actor = ctx.puppet == null ? ctx : ContextManager.INSTANCE.getContext(ctx.puppet);
         MoveManager.INSTANCE.describeAction(actor);
-        ContextManager.INSTANCE.syncContext(actor);
     }
 }

@@ -62,6 +62,7 @@ public enum ContextManager {
     }
 
     public void syncContext(Context ctx) {
+        if (ctx == null) return;
         toSync.add(ctx);
     }
 

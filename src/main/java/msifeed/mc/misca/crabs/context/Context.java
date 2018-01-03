@@ -44,6 +44,7 @@ public class Context {
         updateStatus(status);
 
         puppet = null;
+        action = null;
         modifier = 0;
         described = false;
         target = null;
@@ -66,6 +67,7 @@ public class Context {
     public void updateAction(Action action) {
         this.action = action;
         this.described = false;
+        this.damageDealt = 0;
     }
 
     public boolean canSelectAction() {
