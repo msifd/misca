@@ -21,7 +21,7 @@ public class Tweaks {
     private DeathToll deathToll = new DeathToll();
     private HealthNotification healthNotification = new HealthNotification();
     private BanEntities banEntities = new BanEntities();
-    private FoodSupplier foodSupplier = new FoodSupplier();
+    private HungerClamper hungerClamper = new HungerClamper();
     private DRM drm = new DRM();
 
     public void preInit(FMLPreInitializationEvent event) {
@@ -33,7 +33,7 @@ public class Tweaks {
         MinecraftForge.EVENT_BUS.register(deathToll);
         MinecraftForge.EVENT_BUS.register(healthNotification);
         MinecraftForge.EVENT_BUS.register(banEntities);
-        MinecraftForge.EVENT_BUS.register(foodSupplier);
+        MinecraftForge.EVENT_BUS.register(hungerClamper);
         FMLCommonHandler.instance().bus().register(drm);
 
         if (event.getSide().isServer()) {
