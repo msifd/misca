@@ -63,7 +63,7 @@ public final class MoveFormatter {
                 + "] "
                 + stat.toString()
                 + ": ["
-                + diceRankColor(DiceMath.DiceRank.of(roll))
+                + diceRankColor(DiceMath.DiceRank.ofD15(roll))
                 + roll
                 + "\u00A76]+\u00A7r"
                 + statValue;

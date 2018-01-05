@@ -17,7 +17,8 @@ public class DiceTest {
         java.util.stream.IntStream.range(0, total)
 //                .map(i -> (int) Math.floor(gauss(4.5, 1, 21))) // fight roll
 //                .map(i -> (int) Math.round(gauss(4.5, 1, 21) / 2.)) // stat roll
-                .map(i -> DiceMath.g30())
+                .map(i -> DiceMath.g15())
+//                .map(i -> DiceMath.g30())
 //                .map(i -> DiceMath.g30_plus())
                 .boxed()
                 .collect(Collectors.groupingBy(Function.identity(), TreeMap::new, Collectors.counting()))

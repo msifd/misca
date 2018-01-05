@@ -130,7 +130,7 @@ public final class Rules {
             return;
         }
 
-        final int roll = DiceMath.g30();
+        final int roll = DiceMath.g15();
         final String msg = MoveFormatter.formatStatRoll(c, stat, roll, mod);
         MiscaUtils.notifyAround(
                 player, BattleDefines.NOTIFICATION_RADIUS,
