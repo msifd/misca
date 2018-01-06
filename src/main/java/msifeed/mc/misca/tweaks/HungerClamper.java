@@ -13,8 +13,11 @@ public class HungerClamper {
         if (!(event.entityLiving instanceof EntityPlayer)) return;
         final FoodStats stats = ((EntityPlayer) event.entityLiving).getFoodStats();
         final int currLevel = stats.getFoodLevel();
-        final int targetLevel = MathHelper.clamp_int(currLevel, 1, 19);
-        if (currLevel != targetLevel)
-            stats.setFoodLevel(targetLevel);
+        if (currLevel > 19) stats.addStats(-1, 0);
+        else if (currLevel < 1) stats.addStats(1, 0);
+            
+//        final int targetLevel = MathHelper.clamp_int(currLevel, 1, 19);
+//        if (currLevel != targetLevel)
+//            stats.addStats(targetLevel - currLevel, 0);
     }
 }
