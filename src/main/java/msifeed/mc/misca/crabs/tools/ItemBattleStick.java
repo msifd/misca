@@ -23,7 +23,7 @@ public class ItemBattleStick extends Item {
     public ItemBattleStick() {
         setUnlocalizedName("battle_stick");
         setTextureName("blaze_rod");
-        setCreativeTab(MiscaThings.tab);
+        setCreativeTab(MiscaThings.itemsTab);
         setMaxStackSize(1);
         setFull3D();
     }

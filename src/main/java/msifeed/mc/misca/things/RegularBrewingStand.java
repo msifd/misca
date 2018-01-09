@@ -8,7 +8,7 @@ public class RegularBrewingStand extends BlockBrewingStand {
     RegularBrewingStand(int index) {
         setBlockName(NAME_BASE + index);
         setBlockTextureName("misca:" + NAME_BASE + index);
-        setCreativeTab(MiscaThings.tab);
+        setCreativeTab(MiscaThings.blocksTab);
 
         setLightOpacity(255);
         setHardness(2);

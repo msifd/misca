@@ -9,8 +9,8 @@ import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 
 public class MiscaThings {
-    public static final MiscaCreativeTab tab = new MiscaCreativeTab();
-    public static final MisochkaCreativeTab itemTab = new MisochkaCreativeTab();
+    public static final MiscaCreativeTab blocksTab = new MiscaCreativeTab("misca.blocks");
+    public static final MiscaCreativeTab itemsTab = new MiscaCreativeTab("misca.items");
 
     public static CustomWeapon customWeapon;
     public static CustomFood customFood;
@@ -33,32 +33,54 @@ public class MiscaThings {
             GameRegistry.registerItem(door.item, id_base + "item_" + i);
         }
 
-        for (int i = 1; i <= 65; i++) {
+        for (int i = 1; i <= 85; i++) {
             String name_base = "misca_block_";
             RegularBlock block = new RegularBlock(name_base, i);
             block.setResistance(10);
             GameRegistry.registerBlock(block, name_base + i);
         }
 
-        for (int i = 1; i <= 4; i++) {
+        for (int i = 1; i <= 5; i++) {
             String name_base = "misca_block_ub_";
-            RegularBlock block = new RegularBlock(name_base, i);
-            block.setBlockUnbreakable().setResistance(6000000.0F);
+            final RegularBlock block = new RegularBlock(name_base, i);
+            block.setBlockUnbreakable().setResistance(6000000);
             GameRegistry.registerBlock(block, name_base + i);
+
+            registerSlabAndStairsFor(block, -1, 6000000);
         }
 
         for (int i = 1; i <= 30; i++) {
             String name_base = "misca_block_wool_";
-            RegularBlock block = new RegularBlock(name_base, i);
+            final RegularBlock block = new RegularBlock(name_base, i);
             block.setStepSound(Block.soundTypeCloth).setHardness(0.8F);
             GameRegistry.registerBlock(block, name_base + i);
+
+            registerSlabAndStairsFor(block, 0.8f, 0);
         }
 
-        for (int i = 1; i <= 40; i++) {
+        for (int i = 1; i <= 16; i++) {
+            String name_base = "misca_block_clay_";
+            RegularBlock block = new RegularBlock(name_base, i);
+            block.setStepSound(Block.soundTypeGravel).setHardness(0.6F);
+            GameRegistry.registerBlock(block, name_base + i);
+
+            registerSlabAndStairsFor(block, 0.6f, 0);
+        }
+
+        for (int i = 1; i <= 30; i++) {
+            String name_base = "misca_block_plank_";
+            RegularBlock block = new RegularBlock(name_base, i);
+            block.setHardness(2.0F).setResistance(5.0F).setStepSound(Block.soundTypeWood);
+            GameRegistry.registerBlock(block, name_base + i);
+
+            registerSlabAndStairsFor(block, 2,5);
+        }
+
+        for (int i = 1; i <= 50; i++) {
             GameRegistry.registerBlock(new RegularPillar(i), RegularPillar.NAME_BASE + i);
         }
 
-        for (int i = 1; i <= 40; i++) {
+        for (int i = 1; i <= 50; i++) {
             String name_base = "misca_barrel_";
             GameRegistry.registerBlock(new RegularBarrel(name_base, i), name_base + i);
         }
@@ -123,11 +145,30 @@ public class MiscaThings {
             GameRegistry.registerBlock(block, id_base + i);
         }
 
-        customWeapon = new CustomWeapon(itemTab);
-        customFood = new CustomFood(itemTab);
-        miscellaneous = new Miscellaneous(itemTab);
+        customWeapon = new CustomWeapon(itemsTab);
+        customFood = new CustomFood(itemsTab);
+        miscellaneous = new Miscellaneous(itemsTab);
 
         GameRegistry.registerBlock(new TransparentBlock(), TransparentBlock.NAME_BASE);
         GameRegistry.registerBlock(new DripsBlock(), DripsBlock.NAME_BASE);
+    }
+
+    private void registerSlabAndStairsFor(Block block, float hardness, float resistance) {
+        final RegularSlab halfSlab = new RegularSlab(block, false);
+        final RegularSlab doubleSlab = new RegularSlab(block, true);
+        halfSlab.setHardness(hardness);
+        doubleSlab.setHardness(hardness);
+        if (resistance > 0) {
+            halfSlab.setResistance(resistance);
+            doubleSlab.setResistance(resistance);
+        }
+//        final RegularSlab.Item slabItem = new RegularSlab.Item(halfSlab, doubleSlab);
+
+        GameRegistry.registerBlock(halfSlab, RegularSlab.Item.class, halfSlab.getName(), halfSlab, doubleSlab);
+        GameRegistry.registerBlock(doubleSlab, doubleSlab.getName());
+
+        final RegularStairs stairs = new RegularStairs(block, 0);
+
+        GameRegistry.registerBlock(stairs, stairs.getName());
     }
 }

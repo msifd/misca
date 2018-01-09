@@ -14,7 +14,7 @@ public class RegularBarrel extends Block {
 
         setBlockName(name_base + index);
         setBlockTextureName("misca:" + name_base + index);
-        setCreativeTab(MiscaThings.tab);
+        setCreativeTab(MiscaThings.blocksTab);
 
         setHardness(2);
         setResistance(10);

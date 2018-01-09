@@ -1,4 +1,5 @@
-itemGroup.misca=Миска
+itemGroup.misca.blocks=Миска блоки
+itemGroup.misca.items=Миска предметы
 
 key.misca=Misca
 key.misca.char=Characters

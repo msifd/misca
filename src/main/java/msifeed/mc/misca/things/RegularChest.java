@@ -15,7 +15,7 @@ public class RegularChest extends BlockChest {
         this.index = index;
 
         setBlockName(NAME_BASE + index);
-        setCreativeTab(MiscaThings.tab);
+        setCreativeTab(MiscaThings.blocksTab);
 
         setHardness(2.5F);
         setStepSound(soundTypeWood);

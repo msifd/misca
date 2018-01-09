@@ -9,7 +9,7 @@ class RegularBlock extends Block {
 
         setBlockName(base_name + index);
         setBlockTextureName("misca:" + base_name + index);
-        setCreativeTab(MiscaThings.tab);
+        setCreativeTab(MiscaThings.blocksTab);
 
         setHardness(2);
         setStepSound(soundTypePiston);

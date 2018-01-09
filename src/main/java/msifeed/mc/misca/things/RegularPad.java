@@ -9,7 +9,7 @@ class RegularPad extends Block {
 
         setBlockName(base_name + index);
         setBlockTextureName("misca:" + base_name + index);
-        setCreativeTab(MiscaThings.tab);
+        setCreativeTab(MiscaThings.blocksTab);
 
         float f = 0.5F;
         float f1 = 0.015625F;

@@ -9,7 +9,7 @@ public class RegularTrapdoor extends BlockTrapDoor {
 
         setBlockName(base_name + index);
         setBlockTextureName("misca:" + base_name + index);
-        setCreativeTab(MiscaThings.tab);
+        setCreativeTab(MiscaThings.blocksTab);
 
         disableStats();
         setHardness(3.0F);

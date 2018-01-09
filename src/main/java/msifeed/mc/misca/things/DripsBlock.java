@@ -17,7 +17,7 @@ public class DripsBlock extends Block {
         super(Material.rock);
 
         setBlockName(NAME_BASE);
-        setCreativeTab(MiscaThings.tab);
+        setCreativeTab(MiscaThings.blocksTab);
 
         setBlockBounds(0.2f, 0, 0.2f, 0.8f, 0.8f, 0.8f);
 

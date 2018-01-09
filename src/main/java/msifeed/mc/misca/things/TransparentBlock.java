@@ -13,7 +13,7 @@ public class TransparentBlock extends Block {
 
         setBlockName(NAME_BASE);
         setBlockTextureName("misca:" + NAME_BASE);
-        setCreativeTab(MiscaThings.tab);
+        setCreativeTab(MiscaThings.blocksTab);
     }
 
     @Override

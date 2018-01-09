@@ -15,8 +15,8 @@ import java.util.List;
 public class MiscaCreativeTab extends CreativeTabs {
     private ArrayList<ItemStack> cache = new ArrayList<>();
 
-    public MiscaCreativeTab() {
-        super("misca");
+    public MiscaCreativeTab(String name) {
+        super(name);
     }
 
     @Override

@@ -21,7 +21,7 @@ public class ItemCharSheet extends Item {
     public ItemCharSheet() {
         setUnlocalizedName("char_sheet");
         setTextureName("paper");
-        setCreativeTab(MiscaThings.tab);
+        setCreativeTab(MiscaThings.itemsTab);
         setMaxStackSize(1);
     }
 
