@@ -61,7 +61,7 @@ public enum MoveManager {
         ContextManager.INSTANCE.syncContext(actor);
     }
 
-    public void dealDamage(Context actor, Context target, EntityDamageSource damageSource, float amount) {
+    public void dealDamage(Context actor, Context target, float amount) {
         // Первый удар
         if (actor.status == Context.Status.ACTIVE) {
             actor.target = target.uuid;

@@ -12,9 +12,10 @@ import msifeed.mc.misca.crabs.rules.Rules;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.util.EntityDamageSource;
+import net.minecraft.util.DamageSource;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.ServerChatEvent;
+import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import org.apache.logging.log4j.LogManager;
@@ -116,7 +117,6 @@ public enum FightManager {
         }
     }
 
-    // TODO добавить паузы между проверками
     @SubscribeEvent
     public void onEntityTick(LivingEvent.LivingUpdateEvent event) {
         final Context ctx = ContextManager.INSTANCE.getContext(event.entityLiving);
@@ -127,6 +127,10 @@ public enum FightManager {
             ctx.knockedOut = false;
             ContextManager.INSTANCE.syncContext(ctx);
         }
+
+        // Тушим воспламенившихся игроков
+        if (event.entityLiving.isBurning())
+            event.entityLiving.extinguish();
 
         final long now = System.currentTimeMillis() / 1000;
         final long statusAge = now - ctx.lastStatusChange;
@@ -143,20 +147,22 @@ public enum FightManager {
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public void onDamage(LivingHurtEvent event) {
-        if (!(event.source instanceof EntityDamageSource)) return;
-
-        final EntityDamageSource damage = (EntityDamageSource) event.source;
+        final DamageSource damageSource = event.source;
 
         // Пришел урон по результатам хода
-        if (damage instanceof CrabsDamage) return;
+        if (damageSource instanceof CrabsDamage) return;
 
-        // Умываем руки если никто не атаковал
-        if (damage.getEntity() == null) return;
-
-        final Context attacker = ContextManager.INSTANCE.getContext((EntityLivingBase) damage.getEntity());
         final Context target = ContextManager.INSTANCE.getContext(event.entityLiving);
-        final boolean attackerFighting = attacker != null && attacker.status.isFighting();
         final boolean targetFighting = target != null && target.status.isFighting();
+
+        // Если урон ничейный, а цель в бою, то отменяем урон, а если не в бою, то не отменяем
+        if (damageSource.getEntity() == null) {
+            if (targetFighting) event.setCanceled(true);
+            return;
+        }
+
+        final Context attacker = ContextManager.INSTANCE.getContext((EntityLivingBase) damageSource.getEntity());
+        final boolean attackerFighting = attacker != null && attacker.status.isFighting();
 
         // Механ, если оба не сражаются через крабс
         if (!attackerFighting && !targetFighting) return;
@@ -182,7 +188,7 @@ public enum FightManager {
         // После того как цель определена можно атаковать только её
         if (actor.target != null && !actor.target.equals(target.uuid)) return;
 
-        MoveManager.INSTANCE.dealDamage(actor, target, damage, event.ammount);
+        MoveManager.INSTANCE.dealDamage(actor, target, event.ammount);
     }
 
     @SubscribeEvent
