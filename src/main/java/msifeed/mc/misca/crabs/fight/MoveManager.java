@@ -49,7 +49,7 @@ public enum MoveManager {
     }
 
     public void describeAction(Context actor) {
-        if (!actor.canSelectAction() && actor.action == null) return;
+        if (!actor.canSelectAction() || actor.action == null) return;
 
         actor.described = true;
 
