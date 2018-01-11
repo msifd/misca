@@ -1,5 +1,7 @@
 package msifeed.mc.gui.im;
 
+import msifeed.mc.gui.ImStyle;
+import msifeed.mc.gui.NimGui;
 import msifeed.mc.gui.font.FontFactory;
 import net.minecraft.client.Minecraft;
 import net.minecraft.profiler.Profiler;
@@ -8,17 +10,22 @@ import thvortex.betterfonts.StringCache;
 public class ImLabel {
     public StringCache font = FontFactory.fsexFont;
 
-    /**
-     * Draw label at pos
-     *
-     * @return width
-     */
     public int label(String label, int x, int y, int color, boolean shadow) {
-        Profiler profiler = Minecraft.getMinecraft().mcProfiler;
+        final Profiler profiler = Minecraft.getMinecraft().mcProfiler;
         profiler.startSection("ImLabel");
         final int width = font.renderString(label, x, y - 1, 0.01, color, shadow); // y - 1 slightly fixes ypos
         profiler.endSection();
         return width;
+    }
+
+    /**
+     * Draw default label at pos
+     *
+     * @return width
+     */
+    public int label(String label, int x, int y) {
+        final ImStyle st = NimGui.INSTANCE.imStyle;
+        return label(label, x, y, st.labelColor, false);
     }
 
     /**

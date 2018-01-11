@@ -5,10 +5,12 @@ import msifeed.mc.gui.NimGui;
 import msifeed.mc.gui.input.KeyTracker;
 import msifeed.mc.gui.input.MouseTracker;
 import msifeed.mc.gui.render.DrawPrimitives;
+import msifeed.mc.gui.render.ScalingHelper;
 import msifeed.mc.gui.render.TextureInfo;
 import net.minecraft.client.Minecraft;
 import net.minecraft.profiler.Profiler;
 import org.lwjgl.input.Keyboard;
+import org.lwjgl.opengl.Display;
 import org.lwjgl.util.Point;
 
 public class NimWindow {
@@ -33,6 +35,11 @@ public class NimWindow {
     public NimWindow(String title, Runnable onCrossBtn) {
         this.title = title;
         this.onCrossBtn = onCrossBtn;
+
+        pos.setLocation(
+                ScalingHelper.scaleWidth(Display.getWidth()) / 3,
+                ScalingHelper.scaleHeight(Display.getHeight()) / 3
+        );
     }
 
     public void begin() {
@@ -46,7 +53,6 @@ public class NimWindow {
     public void end() {
         final ImStyle st = NimGui.INSTANCE.imStyle;
         pushAlignmentBlock(Alignment.VERTICAL);
-//        size.translate(st.windowSpacing);
         renderWindow();
     }
 

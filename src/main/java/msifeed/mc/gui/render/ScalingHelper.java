@@ -32,7 +32,7 @@ public class ScalingHelper {
         return args;
     }
 
-    private static void checkFactor() {
+    public static void checkFactor() {
         final Minecraft mc = Minecraft.getMinecraft();
         if (mc.displayWidth == latestWidth && mc.displayHeight == latestHeight) return;
 

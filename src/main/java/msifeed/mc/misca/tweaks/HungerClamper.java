@@ -15,7 +15,7 @@ public class HungerClamper {
         final int currLevel = stats.getFoodLevel();
         if (currLevel > 19) stats.addStats(-1, 0);
         else if (currLevel < 1) stats.addStats(1, 0);
-            
+
 //        final int targetLevel = MathHelper.clamp_int(currLevel, 1, 19);
 //        if (currLevel != targetLevel)
 //            stats.addStats(targetLevel - currLevel, 0);

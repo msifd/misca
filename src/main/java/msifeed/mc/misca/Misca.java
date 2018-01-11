@@ -5,6 +5,8 @@ import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.SidedProxy;
 import cpw.mods.fml.common.event.*;
+import cpw.mods.fml.common.network.NetworkRegistry;
+import msifeed.mc.misca.books.RemoteBookManager;
 import msifeed.mc.misca.commands.CommandMiscaCommon;
 import msifeed.mc.misca.config.ConfigManager;
 import msifeed.mc.misca.crabs.Crabs;
@@ -12,12 +14,17 @@ import msifeed.mc.misca.database.DBHandler;
 import msifeed.mc.misca.things.MiscaThings;
 import msifeed.mc.misca.tweaks.Tweaks;
 import msifeed.mc.misca.tweaks.mining.MiningNerf;
+import msifeed.mc.misca.utils.MiscaGuiHandler;
+import msifeed.mc.misca.utils.MiscaNetwork;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 @Mod(modid = "misca", version = "@VERSION@")
 public class Misca {
     private static Logger logger = LogManager.getLogger("Misca");
+
+    @Mod.Instance
+    public static Misca INSTANCE;
 
     @SidedProxy(
             serverSide = "msifeed.mc.misca.crabs.Crabs",
@@ -40,6 +47,7 @@ public class Misca {
         crabs.preInit(event);
         tweaks.preInit(event);
         miningNerf.preInit(event);
+        RemoteBookManager.INSTANCE.preInit(event);
 
         if (FMLCommonHandler.instance().getSide().isServer()) {
             DBHandler.INSTANCE.onPreInit(event);
@@ -52,6 +60,10 @@ public class Misca {
         things.onInit(event);
         tweaks.onInit(event);
         miningNerf.onInit(event);
+        MiscaNetwork.INSTANCE.onInit();
+        RemoteBookManager.INSTANCE.init(event);
+
+        NetworkRegistry.INSTANCE.registerGuiHandler(INSTANCE, new MiscaGuiHandler());
     }
 
     @EventHandler
