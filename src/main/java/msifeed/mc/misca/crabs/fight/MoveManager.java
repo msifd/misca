@@ -249,11 +249,21 @@ public enum MoveManager {
         final EntityLivingBase enemyEntity = enemy.ctx.entity;
 
         final float currentHealth = selfEntity.getHealth();
-        final boolean isFatal = currentHealth <= self.damageToReceive;
-        final float damageToDeal = isFatal && !selfCtx.knockedOut ? currentHealth - 1.0f : self.damageToReceive;
+        final float armorValue = selfEntity.getTotalArmorValue();
+
+        final float maxArmorResist = 33; // Макс. резист урона броней ~60%.
+        final float armorThresholdMod = 0.3f;
+        final float minArmorThreshold = 0.4f; // Урон не может быть ниже 40% резистного урона
+
+        final float dr = (maxArmorResist - Math.min(armorValue, 20)) / maxArmorResist;
+        final float damageResisted = self.damageToReceive * dr;
+        final float damage = Math.round(Math.max(damageResisted - armorValue * armorThresholdMod, damageResisted * minArmorThreshold));
+
+        final boolean isFatal = currentHealth <= damage;
+        final float damageToHealth = isFatal && !selfCtx.knockedOut ? currentHealth - 1.0f : damage;
 
         if (isFatal) selfCtx.knockedOut = true;
-        selfEntity.setHealth(currentHealth - damageToDeal);
+        selfEntity.setHealth(currentHealth - damageToHealth);
         selfEntity.attackEntityFrom(new CrabsDamage(enemyEntity), Float.MIN_VALUE); // Нужно для визуального эффекта урона
 
         final float damageDealt = currentHealth - selfEntity.getHealth();
