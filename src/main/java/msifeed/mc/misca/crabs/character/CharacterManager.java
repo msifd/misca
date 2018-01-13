@@ -48,18 +48,17 @@ public enum CharacterManager {
 
         // Оповещаем спецслужбы...
         if (message.character.isPlayer) {
-            new Thread(() -> CharacterProvider.INSTANCE.logCharChange(sender, old, message.character)).start();
+            CharacterProvider.INSTANCE.logCharChange(sender, old, message.character);
         }
 
         uuidToChar.put(message.uuid, message.character);
 
         if (!message.character.isPlayer) return;
-        new Thread(() -> {
-            final Map<UUID, Character> players = new LinkedHashMap<>();
-            for (Map.Entry<UUID, Character> e : uuidToChar.entrySet())
-                if (e.getValue().isPlayer) players.put(e.getKey(), e.getValue());
-            CharacterProvider.INSTANCE.save(players);
-        }).start();
+
+        final Map<UUID, Character> players = new LinkedHashMap<>();
+        for (Map.Entry<UUID, Character> e : uuidToChar.entrySet())
+            if (e.getValue().isPlayer) players.put(e.getKey(), e.getValue());
+        CharacterProvider.INSTANCE.save(players);
     }
 
     @SideOnly(Side.CLIENT)

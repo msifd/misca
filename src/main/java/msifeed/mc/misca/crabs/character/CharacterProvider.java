@@ -6,6 +6,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.InstanceCreator;
 import com.google.gson.reflect.TypeToken;
 import msifeed.mc.misca.config.ConfigManager;
+import msifeed.mc.misca.database.DBHandler;
 import net.minecraft.entity.player.EntityPlayerMP;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -51,15 +52,19 @@ public enum CharacterProvider {
     public synchronized void logCharChange(EntityPlayerMP sender, Character old, Character fresh) {
         final String line = String.format("[%s] `%s` changed `%s` from (%s) to (%s)\n",
                 LocalDateTime.now().toString(), sender.getCommandSenderName(), fresh.name, old.compactStats(), fresh.compactStats());
-        try {
-            logger.info(line);
-            Files.write(charsLogFile.toPath(), line.getBytes(UTF_8), APPEND, CREATE);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+
+        logger.info(line);
+        DBHandler.INSTANCE.logMessage(sender, "stats_change", line);
+        new Thread(() -> {
+            try {
+                Files.write(charsLogFile.toPath(), line.getBytes(UTF_8), APPEND, CREATE);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }).start();
     }
 
-    public synchronized void save(Map<UUID, Character> chars) {
+    public void save(Map<UUID, Character> chars) {
         logger.info("Saving {} characters...", chars.size());
         try {
             final String json = gson.toJson(chars, contentType);
@@ -69,7 +74,7 @@ public enum CharacterProvider {
         }
     }
 
-    public synchronized Map<UUID, Character> load() {
+    public Map<UUID, Character> load() {
         if (charsFile.exists()) {
             logger.info("Loading characters...");
             try {

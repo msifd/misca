@@ -6,6 +6,7 @@ import msifeed.mc.misca.crabs.character.Stats;
 import msifeed.mc.misca.crabs.context.Context;
 import msifeed.mc.misca.crabs.fight.BattleDefines;
 import msifeed.mc.misca.crabs.fight.MoveFormatter;
+import msifeed.mc.misca.database.DBHandler;
 import msifeed.mc.misca.utils.MiscaUtils;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.ChatComponentText;
@@ -132,6 +133,8 @@ public final class Rules {
 
         final int roll = DiceMath.g15();
         final String msg = MoveFormatter.formatStatRoll(c, stat, roll, mod);
+
+        DBHandler.INSTANCE.logMessage(player, "crabs_roll", msg);
         MiscaUtils.notifyAround(
                 player, BattleDefines.NOTIFICATION_RADIUS,
                 new ChatComponentText(msg)

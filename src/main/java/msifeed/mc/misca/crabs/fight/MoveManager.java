@@ -6,8 +6,10 @@ import msifeed.mc.misca.crabs.context.ContextManager;
 import msifeed.mc.misca.crabs.rules.ActionResult;
 import msifeed.mc.misca.crabs.rules.Buff;
 import msifeed.mc.misca.crabs.rules.Effect;
+import msifeed.mc.misca.database.DBHandler;
 import msifeed.mc.misca.utils.MiscaUtils;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EntityDamageSource;
 import org.apache.logging.log4j.LogManager;
@@ -153,6 +155,11 @@ public enum MoveManager {
         final String resultMsg = isFatality && higherOne.actionSuccessful
                 ? MoveFormatter.formatFatalityResult(higherOne.ctx.entity, lowerOne.ctx.entity)
                 : MoveFormatter.formatActionResults(higherOne, lowerOne);
+
+        if (attackCtx.entity instanceof EntityPlayer)
+            DBHandler.INSTANCE.logMessage((EntityPlayer) attackCtx.entity, "crabs_move", resultMsg);
+        if (defenceCtx.entity instanceof EntityPlayer)
+            DBHandler.INSTANCE.logMessage((EntityPlayer) defenceCtx.entity, "crabs_move", resultMsg);
 
         MiscaUtils.notifyAround(
                 attackCtx.entity, defenceCtx.entity,
