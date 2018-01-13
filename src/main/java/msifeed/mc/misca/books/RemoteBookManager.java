@@ -6,6 +6,8 @@ import cpw.mods.fml.common.registry.GameRegistry;
 import msifeed.mc.misca.config.ConfigManager;
 import msifeed.mc.misca.utils.MiscaNetwork;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -20,7 +22,7 @@ public enum RemoteBookManager {
     INSTANCE;
 
     private Logger logger = LogManager.getLogger("Misca.Books");
-    private Consumer<String> fetchConsumer = null;
+    private Consumer<RemoteBook> fetchConsumer = null;
     private Consumer<Boolean> checkConsumer = null;
     private File booksDir;
 
@@ -37,11 +39,11 @@ public enum RemoteBookManager {
     /**
      * @return Прошел ли запрос. Нельзя запрашивать следующую книжку до прихода предыдущей.
      */
-    public boolean fetchBookText(String name, Consumer<String> consumer) {
+    public boolean fetchBook(String name, Consumer<RemoteBook> consumer) {
         if (fetchConsumer != null) return false;
 
         fetchConsumer = consumer;
-        MiscaNetwork.INSTANCE.sendToServer(new MessageRemoteBook(name, true));
+        MiscaNetwork.INSTANCE.sendToServer(new MessageRemoteBook(MessageRemoteBook.Type.REQUEST_RESPONSE, name));
         return true;
     }
 
@@ -49,16 +51,15 @@ public enum RemoteBookManager {
         if (checkConsumer != null) return;
 
         checkConsumer = consumer;
-        MiscaNetwork.INSTANCE.sendToServer(new MessageRemoteBook(name, true));
+        MiscaNetwork.INSTANCE.sendToServer(new MessageRemoteBook(MessageRemoteBook.Type.CHECK, name));
     }
 
-    public void receiveResponse(String text) {
+    public void receiveResponse(String rawBook) {
         if (fetchConsumer == null) return;
 
-        final Consumer<String> consumer = fetchConsumer;
+        final Consumer<RemoteBook> consumer = fetchConsumer;
         fetchConsumer = null;
-        consumer.accept(text);
-//        consumer.accept(RemoteBookParser.parse(text));
+        consumer.accept(RemoteBookParser.parse(rawBook));
     }
 
     public void receiveCheck(boolean check) {
@@ -86,7 +87,24 @@ public enum RemoteBookManager {
         }
     }
 
-    public void signBook(EntityPlayerMP player, RemoteBook.Style style, String name) {
+    public void signBook(EntityPlayerMP player, String name) {
+        final ItemStack heldItem = player.getHeldItem();
+        if (!(heldItem.getItem() instanceof ItemRemoteBook)) return;
 
+        final String rawBook = loadBook(name);
+        if (rawBook.isEmpty()) return;
+
+        final RemoteBook book = RemoteBookParser.parse(rawBook);
+
+        final NBTTagCompound tc = new NBTTagCompound();
+        tc.setString("name", name);
+        tc.setString("title", book.title);
+        tc.setString("style", book.style.toString());
+//        tc.setByte("style_ord", (byte) style.ordinal());
+        heldItem.setTagCompound(tc);
+
+        heldItem.setItemDamage(book.style.ordinal() + 1);
+
+        player.updateHeldItem();
     }
 }

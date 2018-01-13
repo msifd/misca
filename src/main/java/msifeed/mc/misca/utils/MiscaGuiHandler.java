@@ -21,11 +21,13 @@ public class MiscaGuiHandler implements IGuiHandler {
         switch (ID) {
             case GUI_REMOTE_BOOK:
                 final ItemStack itemStack = player.getHeldItem();
-                if (itemStack.getItem() instanceof ItemRemoteBook)
-                    return new GuiEditBook();
-//                    return new GuiReadBook(itemStack);
-                else
-                    return null;
+                if (itemStack.getItem() instanceof ItemRemoteBook) {
+                    if (itemStack.hasTagCompound())
+                        return new GuiReadBook(itemStack);
+                    else
+                        return new GuiEditBook();
+                }
+                break;
         }
 
         return null;

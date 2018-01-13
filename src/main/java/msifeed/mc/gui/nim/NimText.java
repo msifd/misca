@@ -12,6 +12,7 @@ import net.minecraft.profiler.Profiler;
 import net.minecraft.util.ChatAllowedCharacters;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.util.Point;
+import thvortex.betterfonts.StringCache;
 
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -51,6 +52,7 @@ public class NimText extends NimPart {
         frameCounter++;
 
         final ImLabel imLabel = NimGui.INSTANCE.imLabel;
+        final StringCache font = NimGui.INSTANCE.imStyle.labelFont;
         final Profiler profiler = Minecraft.getMinecraft().mcProfiler;
         profiler.startSection("NimText");
 
@@ -61,7 +63,7 @@ public class NimText extends NimPart {
             final Point pos = MouseTracker.pos();
             final int curX = pos.getX() - (x + st.textLabelOffsetX);
             final String strScrolled = text.substring(scrollOffset);
-            final String strBeforeCursor = imLabel.font.trimStringToWidth(strScrolled, curX, false);
+            final String strBeforeCursor = font.trimStringToWidth(strScrolled, curX, false);
             setCursor(strBeforeCursor.length() + scrollOffset);
         }
         if (inFocus() && (KeyTracker.isPressed(Keyboard.KEY_ESCAPE) || !inRect && MouseTracker.pressedAnyway())) {
@@ -77,7 +79,7 @@ public class NimText extends NimPart {
         }
 
         final int labelX = x + (centerByWidth
-                ? (width - NimGui.INSTANCE.imLabel.font.getStringWidth(text)) / 2
+                ? (width - font.getStringWidth(text)) / 2
                 : st.textLabelOffsetX);
 
         // Render text
@@ -89,7 +91,7 @@ public class NimText extends NimPart {
         // Render cursor
         if (inFocus() && frameCounter / 16 % 2 == 0) {
             final String beforeCurText = text.substring(scrollOffset, scrollOffset + cursor);
-            final int beforeCurTextLen = imLabel.font.getStringWidth(beforeCurText);
+            final int beforeCurTextLen = font.getStringWidth(beforeCurText);
             final int curX = labelX + beforeCurTextLen;
             final int curY = y + 1;
             DrawPrimitives.drawInvertedRect(curX, curY, posZ, 1, st.textCursorHeight, 0xFFFFFFFF);

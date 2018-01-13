@@ -54,7 +54,7 @@ public class GuiEditBook extends GuiScreen {
         }
 
         if (nimgui.button("Получить") && checkStatus == CheckStatus.EXISTS) {
-            MiscaNetwork.INSTANCE.sendToServer(new MessageRemoteBook(RemoteBook.Style.RICH_BOOK, nameInput.getText()));
+            MiscaNetwork.INSTANCE.sendToServer(new MessageRemoteBook(MessageRemoteBook.Type.SIGN, nameInput.getText()));
             closeGui();
         }
 

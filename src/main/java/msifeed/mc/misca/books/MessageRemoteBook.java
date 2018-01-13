@@ -8,10 +8,8 @@ import msifeed.mc.misca.utils.AbstractMessage;
 public class MessageRemoteBook extends AbstractMessage<MessageRemoteBook> {
     private Type type;
     private String text;
-    private RemoteBook.Style style = RemoteBook.Style.BOOK;
 
     public MessageRemoteBook() {
-        this.type = Type.CHECK;
     }
 
     public MessageRemoteBook(boolean check) {
@@ -19,33 +17,21 @@ public class MessageRemoteBook extends AbstractMessage<MessageRemoteBook> {
         this.text = check ? "y" : "n";
     }
 
-    public MessageRemoteBook(String text, boolean isCheck) {
-        this.type = isCheck ? Type.CHECK : Type.REQUEST_RESPONSE;
+    public MessageRemoteBook(Type type, String text) {
+        this.type = type;
         this.text = text;
-    }
-
-    public MessageRemoteBook(RemoteBook.Style style, String name) {
-        this.type = Type.SIGN;
-        this.style = style;
-        this.text = name;
     }
 
     @Override
     public void fromBytes(ByteBuf buf) {
         type = Type.values()[buf.readByte()];
         text = readString(buf);
-        if (type == Type.SIGN) {
-            style = RemoteBook.Style.valueOf(readShortString(buf));
-        }
     }
 
     @Override
     public void toBytes(ByteBuf buf) {
         buf.writeByte(type.ordinal());
         writeString(buf, text);
-        if (type == Type.SIGN) {
-            writeShortString(buf, style.toString());
-        }
     }
 
     @Override
@@ -55,10 +41,10 @@ public class MessageRemoteBook extends AbstractMessage<MessageRemoteBook> {
                 case CHECK:
                     return new MessageRemoteBook(RemoteBookManager.INSTANCE.checkBook(message.text));
                 case SIGN:
-                    RemoteBookManager.INSTANCE.signBook(ctx.getServerHandler().playerEntity, message.style, message.text);
+                    RemoteBookManager.INSTANCE.signBook(ctx.getServerHandler().playerEntity, message.text);
                     return null;
                 case REQUEST_RESPONSE:
-                    return new MessageRemoteBook(RemoteBookManager.INSTANCE.loadBook(message.text), false);
+                    return new MessageRemoteBook(Type.REQUEST_RESPONSE, RemoteBookManager.INSTANCE.loadBook(message.text));
             }
         } else {
             switch (message.type) {
@@ -73,7 +59,7 @@ public class MessageRemoteBook extends AbstractMessage<MessageRemoteBook> {
         return null;
     }
 
-    private enum Type {
+    public enum Type {
         CHECK, REQUEST_RESPONSE, SIGN
     }
 }

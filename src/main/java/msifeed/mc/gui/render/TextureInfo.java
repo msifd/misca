@@ -11,8 +11,12 @@ public class TextureInfo {
         this(res, u, v, 0, 0);
     }
 
-    public TextureInfo(String res, int u, int v, int width, int height) {
-        this.resource = new ResourceLocation(res);
+    public TextureInfo(String resLoc, int u, int v, int width, int height) {
+        this(new ResourceLocation(resLoc), u, v, width, height);
+    }
+
+    public TextureInfo(ResourceLocation res, int u, int v, int width, int height) {
+        this.resource = res;
         this.u = u;
         this.v = v;
         this.width = width;

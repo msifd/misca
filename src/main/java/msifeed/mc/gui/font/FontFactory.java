@@ -8,6 +8,7 @@ import java.io.InputStream;
 
 public class FontFactory {
     public static final StringCache fsexFont;
+    public static final StringCache carefreeFont;
     private static int[] colorCodes = new int[32];
 
     static {
@@ -30,17 +31,16 @@ public class FontFactory {
             colorCodes[i] = (k & 255) << 16 | (l & 255) << 8 | i1 & 255;
         }
 
-        fsexFont = FontFactory.createFsexFontRenderer();
+        // Fixedsys Excelsior 3
+        fsexFont = FontFactory.createFontRenderer("FSEX302_FIXED.ttf", 16, false);
+        carefreeFont = FontFactory.createFontRenderer("Carefree.ttf", 28, true);
     }
 
-    /**
-     * Fixedsys Excelsior 3
-     */
-    private static StringCache createFsexFontRenderer() {
+    private static StringCache createFontRenderer(String resourceName, int size, boolean antiAlias) {
         try {
-            final InputStream is = FontFactory.class.getResourceAsStream("FSEX302_FIXED.ttf");
+            final InputStream is = FontFactory.class.getResourceAsStream(resourceName);
             final Font font = Font.createFont(Font.TRUETYPE_FONT, is);
-            return createFontRenderer(font, 16, false);
+            return createFontRenderer(font, size, antiAlias);
         } catch (FontFormatException | IOException e) {
             e.printStackTrace();
         }

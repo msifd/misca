@@ -1,7 +1,9 @@
 package msifeed.mc.gui;
 
+import msifeed.mc.gui.font.FontFactory;
 import msifeed.mc.gui.render.TextureInfo;
 import org.lwjgl.util.Point;
+import thvortex.betterfonts.StringCache;
 
 public class ImStyle {
     public static final ImStyle DEFAULT = new ImStyle();
@@ -42,5 +44,6 @@ public class ImStyle {
     public TextureInfo buttonMiddleTexture = new TextureInfo(buttonTexture, 55, 0, 2, 12);
     public TextureInfo buttonRightTexture = new TextureInfo(buttonTexture, 58, 0, 4, 12);
 
+    public StringCache labelFont = FontFactory.fsexFont;
     public int labelColor = 0xFFf2c399;
 }

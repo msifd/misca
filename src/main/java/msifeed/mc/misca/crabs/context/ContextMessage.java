@@ -81,7 +81,9 @@ public class ContextMessage extends AbstractMessage<ContextMessage> {
                 ctx.damageDealt = buf.readFloat();
             }
 
-            contexts.add(ctx);
+            // К нам могут прилететь контексты для неизвестных энтити. Игнорим.
+            if (ctx.entity != null)
+                contexts.add(ctx);
         }
     }
 

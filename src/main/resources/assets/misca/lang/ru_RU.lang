@@ -10,6 +10,7 @@ item.battle_stick.name=Палка битвы
 item.battle_stick.desc=Воздействует на существо:\nЛКМ - выйти раз на раз\nShift+ЛКМ - уточнить мотивы бойца\nПКМ - переключение командования\nShift+ПКМ - отпустить покурить
 item.char_sheet.name=Чар листок
 item.char_sheet.desc=ПКМ по существу редактирует его характеристики
+item.remote_book.name=Шаблон книги
 
 death.attack.crabs=%1$s был убит в бою
 
