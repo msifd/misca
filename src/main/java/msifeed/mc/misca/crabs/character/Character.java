@@ -10,7 +10,7 @@ public class Character {
     public EnumMap<Stats, Integer> stats = new EnumMap<>(Stats.class);
     public HashSet<Buff> const_buffs = new HashSet<>();
 
-    public transient boolean isPlayer = false; // Используется только при сохранении стат, отсеивая не-игроков
+    public transient boolean isPlayer = true; // Используется только при сохранении стат, отсеивая не-игроков
 
     Character() {
     }

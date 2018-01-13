@@ -17,6 +17,7 @@ death.attack.crabs=%1$s был убит в бою
 misca.crabs.character=Персонаж:
 misca.crabs.update_char=Обновить персонажа
 misca.crabs.fill_all_stats=Заполни все поля!
+misca.crabs.cant_open_in_battle=Хар-ки нельзя изменять во время боя
 
 misca.crabs.battle=Бой
 misca.crabs.join_fight=Войти в бой

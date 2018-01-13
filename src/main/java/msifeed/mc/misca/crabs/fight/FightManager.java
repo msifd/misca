@@ -9,10 +9,13 @@ import msifeed.mc.misca.crabs.context.Context;
 import msifeed.mc.misca.crabs.context.ContextManager;
 import msifeed.mc.misca.crabs.context.ContextMessage;
 import msifeed.mc.misca.crabs.rules.Rules;
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.MinecraftError;
+import net.minecraftforge.common.ForgeHooks;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.ServerChatEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
@@ -118,6 +121,9 @@ public enum FightManager {
 
     @SubscribeEvent
     public void onEntityTick(LivingEvent.LivingUpdateEvent event) {
+        final FMLCommonHandler fml = FMLCommonHandler.instance();
+        if (fml.getSide().isClient() && !Minecraft.getMinecraft().isSingleplayer()) return;
+
         final Context ctx = ContextManager.INSTANCE.getContext(event.entityLiving);
         if (ctx == null) return;
 
@@ -146,6 +152,9 @@ public enum FightManager {
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public void onDamage(LivingHurtEvent event) {
+        final FMLCommonHandler fml = FMLCommonHandler.instance();
+        if (fml.getSide().isClient() && !Minecraft.getMinecraft().isSingleplayer()) return;
+
         final DamageSource damageSource = event.source;
 
         // Пришел урон по результатам хода
@@ -192,6 +201,9 @@ public enum FightManager {
 
     @SubscribeEvent
     public void onChatMessage(ServerChatEvent event) {
+        final FMLCommonHandler fml = FMLCommonHandler.instance();
+        if (fml.getSide().isClient() && !Minecraft.getMinecraft().isSingleplayer()) return;
+
         if (event.message.trim().isEmpty()) return;
 
         final Context ctx = ContextManager.INSTANCE.getContext(event.player.getUniqueID());

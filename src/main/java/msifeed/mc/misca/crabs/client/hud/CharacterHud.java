@@ -13,9 +13,11 @@ import msifeed.mc.misca.crabs.context.ContextManager;
 import msifeed.mc.misca.utils.EntityUtils;
 import msifeed.mc.misca.utils.MiscaUtils;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.ChatComponentText;
 
 import java.util.UUID;
 import java.util.function.Function;
@@ -45,7 +47,7 @@ public class CharacterHud extends AbstractHudWindow {
         this.entity = entity;
         this.entityUuid = EntityUtils.getUuid(entity);
         this.character = null; // Сбрасываем перед запросом
-        this.window.title = MiscaUtils.l10n("misca.crabs.character") + ' ' + entity.getCommandSenderName();
+        this.window.title = I18n.format("misca.crabs.character") + ' ' + entity.getCommandSenderName();
 
         // Просим чара, после чего заполняем поля для ввода
         CharacterManager.INSTANCE.fetch(entityUuid, c -> {
@@ -87,6 +89,7 @@ public class CharacterHud extends AbstractHudWindow {
         final EntityPlayer player = Minecraft.getMinecraft().thePlayer;
         if (context == null || (entity == player && context.status.isFighting())) {
             HudManager.INSTANCE.closeHud(INSTANCE);
+            player.addChatMessage(new ChatComponentText(I18n.format("misca.crabs.cant_open_in_battle")));
             return;
         }
 
