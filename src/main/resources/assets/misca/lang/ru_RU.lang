@@ -82,7 +82,12 @@ misca.health_note.wound=получил рану
 misca.health_note.injury=получил травму
 misca.health_note.dying=при смерти
 
-itemGroup.misca_items=Миска - вещички
+misca.books.editor.title=Букинист
+misca.books.editor.index=Учетный номер:
+misca.books.editor.the_book=Такая книга
+misca.books.editor.missing=отсутствует.
+misca.books.editor.exists=есть в наличии.
+misca.books.editor.get=Получить
 
 item.misc_1.name=misc_1
 item.misc_2.name=misc_2

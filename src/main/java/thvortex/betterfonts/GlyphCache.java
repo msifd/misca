@@ -52,16 +52,16 @@ public class GlyphCache
      * The width in pixels of every texture used for caching pre-rendered glyph images. Used by GlyphCache when calculating
      * floating point 0.0-1.0 texture coordinates. Must be a power of two for mip-mapping to work.
      */
-    private static final int TEXTURE_WIDTH = 256;
+    private static final int TEXTURE_WIDTH = 512;
 
     /**
      * The height in pixels of every texture used for caching pre-rendered glyph images. Used by GlyphCache when calculating
      * floating point 0.0-1.0 texture coordinates. Must be a power of two for mip-mapping to work.
      */
-    private static final int TEXTURE_HEIGHT = 256;
+    private static final int TEXTURE_HEIGHT = 512;
 
     /** Initial width in pixels of the stringImage buffer used to extract individual glyph images. */
-    private static final int STRING_WIDTH = 256;
+    private static final int STRING_WIDTH = 512;
 
     /** Initial height in pixels of the stringImage buffer used to extract individual glyph images. */
     private static final int STRING_HEIGHT = 64;
@@ -71,7 +71,7 @@ public class GlyphCache
      * glyphs from "bleeding through" when the scaled GUI resolution is not pixel aligned and sometimes results in off-by-one
      * sampling of the glyph cache textures.
      */
-    private static final int GLYPH_BORDER = 1;
+    private static final int GLYPH_BORDER = 2;
 
     /** Transparent (alpha zero) white background color for use with BufferedImage.clearRect(). */
     private static Color BACK_COLOR = new Color(255, 255, 255, 0);

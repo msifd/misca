@@ -5,9 +5,11 @@ import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.registry.GameRegistry;
 import msifeed.mc.misca.config.ConfigManager;
 import msifeed.mc.misca.utils.MiscaNetwork;
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.ChatComponentText;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -59,7 +61,12 @@ public enum RemoteBookManager {
 
         final Consumer<RemoteBook> consumer = fetchConsumer;
         fetchConsumer = null;
-        consumer.accept(RemoteBookParser.parse(rawBook));
+
+        try {
+            consumer.accept(RemoteBookParser.parse(rawBook));
+        } catch (Exception ignored) {
+            Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText("Failed to parse book file."));
+        }
     }
 
     public void receiveCheck(boolean check) {
@@ -94,13 +101,18 @@ public enum RemoteBookManager {
         final String rawBook = loadBook(name);
         if (rawBook.isEmpty()) return;
 
-        final RemoteBook book = RemoteBookParser.parse(rawBook);
+        final RemoteBook book;
+        try {
+            book = RemoteBookParser.parse(rawBook);
+        } catch (Exception ignored) {
+            player.addChatMessage(new ChatComponentText("Failed to parse book file."));
+            return;
+        }
 
         final NBTTagCompound tc = new NBTTagCompound();
         tc.setString("name", name);
         tc.setString("title", book.title);
         tc.setString("style", book.style.toString());
-//        tc.setByte("style_ord", (byte) style.ordinal());
         heldItem.setTagCompound(tc);
 
         heldItem.setItemDamage(book.style.ordinal() + 1);

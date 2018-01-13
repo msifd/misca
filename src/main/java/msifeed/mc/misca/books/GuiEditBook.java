@@ -6,9 +6,10 @@ import msifeed.mc.gui.nim.NimWindow;
 import msifeed.mc.misca.utils.MiscaNetwork;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.resources.I18n;
 
 public class GuiEditBook extends GuiScreen {
-    private final NimWindow writerWindow = new NimWindow("Букинист", GuiEditBook::closeGui);
+    private final NimWindow writerWindow = new NimWindow(I18n.format("misca.books.editor.title"), GuiEditBook::closeGui);
     private final NimText nameInput = new NimText();
 
     private boolean nameChecked = true;
@@ -40,20 +41,20 @@ public class GuiEditBook extends GuiScreen {
         nimgui.beginWindow(writerWindow);
 
         nimgui.horizontalBlock();
-        nimgui.label("Учетный номер: ");
+        nimgui.label(I18n.format("misca.books.editor.index"));
         nimgui.nim(nameInput);
 
         nimgui.verticalBlock();
         if (checkStatus != null) {
             final String status;
             if (checkStatus == CheckStatus.CHECKING) status = "...";
-            else if (checkStatus == CheckStatus.EXISTS) status = "есть в наличии.";
-            else status = "отсутствует.";
+            else if (checkStatus == CheckStatus.EXISTS) status = I18n.format("misca.books.editor.exists");
+            else status = I18n.format("misca.books.editor.missing");
 
-            nimgui.label("Такая книга " + status);
+            nimgui.label(I18n.format("misca.books.editor.the_book") + status);
         }
 
-        if (nimgui.button("Получить") && checkStatus == CheckStatus.EXISTS) {
+        if (nimgui.button(I18n.format("misca.books.editor.get")) && checkStatus == CheckStatus.EXISTS) {
             MiscaNetwork.INSTANCE.sendToServer(new MessageRemoteBook(MessageRemoteBook.Type.SIGN, nameInput.getText()));
             closeGui();
         }

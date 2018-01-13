@@ -74,6 +74,7 @@ misca.crabs.gui.describe=2. Опишите его в чате.
 misca.crabs.gui.no_damage=3. Наносите урон!
 misca.crabs.gui.damage=3. Урона нанесено: %f.
 misca.crabs.gui.wait=4. Ждите хода противника.
+
 misca.mining_stamina.msg=You have stamina left for about %d seconds
 misca.death_toll.intro=Вы заболели
 misca.death_toll.illnesses=мышечными спазмами;немощью;ломкостью;неуклюжестью;нарушением моторики;трясучкой;потерей чувств;неразборчивостью;расфокусировкой;амнезией;технологической слепотой;забывчивостью;бесхребетностью;раболепием;подавлением иммунитета;душевными метаниями;магочувствительностью
@@ -81,7 +82,12 @@ misca.health_note.wound=получил рану
 misca.health_note.injury=получил травму
 misca.health_note.dying=при смерти
 
-itemGroup.misca_items=Misca - items
+misca.books.editor.title=Букинист
+misca.books.editor.index=Учетный номер:
+misca.books.editor.the_book=Такая книга
+misca.books.editor.missing=отсутствует.
+misca.books.editor.exists=есть в наличии.
+misca.books.editor.get=Получить
 
 item.misc_1.name=misc_1
 item.misc_2.name=misc_2

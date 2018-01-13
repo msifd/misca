@@ -12,14 +12,16 @@ import org.lwjgl.opengl.GL11;
 import thvortex.betterfonts.StringCache;
 
 import java.util.ArrayList;
-import java.util.regex.Pattern;
 
 public class GuiReadBook extends GuiScreen {
+    private static final StringCache carefreeFont = FontFactory.createFontRenderer("Carefree.ttf", 28, true);
+    private static final StringCache caslonFont = FontFactory.createFontRenderer("Caslon.ttf", 20, true);
+    private static final StringCache vollkornFont = FontFactory.createFontRenderer("Vollkorn.ttf", 16, true);
+
     private RemoteBook book;
     private TextureInfo[] buttonTextures = new TextureInfo[2];
 
     private String[] lines;
-
     private int page = 0;
 
     public GuiReadBook(ItemStack itemStack) {
@@ -69,24 +71,30 @@ public class GuiReadBook extends GuiScreen {
         this.mc.getTextureManager().bindTexture(book.style.texture);
         this.drawTexturedModalRect(xOffset, 2, 0, 0, bgTextureWidth, bgTextureHeight);
 
+
         final NimGui nimgui = NimGui.INSTANCE;
 
         // Render text
         nimgui.imStyle.labelFont = getFontForStyle();
 
-        final int fontHeight = nimgui.imLabel.labelHeight();
-        final int linesOnPage = 140 / fontHeight;
+        int fontHeight = nimgui.imLabel.labelHeight();
+        if (book.style == RemoteBook.Style.RICH_BOOK) fontHeight += 1; // Костыль для шрифта
+
+        final int linesOnPage = 139 / fontHeight;
         final int startLine = page * linesOnPage;
         final int linesToDisplay = Math.min(linesOnPage, lines.length - startLine);
+
         for (int i = 0; i < linesToDisplay; i++) {
             final int yOffset = 10 + fontHeight + i * fontHeight;
-            nimgui.imLabel.label(lines[startLine + i], xOffset + 36, yOffset, 0xFF000000, false);
+            nimgui.imLabel.label(lines[startLine + i], xOffset + 34, yOffset, 0xFF000000, false);
         }
 
-        // Render page counter
-        nimgui.imLabel.label(Integer.toString(page + 1), xOffset + 61, 156, 59, 13, 0xFF000000, true, false);
+        // Page counter
+        nimgui.imLabel.label(Integer.toString(page + 1), xOffset, 156, bgTextureWidth, 13, 0xFF000000, true, false);
 
         nimgui.imStyle.labelFont = ImStyle.DEFAULT.labelFont;
+
+        // // //
 
         // Prev button
         if (page > 0 && nimgui.imButton.button(buttonTextures[1], xOffset + 38, 156, 23, 13)) {
@@ -101,10 +109,10 @@ public class GuiReadBook extends GuiScreen {
     }
 
     private void buildPages(String text) {
-        final int bookWidth = 116;
+        final int bookWidth = 115;
 
         final ArrayList<String> lines = new ArrayList<>();
-        final String cleanedText = text.trim().replaceAll("\r", "");
+        final String cleanedText = text.replaceAll("\r", "");
         final StringCache font = NimGui.INSTANCE.imStyle.labelFont;
         final StringBuilder sb = new StringBuilder(cleanedText);
 
@@ -134,8 +142,18 @@ public class GuiReadBook extends GuiScreen {
     }
 
     private StringCache getFontForStyle() {
-        if (book.style == RemoteBook.Style.NOTE) return FontFactory.carefreeFont;
-        else return FontFactory.fsexFont;
+        switch (book.style) {
+            case BOOK:
+                return caslonFont;
+            case RICH_BOOK:
+                return vollkornFont;
+//            case PAD:
+//                return alienFont;
+            case NOTE:
+                return carefreeFont;
+            default:
+                return FontFactory.fsexFont;
+        }
     }
 
     private static void closeGui() {
