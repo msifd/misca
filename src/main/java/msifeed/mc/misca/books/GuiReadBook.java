@@ -8,6 +8,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.ChatComponentText;
 import org.lwjgl.opengl.GL11;
 import thvortex.betterfonts.StringCache;
 
@@ -43,6 +44,11 @@ public class GuiReadBook extends GuiScreen {
         }
 
         RemoteBookManager.INSTANCE.fetchBook(name, b -> {
+            if (b == null) {
+                closeGui();
+                return;
+            }
+
             book = b;
 
             if (book.style == null) book.style = style;
@@ -109,32 +115,25 @@ public class GuiReadBook extends GuiScreen {
     }
 
     private void buildPages(String text) {
+        if (text.trim().isEmpty()) return;
+
         final int bookWidth = 115;
+        final String cleaned = text.replaceAll("\r", ""); // TODO remove me
 
         final ArrayList<String> lines = new ArrayList<>();
-        final String cleanedText = text.replaceAll("\r", "");
         final StringCache font = NimGui.INSTANCE.imStyle.labelFont;
-        final StringBuilder sb = new StringBuilder(cleanedText);
+        final StringBuilder sb = new StringBuilder(cleaned);
 
         while (sb.length() > 0) {
-            final int endBound = Math.min(bookWidth, sb.length());
-            final int lineWidth;
+            final int textPartLength = Math.min(bookWidth, sb.length());
+            final String textPart = sb.substring(0, textPartLength);
+            final int lineWidth = font.sizeStringToWidth(textPart, bookWidth) + 1;
 
-            final String textPart = sb.substring(0, endBound);
-            final boolean nextCharEmpty = textPart.charAt(0) == ' ' || textPart.charAt(0) == '\n';
-            boolean skipLine = textPart.startsWith("\n\n");
+            final int lineEnd = Math.min(lineWidth, sb.length());
+            final String line = sb.substring(0, lineEnd).trim();
 
-            if (textPart.charAt(0) == '\n') {
-                lineWidth = 1;
-            } else {
-                lineWidth = font.sizeStringToWidth(textPart, bookWidth);
-            }
-
-            final String line = textPart.substring((nextCharEmpty ? 1 : 0), lineWidth);
-
-            if (!skipLine)
-                lines.add(line);
-            sb.delete(0, lineWidth);
+            lines.add(line);
+            sb.delete(0, lineEnd);
         }
 
         this.lines = new String[lines.size()];

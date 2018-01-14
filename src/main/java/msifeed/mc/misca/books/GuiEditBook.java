@@ -51,7 +51,7 @@ public class GuiEditBook extends GuiScreen {
             else if (checkStatus == CheckStatus.EXISTS) status = I18n.format("misca.books.editor.exists");
             else status = I18n.format("misca.books.editor.missing");
 
-            nimgui.label(I18n.format("misca.books.editor.the_book") + status);
+            nimgui.label(I18n.format("misca.books.editor.the_book") + " " + status);
         }
 
         if (nimgui.button(I18n.format("misca.books.editor.get")) && checkStatus == CheckStatus.EXISTS) {

@@ -4,21 +4,29 @@ public class RemoteBookParser {
     public static RemoteBook parse(String raw) throws RuntimeException {
         final RemoteBook book = new RemoteBook();
 
-        final int firstLineEnd = Math.min(raw.indexOf('\n'), 70);
-        final String firstLine = raw.substring(0, firstLineEnd).trim();
+        final String cleanedRaw = raw.replaceAll("\r", "");
+        if (cleanedRaw.trim().isEmpty()) throw new RuntimeException("Remote book is empty!");
 
-        final boolean hasHeader = firstLine.startsWith("#!");
-        if (hasHeader) {
+        int pos;
+
+        final int firstLineIndex = cleanedRaw.indexOf('\n');
+        final String firstLine = cleanedRaw.substring(0, firstLineIndex).trim();
+        pos = firstLineIndex + 1;
+
+        if (firstLine.startsWith("#!")) {
             final String header = firstLine.substring(2);
             book.style = RemoteBook.Style.valueOf(header.toUpperCase());
 
-            final int secondLineEnd = raw.indexOf('\n', firstLineEnd + 2);
-            book.title = raw.substring(firstLineEnd, secondLineEnd).trim();
-            book.text = raw.substring(secondLineEnd + 1);
+            final int secondLineIndex = cleanedRaw.indexOf('\n', pos);
+            if (secondLineIndex < 0) throw new RuntimeException("Book has only header!");
+            book.title = cleanedRaw.substring(pos, secondLineIndex).trim();
+            pos = secondLineIndex + 1;
         } else {
             book.title = firstLine;
-            book.text = raw.substring(firstLineEnd + 1);
         }
+
+        if (pos == cleanedRaw.length()) throw new RuntimeException("Book has no body text!");
+        book.text = cleanedRaw.substring(pos);
 
         return book;
     }

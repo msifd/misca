@@ -64,8 +64,11 @@ public enum RemoteBookManager {
 
         try {
             consumer.accept(RemoteBookParser.parse(rawBook));
-        } catch (Exception ignored) {
+        } catch (Exception e) {
+            logger.error(e);
             Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText("Failed to parse book file."));
+
+            consumer.accept(null);
         }
     }
 
@@ -87,7 +90,8 @@ public enum RemoteBookManager {
         if (!bookFile.exists()) return "";
 
         try {
-            return new String(Files.readAllBytes(bookFile.toPath()), UTF_8);
+            final String raw = new String(Files.readAllBytes(bookFile.toPath()), UTF_8);
+            return raw.replaceAll("\r", "");
         } catch (IOException e) {
             logger.error(e);
             return "";
@@ -104,7 +108,8 @@ public enum RemoteBookManager {
         final RemoteBook book;
         try {
             book = RemoteBookParser.parse(rawBook);
-        } catch (Exception ignored) {
+        } catch (Exception e) {
+            logger.error(e);
             player.addChatMessage(new ChatComponentText("Failed to parse book file."));
             return;
         }
