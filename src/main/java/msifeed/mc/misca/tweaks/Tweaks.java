@@ -15,7 +15,7 @@ public class Tweaks {
     public final SimpleNetworkWrapper network = new SimpleNetworkWrapper("misca.tweaks");
 
     private OfftopFormat offtopFormat = new OfftopFormat();
-    private HideNametag hideNametag = new HideNametag();
+    private NametagOverhaul nametagOverhaul = new NametagOverhaul();
     private SpawnInvincibility spawnInvincibility = new SpawnInvincibility();
     private DisableSomeCraftingTables disableSomeCraftingTables = new DisableSomeCraftingTables();
     private DeathToll deathToll = new DeathToll();
@@ -40,13 +40,14 @@ public class Tweaks {
             MinecraftForge.EVENT_BUS.register(offtopFormat);
             MinecraftForge.EVENT_BUS.register(spawnInvincibility);
         } else {
-            MinecraftForge.EVENT_BUS.register(hideNametag);
+            MinecraftForge.EVENT_BUS.register(nametagOverhaul);
+            nametagOverhaul.initClient();
         }
 
-        network.registerMessage(hideNametag, HideNametag.MessageIncognito.class, 1, Side.CLIENT);
+        network.registerMessage(nametagOverhaul, NametagOverhaul.MessageNametag.class, 1, Side.CLIENT);
     }
 
     public void onServerStart(FMLServerStartingEvent event) {
-        event.registerServerCommand(hideNametag.commandIncognito);
+        nametagOverhaul.onServerStart(event);
     }
 }
