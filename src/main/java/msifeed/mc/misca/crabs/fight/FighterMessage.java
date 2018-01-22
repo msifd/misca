@@ -83,6 +83,6 @@ public class FighterMessage extends AbstractMessage<FighterMessage> {
     }
 
     public enum Type {
-        JOIN, ACTION, MOD, CALC, LEAVE
+        JOIN, ACTION, MOD, CALC, LEAVE, RESET
     }
 }

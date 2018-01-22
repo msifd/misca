@@ -14,8 +14,6 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.DamageSource;
-import net.minecraft.util.MinecraftError;
-import net.minecraftforge.common.ForgeHooks;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.ServerChatEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
@@ -113,6 +111,12 @@ public enum FightManager {
                     MoveManager.INSTANCE.selectMod(actor, message.mod);
             }
             break;
+            case RESET: {
+                final Context actor = context == null || context.puppet == null ? context : ContextManager.INSTANCE.getContext(context.puppet);
+                if (actor != null)
+                    ContextManager.INSTANCE.softResetContext(actor);
+            }
+            break;
             case CALC:
                 Rules.rollSingleStat(player, context, message.stat, message.mod);
                 break;
@@ -151,11 +155,32 @@ public enum FightManager {
     }
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
-    public void onDamage(LivingHurtEvent event) {
+    public void onHurtDamage(LivingHurtEvent event) {
+        handleDamage(event, event.source, event.ammount);
+    }
+
+//    @SubscribeEvent(priority = EventPriority.LOWEST)
+//    public void onAttackDamage(LivingAttackEvent event) {
+//        handleDamage(event, event.source, event.ammount);
+//    }
+
+    @SubscribeEvent
+    public void onChatMessage(ServerChatEvent event) {
         final FMLCommonHandler fml = FMLCommonHandler.instance();
         if (fml.getSide().isClient() && !Minecraft.getMinecraft().isSingleplayer()) return;
 
-        final DamageSource damageSource = event.source;
+        if (event.message.trim().isEmpty()) return;
+
+        final Context ctx = ContextManager.INSTANCE.getContext(event.player.getUniqueID());
+        if (ctx == null) return;
+
+        final Context actor = ctx.puppet == null ? ctx : ContextManager.INSTANCE.getContext(ctx.puppet);
+        MoveManager.INSTANCE.describeAction(actor);
+    }
+
+    private void handleDamage(LivingEvent event, DamageSource damageSource, float damage) {
+        final FMLCommonHandler fml = FMLCommonHandler.instance();
+        if (fml.getSide().isClient() && !Minecraft.getMinecraft().isSingleplayer()) return;
 
         // Пришел урон по результатам хода
         if (damageSource instanceof CrabsDamage) return;
@@ -190,26 +215,15 @@ public enum FightManager {
         // Мешаем марионетке избивать саму себя
         if (actor == target) return;
 
+        // Можно бить только игроков без цели или свою цель.
+        if (target.target != null && !target.target.equals(actor.uuid)) return;
+
         // Если атакующий еще не должен бить (завершать ход), то игнорим
         if (!actor.canAttack()) return;
 
         // После того как цель определена можно атаковать только её
         if (actor.target != null && !actor.target.equals(target.uuid)) return;
 
-        MoveManager.INSTANCE.dealDamage(actor, target, event.ammount);
-    }
-
-    @SubscribeEvent
-    public void onChatMessage(ServerChatEvent event) {
-        final FMLCommonHandler fml = FMLCommonHandler.instance();
-        if (fml.getSide().isClient() && !Minecraft.getMinecraft().isSingleplayer()) return;
-
-        if (event.message.trim().isEmpty()) return;
-
-        final Context ctx = ContextManager.INSTANCE.getContext(event.player.getUniqueID());
-        if (ctx == null) return;
-
-        final Context actor = ctx.puppet == null ? ctx : ContextManager.INSTANCE.getContext(ctx.puppet);
-        MoveManager.INSTANCE.describeAction(actor);
+        MoveManager.INSTANCE.dealDamage(actor, target, damage);
     }
 }

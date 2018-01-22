@@ -110,6 +110,11 @@ public enum MoveManager {
         }
     }
 
+    public void removeWaitingMove(UUID uuid) {
+        if (uuid == null) return;
+        pendingMoves.remove(uuid);
+    }
+
     public void finalizeMoves() {
         completeMoves.removeIf(m -> finalizeMove(m.attacker, m.defender));
     }

@@ -97,11 +97,16 @@ public class BattleHud extends AbstractHudWindow {
                 renderActionTabs(nimgui, isAttack);
                 renderActions(nimgui);
                 renderPlayerModifier(nimgui);
-            } else {
-                // TODO display selected action
             }
 
             renderManual(nimgui, actor);
+
+            // Позволяем отменить свою атаку
+            if (actor.status == Context.Status.WAIT) {
+                if (nimgui.button(MiscaUtils.l10n("misca.crabs.abort"), 100)) {
+                    CrabsNetwork.INSTANCE.sendToServer(new FighterMessage(FighterMessage.Type.RESET));
+                }
+            }
         } else {
             renderStatRolls(nimgui);
             renderPlayerModifier(nimgui);

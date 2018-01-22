@@ -164,6 +164,9 @@ public enum ContextManager {
      * Отсоединяем направленные на контекст таргеты
      */
     public void unbindTargetToContext(Context context) {
+        MoveManager.INSTANCE.removeWaitingMove(context.uuid);
+        MoveManager.INSTANCE.removeWaitingMove(context.target);
+
         for (Context ctx : uuidToContext.values()) {
             if ((ctx.target != null && ctx.target.equals(context.uuid))
                     || (ctx.puppet != null && ctx.puppet.equals(context.uuid))) {
@@ -173,6 +176,13 @@ public enum ContextManager {
         }
     }
 
+    public void softResetContext(Context context) {
+        unbindTargetToContext(context);
+        context.softReset();
+        toSync.add(context);
+        logger.info("{} has been soft reseted", context.entity.getCommandSenderName());
+    }
+    
     public void hardResetContext(Context context) {
         unbindTargetToContext(context);
         context.hardReset();
