@@ -6,6 +6,7 @@ import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.event.FMLServerStartingEvent;
 import cpw.mods.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import cpw.mods.fml.relauncher.Side;
+import msifeed.mc.misca.tweaks.entity_control.EntityControl;
 import net.minecraftforge.common.MinecraftForge;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -20,7 +21,7 @@ public class Tweaks {
     private DisableSomeCraftingTables disableSomeCraftingTables = new DisableSomeCraftingTables();
     private DeathToll deathToll = new DeathToll();
     private HealthNotification healthNotification = new HealthNotification();
-    private BanEntities banEntities = new BanEntities();
+    private EntityControl entityControl = new EntityControl();
     private HungerClamper hungerClamper = new HungerClamper();
     private DRM drm = new DRM();
 
@@ -32,7 +33,7 @@ public class Tweaks {
         MinecraftForge.EVENT_BUS.register(disableSomeCraftingTables);
         MinecraftForge.EVENT_BUS.register(deathToll);
         MinecraftForge.EVENT_BUS.register(healthNotification);
-        MinecraftForge.EVENT_BUS.register(banEntities);
+        MinecraftForge.EVENT_BUS.register(entityControl);
         MinecraftForge.EVENT_BUS.register(hungerClamper);
         FMLCommonHandler.instance().bus().register(drm);
 
