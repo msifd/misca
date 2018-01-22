@@ -134,7 +134,9 @@ public final class Rules {
         final int roll = DiceMath.g15();
         final String msg = MoveFormatter.formatStatRoll(c, stat, roll, mod);
 
-        DBHandler.INSTANCE.logMessage(player, "crabs_roll", msg);
+        final String unformattedMsg = MiscaUtils.roughRemoveFormatting(msg)
+                + " // " + DiceMath.DiceRank.ofD15(roll);
+        DBHandler.INSTANCE.logMessage(player, "crabs_roll", unformattedMsg);
         MiscaUtils.notifyAround(
                 player, BattleDefines.NOTIFICATION_RADIUS,
                 new ChatComponentText(msg)

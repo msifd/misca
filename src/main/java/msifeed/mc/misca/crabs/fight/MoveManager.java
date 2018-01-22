@@ -156,10 +156,12 @@ public enum MoveManager {
                 ? MoveFormatter.formatFatalityResult(higherOne.ctx.entity, lowerOne.ctx.entity)
                 : MoveFormatter.formatActionResults(higherOne, lowerOne);
 
+        final String unformattedMsg = MiscaUtils.roughRemoveFormatting(resultMsg)
+                + " // " + higherOne.diceRank.toString() + " -> " + lowerOne.diceRank.toString();
         if (attackCtx.entity instanceof EntityPlayer)
-            DBHandler.INSTANCE.logMessage((EntityPlayer) attackCtx.entity, "crabs_move", resultMsg);
+            DBHandler.INSTANCE.logMessage((EntityPlayer) attackCtx.entity, "crabs_move", unformattedMsg);
         if (defenceCtx.entity instanceof EntityPlayer)
-            DBHandler.INSTANCE.logMessage((EntityPlayer) defenceCtx.entity, "crabs_move", resultMsg);
+            DBHandler.INSTANCE.logMessage((EntityPlayer) defenceCtx.entity, "crabs_move", unformattedMsg);
 
         MiscaUtils.notifyAround(
                 attackCtx.entity, defenceCtx.entity,

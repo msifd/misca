@@ -33,6 +33,21 @@ public class MiscaUtils {
         return false;
     }
 
+    public static String roughRemoveFormatting(String raw) {
+        if (raw.length() < 2) return raw;
+
+        final StringBuilder sb = new StringBuilder(raw);
+        int index = 0;
+        while (index < sb.length() - 1) {
+            if (sb.charAt(index) == '\u00A7') {
+                sb.delete(index, index + 2);
+            } else {
+                index++;
+            }
+        }
+        return sb.toString();
+    }
+
     public static void notifyAround(EntityLivingBase center, int radius, IChatComponent msg) {
         EntityUtils.getPlayersAround(center, radius).forEach(player -> player.addChatMessage(msg));
     }

@@ -41,6 +41,10 @@ public class Misca {
 
     @EventHandler
     public void preInit(FMLPreInitializationEvent event) {
+        if (FMLCommonHandler.instance().getSide().isServer()) {
+            ConfigManager.INSTANCE.eventbus.register(DBHandler.INSTANCE);
+        }
+
         ConfigManager.INSTANCE.init(event);
         ConfigManager.INSTANCE.reloadConfig();
 
@@ -48,10 +52,6 @@ public class Misca {
         tweaks.preInit(event);
         miningNerf.preInit(event);
         RemoteBookManager.INSTANCE.preInit(event);
-
-        if (FMLCommonHandler.instance().getSide().isServer()) {
-            DBHandler.INSTANCE.onPreInit(event);
-        }
     }
 
     @EventHandler

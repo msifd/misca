@@ -1,7 +1,8 @@
 package msifeed.mc.misca.database;
 
 import com.google.common.eventbus.Subscribe;
-import cpw.mods.fml.common.event.FMLPreInitializationEvent;
+import cpw.mods.fml.common.FMLCommonHandler;
+import msifeed.mc.misca.config.ConfigEvent;
 import msifeed.mc.misca.config.ConfigManager;
 import msifeed.mc.misca.config.JsonConfig;
 import net.minecraft.command.ICommandSender;
@@ -22,33 +23,37 @@ public enum DBHandler {
     private Connection connection;
     private JsonConfig<ConfigSection> config = ConfigManager.getServerConfigFor(ConfigSection.class, "database.json");
 
+    private String chatTable = "";
+
     private static void asyncUpdate(PreparedStatement s) {
-        Thread thread = new Thread(() -> {
+        new Thread(() -> {
             try {
                 s.executeUpdate();
             } catch (SQLException e) {
                 logger.error("Failed to update database! {}", e);
             }
-        });
-        thread.start();
+        }).start();
     }
 
     @Subscribe
-    public void onPreInit(FMLPreInitializationEvent event) {
-        if (event.getSide().isClient())
+    public void onReloadDone(ConfigEvent.ReloadDone event) {
+        if (FMLCommonHandler.instance().getSide().isClient())
             return;
 
-        if (!connectToDB() || connection == null)
-            return;
+        chatTable = config.get().chat_table;
+        new Thread(() -> {
+            if (!connectToDB() || connection == null)
+                return;
 
-        logger.info("Misca successfully connected to database.");
+            logger.info("Misca successfully connected to database.");
+        }).start();
     }
 
     public void logMessage(ICommandSender sender, String cmd, String text) {
         if (connection == null) return;
 
         try {
-            String query = "INSERT INTO `" + config.get().chat_table +
+            final String query = "INSERT INTO `" + chatTable +
                     "` (`chara`,`uuid`,`time`,`world`,`X`,`Y`,`Z`,`command`,`text`) " +
                     "VALUES (?,?,?,?,?,?,?,?,?);";
 
@@ -56,9 +61,9 @@ public enum DBHandler {
             if (sender instanceof EntityPlayerMP) {
                 uuid = ((EntityPlayerMP) sender).getUniqueID().toString();
             }
-            ChunkCoordinates coord = sender.getPlayerCoordinates();
+            final ChunkCoordinates coord = sender.getPlayerCoordinates();
 
-            PreparedStatement s = connection.prepareStatement(query);
+            final PreparedStatement s = connection.prepareStatement(query);
             s.setString(1, sender.getCommandSenderName());
             s.setString(2, uuid);
             s.setLong(3, System.currentTimeMillis());
