@@ -5,6 +5,9 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import msifeed.mc.misca.crabs.client.hud.CharacterHud;
 import msifeed.mc.misca.crabs.client.hud.HudManager;
+import msifeed.mc.misca.crabs.context.Context;
+import msifeed.mc.misca.crabs.context.ContextManager;
+import msifeed.mc.misca.crabs.fight.FightManager;
 import msifeed.mc.misca.things.MiscaThings;
 import msifeed.mc.misca.utils.MiscaUtils;
 import net.minecraft.entity.Entity;
@@ -52,7 +55,18 @@ public class ItemCharSheet extends Item {
         if (!(event.target instanceof EntityLivingBase)) return;
 
         final ItemStack itemStack = event.entityPlayer.getHeldItem();
-        if (itemStack == null || !(itemStack.getItem() instanceof ItemCharSheet)) return;
+        if (itemStack == null) {
+            final Context playerCtx = ContextManager.INSTANCE.getContext(event.entityPlayer);
+            if (playerCtx == null || !playerCtx.status.isFighting()) return;
+            final Context targetCtx = ContextManager.INSTANCE.getContext((EntityLivingBase) event.target);
+            if (targetCtx == null || !targetCtx.status.isFighting()) return;
+
+            CharacterHud.INSTANCE.setEditable(false);
+        } else {
+            if (!(itemStack.getItem() instanceof ItemCharSheet)) return;
+
+            CharacterHud.INSTANCE.setEditable(true);
+        }
 
         CharacterHud.INSTANCE.setEntity((EntityLivingBase) event.target);
         HudManager.INSTANCE.openHud(CharacterHud.INSTANCE);

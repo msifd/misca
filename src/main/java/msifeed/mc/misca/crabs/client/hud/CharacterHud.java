@@ -32,6 +32,7 @@ public class CharacterHud extends AbstractHudWindow {
     private EntityLivingBase entity;
     private UUID entityUuid;
     private Character character;
+    private boolean editable = false;
 
     private CharacterHud() {
         final Function<String, Boolean> validator = s -> s.matches("\\d{0,2}");
@@ -41,6 +42,10 @@ public class CharacterHud extends AbstractHudWindow {
             t.centerByWidth = true;
             statTexts[i] = t;
         }
+    }
+
+    public void setEditable(boolean canEdit) {
+        this.editable = canEdit;
     }
 
     public void setEntity(EntityLivingBase entity) {
@@ -114,16 +119,18 @@ public class CharacterHud extends AbstractHudWindow {
             nimgui.nim(statText);
         }
 
-        final int inputWidth = window.getBlockContentWidth();
-        nimgui.verticalBlock();
-        if (nimgui.button(MiscaUtils.l10n("misca.crabs.update_char"), inputWidth)) {
-            try {
-                int[] stats = new int[statTexts.length];
-                for (int i = 0; i < stats.length; i++) stats[i] = Byte.parseByte(statTexts[i].getText());
-                character.fill(stats);
-                CharacterManager.INSTANCE.requestUpdate(entityUuid, character);
-            } catch (NumberFormatException e) {
-                Minecraft.getMinecraft().thePlayer.sendChatMessage(MiscaUtils.l10n("misca.crabs.fill_all_stats"));
+        if (editable) {
+            final int inputWidth = window.getBlockContentWidth();
+            nimgui.verticalBlock();
+            if (nimgui.button(MiscaUtils.l10n("misca.crabs.update_char"), inputWidth)) {
+                try {
+                    int[] stats = new int[statTexts.length];
+                    for (int i = 0; i < stats.length; i++) stats[i] = Byte.parseByte(statTexts[i].getText());
+                    character.fill(stats);
+                    CharacterManager.INSTANCE.requestUpdate(entityUuid, character);
+                } catch (NumberFormatException e) {
+                    Minecraft.getMinecraft().thePlayer.sendChatMessage(MiscaUtils.l10n("misca.crabs.fill_all_stats"));
+                }
             }
         }
 

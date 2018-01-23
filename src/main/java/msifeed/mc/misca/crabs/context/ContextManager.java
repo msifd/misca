@@ -182,7 +182,7 @@ public enum ContextManager {
         toSync.add(context);
         logger.info("{} has been soft reseted", context.entity.getCommandSenderName());
     }
-    
+
     public void hardResetContext(Context context) {
         unbindTargetToContext(context);
         context.hardReset();
