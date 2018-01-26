@@ -26,10 +26,11 @@ public class ItemHealthController extends Item {
         setMaxStackSize(1);
     }
 
-    public void changeHealth(EntityLivingBase entity, float amount) {
+    public void changeHealth(EntityLivingBase entity, boolean isPositive) {
+        final float value = isPositive ? 1.0F : -1.0F;
         final float currentEntityHealth = entity.getHealth();
-        if (currentEntityHealth > 1.0F && currentEntityHealth <= entity.getMaxHealth())
-            entity.setHealth(entity.getHealth() + amount);
+        if (currentEntityHealth + value > 0 && currentEntityHealth + value <= entity.getMaxHealth())
+            entity.setHealth(entity.getHealth() + value);
     }
 
     @Override
@@ -53,9 +54,8 @@ public class ItemHealthController extends Item {
     public boolean onEntitySwing(EntityLivingBase player, ItemStack stack) {
         // Shift+ЛКМ - добавить 1 хп себе
 
-        if (player.isSneaking()) {
-            this.changeHealth(player, 1.0F);
-        }
+        if (player.isSneaking())
+            this.changeHealth(player, true);
 
         return true;
     }
@@ -65,9 +65,9 @@ public class ItemHealthController extends Item {
         // ЛКМ по существу - добавить 1 хп
 
         if (!player.isSneaking()) {
-            if (FMLCommonHandler.instance().getSide().isClient() || !(target instanceof EntityLivingBase)) return true;
+            if (player.worldObj.isRemote || !(target instanceof EntityLivingBase)) return true;
             final EntityLivingBase entity = (EntityLivingBase) target;
-            this.changeHealth(entity, 1.0F);
+            this.changeHealth(entity, true);
         }
 
         return true;
@@ -77,9 +77,8 @@ public class ItemHealthController extends Item {
     public ItemStack onItemRightClick(ItemStack stack, World world, EntityPlayer player) {
         // Shift+ПКМ - убрать 1 хп себе
 
-        if (player.isSneaking()) {
-            this.changeHealth(player, -1.0F);
-        }
+        if (player.isSneaking())
+            this.changeHealth(player, false);
 
         return stack;
     }
@@ -89,10 +88,10 @@ public class ItemHealthController extends Item {
     public void onEntityInteract(EntityInteractEvent event) {
         // ПКМ по существу: убрать 1 хп
 
-        if (event.entityPlayer.isSneaking()) {
+        if (!event.entityPlayer.isSneaking()) {
             if (!(event.target instanceof EntityLivingBase)) return;
             final EntityLivingBase entity = (EntityLivingBase) event.target;
-            this.changeHealth(entity, -1.0F);
+            this.changeHealth(entity, false);
         }
     }
 }
