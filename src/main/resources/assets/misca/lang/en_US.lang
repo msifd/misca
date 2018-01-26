@@ -11,6 +11,8 @@ item.battle_stick.desc=Effects clicked entity:\nLeft-click - battle on\nShift+Le
 item.char_sheet.name=Char sheet
 item.char_sheet.desc=RMB on entity to edit its charsheet
 item.remote_book.name=Book template
+item.health_controller.name=Health controller
+item.health_controller.desc=Effects clicked entity:\nLeft-click - add 1 health point\nRight-click - remove 1 health point
 
 death.attack.crabs=%1$s был убит в бою
 

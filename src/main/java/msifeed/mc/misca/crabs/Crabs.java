@@ -11,6 +11,7 @@ import msifeed.mc.misca.crabs.context.ContextManager;
 import msifeed.mc.misca.crabs.fight.FightManager;
 import msifeed.mc.misca.crabs.tools.ItemBattleStick;
 import msifeed.mc.misca.crabs.tools.ItemCharSheet;
+import msifeed.mc.misca.crabs.tools.ItemHealthController;
 import net.minecraftforge.common.MinecraftForge;
 
 public class Crabs {
@@ -33,5 +34,9 @@ public class Crabs {
         ItemCharSheet charSheet = new ItemCharSheet();
         MinecraftForge.EVENT_BUS.register(charSheet);
         GameRegistry.registerItem(charSheet, "char_sheet");
+
+        ItemHealthController healthStick = new ItemHealthController();
+        MinecraftForge.EVENT_BUS.register(healthStick);
+        GameRegistry.registerItem(healthStick, "health_controller");
     }
 }
