@@ -18,6 +18,7 @@ import java.lang.reflect.Type;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -64,14 +65,12 @@ public class EntityControl {
         if (!EntityLivingBase.class.isAssignableFrom(ec)) return;
 
         final String world = event.world.getWorldInfo().getWorldName();
-        for (ControlEntry entry : rules) {
-            if (entry.aClass.isAssignableFrom(ec)) {
-                if (entry.dimensions != null) {
-                    if (entry.dimensions.contains(world)) {
-                        event.setCanceled(true);
-                        return;
-                    }
-                } else {
+        for (final ControlEntry entry : rules) {
+            if (entry.dimensions != null && !entry.dimensions.contains(world))
+                continue;
+
+            for (final Class c : entry.classes) {
+                if (c.isAssignableFrom(ec)) {
                     event.setCanceled(true);
                     return;
                 }
@@ -80,7 +79,7 @@ public class EntityControl {
     }
 
     static class ControlEntry {
-        public Class aClass;
+        public Set<Class> classes = new HashSet<>();
         public Set<String> dimensions;
     }
 }

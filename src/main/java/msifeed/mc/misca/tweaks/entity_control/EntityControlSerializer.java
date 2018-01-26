@@ -17,19 +17,20 @@ public class EntityControlSerializer implements JsonDeserializer<List<ControlEnt
         final ArrayList<ControlEntry> result = new ArrayList<>();
 
         for (JsonElement el : root) {
+            final ControlEntry c = new ControlEntry();
             if (el.isJsonPrimitive() && el.getAsJsonPrimitive().isString()) {
-                final ControlEntry c = new ControlEntry();
-                c.aClass = lookupClass(el.getAsString());
-                result.add(c);
+                c.classes.add(lookupClass(el.getAsString()));
             } else if (el.isJsonObject()) {
                 final JsonObject entry = el.getAsJsonObject();
 
-                final JsonElement nameElement = entry.get("class");
-                if (nameElement == null || !nameElement.isJsonPrimitive() || !nameElement.getAsJsonPrimitive().isString())
-                    throw new JsonParseException("Entry must contain `name` string!");
-
-                final ControlEntry c = new ControlEntry();
-                c.aClass = lookupClass(nameElement.getAsString());
+                final JsonElement classesElement = entry.get("classes");
+                if (classesElement == null || !classesElement.isJsonArray())
+                    throw new JsonParseException("Entry must contain `classes` string array!");
+                for (JsonElement ce : classesElement.getAsJsonArray()) {
+                    if (ce == null || !ce.isJsonPrimitive() || !ce.getAsJsonPrimitive().isString())
+                        throw new JsonParseException("`classes` entry must be a string!");
+                    c.classes.add(lookupClass(ce.getAsString()));
+                }
 
                 final JsonElement dimsElement = entry.get("dims");
                 if (dimsElement != null && dimsElement.isJsonArray()) {
@@ -40,11 +41,10 @@ public class EntityControlSerializer implements JsonDeserializer<List<ControlEnt
                         c.dimensions.add(de.getAsString());
                     }
                 }
-
-                result.add(c);
             } else {
                 throw new JsonParseException("Entry must by string or object!");
             }
+            result.add(c);
         }
 
         return result;
