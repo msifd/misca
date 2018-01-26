@@ -12,7 +12,7 @@ item.char_sheet.name=Чар листок
 item.char_sheet.desc=ПКМ по существу редактирует его характеристики
 item.remote_book.name=Шаблон книги
 item.health_controller.name=Контроллер здоровья
-item.health_controller.desc=Воздействует на существо:\nЛКМ - добавить 1 пункт здоровья\nПКМ - убрать 1 пункт здоровья
+item.health_controller.desc=ЛКМ - добавить 1 пункт здоровья цели\nShift+ЛКМ - добавить 1 пункт здоровья себе\nПКМ - убрать 1 пункт здоровья у цели\nShift+ПКМ - убрать 1 пункт здоровья у себя
 
 death.attack.crabs=%1$s был убит в бою
 
