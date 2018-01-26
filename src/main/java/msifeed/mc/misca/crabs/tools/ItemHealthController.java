@@ -1,5 +1,6 @@
 package msifeed.mc.misca.crabs.tools;
 
+import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.registry.LanguageRegistry;
 import cpw.mods.fml.relauncher.Side;
@@ -25,16 +26,10 @@ public class ItemHealthController extends Item {
         setMaxStackSize(1);
     }
 
-    public void addHealth(EntityLivingBase entity, Float amount) {
-        final Float currentEntityHealth = entity.getHealth();
-        if (currentEntityHealth <= entity.getMaxHealth())
+    public void changeHealth(EntityLivingBase entity, float amount) {
+        final float currentEntityHealth = entity.getHealth();
+        if (currentEntityHealth > 1.0F && currentEntityHealth <= entity.getMaxHealth())
             entity.setHealth(entity.getHealth() + amount);
-    }
-
-    public void removeHealth(EntityLivingBase entity, Float amount) {
-        final Float currentEntityHealth = entity.getHealth();
-        if (currentEntityHealth > 1.0F)
-            entity.setHealth(entity.getHealth() - amount);
     }
 
     @Override
@@ -59,7 +54,7 @@ public class ItemHealthController extends Item {
         // Shift+ЛКМ - добавить 1 хп себе
 
         if (player.isSneaking()) {
-            this.addHealth(player, 1.0F);
+            this.changeHealth(player, 1.0F);
         }
 
         return true;
@@ -70,9 +65,9 @@ public class ItemHealthController extends Item {
         // ЛКМ по существу - добавить 1 хп
 
         if (!player.isSneaking()) {
-            if (player.worldObj.isRemote || !(target instanceof EntityLivingBase)) return true;
+            if (FMLCommonHandler.instance().getSide().isClient() || !(target instanceof EntityLivingBase)) return true;
             final EntityLivingBase entity = (EntityLivingBase) target;
-            this.addHealth(entity, 1.0F);
+            this.changeHealth(entity, 1.0F);
         }
 
         return true;
@@ -83,7 +78,7 @@ public class ItemHealthController extends Item {
         // Shift+ПКМ - убрать 1 хп себе
 
         if (player.isSneaking()) {
-            this.removeHealth(player, 1.0F);
+            this.changeHealth(player, -1.0F);
         }
 
         return stack;
@@ -97,7 +92,7 @@ public class ItemHealthController extends Item {
         if (event.entityPlayer.isSneaking()) {
             if (!(event.target instanceof EntityLivingBase)) return;
             final EntityLivingBase entity = (EntityLivingBase) event.target;
-            this.removeHealth(entity, 1.0F);
+            this.changeHealth(entity, -1.0F);
         }
     }
 }
