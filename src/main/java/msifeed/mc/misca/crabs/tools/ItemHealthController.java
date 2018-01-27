@@ -53,22 +53,22 @@ public class ItemHealthController extends Item {
 
     @Override
     public boolean onEntitySwing(EntityLivingBase player, ItemStack stack) {
-        // Shift+ЛКМ - добавить 1 хп себе
+        // Shift+ЛКМ - убрать 1 хп у себя
 
         if (player.isSneaking())
-            this.changeHealth(player, true);
+            this.changeHealth(player, false);
 
         return true;
     }
 
     @Override
     public boolean onLeftClickEntity(ItemStack stack, EntityPlayer player, Entity target) {
-        // ЛКМ по существу - добавить 1 хп
+        // ЛКМ по существу - убрать 1 хп у существа
 
         if (!player.isSneaking()) {
             if (player.worldObj.isRemote || !(target instanceof EntityLivingBase)) return true;
             final EntityLivingBase entity = (EntityLivingBase) target;
-            this.changeHealth(entity, true);
+            this.changeHealth(entity, false);
         }
 
         return true;
@@ -76,22 +76,22 @@ public class ItemHealthController extends Item {
 
     @Override
     public ItemStack onItemRightClick(ItemStack stack, World world, EntityPlayer player) {
-        // Shift+ПКМ - убрать 1 хп себе
+        // Shift+ПКМ - добавить 1 хп себе
 
         if (player.isSneaking())
-            this.changeHealth(player, false);
+            this.changeHealth(player, true);
 
         return stack;
     }
 
     @SubscribeEvent
     public void onEntityInteract(EntityInteractEvent event) {
-        // ПКМ по существу: убрать 1 хп
+        // ПКМ по существу - добавить 1 хп существу
 
         if (!event.entityPlayer.isSneaking()) {
             if (!(event.target instanceof EntityLivingBase)) return;
             final EntityLivingBase entity = (EntityLivingBase) event.target;
-            this.changeHealth(entity, false);
+            this.changeHealth(entity, true);
         }
     }
 }
