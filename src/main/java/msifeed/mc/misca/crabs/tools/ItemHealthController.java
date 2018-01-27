@@ -29,8 +29,9 @@ public class ItemHealthController extends Item {
     public void changeHealth(EntityLivingBase entity, boolean isPositive) {
         final float value = isPositive ? 1.0F : -1.0F;
         final float currentEntityHealth = entity.getHealth();
-        if (currentEntityHealth + value > 0 && currentEntityHealth + value <= entity.getMaxHealth())
-            entity.setHealth(entity.getHealth() + value);
+        final float result = currentEntityHealth + value;
+        if (result > 0 && result <= entity.getMaxHealth())
+            entity.setHealth(result);
     }
 
     @Override
@@ -84,7 +85,6 @@ public class ItemHealthController extends Item {
     }
 
     @SubscribeEvent
-    @SideOnly(Side.CLIENT)
     public void onEntityInteract(EntityInteractEvent event) {
         // ПКМ по существу: убрать 1 хп
 
