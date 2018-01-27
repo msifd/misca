@@ -13,6 +13,8 @@ import net.minecraft.util.IIcon;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 
+import java.util.Random;
+
 public class RegularBed extends BlockBed {
     final Item item;
     private IIcon[] texture_top, texture_end, texture_side;
@@ -29,6 +31,11 @@ public class RegularBed extends BlockBed {
 
     @Override
     public net.minecraft.item.Item getItem(World p_149694_1_, int p_149694_2_, int p_149694_3_, int p_149694_4_) {
+        return item;
+    }
+
+    @Override
+    public net.minecraft.item.Item getItemDropped(int p_149650_1_, Random p_149650_2_, int p_149650_3_) {
         return item;
     }
 
