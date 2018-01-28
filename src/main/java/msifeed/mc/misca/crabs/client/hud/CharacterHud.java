@@ -32,7 +32,7 @@ public class CharacterHud extends AbstractHudWindow {
     private EntityLivingBase entity;
     private UUID entityUuid;
     private Character character;
-    private boolean editable = false;
+    private boolean editable = true;
 
     private CharacterHud() {
         final Function<String, Boolean> validator = s -> s.matches("\\d{0,2}");
@@ -79,6 +79,7 @@ public class CharacterHud extends AbstractHudWindow {
     @Override
     void close() {
         entity = null;
+        editable = true; // По-дефолту редачить можно
 
         // Manually release inputs' focus to be able use hotkey again
         for (NimText t : statTexts)
