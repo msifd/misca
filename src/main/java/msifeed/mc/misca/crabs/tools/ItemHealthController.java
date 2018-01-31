@@ -1,10 +1,7 @@
 package msifeed.mc.misca.crabs.tools;
 
-import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.registry.LanguageRegistry;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 import msifeed.mc.misca.things.MiscaThings;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
