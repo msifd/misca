@@ -62,10 +62,8 @@ public class ItemCharSheet extends Item {
             if (targetCtx == null || !targetCtx.status.isFighting()) return;
 
             CharacterHud.INSTANCE.setEditable(false);
-        } else {
-            if (!(itemStack.getItem() instanceof ItemCharSheet)) return;
-
-            CharacterHud.INSTANCE.setEditable(true);
+        } else if (!(itemStack.getItem() instanceof ItemCharSheet)) {
+             return;
         }
 
         CharacterHud.INSTANCE.setEntity((EntityLivingBase) event.target);
