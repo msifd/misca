@@ -25,7 +25,7 @@ public abstract class Modifier {
     public static class DiceG30 extends Modifier {
         @Override
         public int mod(Character c) {
-            return DiceMath.g30();
+            return DiceMath.g40();
         }
 
         @Override
@@ -35,30 +35,30 @@ public abstract class Modifier {
 
         @Override
         public String name() {
-            return "g30";
+            return "g40";
         }
     }
 
     public static class DiceG30Plus extends DiceG30 {
         public int mod(Character c) {
-            return DiceMath.g30_plus();
+            return DiceMath.g40_plus();
         }
 
         @Override
         public String name() {
-            return "g30+";
+            return "g40+";
         }
     }
 
     public static class DiceG30Minus extends DiceG30 {
         @Override
         public int mod(Character c) {
-            return DiceMath.g30_minus();
+            return DiceMath.g40_minus();
         }
 
         @Override
         public String name() {
-            return "g30-";
+            return "g40-";
         }
     }
 

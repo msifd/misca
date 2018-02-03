@@ -50,7 +50,8 @@ public final class MoveFormatter {
 
         s += "\u00A76]\u00A7r";
 
-        if (!action.actionSuccessful && action.action.type != Action.Type.PASSIVE)
+        // Неуспешными помечаются только провалившиеся атакующие действия
+        if (!action.actionSuccessful && !action.action.isDefencive())
             s += " " + MiscaUtils.l10n("misca.crabs.failed");
 
         return s;

@@ -5,6 +5,8 @@ import msifeed.mc.misca.crabs.rules.Modifier;
 import msifeed.mc.misca.utils.MiscaUtils;
 
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.stream.Stream;
 
 public class Action {
     public static final Action ACTION_NONE = new Action("none", ".none", Type.PASSIVE);
@@ -12,32 +14,38 @@ public class Action {
     public final String name;
     public final String title;
     public final Type type;
-    protected boolean deal_no_damage = false;
+    public boolean defencive;
     public ArrayList<Modifier> modifiers = new ArrayList<>();
     public ArrayList<Effect> target_effects = new ArrayList<>();
     public ArrayList<Effect> self_effects = new ArrayList<>();
-    public ArrayList<String> tags = new ArrayList<>(); // По большей части сейчас не используется
 
     public Action(String signature) {
         final String[] parts = signature.split("/");
-        this.name = parts[0];
-        this.title = parts[1];
-        this.type = Action.Type.valueOf(parts[2].toUpperCase());
-        this.deal_no_damage = this.type.dealNoDamage();
+        final Iterator<String> it = Stream.of(parts).iterator();
+
+        this.name = it.next();
+        this.title = it.next();
+        this.type = Action.Type.valueOf(it.next().toUpperCase());
+        this.defencive = this.type.defencive();
+
+        while (it.hasNext()) {
+            switch (it.next()) {
+                case "defencive":
+                    this.defencive = true;
+                    break;
+            }
+        }
     }
 
     Action(String name, String title, Type type) {
         this.name = name;
         this.title = title;
         this.type = type;
-        this.deal_no_damage = type.dealNoDamage();
+        this.defencive = type.defencive();
     }
 
-    /**
-     * Действия без урона приимаются сразу после отписи. Кроме того ими нельзя атаковать.
-     */
-    public boolean dealNoDamage() {
-        return deal_no_damage;
+    public boolean isDefencive() {
+        return defencive;
     }
 
     /**
@@ -45,7 +53,13 @@ public class Action {
      * Заголовок передаем потому что есть кастомные экшны, не прописанные в .lang файлах
      */
     public String signature() {
-        return name + "/" + title + "/" + type.toString();
+        String s = name + "/"
+                + title + "/"
+                + type.toString();
+
+        if (defencive) s += "/defencive";
+
+        return s;
     }
 
     /**
@@ -63,16 +77,16 @@ public class Action {
         final Action act = (Action) obj;
         return this.name.equals(act.name)
                 && this.type.equals(act.type)
+                && this.defencive == act.defencive
                 && this.modifiers.equals(act.modifiers)
                 && this.target_effects.equals(act.target_effects)
-                && this.self_effects.equals(act.self_effects)
-                && this.tags.equals(act.tags);
+                && this.self_effects.equals(act.self_effects);
     }
 
     public enum Type {
         MELEE, RANGED, MAGIC, SUPPORT, DEFENCE, PASSIVE;
 
-        public boolean dealNoDamage() {
+        public boolean defencive() {
             return this == DEFENCE || this == PASSIVE;
         }
 

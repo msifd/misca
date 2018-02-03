@@ -22,7 +22,7 @@ import java.util.function.Consumer;
 public enum CharacterManager {
     INSTANCE;
 
-    private static final Character GENERIC_CHAR = new Character(new int[]{8, 8, 8, 8, 8, 8});
+    private static final Character GENERIC_CHAR = new Character(new int[]{7, 7, 7, 7, 7, 7, 7, 7});
     private HashMap<UUID, Character> uuidToChar = new HashMap<>();
     private HashMap<UUID, Consumer<Character>> requests = new HashMap<>();
 

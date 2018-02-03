@@ -33,8 +33,8 @@ public enum MoveManager {
         if (actor.action != null && actor.action.name.equals(action.name)) {
             actor.updateAction(null);
         } else {
-            // Выбирать пассивные действия можно только при защите
-            if (!actor.canSelectAction() || (actor.target == null && action.dealNoDamage())) return;
+            // Выбирать оборонные действия можно только при защите
+            if (!actor.canSelectAction() || (actor.target == null && action.isDefencive())) return;
             actor.updateAction(action);
             actor.modifier = mod;
         }
@@ -56,7 +56,7 @@ public enum MoveManager {
         actor.described = true;
 
         // Действия не требующие атаки завершаются сразу после отписи
-        if (actor.target != null && actor.action.dealNoDamage()) {
+        if (actor.target != null && actor.action.isDefencive()) {
             stopDealingDamage(actor);
         }
 
@@ -122,13 +122,6 @@ public enum MoveManager {
     private boolean finalizeMove(Context attackCtx, Context defenceCtx) {
         if (attackCtx.action == null || defenceCtx.action == null) return false;
 
-        // 1. Изначально выполняются действия обоих бойцов
-        // 2. Если фаталити, то действие защищающегося - это "ничего" (присваивается еще при атаке)
-        // 3. Если действие бойца отмечается как неудачное, то оно не выполняется (провал выстрела)
-        // 4. Если действие не наносит прямой урон и оно проиграло по очкам, то оно не выполняется (провал обороны)
-
-        // TODO плавающее ограничение на получаемый урон чтобы стимулировать нокауты
-        // TODO выяснить что я имел в виду под плавающим ограничением
         final boolean isFatality = defenceCtx.knockedOut;
 
         final ActionResult higherOne;
@@ -140,11 +133,11 @@ public enum MoveManager {
             lowerOne = higherOne == attack ? defence : attack;
         }
 
-        // 4.
-        if (lowerOne.action.dealNoDamage())
+        // Если действие не наносит прямой урон и оно проиграло по очкам, то оно не выполняется (провал обороны)
+        if (lowerOne.action.isDefencive())
             lowerOne.actionSuccessful = false;
 
-        // 3.
+        // Если действие бойца отмечается как неудачное, то оно не выполняется (провал выстрела) (проверка внутри)
         applyAction(Effect.Stage.ACTION, higherOne, lowerOne);
         applyAction(Effect.Stage.ACTION, lowerOne, higherOne);
 

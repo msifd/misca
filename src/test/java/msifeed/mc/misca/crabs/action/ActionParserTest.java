@@ -34,13 +34,6 @@ public class ActionParserTest {
         return act;
     }
 
-    @Ignore
-    @Test
-    public void test_liner() throws IOException {
-        String liner = "point_hit:melee:g30+,STR,PER,INT,-5:damage: : ";
-        assertEquals(getPointHitAction(), ActionParser.parse(liner));
-    }
-
     @Test
     public void test_json() throws IOException {
         URL url = Resources.getResource("action1.json");

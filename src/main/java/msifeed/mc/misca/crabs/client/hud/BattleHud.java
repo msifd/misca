@@ -17,6 +17,7 @@ import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.entity.player.EntityPlayer;
 
 import java.util.Collection;
+import java.util.Iterator;
 
 public class BattleHud extends AbstractHudWindow {
     public static final BattleHud INSTANCE = new BattleHud();
@@ -95,7 +96,7 @@ public class BattleHud extends AbstractHudWindow {
 
             if (actor.canSelectAction()) {
                 renderActionTabs(nimgui, isAttack);
-                renderActions(nimgui);
+                renderActions(nimgui, isAttack);
                 renderPlayerModifier(nimgui);
             }
 
@@ -116,9 +117,13 @@ public class BattleHud extends AbstractHudWindow {
     }
 
     private void renderStatRolls(NimGui nimgui) {
+        nimgui.horizontalBlock();
+        // Пробел между категориями
+        battleWindow.consume(0, battleWindow.nextElemY(), 0, 1);
+
         final Stats[] stats = Stats.values();
         for (int i = 0; i < stats.length; i++) {
-            if (i % 3 == 0) nimgui.horizontalBlock();
+            if (i % 2 == 0) nimgui.horizontalBlock();
             if (nimgui.button(stats[i].toString())) {
                 final long now = System.currentTimeMillis();
                 if (now - lastRollTime > 2000) {
@@ -166,31 +171,39 @@ public class BattleHud extends AbstractHudWindow {
         nimgui.horizontalBlock();
         battleWindow.consume(0, battleWindow.nextElemY(), 0, 1);
 
-        if (currActionTab.dealNoDamage() && isAttack)
+        if (currActionTab.defencive() && isAttack)
             currActionTab = Action.Type.MELEE;
 
         // Горизонтальные блоки задаются в цикле
         final Action.Type[] types = Action.Type.values();
         for (int i = 0; i < types.length; i++) {
-            if (i % 3 == 0) nimgui.horizontalBlock();
-            if (types[i].dealNoDamage() && isAttack) continue;
+            if (i % 2 == 0) nimgui.horizontalBlock();
+            if (types[i].defencive() && isAttack) continue;
             if (nimgui.button(types[i].pretty())) {
                 currActionTab = types[i];
             }
         }
     }
 
-    private void renderActions(NimGui nimgui) {
-        final Collection<Action> stubs = ActionManager.INSTANCE.stubs().get(currActionTab);
-        // Пробел между категориями и экшнами
-        nimgui.horizontalBlock();
-        battleWindow.consume(0, battleWindow.nextElemY(), 0, 1);
+    private void renderActions(NimGui nimgui, boolean isAttack) {
+//        nimgui.horizontalBlock();
 
         nimgui.horizontalBlock();
-        for (Action action : stubs) {
+        // Пробел между категориями
+        battleWindow.consume(0, battleWindow.nextElemY(), 0, 1);
+
+        final Collection<Action> stubs = ActionManager.INSTANCE.stubs().get(currActionTab);
+        Iterator<Action> it = stubs.iterator();
+
+        int pos = 0;
+        while (it.hasNext()) {
+            if (pos % 2 == 0) nimgui.horizontalBlock();
+            final Action action = it.next();
+            if (isAttack && action.isDefencive()) continue;
             if (nimgui.button(action.pretty())) {
                 CrabsNetwork.INSTANCE.sendToServer(new FighterMessage(action.name, getModifierInput()));
             }
+            pos++;
         }
     }
 
@@ -215,7 +228,7 @@ public class BattleHud extends AbstractHudWindow {
             nimgui.label(MiscaUtils.l10n("misca.crabs.gui.action_mod", context.action.pretty(), context.modifier));
         nimgui.label(MiscaUtils.l10n("misca.crabs.gui.describe"));
 
-        if (context.described && !context.action.dealNoDamage()) {
+        if (context.described && !context.action.isDefencive()) {
             if (context.damageDealt == 0)
                 nimgui.label(MiscaUtils.l10n("misca.crabs.gui.no_damage"));
             else

@@ -16,12 +16,13 @@ public class ActionJsonSerializer implements JsonSerializer<Action>, JsonDeseria
         root.addProperty("title", action.title);
         root.addProperty("type", action.type.toString());
 
-        if (action.deal_no_damage) root.addProperty("deal_no_damage", true);
-
         root.add("modifiers", serializeToStrings(action.modifiers));
         if (!action.target_effects.isEmpty()) root.add("target_effects", serializeToStrings(action.target_effects));
         if (!action.self_effects.isEmpty()) root.add("self_effects", serializeToStrings(action.self_effects));
-        if (!action.tags.isEmpty()) root.add("tags", serializeToStrings(action.tags));
+
+        final JsonArray tags = new JsonArray();
+        if (action.isDefencive()) tags.add(new JsonPrimitive("defencive"));
+        if (tags.size() > 0) root.add("tags", tags);
 
         return root;
     }
@@ -37,8 +38,8 @@ public class ActionJsonSerializer implements JsonSerializer<Action>, JsonDeseria
 
         final Action action = new Action(name, title, type);
 
-        final JsonElement deal_no_damage = root.get("deal_no_damage");
-        if (deal_no_damage != null) action.deal_no_damage = deal_no_damage.getAsBoolean();
+        final JsonElement dealNoDamage = root.get("defencive");
+        if (dealNoDamage != null) action.defencive = dealNoDamage.getAsBoolean();
 
         for (JsonElement e : root.getAsJsonArray("modifiers")) {
             final Modifier m = Rules.mod(e.getAsString().toLowerCase());
@@ -67,7 +68,13 @@ public class ActionJsonSerializer implements JsonSerializer<Action>, JsonDeseria
         final JsonArray tags = root.getAsJsonArray("tags");
         if (tags != null) {
             for (JsonElement e : tags) {
-                action.tags.add(e.getAsString());
+                if (!e.isJsonPrimitive() || !e.getAsJsonPrimitive().isString())
+                    throw new JsonParseException("Action tag must be a string!");
+                switch (e.getAsString()) {
+                    case "defencive":
+                        action.defencive = true;
+                        break;
+                }
             }
         }
 
