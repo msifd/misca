@@ -83,7 +83,10 @@ public class ItemHealthController extends Item {
 
     @SubscribeEvent
     public void onEntityInteract(EntityInteractEvent event) {
-        // ПКМ по существу - добавить 1 хп существу
+        // ПКМ этим предметом по существу - добавить 1 хп существу
+
+        final ItemStack itemStack = event.entityPlayer.getHeldItem();
+        if (itemStack == null || !(itemStack.getItem() instanceof ItemHealthController)) return;
 
         if (!event.entityPlayer.isSneaking()) {
             if (!(event.target instanceof EntityLivingBase)) return;
