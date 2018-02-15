@@ -30,18 +30,28 @@ public final class DiceMath {
         return (int) Math.floor(gauss(9.01, 1, 39));
     }
 
+    public static int d20() {
+        return rand.nextInt(20) + 1;
+    }
+
     public enum DiceRank {
         REGULAR, FAIL, LUCK;
 
-        public static DiceRank ofD15(int roll) {
+        public static DiceRank ofG15(int roll) {
             if (roll == 15) return LUCK;
             else if (roll == 1) return FAIL;
             else return REGULAR;
         }
 
-        public static DiceRank ofD40(int roll) {
+        public static DiceRank ofG40(int roll) {
             if (roll >= 37) return LUCK;
             else if (roll <= 4) return FAIL;
+            else return REGULAR;
+        }
+
+        public static DiceRank ofD20(int roll) {
+            if (roll >= 20) return LUCK;
+            else if (roll <= 1) return FAIL;
             else return REGULAR;
         }
 

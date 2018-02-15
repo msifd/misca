@@ -1,6 +1,5 @@
 package msifeed.mc.misca.crabs.fight;
 
-import msifeed.mc.misca.crabs.action.Action;
 import msifeed.mc.misca.crabs.character.Character;
 import msifeed.mc.misca.crabs.character.Stats;
 import msifeed.mc.misca.crabs.rules.ActionResult;
@@ -64,7 +63,7 @@ public final class MoveFormatter {
                 + "] "
                 + stat.toString()
                 + ": ["
-                + diceRankColor(DiceMath.DiceRank.ofD15(roll))
+                + diceRankColor(DiceMath.DiceRank.ofD20(roll))
                 + roll
                 + "\u00A76]+\u00A7r"
                 + statValue;

@@ -33,7 +33,7 @@ public final class ActionResult {
             final int result = m.mod(c);
             if (m.isDice()) {
                 diceSum += result;
-                final DiceRank rank = DiceRank.ofD40(result);
+                final DiceRank rank = DiceRank.ofG40(result);
                 if (rank.compareTo(diceRank) > 0)
                     diceRank = rank; // Если несколько дайсов, то выбираем наилучший критический ранг
             } else if (m instanceof Modifier.Stat) {

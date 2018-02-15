@@ -18,8 +18,9 @@ public class DiceTest {
 //                .map(i -> (int) Math.floor(gauss(4.5, 1, 21))) // fight roll
 //                .map(i -> (int) Math.round(gauss(4.5, 1, 21) / 2.)) // stat roll
 //                .map(i -> DiceMath.g15())
-                .map(i -> DiceMath.g40())
+//                .map(i -> DiceMath.g40())
 //                .map(i -> DiceMath.g40_plus())
+                .map(i -> DiceMath.d20())
                 .boxed()
                 .collect(Collectors.groupingBy(Function.identity(), TreeMap::new, Collectors.counting()))
                 .forEach((i, c) -> {

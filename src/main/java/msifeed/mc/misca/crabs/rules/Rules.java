@@ -131,11 +131,11 @@ public final class Rules {
             return;
         }
 
-        final int roll = DiceMath.g15();
+        final int roll = DiceMath.d20();
         final String msg = MoveFormatter.formatStatRoll(c, stat, roll, mod);
 
         final String unformattedMsg = MiscaUtils.roughRemoveFormatting(msg)
-                + " // " + DiceMath.DiceRank.ofD15(roll);
+                + " // " + DiceMath.DiceRank.ofD20(roll);
         DBHandler.INSTANCE.logMessage(player, "crabs_roll", unformattedMsg);
         MiscaUtils.notifyAround(
                 player, BattleDefines.NOTIFICATION_RADIUS,
