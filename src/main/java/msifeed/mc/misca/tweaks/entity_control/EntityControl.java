@@ -71,6 +71,7 @@ public class EntityControl {
 
             for (final Class c : entry.classes) {
                 if (c.isAssignableFrom(ec)) {
+                    event.entity.setDead();
                     event.setCanceled(true);
                     return;
                 }
