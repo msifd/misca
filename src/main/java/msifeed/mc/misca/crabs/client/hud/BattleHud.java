@@ -11,8 +11,10 @@ import msifeed.mc.misca.crabs.client.CrabsKeyBinds;
 import msifeed.mc.misca.crabs.context.Context;
 import msifeed.mc.misca.crabs.context.ContextManager;
 import msifeed.mc.misca.crabs.fight.FighterMessage;
+import msifeed.mc.misca.crabs.rules.FistFight;
 import msifeed.mc.misca.utils.MiscaUtils;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.entity.player.EntityPlayer;
 
@@ -25,8 +27,8 @@ public class BattleHud extends AbstractHudWindow {
     private final NimWindow battleWindow = new NimWindow(MiscaUtils.l10n("misca.crabs.battle"), () -> HudManager.INSTANCE.closeHud(INSTANCE));
     private final NimText modText = new NimText(20);
 
-    Context context = null;
-    private boolean diceRollMode = false;
+    private Context context = null;
+    private RollTab rollTab = RollTab.STATS;
     private Action.Type currActionTab = Action.Type.MELEE;
 
     private long lastRollTime = System.currentTimeMillis();
@@ -48,6 +50,9 @@ public class BattleHud extends AbstractHudWindow {
 
     @Override
     void open() {
+        final boolean isFighting = context != null && context.status.isFighting();
+        if (!isFighting && rollTab == RollTab.BATTLE)
+            rollTab = rollTab.next();
     }
 
     @Override
@@ -56,6 +61,8 @@ public class BattleHud extends AbstractHudWindow {
 
     @Override
     void render() {
+        final boolean wasInFight = context != null && context.status.isFighting();
+
         final Minecraft mc = Minecraft.getMinecraft();
         final EntityPlayer player = mc.thePlayer;
         final ContextManager cm = ContextManager.INSTANCE;
@@ -66,7 +73,7 @@ public class BattleHud extends AbstractHudWindow {
         final NimGui nimgui = NimGui.INSTANCE;
         nimgui.beginWindow(battleWindow);
 
-        // Super кнопка
+        // Super кнопки
         {
             nimgui.horizontalBlock();
 
@@ -75,19 +82,20 @@ public class BattleHud extends AbstractHudWindow {
             if (nimgui.button(MiscaUtils.l10n(controlButtonKey))) {
                 FighterMessage message = new FighterMessage(isFighting ? FighterMessage.Type.LEAVE : FighterMessage.Type.JOIN);
                 CrabsNetwork.INSTANCE.sendToServer(message);
+                if (!isFighting) rollTab = RollTab.BATTLE;
+            }
+
+            if (nimgui.button(rollTab.title)) {
+                rollTab = rollTab.next();
+                if (!isFighting && rollTab == RollTab.BATTLE)
+                    rollTab = rollTab.next();
             }
         }
 
-        if (isFighting) {
-            final String modeTitle = diceRollMode
-                    ? MiscaUtils.l10n("misca.crabs.battle")
-                    : MiscaUtils.l10n("misca.crabs.dices");
-            if (nimgui.button(modeTitle)) {
-                diceRollMode = !diceRollMode;
-            }
-        }
+        if (isFighting && !wasInFight)
+            rollTab = RollTab.BATTLE;
 
-        if (isFighting && !diceRollMode) {
+        if (isFighting && rollTab == RollTab.BATTLE) {
             final Context actor = context.puppet == null ? context : cm.getContext(context.puppet);
 
             if (!modText.inFocus())
@@ -104,7 +112,8 @@ public class BattleHud extends AbstractHudWindow {
                 renderPlayerModifier(nimgui);
             }
 
-            renderManual(nimgui, actor);
+            if (actor.status != Context.Status.LEAVING)
+                renderManual(nimgui, actor);
 
             // Позволяем отменить свою атаку
             if (actor.status == Context.Status.WAIT) {
@@ -112,8 +121,11 @@ public class BattleHud extends AbstractHudWindow {
                     CrabsNetwork.INSTANCE.sendToServer(new FighterMessage(FighterMessage.Type.RESET));
                 }
             }
-        } else {
+        } else if (rollTab == RollTab.STATS) {
             renderStatRolls(nimgui);
+            renderPlayerModifier(nimgui);
+        } else if (rollTab == RollTab.FISTS) {
+            renderFistFightRolls(nimgui);
             renderPlayerModifier(nimgui);
         }
 
@@ -133,6 +145,24 @@ public class BattleHud extends AbstractHudWindow {
                 if (now - lastRollTime > 2000) {
                     lastRollTime = now;
                     CrabsNetwork.INSTANCE.sendToServer(new FighterMessage(stats[i], getModifierInput()));
+                }
+            }
+        }
+    }
+
+    private void renderFistFightRolls(NimGui nimgui) {
+        nimgui.horizontalBlock();
+        // Пробел между категориями
+        battleWindow.consume(0, battleWindow.nextElemY(), 0, 1);
+
+        final FistFight.Action[] actions = FistFight.Action.values();
+        for (int i = 0; i < actions.length; i++) {
+            if (i % 2 == 0) nimgui.horizontalBlock();
+            if (nimgui.button(actions[i].pretty())) {
+                final long now = System.currentTimeMillis();
+                if (now - lastRollTime > 2000) {
+                    lastRollTime = now;
+                    CrabsNetwork.INSTANCE.sendToServer(new FighterMessage(actions[i], getModifierInput()));
                 }
             }
         }
@@ -251,6 +281,18 @@ public class BattleHud extends AbstractHudWindow {
                     : Integer.parseInt(modStr);
         } catch (NumberFormatException ignore) {
             return 0;
+        }
+    }
+
+    private enum RollTab {
+        STATS, BATTLE, FISTS;
+
+        String title = I18n.format("misca.crabs." + toString().toLowerCase());
+
+        public RollTab next() {
+            final RollTab[] v = RollTab.values();
+            final int n = ordinal() + 1;
+            return n < v.length ? v[n] : v[0];
         }
     }
 }

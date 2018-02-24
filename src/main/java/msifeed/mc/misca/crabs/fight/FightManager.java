@@ -120,6 +120,9 @@ public enum FightManager {
             case CALC:
                 Rules.rollSingleStat(player, context, message.stat, message.mod);
                 break;
+            case FIST:
+                Rules.rollFistFight(player, context, message.fistAction, message.mod);
+                break;
         }
     }
 

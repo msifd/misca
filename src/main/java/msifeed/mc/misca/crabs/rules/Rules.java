@@ -5,7 +5,7 @@ import msifeed.mc.misca.crabs.character.CharacterManager;
 import msifeed.mc.misca.crabs.character.Stats;
 import msifeed.mc.misca.crabs.context.Context;
 import msifeed.mc.misca.crabs.fight.BattleDefines;
-import msifeed.mc.misca.crabs.fight.MoveFormatter;
+import msifeed.mc.misca.crabs.fight.ActionFormatter;
 import msifeed.mc.misca.database.DBHandler;
 import msifeed.mc.misca.utils.MiscaUtils;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -132,7 +132,35 @@ public final class Rules {
         }
 
         final int roll = DiceMath.d20();
-        final String msg = MoveFormatter.formatStatRoll(c, stat, roll, mod);
+        final String msg = ActionFormatter.formatStatRoll(c, stat, roll, mod);
+
+        final String unformattedMsg = MiscaUtils.roughRemoveFormatting(msg)
+                + " // " + DiceMath.DiceRank.ofD20(roll);
+        DBHandler.INSTANCE.logMessage(player, "crabs_roll", unformattedMsg);
+        MiscaUtils.notifyAround(
+                player, BattleDefines.NOTIFICATION_RADIUS,
+                new ChatComponentText(msg)
+        );
+    }
+
+    public static void rollFistFight(EntityPlayerMP player, Context ctx, FistFight.Action action, int mod) {
+        final UUID actor = ctx != null
+                ? ctx.puppet != null ? ctx.puppet : ctx.uuid
+                : player.getUniqueID();
+
+        final Character c = CharacterManager.INSTANCE.getNullable(actor);
+        if (c == null) {
+            player.addChatMessage(new ChatComponentText("Update stats at first."));
+            return;
+        }
+
+        final int roll = DiceMath.d20();
+        final Stats[] rule = FistFight.rules.get(action);
+        int stats = 0;
+        for (Stats s : rule)
+            stats += c.stat(s);
+
+        final String msg = ActionFormatter.formatFistFightRoll(c, action, roll, stats, mod);
 
         final String unformattedMsg = MiscaUtils.roughRemoveFormatting(msg)
                 + " // " + DiceMath.DiceRank.ofD20(roll);

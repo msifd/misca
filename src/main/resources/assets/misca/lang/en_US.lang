@@ -21,11 +21,13 @@ misca.crabs.update_char=Обновить персонажа
 misca.crabs.fill_all_stats=Заполни все поля!
 misca.crabs.cant_open_in_battle=Хар-ки нельзя изменять во время боя
 
+misca.crabs.stats=Статы
+misca.crabs.fists=Кулаки
 misca.crabs.battle=Бой
+
 misca.crabs.join_fight=Войти в бой
 misca.crabs.leave_fight=Выйти из боя
 misca.crabs.cancel=Отмена
-misca.crabs.dices=Дайсы
 misca.crabs.abort=I Never Asked For This
 misca.crabs.player_mod=Модификатор:
 
@@ -62,6 +64,11 @@ misca.crabs.action.area_spell=AOE заклинание
 misca.crabs.action.counterspell=Контрзаклинание
 misca.crabs.action.use=Использование
 misca.crabs.action.none=Ничего
+
+misca.crabs.action.hook=Хук
+misca.crabs.action.jeb=Джеб
+misca.crabs.action.magic_punch=Маг. удар
+misca.crabs.action.magic_block=Маг. блок
 
 misca.crabs.buff.score=Бонус очков: %s
 

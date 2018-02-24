@@ -11,7 +11,6 @@ import msifeed.mc.misca.utils.MiscaUtils;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ChatComponentText;
-import net.minecraft.util.EntityDamageSource;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -171,10 +170,6 @@ public enum MoveManager {
         applyBuffs(higherOne, lowerOne);
         applyBuffs(lowerOne, higherOne);
 
-        // Максимальный урон за ход = 15
-        if (higherOne.damageToReceive > 15) higherOne.damageToReceive = 15;
-        if (lowerOne.damageToReceive > 15) lowerOne.damageToReceive = 15;
-
         // Если оба действия атакующие, то меньшее наносит лишь 75% урона
         if (!higherOne.action.isDefencive() && !lowerOne.action.isDefencive())
             higherOne.damageToReceive *= 0.75;
@@ -185,8 +180,8 @@ public enum MoveManager {
 
         // Пишем про фаталити только если оно, собственно, удачно
         final String resultMsg = isFatality && higherOne.successful()
-                ? MoveFormatter.formatFatalityResult(higherOne.ctx.entity, lowerOne.ctx.entity)
-                : MoveFormatter.formatActionResults(higherOne, lowerOne);
+                ? ActionFormatter.formatFatalityResult(higherOne.ctx.entity, lowerOne.ctx.entity)
+                : ActionFormatter.formatActionResults(higherOne, lowerOne);
 
         final String unformattedMsg = MiscaUtils.roughRemoveFormatting(resultMsg)
                 + " // " + higherOne.diceRank.toString() + " -> " + lowerOne.diceRank.toString();
@@ -273,7 +268,10 @@ public enum MoveManager {
 
         final float dr = (maxArmorResist - Math.min(armorValue, 20)) / maxArmorResist;
         final float damageResisted = self.damageToReceive * dr;
-        final float damage = Math.round(Math.max(damageResisted - armorValue * armorThresholdMod, damageResisted * minArmorThreshold));
+        float damage = Math.round(Math.max(damageResisted - armorValue * armorThresholdMod, damageResisted * minArmorThreshold));
+
+        // Обрезаем урон
+        if (damage > 15) damage = 15;
 
         final boolean isFatal = currentHealth <= damage;
         final float damageToHealth = isFatal && !selfCtx.knockedOut ? currentHealth - 1.0f : damage;

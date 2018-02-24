@@ -4,10 +4,11 @@ import msifeed.mc.misca.crabs.character.Character;
 import msifeed.mc.misca.crabs.character.Stats;
 import msifeed.mc.misca.crabs.rules.ActionResult;
 import msifeed.mc.misca.crabs.rules.DiceMath;
+import msifeed.mc.misca.crabs.rules.FistFight;
 import msifeed.mc.misca.utils.MiscaUtils;
 import net.minecraft.entity.EntityLivingBase;
 
-public final class MoveFormatter {
+public final class ActionFormatter {
     public static String formatActionResults(ActionResult winner, ActionResult looser) {
         EntityLivingBase we = winner.ctx.entity, le = looser.ctx.entity;
         return "\u00A76[\u00A72"
@@ -72,6 +73,25 @@ public final class MoveFormatter {
             s += (mod > 0 ? "\u00A76+\u00A7r" : "\u00A76-\u00A7r") + Math.abs(mod);
 
         s += "\u00A76=\u00A7r" + (roll + statValue + mod);
+
+        return s;
+    }
+
+    public static String formatFistFightRoll(Character character, FistFight.Action action, int roll, int stats, int mod) {
+        String s = "\u00A76["
+                + character.name
+                + "] "
+                + action.pretty()
+                + ": ["
+                + diceRankColor(DiceMath.DiceRank.ofD20(roll))
+                + roll
+                + "\u00A76]+\u00A7r"
+                + stats;
+
+        if (mod != 0)
+            s += (mod > 0 ? "\u00A76+\u00A7r" : "\u00A76-\u00A7r") + Math.abs(mod);
+
+        s += "\u00A76=\u00A7r" + (roll + stats + mod);
 
         return s;
     }
