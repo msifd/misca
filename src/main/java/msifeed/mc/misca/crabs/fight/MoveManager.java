@@ -119,6 +119,22 @@ public enum MoveManager {
         completeMoves.removeIf(m -> finalizeMove(m.attacker, m.defender));
     }
 
+    private ActionResult computeWinner(ActionResult a, ActionResult b) {
+        applyAction(Effect.Stage.BEFORE_MODS, a, b);
+        applyAction(Effect.Stage.BEFORE_MODS, b, a);
+
+        do {
+            a.throwDices(a.character);
+            b.throwDices(b.character);
+
+            // Для таких эффектов как ограничение на минимальные очки
+            applyAction(Effect.Stage.AFTER_MODS, a, b);
+            applyAction(Effect.Stage.AFTER_MODS, b, a);
+        } while (a.compareTo(b) == 0);
+
+        return a.compareTo(b) > 0 ? a : b;
+    }
+
     private boolean finalizeMove(Context attackCtx, Context defenceCtx) {
         if (attackCtx.action == null || defenceCtx.action == null) return false;
 
@@ -133,24 +149,42 @@ public enum MoveManager {
             lowerOne = higherOne == attack ? defence : attack;
         }
 
-        // Если действие не наносит прямой урон и оно проиграло по очкам, то оно не выполняется (провал обороны)
+        // Если меньшее действие защитное, то его эффекты не применяются
+        // Для отмены эффектов провалившейся защиты
         if (lowerOne.action.isDefencive())
-            lowerOne.actionSuccessful = false;
+            lowerOne.applyEffects = false;
 
         // Если действие бойца отмечается как неудачное, то оно не выполняется (провал выстрела) (проверка внутри)
         applyAction(Effect.Stage.ACTION, higherOne, lowerOne);
         applyAction(Effect.Stage.ACTION, lowerOne, higherOne);
 
+        // Если большее действие защитное, то доп. эффекты и баффы меньшего не применяются
+        // Для отмены эффектов заблокированной атаки
+        if (higherOne.action.isDefencive())
+            lowerOne.applyEffects = false;
+
         // Для манипуляторов уроном, например
         applyAction(Effect.Stage.AFTER_ACTION, higherOne, lowerOne);
         applyAction(Effect.Stage.AFTER_ACTION, lowerOne, higherOne);
 
-        // Выдаем урон обоим, мало ли...
+        // Выдаем баффы
+        applyBuffs(higherOne, lowerOne);
+        applyBuffs(lowerOne, higherOne);
+
+        // Максимальный урон за ход = 15
+        if (higherOne.damageToReceive > 15) higherOne.damageToReceive = 15;
+        if (lowerOne.damageToReceive > 15) lowerOne.damageToReceive = 15;
+
+        // Если оба действия атакующие, то меньшее наносит лишь 75% урона
+        if (!higherOne.action.isDefencive() && !lowerOne.action.isDefencive())
+            higherOne.damageToReceive *= 0.75;
+
+        // Урон выдаем всегда, но он может умножаться на ноль эффекатми
         applyDamage(lowerOne, higherOne);
         applyDamage(higherOne, lowerOne);
 
         // Пишем про фаталити только если оно, собственно, удачно
-        final String resultMsg = isFatality && higherOne.actionSuccessful
+        final String resultMsg = isFatality && higherOne.successful()
                 ? MoveFormatter.formatFatalityResult(higherOne.ctx.entity, lowerOne.ctx.entity)
                 : MoveFormatter.formatActionResults(higherOne, lowerOne);
 
@@ -179,14 +213,12 @@ public enum MoveManager {
     }
 
     private static void applyAction(Effect.Stage stage, ActionResult self, ActionResult target) {
-        // Осторожно! Мокрый код!
-
-        // Баффы работают всегда, но ограниченное кол-во раз
+        // Баффы работают всегда, потому что уже висят на бойце
         for (final Buff b : self.ctx.buffs)
             if (b.shouldApply(stage, self, target))
                 b.apply(stage, self, target);
 
-        if (!self.actionSuccessful) return;
+        if (!self.successful()) return;
 
         // Раздача пенделей
         for (final Effect e : self.action.target_effects)
@@ -195,33 +227,17 @@ public enum MoveManager {
         for (final Effect e : self.action.self_effects)
             if (!(e instanceof Buff) && e.shouldApply(stage, self, target))
                 e.apply(stage, self, target);
-
-        // Раздача баффов
-        // Здесь, потому что нужно выдавать для каждого успешного действия бойца
-        if (stage == Effect.Stage.ACTION) {
-            for (final Effect e : self.action.target_effects)
-                if (e instanceof Buff)
-                    target.ctx.buffs.add((Buff) e);
-            for (final Effect e : self.action.self_effects)
-                if (e instanceof Buff)
-                    self.ctx.buffs.add((Buff) e);
-        }
     }
 
-    private static ActionResult computeWinner(ActionResult a, ActionResult b) {
-        applyAction(Effect.Stage.BEFORE_MODS, a, b);
-        applyAction(Effect.Stage.BEFORE_MODS, b, a);
+    private void applyBuffs(ActionResult self, ActionResult target) {
+        if (!self.successful()) return;
 
-        do {
-            a.throwDices(a.character);
-            b.throwDices(b.character);
-
-            // Для таких эффектов как ограничение на минимальные очки
-            applyAction(Effect.Stage.AFTER_MODS, a, b);
-            applyAction(Effect.Stage.AFTER_MODS, b, a);
-        } while (a.compareTo(b) == 0);
-
-        return a.compareTo(b) > 0 ? a : b;
+        for (final Effect e : self.action.target_effects)
+            if (e instanceof Buff)
+                target.ctx.buffs.add((Buff) e);
+        for (final Effect e : self.action.self_effects)
+            if (e instanceof Buff)
+                self.ctx.buffs.add((Buff) e);
     }
 
     private static void applyDamage(ActionResult self, ActionResult enemy) {

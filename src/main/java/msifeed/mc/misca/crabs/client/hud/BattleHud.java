@@ -32,7 +32,7 @@ public class BattleHud extends AbstractHudWindow {
     private long lastRollTime = System.currentTimeMillis();
 
     private BattleHud() {
-        modText.validateText = s -> s.matches("-?\\d{0,3}");
+        modText.validateText = s -> s.matches("(-?\\d{0,3})?");
         modText.onUnfocus = s -> {
             if (context == null) return;
             final int mod = getModifierInput();
@@ -89,6 +89,10 @@ public class BattleHud extends AbstractHudWindow {
 
         if (isFighting && !diceRollMode) {
             final Context actor = context.puppet == null ? context : cm.getContext(context.puppet);
+
+            if (!modText.inFocus())
+                modText.setText(actor.modifier == 0 ? "" : Integer.toString(actor.modifier));
+
             // При защите таргет уже указвает на нападающего
             final boolean isAttack = actor.status == Context.Status.ACTIVE && actor.target == null;
 

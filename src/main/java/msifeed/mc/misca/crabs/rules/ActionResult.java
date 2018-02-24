@@ -11,7 +11,8 @@ public final class ActionResult {
     public final Character character;
     public final Action action;
 
-    public boolean actionSuccessful;
+    public boolean actionSuccessful; // Флаг преодоления порога очков
+    public boolean applyEffects; // Успешность эффектов. Урон регулируется блоками.
     public int playerMod, effectMod;
     public int diceSum, statSum, modSum, totalSum;
     public DiceRank diceRank = DiceRank.REGULAR;
@@ -52,14 +53,19 @@ public final class ActionResult {
         if (diceRank.beats(other.diceRank)) return 1;
         else if (other.diceRank.beats(diceRank)) return -1;
 
-        else if (actionSuccessful && !other.actionSuccessful) return 1;
-        else if (!actionSuccessful && other.actionSuccessful) return -1;
+        else if (successful() && !other.successful()) return 1;
+        else if (!successful() && other.successful()) return -1;
 
         else return totalSum - other.totalSum;
     }
 
+    public boolean successful() {
+        return applyEffects && actionSuccessful;
+    }
+
     private void reset() {
         actionSuccessful = !ctx.knockedOut;
+        applyEffects = true;
         diceSum = 0;
         statSum = 0;
         modSum = 0;
