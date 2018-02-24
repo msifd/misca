@@ -18,6 +18,10 @@ public final class DiceMath {
         return (int) Math.floor(gauss(4.15, 1, 16));
     }
 
+    public static int g20() {
+        return (int) Math.floor(gauss(4.5, 1, 21));
+    }
+
     public static int g40() {
         return (int) Math.floor(gauss(9.01, 1, 41));
     }
