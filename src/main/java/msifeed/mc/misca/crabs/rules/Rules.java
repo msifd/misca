@@ -164,7 +164,7 @@ public final class Rules {
 
         final String unformattedMsg = MiscaUtils.roughRemoveFormatting(msg)
                 + " // " + DiceMath.DiceRank.ofD20(roll);
-        DBHandler.INSTANCE.logMessage(player, "crabs_roll", unformattedMsg);
+        DBHandler.INSTANCE.logMessage(player, "crabs_fist", unformattedMsg);
         MiscaUtils.notifyAround(
                 player, BattleDefines.NOTIFICATION_RADIUS,
                 new ChatComponentText(msg)

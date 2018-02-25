@@ -3,6 +3,7 @@ package msifeed.mc.misca.crabs.rules;
 import java.util.EnumMap;
 
 import msifeed.mc.misca.crabs.character.Stats;
+import msifeed.mc.misca.utils.MiscaUtils;
 import net.minecraft.client.resources.I18n;
 
 import static msifeed.mc.misca.crabs.character.Stats.*;
@@ -26,7 +27,7 @@ public class FistFight {
         HOOK, JEB, KICK, MAGIC_PUNCH, BLOCK, DODGE, PARRY, MAGIC_BLOCK;
 
         public String pretty() {
-            return I18n.format("misca.crabs.action." + this.toString().toLowerCase());
+            return MiscaUtils.l10n("misca.crabs.action." + this.toString().toLowerCase());
         }
     }
 }

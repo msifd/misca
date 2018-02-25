@@ -4,12 +4,13 @@ import msifeed.mc.gui.NimGui;
 import msifeed.mc.gui.nim.NimText;
 import msifeed.mc.gui.nim.NimWindow;
 import msifeed.mc.misca.utils.MiscaNetwork;
+import msifeed.mc.misca.utils.MiscaUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.resources.I18n;
 
 public class GuiEditBook extends GuiScreen {
-    private final NimWindow writerWindow = new NimWindow(I18n.format("misca.books.editor.title"), GuiEditBook::closeGui);
+    private final NimWindow writerWindow = new NimWindow(MiscaUtils.l10n("misca.books.editor.title"), GuiEditBook::closeGui);
     private final NimText nameInput = new NimText();
 
     private boolean nameChecked = true;
@@ -41,20 +42,20 @@ public class GuiEditBook extends GuiScreen {
         nimgui.beginWindow(writerWindow);
 
         nimgui.horizontalBlock();
-        nimgui.label(I18n.format("misca.books.editor.index"));
+        nimgui.label(MiscaUtils.l10n("misca.books.editor.index"));
         nimgui.nim(nameInput);
 
         nimgui.verticalBlock();
         if (checkStatus != null) {
             final String status;
             if (checkStatus == CheckStatus.CHECKING) status = "...";
-            else if (checkStatus == CheckStatus.EXISTS) status = I18n.format("misca.books.editor.exists");
-            else status = I18n.format("misca.books.editor.missing");
+            else if (checkStatus == CheckStatus.EXISTS) status = MiscaUtils.l10n("misca.books.editor.exists");
+            else status = MiscaUtils.l10n("misca.books.editor.missing");
 
-            nimgui.label(I18n.format("misca.books.editor.the_book") + " " + status);
+            nimgui.label(MiscaUtils.l10n("misca.books.editor.the_book") + " " + status);
         }
 
-        if (nimgui.button(I18n.format("misca.books.editor.get")) && checkStatus == CheckStatus.EXISTS) {
+        if (nimgui.button(MiscaUtils.l10n("misca.books.editor.get")) && checkStatus == CheckStatus.EXISTS) {
             MiscaNetwork.INSTANCE.sendToServer(new MessageRemoteBook(MessageRemoteBook.Type.SIGN, nameInput.getText()));
             closeGui();
         }

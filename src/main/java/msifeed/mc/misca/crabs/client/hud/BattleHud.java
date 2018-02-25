@@ -287,7 +287,7 @@ public class BattleHud extends AbstractHudWindow {
     private enum RollTab {
         STATS, BATTLE, FISTS;
 
-        String title = I18n.format("misca.crabs." + toString().toLowerCase());
+        String title = MiscaUtils.l10n("misca.crabs." + toString().toLowerCase());
 
         public RollTab next() {
             final RollTab[] v = RollTab.values();
