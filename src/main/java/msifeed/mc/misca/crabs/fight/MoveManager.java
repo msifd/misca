@@ -270,8 +270,9 @@ public enum MoveManager {
         final float damageResisted = self.damageToReceive * dr;
         float damage = Math.round(Math.max(damageResisted - armorValue * armorThresholdMod, damageResisted * minArmorThreshold));
 
-        // Обрезаем урон
-        if (damage > 15) damage = 15;
+        // Макс. урон = 75% от макс. здоровья
+        final float maxDamage = selfEntity.getMaxHealth() * 0.75f;
+        if (damage > maxDamage) damage = maxDamage;
 
         final boolean isFatal = currentHealth <= damage;
         final float damageToHealth = isFatal && !selfCtx.knockedOut ? currentHealth - 1.0f : damage;
