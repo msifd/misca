@@ -93,7 +93,7 @@ public class CharacterHud extends AbstractHudWindow {
         // Во время боя изменять самому себе статы нельзя.
         // Распологается здесь чтобы окошко закрывалось при входе в бой.
         final EntityPlayer player = Minecraft.getMinecraft().thePlayer;
-        if (context == null || (entity == player && context.status.isFighting())) {
+        if (entity == player && context != null && context.status.isFighting()) {
             HudManager.INSTANCE.closeHud(INSTANCE);
             player.addChatMessage(new ChatComponentText(MiscaUtils.l10n("misca.crabs.cant_open_in_battle")));
             return;
