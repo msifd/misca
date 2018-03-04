@@ -2,7 +2,6 @@ package msifeed.mc.misca.things;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockSlab;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemSlab;
 import net.minecraft.world.World;
 

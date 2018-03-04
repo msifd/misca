@@ -7,9 +7,9 @@ import msifeed.mc.misca.utils.AbstractMessage;
 import java.util.UUID;
 
 public class CharacterMessage extends AbstractMessage<CharacterMessage> {
-    private Type type;
     UUID uuid;
     Character character;
+    private Type type;
 
     public CharacterMessage() {
     }

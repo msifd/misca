@@ -7,7 +7,6 @@ import msifeed.mc.misca.utils.MiscaNetwork;
 import msifeed.mc.misca.utils.MiscaUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.resources.I18n;
 
 public class GuiEditBook extends GuiScreen {
     private final NimWindow writerWindow = new NimWindow(MiscaUtils.l10n("misca.books.editor.title"), GuiEditBook::closeGui);
@@ -24,6 +23,10 @@ public class GuiEditBook extends GuiScreen {
             lastInput = System.currentTimeMillis();
             return true;
         };
+    }
+
+    private static void closeGui() {
+        Minecraft.getMinecraft().displayGuiScreen(null);
     }
 
     @Override
@@ -70,10 +73,6 @@ public class GuiEditBook extends GuiScreen {
         nameChecked = true;
         checkStatus = CheckStatus.CHECKING;
         RemoteBookManager.INSTANCE.sendCheck(name, exists -> checkStatus = exists ? CheckStatus.EXISTS : CheckStatus.MISSING);
-    }
-
-    private static void closeGui() {
-        Minecraft.getMinecraft().displayGuiScreen(null);
     }
 
     private enum CheckStatus {

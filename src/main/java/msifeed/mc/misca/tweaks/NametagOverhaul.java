@@ -27,13 +27,11 @@ import java.util.UUID;
 public class NametagOverhaul implements IMessageHandler<NametagOverhaul.MessageNametag, IMessage> {
     private static final int MIN_NAMETAG_DISTANCE = 3;
     private static final int MIN_LOOKUP_DISTANCE = 10;
-
+    private final CommandNametag commandNametag = new CommandNametag();
+    private final CommandLookup commandLookup = new CommandLookup();
     private HashSet<UUID> hiddenOnes = new HashSet<>();
     private HashSet<UUID> publicOnes = new HashSet<>();
     private boolean lookupEnabled = false;
-
-    private final CommandNametag commandNametag = new CommandNametag();
-    private final CommandLookup commandLookup = new CommandLookup();
 
     public void initClient() {
         ClientCommandHandler.instance.registerCommand(commandLookup);
@@ -78,6 +76,51 @@ public class NametagOverhaul implements IMessageHandler<NametagOverhaul.MessageN
         publicOnes.clear();
         publicOnes.addAll(message.publicOnes);
         return null;
+    }
+
+    public static class MessageNametag implements IMessage {
+        HashSet<UUID> hiddenOnes = new HashSet<>();
+        HashSet<UUID> publicOnes = new HashSet<>();
+
+        public MessageNametag() {
+
+        }
+
+        public MessageNametag(NametagOverhaul module) {
+            hiddenOnes.addAll(module.hiddenOnes);
+            publicOnes.addAll(module.publicOnes);
+        }
+
+        @Override
+        public void fromBytes(ByteBuf buf) {
+            int size = buf.readInt();
+            ByteBuf map_buf = buf.readBytes(size);
+
+            try {
+                ByteArrayInputStream bis = new ByteArrayInputStream(map_buf.array());
+                ObjectInputStream ois = new ObjectInputStream(bis);
+                this.hiddenOnes = (HashSet<UUID>) ois.readObject();
+                this.publicOnes = (HashSet<UUID>) ois.readObject();
+            } catch (IOException | ClassNotFoundException e) {
+                e.printStackTrace();
+            }
+        }
+
+        @Override
+        public void toBytes(ByteBuf buf) {
+            try {
+                ByteArrayOutputStream bos = new ByteArrayOutputStream();
+                ObjectOutputStream oos = new ObjectOutputStream(bos);
+                oos.writeObject(this.hiddenOnes);
+                oos.writeObject(this.publicOnes);
+
+                byte[] bytes = bos.toByteArray();
+                buf.writeInt(bytes.length);
+                buf.writeBytes(bytes);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     public class CommandNametag extends CommandBase {
@@ -155,52 +198,6 @@ public class NametagOverhaul implements IMessageHandler<NametagOverhaul.MessageN
         @Override
         public boolean canCommandSenderUseCommand(ICommandSender sender) {
             return sender instanceof EntityPlayer;
-        }
-    }
-
-
-    public static class MessageNametag implements IMessage {
-        HashSet<UUID> hiddenOnes = new HashSet<>();
-        HashSet<UUID> publicOnes = new HashSet<>();
-
-        public MessageNametag() {
-
-        }
-
-        public MessageNametag(NametagOverhaul module) {
-            hiddenOnes.addAll(module.hiddenOnes);
-            publicOnes.addAll(module.publicOnes);
-        }
-
-        @Override
-        public void fromBytes(ByteBuf buf) {
-            int size = buf.readInt();
-            ByteBuf map_buf = buf.readBytes(size);
-
-            try {
-                ByteArrayInputStream bis = new ByteArrayInputStream(map_buf.array());
-                ObjectInputStream ois = new ObjectInputStream(bis);
-                this.hiddenOnes = (HashSet<UUID>) ois.readObject();
-                this.publicOnes = (HashSet<UUID>) ois.readObject();
-            } catch (IOException | ClassNotFoundException e) {
-                e.printStackTrace();
-            }
-        }
-
-        @Override
-        public void toBytes(ByteBuf buf) {
-            try {
-                ByteArrayOutputStream bos = new ByteArrayOutputStream();
-                ObjectOutputStream oos = new ObjectOutputStream(bos);
-                oos.writeObject(this.hiddenOnes);
-                oos.writeObject(this.publicOnes);
-
-                byte[] bytes = bos.toByteArray();
-                buf.writeInt(bytes.length);
-                buf.writeBytes(bytes);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
         }
     }
 }

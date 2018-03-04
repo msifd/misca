@@ -27,6 +27,61 @@ public enum MoveManager {
     private HashMap<UUID, Move> pendingMoves = new HashMap<>();
     private ArrayList<Move> completeMoves = new ArrayList<>();
 
+    private static void applyAction(Effect.Stage stage, ActionResult self, ActionResult target) {
+        // Баффы работают всегда, потому что уже висят на бойце
+        for (final Buff b : self.ctx.buffs)
+            if (b.shouldApply(stage, self, target))
+                b.apply(stage, self, target);
+
+        if (!self.successful()) return;
+
+        // Раздача пенделей
+        for (final Effect e : self.action.target_effects)
+            if (!(e instanceof Buff) && e.shouldApply(stage, target, self))
+                e.apply(stage, target, self);
+        for (final Effect e : self.action.self_effects)
+            if (!(e instanceof Buff) && e.shouldApply(stage, self, target))
+                e.apply(stage, self, target);
+    }
+
+    private static void applyDamage(ActionResult self, ActionResult enemy) {
+        if (self.damageToReceive <= 0) return;
+        receiveDamage(self, enemy);
+    }
+
+    /**
+     * Тут наносится урон `себе`. Он накапливается от эффектов ранее.
+     */
+    private static void receiveDamage(ActionResult self, ActionResult enemy) {
+        final Context selfCtx = self.ctx;
+        final EntityLivingBase selfEntity = selfCtx.entity;
+        final EntityLivingBase enemyEntity = enemy.ctx.entity;
+
+        final float currentHealth = selfEntity.getHealth();
+        final float armorValue = selfEntity.getTotalArmorValue();
+
+        final float maxArmorResist = 33; // Макс. резист урона броней ~60%.
+        final float armorThresholdMod = 0.3f;
+        final float minArmorThreshold = 0.4f; // Урон не может быть ниже 40% резистного урона
+
+        final float dr = (maxArmorResist - Math.min(armorValue, 20)) / maxArmorResist;
+        final float damageResisted = self.damageToReceive * dr;
+        float damage = Math.round(Math.max(damageResisted - armorValue * armorThresholdMod, damageResisted * minArmorThreshold));
+
+        // Макс. урон = 75% от макс. здоровья
+        final float maxDamage = selfEntity.getMaxHealth() * 0.75f;
+        if (damage > maxDamage) damage = maxDamage;
+
+        final boolean isFatal = currentHealth <= damage;
+        final float damageToHealth = isFatal && !selfCtx.knockedOut ? currentHealth - 1.0f : damage;
+
+        selfEntity.setHealth(currentHealth - damageToHealth);
+        selfEntity.attackEntityFrom(new CrabsDamage(enemyEntity), Float.MIN_VALUE); // Нужно для визуального эффекта урона
+
+        final float damageDealt = currentHealth - selfEntity.getHealth();
+        logger.info("`{}` received {} damage from `{}`", selfEntity.getCommandSenderName(), damageDealt, enemyEntity.getCommandSenderName());
+    }
+
     public void selectAction(Context actor, Action action, int mod) {
         // Сбрасывать можно всегда
         if (actor.action != null && actor.action.name.equals(action.name)) {
@@ -207,23 +262,6 @@ public enum MoveManager {
         return true;
     }
 
-    private static void applyAction(Effect.Stage stage, ActionResult self, ActionResult target) {
-        // Баффы работают всегда, потому что уже висят на бойце
-        for (final Buff b : self.ctx.buffs)
-            if (b.shouldApply(stage, self, target))
-                b.apply(stage, self, target);
-
-        if (!self.successful()) return;
-
-        // Раздача пенделей
-        for (final Effect e : self.action.target_effects)
-            if (!(e instanceof Buff) && e.shouldApply(stage, target, self))
-                e.apply(stage, target, self);
-        for (final Effect e : self.action.self_effects)
-            if (!(e instanceof Buff) && e.shouldApply(stage, self, target))
-                e.apply(stage, self, target);
-    }
-
     private void applyBuffs(ActionResult self, ActionResult target) {
         if (!self.successful()) return;
 
@@ -233,44 +271,6 @@ public enum MoveManager {
         for (final Effect e : self.action.self_effects)
             if (e instanceof Buff)
                 self.ctx.buffs.add((Buff) e);
-    }
-
-    private static void applyDamage(ActionResult self, ActionResult enemy) {
-        if (self.damageToReceive <= 0) return;
-        receiveDamage(self, enemy);
-    }
-
-    /**
-     * Тут наносится урон `себе`. Он накапливается от эффектов ранее.
-     */
-    private static void receiveDamage(ActionResult self, ActionResult enemy) {
-        final Context selfCtx = self.ctx;
-        final EntityLivingBase selfEntity = selfCtx.entity;
-        final EntityLivingBase enemyEntity = enemy.ctx.entity;
-
-        final float currentHealth = selfEntity.getHealth();
-        final float armorValue = selfEntity.getTotalArmorValue();
-
-        final float maxArmorResist = 33; // Макс. резист урона броней ~60%.
-        final float armorThresholdMod = 0.3f;
-        final float minArmorThreshold = 0.4f; // Урон не может быть ниже 40% резистного урона
-
-        final float dr = (maxArmorResist - Math.min(armorValue, 20)) / maxArmorResist;
-        final float damageResisted = self.damageToReceive * dr;
-        float damage = Math.round(Math.max(damageResisted - armorValue * armorThresholdMod, damageResisted * minArmorThreshold));
-
-        // Макс. урон = 75% от макс. здоровья
-        final float maxDamage = selfEntity.getMaxHealth() * 0.75f;
-        if (damage > maxDamage) damage = maxDamage;
-
-        final boolean isFatal = currentHealth <= damage;
-        final float damageToHealth = isFatal && !selfCtx.knockedOut ? currentHealth - 1.0f : damage;
-
-        selfEntity.setHealth(currentHealth - damageToHealth);
-        selfEntity.attackEntityFrom(new CrabsDamage(enemyEntity), Float.MIN_VALUE); // Нужно для визуального эффекта урона
-
-        final float damageDealt = currentHealth - selfEntity.getHealth();
-        logger.info("`{}` received {} damage from `{}`", selfEntity.getCommandSenderName(), damageDealt, enemyEntity.getCommandSenderName());
     }
 
     private static class Move {

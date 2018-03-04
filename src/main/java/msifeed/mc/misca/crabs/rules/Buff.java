@@ -4,9 +4,9 @@ import static msifeed.mc.misca.crabs.rules.DynamicEffect.EffectArgs.EFFECT;
 import static msifeed.mc.misca.crabs.rules.DynamicEffect.EffectArgs.INT;
 
 public final class Buff extends DynamicEffect {
+    public Effect effect;
     private int counter;
     private int stopAt;
-    public Effect effect;
 
     @Override
     public String name() {

@@ -1,10 +1,9 @@
 package msifeed.mc.misca.crabs.rules;
 
-import java.util.EnumMap;
-
 import msifeed.mc.misca.crabs.character.Stats;
 import msifeed.mc.misca.utils.MiscaUtils;
-import net.minecraft.client.resources.I18n;
+
+import java.util.EnumMap;
 
 import static msifeed.mc.misca.crabs.character.Stats.*;
 import static msifeed.mc.misca.crabs.rules.FistFight.Action.*;

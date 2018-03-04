@@ -73,7 +73,7 @@ public class MiscaThings {
             block.setHardness(2.0F).setResistance(5.0F).setStepSound(Block.soundTypeWood);
             GameRegistry.registerBlock(block, name_base + i);
 
-            registerSlabAndStairsFor(block, 2,5);
+            registerSlabAndStairsFor(block, 2, 5);
         }
 
         for (int i = 1; i <= 50; i++) {

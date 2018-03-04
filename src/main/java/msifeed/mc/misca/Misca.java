@@ -21,11 +21,8 @@ import org.apache.logging.log4j.Logger;
 
 @Mod(modid = "misca", version = "@VERSION@")
 public class Misca {
-    private static Logger logger = LogManager.getLogger("Misca");
-
     @Mod.Instance
     public static Misca INSTANCE;
-
     @SidedProxy(
             serverSide = "msifeed.mc.misca.crabs.Crabs",
             clientSide = "msifeed.mc.misca.crabs.CrabsClient"
@@ -37,6 +34,7 @@ public class Misca {
     )
     public static MiscaThings things;
     public static Tweaks tweaks = new Tweaks();
+    private static Logger logger = LogManager.getLogger("Misca");
     private MiningNerf miningNerf = new MiningNerf();
 
     @EventHandler

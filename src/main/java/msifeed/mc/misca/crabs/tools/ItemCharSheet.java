@@ -7,7 +7,6 @@ import msifeed.mc.misca.crabs.client.hud.CharacterHud;
 import msifeed.mc.misca.crabs.client.hud.HudManager;
 import msifeed.mc.misca.crabs.context.Context;
 import msifeed.mc.misca.crabs.context.ContextManager;
-import msifeed.mc.misca.crabs.fight.FightManager;
 import msifeed.mc.misca.things.MiscaThings;
 import msifeed.mc.misca.utils.MiscaUtils;
 import net.minecraft.entity.Entity;
@@ -63,7 +62,7 @@ public class ItemCharSheet extends Item {
 
             CharacterHud.INSTANCE.setEditable(false);
         } else if (!(itemStack.getItem() instanceof ItemCharSheet)) {
-             return;
+            return;
         }
 
         CharacterHud.INSTANCE.setEntity((EntityLivingBase) event.target);

@@ -1,7 +1,5 @@
 package msifeed.mc.misca.crabs.rules;
 
-import msifeed.mc.misca.utils.MiscaUtils;
-
 public abstract class Effect {
     public abstract String name();
 
@@ -21,6 +19,12 @@ public abstract class Effect {
 
     // // // // // // // //
 
+    public enum Stage {
+        BEFORE_MODS, AFTER_MODS, ACTION, AFTER_ACTION
+    }
+
+    // // // // // // // //
+
     public static class Damage extends Effect {
         @Override
         public boolean shouldApply(Stage stage, ActionResult target, ActionResult other) {
@@ -36,11 +40,5 @@ public abstract class Effect {
         public String name() {
             return "damage";
         }
-    }
-
-    // // // // // // // //
-
-    public enum Stage {
-        BEFORE_MODS, AFTER_MODS, ACTION, AFTER_ACTION
     }
 }

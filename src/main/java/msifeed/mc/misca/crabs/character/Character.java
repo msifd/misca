@@ -1,9 +1,6 @@
 package msifeed.mc.misca.crabs.character;
 
-import msifeed.mc.misca.crabs.rules.Buff;
-
 import java.util.EnumMap;
-import java.util.HashSet;
 
 public class Character {
     public String name = "";

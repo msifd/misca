@@ -13,7 +13,6 @@ import msifeed.mc.misca.crabs.context.ContextManager;
 import msifeed.mc.misca.utils.EntityUtils;
 import msifeed.mc.misca.utils.MiscaUtils;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.resources.I18n;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;

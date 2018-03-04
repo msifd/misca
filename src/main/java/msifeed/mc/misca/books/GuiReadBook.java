@@ -8,7 +8,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.ChatComponentText;
 import org.lwjgl.opengl.GL11;
 import thvortex.betterfonts.StringCache;
 
@@ -57,6 +56,10 @@ public class GuiReadBook extends GuiScreen {
 
             buildPages(book.text);
         });
+    }
+
+    private static void closeGui() {
+        Minecraft.getMinecraft().displayGuiScreen(null);
     }
 
     @Override
@@ -153,9 +156,5 @@ public class GuiReadBook extends GuiScreen {
             default:
                 return FontFactory.fsexFont;
         }
-    }
-
-    private static void closeGui() {
-        Minecraft.getMinecraft().displayGuiScreen(null);
     }
 }

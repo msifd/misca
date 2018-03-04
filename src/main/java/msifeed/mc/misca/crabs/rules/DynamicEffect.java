@@ -12,6 +12,10 @@ public abstract class DynamicEffect extends Effect {
 
     // // // // // // // //
 
+    public enum EffectArgs {
+        INT, FLOAT, EFFECT
+    }
+
     public static class ConstDamage extends DynamicEffect {
         private int value;
 
@@ -104,6 +108,8 @@ public abstract class DynamicEffect extends Effect {
         }
     }
 
+    // // // // // // // //
+
     public static class ReceivedDamageMultiplier extends DynamicEffect {
         private float value;
 
@@ -131,11 +137,5 @@ public abstract class DynamicEffect extends Effect {
         public void apply(Stage stage, ActionResult target, ActionResult other) {
             target.damageToReceive *= value;
         }
-    }
-
-    // // // // // // // //
-
-    public enum EffectArgs {
-        INT, FLOAT, EFFECT
     }
 }
