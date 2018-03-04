@@ -9,6 +9,7 @@ import msifeed.mc.misca.crabs.context.Context;
 import msifeed.mc.misca.crabs.context.ContextManager;
 import msifeed.mc.misca.crabs.context.ContextMessage;
 import msifeed.mc.misca.crabs.rules.Rules;
+import msifeed.mc.misca.database.DBHandler;
 import msifeed.mc.misca.utils.MiscaUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.EntityLivingBase;
@@ -148,11 +149,13 @@ public enum FightManager {
             ContextManager.INSTANCE.syncContext(ctx);
 
             // Оповещаем...
-            final String msg = MiscaUtils.l10n("misca.crabs.knocked_out", ctx.entity.getCommandSenderName());
+            final String msg = MiscaUtils.l10n("misca.crabs.knocked_out", event.entityLiving.getCommandSenderName());
             MiscaUtils.notifyAround(
-                    ctx.entity,
+                    event.entityLiving,
                     BattleDefines.NOTIFICATION_RADIUS,
                     new ChatComponentText(msg));
+
+            DBHandler.INSTANCE.logMessage((EntityPlayer) event.entityLiving, "crabs_ko", msg);
         }
 
         // Бойцы в нокауте получают кучу плохих эффектов

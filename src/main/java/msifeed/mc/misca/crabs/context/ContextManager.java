@@ -107,7 +107,7 @@ public enum ContextManager {
             context = new Context(player.getUniqueID(), player);
             uuidToContext.put(context.uuid, context);
         } else {
-            hardResetContext(context);
+            softResetContext(context);
             context.entity = player;
         }
 

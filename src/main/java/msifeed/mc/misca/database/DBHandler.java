@@ -22,6 +22,7 @@ public enum DBHandler {
     private static Logger logger = LogManager.getLogger("Misca-DB");
     private Connection connection;
     private JsonConfig<ConfigSection> config = ConfigManager.getServerConfigFor(ConfigSection.class, "database.json");
+    private boolean reconnect = false;
 
     private String chatTable = "";
 
@@ -40,17 +41,25 @@ public enum DBHandler {
         if (FMLCommonHandler.instance().getSide().isClient())
             return;
 
+        reconnect = false;
         chatTable = config.get().chat_table;
         new Thread(() -> {
             if (!connectToDB() || connection == null)
                 return;
 
             logger.info("Misca successfully connected to database.");
+            reconnect = true;
         }).start();
     }
 
     public void logMessage(ICommandSender sender, String cmd, String text) {
-        if (connection == null) return;
+        if (connection == null) {
+            if (!reconnect) return;
+            if (!connectToDB()) {
+                reconnect = false;
+                return;
+            }
+        }
 
         try {
             final String query = "INSERT INTO `" + chatTable +
