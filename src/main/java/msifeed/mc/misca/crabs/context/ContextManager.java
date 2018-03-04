@@ -111,7 +111,8 @@ public enum ContextManager {
             context.entity = player;
         }
 
-        final ContextMessage msg = new ContextMessage(getLocalContexts(event.entity.dimension));
+        // Отправляем уже имеющиеся контексты этого мира
+        final ContextMessage msg = new ContextMessage(getLocalContexts(player.dimension));
         CrabsNetwork.INSTANCE.sendToPlayer(player, msg);
 
         toSync.add(context);

@@ -237,18 +237,7 @@ public enum MoveManager {
 
     private static void applyDamage(ActionResult self, ActionResult enemy) {
         if (self.damageToReceive <= 0) return;
-
-        final boolean wasKnockedOut = self.ctx.knockedOut;
         receiveDamage(self, enemy);
-
-        // Если нокаут появляется после применения эффектов
-        if (!wasKnockedOut && self.ctx.knockedOut) {
-            final String msg = MiscaUtils.l10n("misca.crabs.knocked_out", self.ctx.entity.getCommandSenderName());
-            MiscaUtils.notifyAround(
-                    self.ctx.entity, enemy.ctx.entity,
-                    BattleDefines.NOTIFICATION_RADIUS,
-                    new ChatComponentText(msg));
-        }
     }
 
     /**
@@ -277,7 +266,6 @@ public enum MoveManager {
         final boolean isFatal = currentHealth <= damage;
         final float damageToHealth = isFatal && !selfCtx.knockedOut ? currentHealth - 1.0f : damage;
 
-        if (isFatal) selfCtx.knockedOut = true;
         selfEntity.setHealth(currentHealth - damageToHealth);
         selfEntity.attackEntityFrom(new CrabsDamage(enemyEntity), Float.MIN_VALUE); // Нужно для визуального эффекта урона
 

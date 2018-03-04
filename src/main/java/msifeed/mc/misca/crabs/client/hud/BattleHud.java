@@ -14,7 +14,6 @@ import msifeed.mc.misca.crabs.fight.FighterMessage;
 import msifeed.mc.misca.crabs.rules.FistFight;
 import msifeed.mc.misca.utils.MiscaUtils;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.resources.I18n;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.entity.player.EntityPlayer;
 
@@ -112,8 +111,7 @@ public class BattleHud extends AbstractHudWindow {
                 renderPlayerModifier(nimgui);
             }
 
-            if (actor.status != Context.Status.LEAVING)
-                renderManual(nimgui, actor);
+            renderManual(nimgui, actor);
 
             // Позволяем отменить свою атаку
             if (actor.status == Context.Status.WAIT) {
@@ -248,9 +246,14 @@ public class BattleHud extends AbstractHudWindow {
     }
 
     private void renderManual(NimGui nimgui, Context context) {
-        if (context.knockedOut) return;
-
         nimgui.verticalBlock();
+
+        if (context.knockedOut) {
+            if (context.status == Context.Status.LEAVING)
+                nimgui.label(MiscaUtils.l10n("misca.crabs.gui.going_to_die"));
+            return;
+        }
+
         if (context.action == null) {
             nimgui.label(MiscaUtils.l10n("misca.crabs.gui.no_action"));
             return;

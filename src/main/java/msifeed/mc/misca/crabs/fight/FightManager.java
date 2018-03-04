@@ -9,10 +9,14 @@ import msifeed.mc.misca.crabs.context.Context;
 import msifeed.mc.misca.crabs.context.ContextManager;
 import msifeed.mc.misca.crabs.context.ContextMessage;
 import msifeed.mc.misca.crabs.rules.Rules;
+import msifeed.mc.misca.utils.MiscaUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.potion.Potion;
+import net.minecraft.potion.PotionEffect;
+import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.DamageSource;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.ServerChatEvent;
@@ -25,6 +29,8 @@ public enum FightManager {
     INSTANCE;
 
     private Logger logger = LogManager.getLogger("Crabs.Fight");
+    private PotionEffect koEffectDig = new PotionEffect(Potion.digSlowdown.id, 200, 10);
+    private PotionEffect koEffectWeakness = new PotionEffect(Potion.weakness.id, 200, 10);
 
     public void onInit() {
         MinecraftForge.EVENT_BUS.register(INSTANCE);
@@ -134,6 +140,27 @@ public enum FightManager {
         final Context ctx = ContextManager.INSTANCE.getContext(event.entityLiving);
         if (ctx == null) return;
 
+        // Если присмерти и не нокаутирован, то получаем нокаут и статус боя
+        if (event.entityLiving instanceof EntityPlayer && !ctx.knockedOut && event.entityLiving.getHealth() <= 1) {
+            if (!ctx.status.isFighting())
+                ctx.updateStatus(Context.Status.ACTIVE);
+            ctx.knockedOut = true;
+            ContextManager.INSTANCE.syncContext(ctx);
+
+            // Оповещаем...
+            final String msg = MiscaUtils.l10n("misca.crabs.knocked_out", ctx.entity.getCommandSenderName());
+            MiscaUtils.notifyAround(
+                    ctx.entity,
+                    BattleDefines.NOTIFICATION_RADIUS,
+                    new ChatComponentText(msg));
+        }
+
+        // Бойцы в нокауте получают кучу плохих эффектов
+        if (ctx.knockedOut) {
+            event.entityLiving.addPotionEffect(new PotionEffect(koEffectDig));
+            event.entityLiving.addPotionEffect(new PotionEffect(koEffectWeakness));
+        }
+
         // Восстанавливаем "сознание" если подлечились до четверти здоровья
         if (ctx.knockedOut && ctx.entity != null && ctx.entity.getHealth() >= (ctx.entity.getMaxHealth() / 4f)) {
             ctx.knockedOut = false;
@@ -141,15 +168,23 @@ public enum FightManager {
         }
 
         // Тушим воспламенившихся игроков
-        if (event.entityLiving.isBurning())
+        if (ctx.status.isFighting() && event.entityLiving.isBurning()) {
             event.entityLiving.extinguish();
+        }
 
         final long now = System.currentTimeMillis() / 1000;
         final long statusAge = now - ctx.lastStatusChange;
 
         switch (ctx.status) {
             case LEAVING:
-                if (statusAge >= BattleDefines.SECS_BEFORE_LEAVE_BATTLE) removeFromFight(ctx);
+                if (statusAge >= BattleDefines.SECS_BEFORE_LEAVE_BATTLE) {
+                    removeFromFight(ctx);
+                    // При выходе из боя в нокауте боец погибает
+                    if (ctx.knockedOut) {
+                        ctx.entity.setHealth(0);
+                        ctx.entity.setDead();
+                    }
+                }
                 break;
             case DEAL_DAMAGE:
                 if (statusAge >= BattleDefines.SECS_TO_DEAL_DAMAGE) MoveManager.INSTANCE.stopDealingDamage(ctx);
@@ -191,9 +226,18 @@ public enum FightManager {
         final Context target = ContextManager.INSTANCE.getContext(event.entityLiving);
         final boolean targetFighting = target != null && target.status.isFighting();
 
-        // Если урон ничейный, а цель в бою, то отменяем урон, а если не в бою, то не отменяем
-        if (damageSource.getEntity() == null) {
+        // Если урон не от живого энтити, а цель в бою, то отменяем урон, а если не в бою, то не отменяем
+        if (damageSource.getEntity() == null || !(damageSource.getEntity() instanceof EntityLivingBase)) {
             if (targetFighting) event.setCanceled(true);
+            return;
+        }
+
+        // Игроки-цели, которые вне боя и вот вот умрут, получают 1 хп. Во время апдейта они войдут в бой и получат нокаут.
+        if (event.entityLiving instanceof EntityPlayer
+                && target != null && !target.status.isFighting()
+                && event.entityLiving.getHealth() - damage <= 1) {
+            event.entityLiving.setHealth(1);
+            event.setCanceled(true);
             return;
         }
 

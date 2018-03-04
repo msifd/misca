@@ -25,6 +25,7 @@ misca.crabs.stats=Статы
 misca.crabs.fists=Кулаки
 misca.crabs.battle=Бой
 
+misca.crabs.in_fight=You are in fight
 misca.crabs.join_fight=Войти в бой
 misca.crabs.leave_fight=Выйти из боя
 misca.crabs.cancel=Отмена
@@ -79,6 +80,7 @@ misca.crabs.gui.status.leaving=Побег из боя
 misca.crabs.gui.status.neutral=Вне боя
 misca.crabs.gui.status.delete=ZALGO
 
+misca.crabs.gui.going_to_die=§4Вы сейчас умрете!§r
 misca.crabs.gui.knocked_out=. Нокаутирован!
 misca.crabs.gui.target=. Цель: %s
 misca.crabs.gui.buffs=Баффы:

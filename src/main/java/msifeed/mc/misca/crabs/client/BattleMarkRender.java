@@ -3,16 +3,32 @@ package msifeed.mc.misca.crabs.client;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import msifeed.mc.misca.crabs.context.Context;
 import msifeed.mc.misca.crabs.context.ContextManager;
+import msifeed.mc.misca.utils.MiscaUtils;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderLivingEvent;
 import org.lwjgl.opengl.GL11;
 
 public enum BattleMarkRender {
     INSTANCE;
+
+    @SubscribeEvent
+    public void onRenderOverlay(RenderGameOverlayEvent.Text event) {
+        final Minecraft mc = Minecraft.getMinecraft();
+
+        final Context ctx = ContextManager.INSTANCE.getContext(mc.thePlayer);
+        if (ctx == null || !ctx.status.isFighting()) return;
+
+        final FontRenderer fr = mc.fontRenderer;
+        final String label = MiscaUtils.l10n("misca.crabs.in_fight");
+        final int xPos = (event.resolution.getScaledWidth() - fr.getStringWidth(label)) / 2;
+        fr.drawStringWithShadow(label, xPos, 1, 0xc82020);
+    }
 
     @SubscribeEvent
     public void onRenderLiving(RenderLivingEvent.Post event) {
