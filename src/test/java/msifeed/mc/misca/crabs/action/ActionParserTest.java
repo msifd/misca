@@ -10,7 +10,6 @@ import msifeed.mc.misca.crabs.rules.DynamicEffect;
 import msifeed.mc.misca.crabs.rules.Effect;
 import msifeed.mc.misca.crabs.rules.Modifier;
 import msifeed.mc.misca.crabs.rules.Rules;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -25,7 +24,7 @@ public class ActionParserTest {
     private static Action getPointHitAction() {
         Action act = new Action("point_hit", "Point hit", Action.Type.MELEE);
         Collections.addAll(act.modifiers,
-                new Modifier.DiceG30Plus(),
+                new Modifier.DiceG40Plus(),
                 new Modifier.Stat(Stats.STR),
                 new Modifier.Stat(Stats.PER),
                 new Modifier.Stat(Stats.INT));

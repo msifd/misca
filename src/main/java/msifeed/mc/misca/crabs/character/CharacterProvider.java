@@ -7,6 +7,7 @@ import com.google.gson.InstanceCreator;
 import com.google.gson.reflect.TypeToken;
 import msifeed.mc.misca.config.ConfigManager;
 import msifeed.mc.misca.database.DBHandler;
+import msifeed.mc.misca.utils.FileLogger;
 import net.minecraft.entity.player.EntityPlayerMP;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -39,29 +40,18 @@ public enum CharacterProvider {
             )
             .create();
     private File charsFile;
-    private File charsLogFile;
 
     public void preInit() {
         charsFile = new File(ConfigManager.config_dir, "characters.json");
-
-        final File logsDir = new File(ConfigManager.config_dir, "logs");
-        logsDir.mkdirs();
-        charsLogFile = new File(logsDir, "characters.log");
     }
 
     public synchronized void logCharChange(EntityPlayerMP sender, Character old, Character fresh) {
-        final String line = String.format("[%s] `%s` changed `%s` from (%s) to (%s)\n",
-                LocalDateTime.now().toString(), sender.getCommandSenderName(), fresh.name, old.compactStats(), fresh.compactStats());
+        final String line = String.format("`%s` changed `%s` from (%s) to (%s)",
+                sender.getCommandSenderName(), fresh.name, old.compactStats(), fresh.compactStats());
 
         logger.info(line);
         DBHandler.INSTANCE.logMessage(sender, "stats_change", line);
-        new Thread(() -> {
-            try {
-                Files.write(charsLogFile.toPath(), line.getBytes(UTF_8), APPEND, CREATE);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }).start();
+        FileLogger.log("characters", line);
     }
 
     public void save(Map<UUID, Character> chars) {

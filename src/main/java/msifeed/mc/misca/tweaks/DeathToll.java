@@ -2,6 +2,7 @@ package msifeed.mc.misca.tweaks;
 
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import msifeed.mc.misca.config.ConfigManager;
+import msifeed.mc.misca.utils.FileLogger;
 import msifeed.mc.misca.utils.MiscaUtils;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ChatComponentText;
@@ -20,14 +21,9 @@ import static java.nio.file.StandardOpenOption.CREATE;
 
 public class DeathToll {
     private String[] illnesses;
-    private File logFile;
 
     public void preInit() {
         illnesses = MiscaUtils.l10n("misca.death_toll.illnesses").split(";");
-
-        final File logsDir = new File(ConfigManager.config_dir, "logs");
-        logsDir.mkdirs();
-        logFile = new File(logsDir, "player_death.log");
     }
 
     @SubscribeEvent
@@ -35,28 +31,19 @@ public class DeathToll {
         if (!(event.entityLiving instanceof EntityPlayer))
             return;
 
-        EntityPlayer player = (EntityPlayer) event.entityLiving;
-        String death_source = event.source.damageType;
-        ChunkCoordinates coords = player.getPlayerCoordinates();
-        String illness = getRandomIllness();
-        String msg = String.format("[%s] '%s' died from '%s' at (%s: %d %d %d). Random illness '%s'\n",
-                LocalDateTime.now().toString(),
+        final EntityPlayer player = (EntityPlayer) event.entityLiving;
+        final String death_source = event.source.damageType;
+        final ChunkCoordinates coords = player.getPlayerCoordinates();
+        final String illness = getRandomIllness();
+        final String msg = String.format("'%s' died from '%s' at (%s: %d %d %d). Random illness '%s'",
                 player.getDisplayName(),
                 death_source,
                 player.getEntityWorld().getWorldInfo().getWorldName(),
                 coords.posX, coords.posY, coords.posZ,
                 illness);
+        FileLogger.log("player_death", msg);
 
-        Tweaks.logger.info(msg);
-        new Thread(() -> {
-            try {
-                Files.write(logFile.toPath(), msg.getBytes(UTF_8), APPEND, CREATE);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }).start();
-
-        String chat_msg = String.format("%s \"%s\"!", MiscaUtils.l10n("misca.death_toll.intro"), illness);
+        final String chat_msg = String.format("%s \"%s\"!", MiscaUtils.l10n("misca.death_toll.intro"), illness);
         player.addChatMessage(new ChatComponentText(chat_msg));
     }
 

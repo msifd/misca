@@ -3,7 +3,7 @@
   "title": ".point_hit",
   "type": "melee",
   "modifiers": [
-    "g30+",
+    "g40+",
     "str",
     "per",
     "int"

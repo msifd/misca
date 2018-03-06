@@ -10,6 +10,7 @@ import msifeed.mc.misca.crabs.context.ContextManager;
 import msifeed.mc.misca.crabs.context.ContextMessage;
 import msifeed.mc.misca.crabs.rules.Rules;
 import msifeed.mc.misca.database.DBHandler;
+import msifeed.mc.misca.utils.FileLogger;
 import msifeed.mc.misca.utils.MiscaUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.EntityLivingBase;
@@ -18,6 +19,7 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.ChunkCoordinates;
 import net.minecraft.util.DamageSource;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.ServerChatEvent;
@@ -154,8 +156,17 @@ public enum FightManager {
                     event.entityLiving,
                     BattleDefines.NOTIFICATION_RADIUS,
                     new ChatComponentText(msg));
-
             DBHandler.INSTANCE.logMessage((EntityPlayer) event.entityLiving, "crabs_ko", msg);
+
+            {
+                final EntityPlayer player = (EntityPlayer) event.entityLiving;
+                final ChunkCoordinates coords = player.getPlayerCoordinates();
+                final String fileMsg = String.format("'%s' knocked out at (%s: %d, %d, %d)",
+                        player.getDisplayName(),
+                        player.getEntityWorld().getWorldInfo().getWorldName(),
+                        coords.posX, coords.posY, coords.posZ);
+                FileLogger.log("player_death", fileMsg);
+            }
         }
 
         // Бойцы в нокауте получают кучу плохих эффектов
@@ -164,9 +175,10 @@ public enum FightManager {
             event.entityLiving.addPotionEffect(new PotionEffect(koEffectWeakness));
         }
 
-        // Восстанавливаем "сознание" если подлечились до четверти здоровья
+        // Восстанавливаем "сознание" если подлечились до четверти здоровья и выходим из боя
         if (ctx.knockedOut && ctx.entity != null && ctx.entity.getHealth() >= (ctx.entity.getMaxHealth() / 4f)) {
             ctx.knockedOut = false;
+            ctx.updateStatus(Context.Status.LEAVING);
             ContextManager.INSTANCE.syncContext(ctx);
         }
 

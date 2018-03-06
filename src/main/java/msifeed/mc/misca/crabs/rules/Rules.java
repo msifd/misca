@@ -28,9 +28,9 @@ public final class Rules {
 
     static {
         Stream.of(
-                new Modifier.DiceG30(),
-                new Modifier.DiceG30Plus(),
-                new Modifier.DiceG30Minus()
+                new Modifier.DiceG40(),
+                new Modifier.DiceG40Plus(),
+                new Modifier.DiceG40Minus()
         ).forEach(m -> modifiers.put(m.name(), m));
         Stream.of(Stats.values())
                 .map(Modifier.Stat::new)
