@@ -1,6 +1,6 @@
 package msifeed.mc.misca.utils;
 
-import net.minecraft.client.Minecraft;
+import cpw.mods.fml.common.FMLCommonHandler;
 
 import java.io.File;
 import java.io.IOException;
@@ -11,7 +11,6 @@ import java.util.HashMap;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.nio.file.StandardOpenOption.APPEND;
 import static java.nio.file.StandardOpenOption.CREATE;
-import static java.nio.file.StandardOpenOption.SYNC;
 
 public class FileLogger {
     private static HashMap<String, FileLogger> loggers = new HashMap<>();
@@ -27,7 +26,7 @@ public class FileLogger {
     private File logFile;
 
     private FileLogger(String filename) {
-        final File logs = new File(Minecraft.getMinecraft().mcDataDir, "logs");
+        final File logs = FMLCommonHandler.instance().getMinecraftServerInstance().getFile("logs");
         final File miscaLogs = new File(logs, "misca");
         logFile = new File(miscaLogs, filename + ".log");
         miscaLogs.mkdirs();
