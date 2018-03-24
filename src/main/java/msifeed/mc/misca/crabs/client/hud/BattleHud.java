@@ -56,6 +56,7 @@ public class BattleHud extends AbstractHudWindow {
 
     @Override
     void close() {
+        context = null;
     }
 
     @Override
@@ -65,6 +66,8 @@ public class BattleHud extends AbstractHudWindow {
         final Minecraft mc = Minecraft.getMinecraft();
         final EntityPlayer player = mc.thePlayer;
         final ContextManager cm = ContextManager.INSTANCE;
+
+        // Обновляем наш контекст
         context = cm.getContext(player.getUniqueID());
 
         final boolean isFighting = context != null && context.status.isFighting();
@@ -95,30 +98,7 @@ public class BattleHud extends AbstractHudWindow {
             rollTab = RollTab.BATTLE;
 
         if (isFighting && rollTab == RollTab.BATTLE) {
-            final Context actor = context.puppet == null ? context : cm.getContext(context.puppet);
-
-            if (!modText.inFocus())
-                modText.setText(actor.modifier == 0 ? "" : Integer.toString(actor.modifier));
-
-            // При защите таргет уже указвает на нападающего
-            final boolean isAttack = actor.status == Context.Status.ACTIVE && actor.target == null;
-
-            renderStatus(nimgui, actor);
-
-            if (actor.canSelectAction()) {
-                renderActionTabs(nimgui, isAttack);
-                renderActions(nimgui, isAttack);
-                renderPlayerModifier(nimgui);
-            }
-
-            renderManual(nimgui, actor);
-
-            // Позволяем отменить свою атаку
-            if (actor.status == Context.Status.WAIT) {
-                if (nimgui.button(MiscaUtils.l10n("misca.crabs.abort"), 100)) {
-                    CrabsNetwork.INSTANCE.sendToServer(new FighterMessage(FighterMessage.Type.RESET));
-                }
-            }
+            renderBattleRolls(nimgui);
         } else if (rollTab == RollTab.STATS) {
             renderStatRolls(nimgui);
             renderPlayerModifier(nimgui);
@@ -128,6 +108,33 @@ public class BattleHud extends AbstractHudWindow {
         }
 
         nimgui.endWindow();
+    }
+
+    private void renderBattleRolls(NimGui nimgui) {
+        final Context actor = ContextManager.INSTANCE.getActorOf(context);
+
+        if (!modText.inFocus())
+            modText.setText(actor.modifier == 0 ? "" : Integer.toString(actor.modifier));
+
+        // При защите таргет уже указвает на нападающего
+        final boolean isAttack = actor.status == Context.Status.ACTIVE && actor.target == null;
+
+        renderStatus(nimgui, actor);
+
+        if (actor.canSelectAction()) {
+            renderActionTabs(nimgui, isAttack);
+            renderActions(nimgui, isAttack);
+            renderPlayerModifier(nimgui);
+        }
+
+        renderManual(nimgui, actor);
+
+        // Позволяем отменить свою атаку
+        if (actor.status == Context.Status.WAIT) {
+            if (nimgui.button(MiscaUtils.l10n("misca.crabs.abort"), 100)) {
+                CrabsNetwork.INSTANCE.sendToServer(new FighterMessage(FighterMessage.Type.RESET));
+            }
+        }
     }
 
     private void renderStatRolls(NimGui nimgui) {

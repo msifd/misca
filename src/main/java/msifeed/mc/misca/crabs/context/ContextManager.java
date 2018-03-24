@@ -61,6 +61,11 @@ public enum ContextManager {
                 });
     }
 
+    public Context getActorOf(Context ctx) {
+        final Context actor = ctx.puppet == null ? ctx : getContext(ctx.puppet);
+        return actor != null ? actor : ctx;
+    }
+
     public void syncContext(Context ctx) {
         if (ctx == null) return;
         toSync.add(ctx);
@@ -165,9 +170,11 @@ public enum ContextManager {
      * Отсоединяем направленные на контекст таргеты
      */
     public void unbindTargetToContext(Context context) {
+        // Отменяем ходы
         MoveManager.INSTANCE.removeWaitingMove(context.uuid);
         MoveManager.INSTANCE.removeWaitingMove(context.target);
 
+        // Сбрасываем контроль и таргет на этого энтитя
         for (Context ctx : uuidToContext.values()) {
             if ((ctx.target != null && ctx.target.equals(context.uuid))
                     || (ctx.puppet != null && ctx.puppet.equals(context.uuid))) {
