@@ -11,7 +11,7 @@ import java.net.SocketAddress;
 import java.net.URI;
 
 public class DRM {
-    private static final InetAddress ARIADNA = InetAddresses.forString("46.105.37.9");
+    private static final InetAddress ARIADNA = InetAddresses.forString("149.202.87.159");
 
     @SubscribeEvent
     public void onClientConnectedToServerEvent(ClientConnectedToServerEvent event) {
