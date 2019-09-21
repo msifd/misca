@@ -1,6 +1,5 @@
 package msifeed.mc.misca.tweaks;
 
-import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.event.FMLServerStartingEvent;
@@ -23,7 +22,6 @@ public class Tweaks {
     private HealthNotification healthNotification = new HealthNotification();
     private EntityControl entityControl = new EntityControl();
     private HungerClamper hungerClamper = new HungerClamper();
-    private DRM drm = new DRM();
 
     public void preInit(FMLPreInitializationEvent event) {
         deathToll.preInit();
@@ -35,7 +33,6 @@ public class Tweaks {
         MinecraftForge.EVENT_BUS.register(healthNotification);
         MinecraftForge.EVENT_BUS.register(entityControl);
         MinecraftForge.EVENT_BUS.register(hungerClamper);
-        FMLCommonHandler.instance().bus().register(drm);
 
         if (event.getSide().isServer()) {
             MinecraftForge.EVENT_BUS.register(offtopFormat);
