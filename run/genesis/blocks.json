@@ -1,0 +1,148 @@
+[
+  {
+    "id": "test_barrel_apples",
+    "title": "Apples barrel",
+    "description": "A barrel full of §4apples",
+    "texture": [
+      "aorta:barrel_bottom",
+      "aorta:barrel_apples",
+      "aorta:barrel_side"
+    ],
+    "texture_layout": "012222",
+    "traits": [
+      "block",
+      "wooden",
+      "container",
+      "small"
+    ]
+  },
+  {
+    "id": "test_basalt",
+    "texture": "aorta:basalt",
+    "traits": [
+      "block",
+      "stone",
+      "unbreakable",
+      "add_slabs",
+      "add_stairs"
+    ]
+  },
+  {
+    "id": "test_xyz_block",
+    "texture": [
+      "minecraft:pumpkin_face_off",
+      "minecraft:pumpkin_face_on",
+      "minecraft:portal",
+      "aorta:barrel_side",
+      "minecraft:ice",
+      "minecraft:glowstone"
+    ],
+    "texture_layout": "012345",
+    "traits": [
+      "block",
+      "wooden",
+      "rotatable",
+      "half",
+      "tiny",
+      "ladder"
+    ]
+  },
+  {
+    "id": "test_rope",
+    "texture": [
+      "aorta:rope_top",
+      "aorta:rope_side"
+    ],
+    "texture_layout": "001111",
+    "traits": [
+      "block",
+      "wooden",
+      "pillar",
+      "ladder"
+    ]
+  },
+  {
+    "id": "test_apple_cross",
+    "texture": "aorta:barrel_apples",
+    "traits": [
+      "block",
+      "wooden",
+      "crossed_squares",
+      "not_collidable"
+    ]
+  },
+  {
+    "id": "test_torch",
+    "texture": "minecraft:torch_on",
+    "traits": [
+      "block",
+      "torch",
+      "dim_light"
+    ]
+  },
+  {
+    "id": "test_chest",
+    "texture": "aorta:chest_supplies",
+    "traits": [
+      "block",
+      "chest"
+    ]
+  },
+  {
+    "id": "test_glass",
+    "texture": "aorta:glass_4",
+    "traits": [
+      "block",
+      "transparent"
+    ]
+  },
+  {
+    "id": "test_alpha_glass",
+    "texture": "aorta:glass_2",
+    "traits": [
+      "block",
+      "transparent",
+      "with_alpha"
+    ]
+  },
+  {
+    "id": "test_pane",
+    "texture": "aorta:pane_2",
+    "traits": [
+      "block",
+      "pane"
+    ]
+  },
+  {
+    "id": "test_door",
+    "texture": "aorta:door_broken",
+    "traits": [
+      "block",
+      "door"
+    ]
+  },
+  {
+    "id": "test_bed",
+    "texture": "aorta:misca_bed_1",
+    "traits": [
+      "block",
+      "bed"
+    ]
+  },
+  {
+    "id": "test_trap",
+    "texture": "minecraft:stone",
+    "trap": {
+      "closeMessage": "Congrats, %s had lost a leg.",
+      "closeRadius": 5,
+      "farMessage": "The leg cutter had striked somewhere",
+      "farRadius": 50,
+      "destroy": false
+    },
+    "traits": [
+      "block",
+      "half",
+      "tiny"
+    ]
+  }
+]

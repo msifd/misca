@@ -3,11 +3,11 @@ package msifeed.mc.misca.crabs.tools;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import msifeed.mc.aorta.genesis.GenesisCreativeTab;
 import msifeed.mc.misca.crabs.client.hud.CharacterHud;
 import msifeed.mc.misca.crabs.client.hud.HudManager;
 import msifeed.mc.misca.crabs.context.Context;
 import msifeed.mc.misca.crabs.context.ContextManager;
-import msifeed.mc.misca.things.MiscaThings;
 import msifeed.mc.misca.utils.MiscaUtils;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -23,7 +23,7 @@ public class ItemCharSheet extends Item {
     public ItemCharSheet() {
         setUnlocalizedName("char_sheet");
         setTextureName("paper");
-        setCreativeTab(MiscaThings.itemsTab);
+        setCreativeTab(GenesisCreativeTab.TOOLS);
         setMaxStackSize(1);
     }
 

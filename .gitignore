@@ -1,9 +1,27 @@
-.gradle/
-.idea/
-build/
-classes/
-out/
-eclipse/
-logs/
+# eclipse
+bin
+*.launch
+.settings
+.metadata
+.classpath
+.project
 
+# idea
+out
+*.ipr
+*.iws
 *.iml
+.idea
+
+# gradle
+build
+.gradle
+
+# other
+run/*
+eclipse
+classes
+
+# exclude genesis config
+!run/genesis/
+!run/resourcepacks/

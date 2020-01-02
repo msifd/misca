@@ -1,0 +1,94 @@
+[
+  {
+    "id": "test_chainsaw",
+    "title": "Тестовая цепная пила",
+    "description": "Многострочное описание\n   с отступами и §4форматами",
+    "values": {
+      "Урон": "§3>100500",
+      "Особый удар": "ААААА! ШАААА!",
+      "Уровень наклона": "60 градусов"
+    },
+    "texture": "aorta:chainsaw",
+    "traits": [
+      "item",
+      "epic",
+      "hold_like_tool",
+      "double_sized"
+    ]
+  },
+  {
+    "id": "test_food",
+    "title": "Тестовая хавка",
+    "texture": "minecraft:mushroom_stew",
+    "traits": [
+      "item",
+      "consumable",
+      "no_saturation",
+      "uncommon"
+    ]
+  },
+  {
+    "id": "test_helmet",
+    "title": "Тестовый шлем",
+    "texture": "minecraft:iron_helmet",
+    "armor_texture": "minecraft:textures/models/armor/iron_layer",
+    "traits": [
+      "item",
+      "armor",
+      "helmet"
+    ]
+  },
+  {
+    "id": "test_book",
+    "title": "Мемуары Мсяйши",
+    "texture": "minecraft:book_normal",
+    "index": "memuars",
+    "traits": [
+      "item",
+      "book"
+    ]
+  },
+  {
+    "id": "test_gun",
+    "title": "Картофелемёт",
+    "texture": "aorta:test_gun",
+    "render": {
+      "scale": 2,
+      "thickness": 1.5,
+      "offset": 0.7,
+      "recess": 0.4
+    },
+    "traits": [
+      "item", "action_bow"
+    ]
+  },
+  {
+    "id": "test_transparent_dagger",
+    "title": "Прозрачнотык",
+    "texture": "aorta:transparent_dagger",
+    "render": {
+      "scale": 0.5,
+      "offset": 0.8,
+      "recess": 1
+    },
+    "traits": [
+      "item"
+    ]
+  },
+  {
+    "id": "test_clicker",
+    "title": "Кликер",
+    "texture": "minecraft:nether_star",
+    "usages": 3,
+    "traits": [
+      "item"
+    ]
+  },
+  {
+    "id": "test_unnamed",
+    "texture": "minecraft:coal",
+    "traits": [
+      "item"
+    ]
+  }
+]

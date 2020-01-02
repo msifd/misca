@@ -1,0 +1,92 @@
+[
+	{
+		"id": "currency_elvel_p",
+		"title":"Эльвельская акция",
+		"description":"Бумажная валюта, выпускаемая после “войны в Долине”. Равна одному парсу, но\nв самой Долине из презрения к Нилию предпочитают использовать именно ее.",
+		"texture": "aorta:elvel_money_paper",
+		"traits": [
+			"item",
+			"common"
+		]
+	},
+	{
+		"id": "currency_elvel_p10",
+		"title":"Десять эльвельских акций",
+		"description":"Номинал этой акции - 10 парсов. Бумажная валюта, выпускаемая после “войны в Долине”. Равна одному\nпарсу, но в самой Долине из презрения к Нилию предпочитают использовать именно ее.",
+		"texture": "aorta:elvel_money_paper2",
+		"traits": [
+			"item",
+			"uncommon"
+		]
+	},
+	{
+		"id": "currency_elvel_p50",
+		"title":"Пятьдесят эльвельских акций",
+		"description":"Номинал этой акции - 50 парсов. Бумажная валюта, выпускаемая после “войны в Долине”. Равна одному\nпарсу, но в самой Долине из презрения к Нилию предпочитают использовать именно ее.",
+		"texture": "aorta:elvel_money_paper3",
+		"traits": [
+			"item",
+			"rare"
+		]
+	},
+	{
+		"id": "currency_elvel_p100",
+		"title":"Сто эльвельских акций",
+		"description":"Номинал этой акции - 100 парсов. Бумажная валюта, выпускаемая после “войны в Долине”. Равна одному\nпарсу, но в самой Долине из презрения к Нилию предпочитают использовать именно ее.",
+		"texture": "aorta:elvel_money_paper4",
+		"traits": [
+			"item",
+			"epic"
+		]
+	},
+	{
+		"id": "moneybundle",
+		"title":"Пачка акций",
+		"description":"Пачка эльвельской бумажной валюты. Тут ровно 250 акций.",
+		"texture": "aorta:moneybundle_co",
+		"traits": [
+			"item",
+			"common"
+		]
+	},
+	{
+		"id": "moneybundle_un",
+		"title":"Пачка акций",
+		"description":"Пачка эльвельской бумажной валюты. Тут ровно 500 акций.",
+		"texture": "aorta:moneybundle_un",
+		"traits": [
+			"item",
+			"uncommon"
+		]
+	},
+	{
+		"id": "moneybundle_ra",
+		"title":"Пачка акций",
+		"description":"Пачка эльвельской бумажной валюты. Тут ровно 1000 акций.",
+		"texture": "aorta:moneybundle_ra",
+		"traits": [
+			"item",
+			"rare"
+		]
+	},
+	{
+		"id": "moneybundle_ep",
+		"title":"Пачка акций",
+		"description":"Пачка эльвельской бумажной валюты. Тут ровно 2000 акций.",
+		"texture": "aorta:moneybundle_ep",
+		"traits": [
+			"item",
+			"epic"
+		]
+	},
+	{
+		"id": "moneybundle_leg",
+		"title":"Пачка акций",
+		"description":"Пачка эльвельской бумажной валюты. Ого! Да тут ровно 5000 акций.",
+		"texture": "aorta:moneybundle_leg",
+		"traits": [
+			"item",
+			"legendary"
+		]
+	}
+]

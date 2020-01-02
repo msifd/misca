@@ -2,8 +2,8 @@ package msifeed.mc.misca.books;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import msifeed.mc.aorta.genesis.GenesisCreativeTab;
 import msifeed.mc.misca.Misca;
-import msifeed.mc.misca.things.MiscaThings;
 import msifeed.mc.misca.utils.MiscaGuiHandler;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.player.EntityPlayer;
@@ -20,7 +20,7 @@ public class ItemRemoteBook extends Item {
 
     public ItemRemoteBook() {
         setUnlocalizedName("remote_book");
-        setCreativeTab(MiscaThings.itemsTab);
+        setCreativeTab(GenesisCreativeTab.TOOLS);
     }
 
     @Override

@@ -2,7 +2,7 @@ package msifeed.mc.misca.crabs.tools;
 
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.registry.LanguageRegistry;
-import msifeed.mc.misca.things.MiscaThings;
+import msifeed.mc.aorta.genesis.GenesisCreativeTab;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
@@ -19,7 +19,7 @@ public class ItemHealthController extends Item {
     public ItemHealthController() {
         setUnlocalizedName("health_controller");
         setTextureName("nether_star");
-        setCreativeTab(MiscaThings.itemsTab);
+        setCreativeTab(GenesisCreativeTab.TOOLS);
         setMaxStackSize(1);
     }
 

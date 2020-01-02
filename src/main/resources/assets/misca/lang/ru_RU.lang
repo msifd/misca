@@ -1,10 +1,31 @@
-itemGroup.misca.blocks=Миска блоки
-itemGroup.misca.items=Миска предметы
-
 key.misca=Misca
 key.misca.char=Characters
 key.misca.char_hud=Стат-о-матик
 key.misca.battle_hud=Битв-о-матик
+
+itemGroup.aorta.blocks=Аорта блоки
+itemGroup.aorta.items=Аорта предметы
+itemGroup.aorta.tools=Аорта тулсы
+
+item.lock_blank_key.name=Заготовка ключа
+item.lock_key.name=Ключ
+item.lock_build_in.name=Встроенный замок
+item.lock_padlock.name=Навесной замок
+item.lock_digital.name=Цифровой замок
+item.lock_lockpick.name=Отмычка
+item.lock_advanced_lockpick.name=Авто-отмычка
+item.lock_access_tuner.name=Настройщик доступа
+item.lock_advanced_tuner.name=Рекомбинатор схем
+item.lock_skeletal_key.name=Скелетный ключ
+
+aorta.lock.locked=§7Закрыто
+aorta.lock.unlocked=§7Открыто
+aorta.lock.installed=§7Замок установлен
+aorta.lock.replaced=§7Замок заменён
+aorta.lock.reset=§7Новый пароль установлен
+aorta.lock.blank_lock=§7Новенький
+aorta.lock.pick_break=§7Отмычка сломалась
+aorta.lock.hacked=§7Замок взломан
 
 item.battle_stick.name=Палка битвы
 item.battle_stick.desc=Воздействует на существо:\nЛКМ - выйти раз на раз\nShift+ЛКМ - уточнить мотивы бойца\nПКМ - переключение командования\nShift+ПКМ - отпустить покурить
@@ -105,199 +126,3 @@ misca.books.editor.the_book=Такая книга
 misca.books.editor.missing=отсутствует.
 misca.books.editor.exists=есть в наличии.
 misca.books.editor.get=Получить
-
-item.misc_1.name=misc_1
-item.misc_2.name=misc_2
-item.misc_3.name=misc_3
-item.misc_4.name=misc_4
-item.misc_5.name=misc_5
-item.misc_6.name=misc_6
-item.misc_7.name=misc_7
-item.misc_8.name=misc_8
-item.misc_9.name=misc_9
-item.misc_10.name=misc_10
-
-item.misc_11.name=misc_11
-item.misc_12.name=misc_12
-item.misc_13.name=misc_13
-item.misc_14.name=misc_14
-item.misc_15.name=misc_15
-item.misc_16.name=misc_16
-item.misc_17.name=misc_17
-item.misc_18.name=misc_18
-item.misc_19.name=misc_19
-item.misc_20.name=misc_20
-
-item.misc_21.name=misc_21
-item.misc_22.name=misc_22
-item.misc_23.name=misc_23
-item.misc_24.name=misc_24
-item.misc_25.name=misc_25
-item.misc_26.name=misc_26
-item.misc_27.name=misc_27
-item.misc_28.name=misc_28
-item.misc_29.name=misc_29
-item.misc_30.name=misc_30
-
-item.misc_31.name=misc_31
-item.misc_32.name=misc_32
-item.misc_33.name=misc_33
-item.misc_34.name=misc_34
-item.misc_35.name=misc_35
-item.misc_36.name=misc_36
-item.misc_37.name=misc_37
-item.misc_38.name=misc_38
-item.misc_39.name=misc_39
-item.misc_40.name=misc_40
-
-item.misc_41.name=misc_41
-item.misc_42.name=misc_42
-item.misc_43.name=misc_43
-item.misc_44.name=misc_44
-item.misc_45.name=misc_45
-item.misc_46.name=misc_46
-item.misc_47.name=misc_47
-item.misc_48.name=misc_48
-item.misc_49.name=misc_49
-item.misc_50.name=misc_50
-
-item.misc_51.name=misc_51
-item.misc_52.name=misc_52
-item.misc_53.name=misc_53
-item.misc_54.name=misc_54
-item.misc_55.name=misc_55
-item.misc_56.name=misc_56
-item.misc_57.name=misc_57
-item.misc_58.name=misc_58
-item.misc_59.name=misc_59
-item.misc_60.name=misc_60
-
-item.misc_61.name=misc_61
-item.misc_62.name=misc_62
-item.misc_63.name=misc_63
-item.misc_64.name=misc_64
-item.misc_65.name=misc_65
-item.misc_66.name=misc_66
-item.misc_67.name=misc_67
-item.misc_68.name=misc_68
-item.misc_69.name=misc_69
-item.misc_70.name=misc_70
-
-item.misc_71.name=misc_71
-item.misc_72.name=misc_72
-item.misc_73.name=misc_73
-item.misc_74.name=misc_74
-item.misc_75.name=misc_75
-
-item.food_1.name=food_1
-item.food_2.name=food_2
-item.food_3.name=food_3
-item.food_4.name=food_4
-item.food_5.name=food_5
-item.food_6.name=food_6
-item.food_7.name=food_7
-item.food_8.name=food_8
-item.food_9.name=food_9
-item.food_10.name=food_10
-
-item.food_11.name=food_11
-item.food_12.name=food_12
-item.food_13.name=food_13
-item.food_14.name=food_14
-item.food_15.name=food_15
-item.food_16.name=food_16
-item.food_17.name=food_17
-item.food_18.name=food_18
-item.food_19.name=food_19
-item.food_20.name=food_20
-
-item.food_21.name=food_21
-item.food_22.name=food_22
-item.food_23.name=food_23
-item.food_24.name=food_24
-item.food_25.name=food_25
-item.food_26.name=food_26
-item.food_27.name=food_27
-item.food_28.name=food_28
-item.food_29.name=food_29
-item.food_30.name=food_30
-
-item.food_31.name=food_31
-item.food_32.name=food_32
-item.food_33.name=food_33
-item.food_34.name=food_34
-item.food_35.name=food_35
-item.food_36.name=food_36
-item.food_37.name=food_37
-item.food_38.name=food_38
-item.food_39.name=food_39
-item.food_40.name=food_40
-
-item.food_41.name=food_41
-item.food_42.name=food_42
-item.food_43.name=food_43
-item.food_44.name=food_44
-item.food_45.name=food_45
-item.food_46.name=food_46
-item.food_47.name=food_47
-item.food_48.name=food_48
-item.food_49.name=food_49
-item.food_50.name=food_50
-
-item.food_51.name=food_51
-item.food_52.name=food_52
-item.food_53.name=food_53
-item.food_54.name=food_54
-item.food_55.name=food_55
-item.food_56.name=food_56
-item.food_57.name=food_57
-item.food_58.name=food_58
-item.food_59.name=food_59
-item.food_60.name=food_60
-
-item.food_61.name=food_61
-item.food_62.name=food_62
-item.food_63.name=food_63
-item.food_64.name=food_64
-item.food_65.name=food_65
-item.food_66.name=food_66
-item.food_67.name=food_67
-item.food_68.name=food_68
-item.food_69.name=food_69
-item.food_70.name=food_70
-
-item.food_71.name=food_71
-item.food_72.name=food_72
-item.food_73.name=food_73
-item.food_74.name=food_74
-item.food_75.name=food_75
-
-item.weapon_type1_1.name=sword_t1_1
-item.weapon_type1_2.name=sword_t1_2
-item.weapon_type1_3.name=sword_t1_3
-item.weapon_type1_4.name=sword_t1_4
-item.weapon_type1_5.name=sword_t1_5
-
-item.weapon_type2_1.name=sword_t2_1
-item.weapon_type2_2.name=sword_t2_2
-item.weapon_type2_3.name=sword_t2_3
-item.weapon_type2_4.name=sword_t2_4
-item.weapon_type2_5.name=sword_t2_5
-
-item.weapon_type3_1.name=sword_t3_1
-item.weapon_type3_2.name=sword_t3_2
-item.weapon_type3_3.name=sword_t3_3
-item.weapon_type3_4.name=sword_t3_4
-item.weapon_type3_5.name=sword_t3_5
-
-item.weapon_type4_1.name=sword_t4_1
-item.weapon_type4_2.name=sword_t4_2
-item.weapon_type4_3.name=sword_t4_3
-item.weapon_type4_4.name=sword_t4_4
-item.weapon_type4_5.name=sword_t4_5
-
-item.weapon_type5_1.name=sword_t5_1
-item.weapon_type5_2.name=sword_t5_2
-item.weapon_type5_3.name=sword_t5_3
-item.weapon_type5_4.name=sword_t5_4
-item.weapon_type5_5.name=sword_t5_5

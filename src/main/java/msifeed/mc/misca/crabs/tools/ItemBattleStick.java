@@ -2,10 +2,10 @@ package msifeed.mc.misca.crabs.tools;
 
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.registry.LanguageRegistry;
+import msifeed.mc.aorta.genesis.GenesisCreativeTab;
 import msifeed.mc.misca.crabs.context.Context;
 import msifeed.mc.misca.crabs.context.ContextManager;
 import msifeed.mc.misca.crabs.fight.FightManager;
-import msifeed.mc.misca.things.MiscaThings;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
@@ -23,7 +23,7 @@ public class ItemBattleStick extends Item {
     public ItemBattleStick() {
         setUnlocalizedName("battle_stick");
         setTextureName("blaze_rod");
-        setCreativeTab(MiscaThings.itemsTab);
+        setCreativeTab(GenesisCreativeTab.TOOLS);
         setMaxStackSize(1);
         setFull3D();
     }

@@ -38,6 +38,10 @@ public final class DiceMath {
         return rand.nextInt(20) + 1;
     }
 
+    public static int dn(int n) {
+        return rand.nextInt(n) + 1;
+    }
+
     public enum DiceRank {
         REGULAR, FAIL, LUCK;
 

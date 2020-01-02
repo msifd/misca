@@ -1,8 +1,8 @@
 [
 {
-  "modid": "misca",
-  "name": "Misca",
-  "description": "Miscellaneous Ariadna features",
+  "modid": "misca-more",
+  "name": "MORE",
+  "description": "Morgana Extensions",
   "version": "${version}",
   "mcversion": "${mcversion}",
   "url": "https://github.com/msifd/misca",

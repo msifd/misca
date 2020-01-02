@@ -1,5 +1,3 @@
-[![Build Status](https://travis-ci.org/msifd/misca.svg?branch=master)](https://travis-ci.org/msifd/misca)
-
 Мод ролевого сервера кубача [Ариадна](http://ariadna-rp.ru/).
 Краткий список фич:
 - Система проведения пошаговых боев. Можно драться с НПС-кабанами и игроками. Говорят, ей даже удобно пользоваться.
