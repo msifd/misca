@@ -15,6 +15,7 @@ import msifeed.mc.misca.config.ConfigManager;
 import msifeed.mc.misca.crabs.Crabs;
 import msifeed.mc.misca.database.DBHandler;
 import msifeed.mc.misca.tweaks.DRM;
+import msifeed.mc.misca.tweaks.GameWindowOptions;
 import msifeed.mc.misca.tweaks.Tweaks;
 import msifeed.mc.misca.tweaks.mining.MiningNerf;
 import msifeed.mc.misca.utils.MiscaGuiHandler;
@@ -50,12 +51,17 @@ public class Misca {
         }
 
         ConfigManager.INSTANCE.init(event);
-        ConfigManager.INSTANCE.reloadConfig();
+
+        if (FMLCommonHandler.instance().getSide().isClient()) {
+            GameWindowOptions.preInit();
+        }
 
         crabs.preInit(event);
         tweaks.preInit(event);
         miningNerf.preInit(event);
         RemoteBookManager.INSTANCE.preInit(event);
+
+        ConfigManager.INSTANCE.reloadConfig();
     }
 
     @EventHandler
