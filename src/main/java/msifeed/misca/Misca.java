@@ -1,11 +1,15 @@
 package msifeed.misca;
 
-import net.minecraft.init.Blocks;
+import msifeed.misca.chatex.IChatexProxy;
+import msifeed.misca.cmd.RollCommand;
+import msifeed.misca.names.NamesExtension;
+import msifeed.misca.rpc.RpcChannel;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
+import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import org.apache.logging.log4j.Logger;
+import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 
 @Mod(modid = Misca.MODID, name = Misca.NAME, version = Misca.VERSION)
 public class Misca {
@@ -13,16 +17,27 @@ public class Misca {
     public static final String NAME = "Misca";
     public static final String VERSION = "2.0";
 
-    private static Logger logger;
+    public static RpcChannel RPC = new RpcChannel(Misca.MODID + ".rpc");
+
+    @SidedProxy(clientSide = "msifeed.misca.chatex.client.ChatexClient", serverSide = "msifeed.misca.chatex.server.ChatexServer")
+    private static IChatexProxy chatex;
+
+    private final NamesExtension names = new NamesExtension();
 
     @EventHandler
     public void preInit(FMLPreInitializationEvent event) {
-        logger = event.getModLog();
     }
 
     @EventHandler
     public void init(FMLInitializationEvent event) {
-        // some example code
-        logger.info("DIRT BLOCK >> {}", Blocks.DIRT.getRegistryName());
+        chatex.init();
+        names.init();
+    }
+
+    @EventHandler
+    public void serverStarting(FMLServerStartingEvent event) {
+        chatex.registerCommands(event);
+
+        event.registerServerCommand(new RollCommand());
     }
 }
