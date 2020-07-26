@@ -1,4 +1,4 @@
-package msifeed.rpc;
+package msifeed.misca.rpc;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -10,6 +10,7 @@ import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import net.minecraftforge.fml.relauncher.Side;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import sun.reflect.Reflection;
 
 import java.lang.reflect.Method;
 import java.util.HashMap;
@@ -17,19 +18,17 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class RpcChannel implements IMessageHandler<RpcMessage, IMessage> {
-    private static final String RPC_NAMESPACE = "rpc.";
-
     private final SimpleNetworkWrapper channel;
     private final HashMap<String, Handler> handlers = new HashMap<>();
 
     private final Logger logger;
 
-    public RpcChannel(String namespace) {
-        channel = NetworkRegistry.INSTANCE.newSimpleChannel(RPC_NAMESPACE + namespace);
-        channel.registerMessage(this, RpcMessage.class, 0, Side.SERVER);
-        channel.registerMessage(this, RpcMessage.class, 1, Side.CLIENT);
+    public RpcChannel(String channel) {
+        this.channel = NetworkRegistry.INSTANCE.newSimpleChannel(channel);
+        this.channel.registerMessage(this, RpcMessage.class, 0, Side.CLIENT);
+        this.channel.registerMessage(this, RpcMessage.class, 1, Side.SERVER);
 
-        logger = LogManager.getLogger("RPC-" + namespace);
+        logger = LogManager.getLogger("RPC:" + channel);
     }
 
     public void sendToAll(String method, Object... args) {
@@ -61,20 +60,25 @@ public class RpcChannel implements IMessageHandler<RpcMessage, IMessage> {
     }
 
     public void register(Object obj) {
-        for (Method m : obj.getClass().getDeclaredMethods()) {
-            if (!m.isAnnotationPresent(RpcMethod.class))
+        final Class<?> clazz = obj.getClass();
+        for (Method m : clazz.getDeclaredMethods()) {
+            if (!m.isAnnotationPresent(RpcMethodHandler.class))
                 continue;
-            final String methodName = m.getAnnotation(RpcMethod.class).value();
+            final String methodName = m.getAnnotation(RpcMethodHandler.class).value();
+
+            if (!m.isAccessible() && !Reflection.quickCheckMemberAccess(clazz, m.getModifiers()))
+                throw new RuntimeException(String.format("RPC method '%s::%s' is not accessible", clazz.getName(), m.getName()));
 
             final Class<?>[] types = m.getParameterTypes();
             if (types.length == 0 || types[0] != MessageContext.class)
-                throw new RuntimeException(String.format("RPC method %s: missing leading MessageContext param", methodName));
+                throw new RuntimeException(String.format("RPC method '%s': missing leading MessageContext arg", methodName));
+
             for (int i = 1; i < types.length; ++i)
                 if (!RpcCodec.INSTANCE.hasCodec(types[i]))
                     throw new RuntimeException(String.format("RPC method '%s': param %d (%s) is not supported", methodName, i + 1, types[i].getSimpleName()));
 
             if (handlers.containsKey(methodName))
-                throw new RuntimeException(String.format("RPC method %s: method duplication", methodName));
+                throw new RuntimeException(String.format("RPC method '%s': method duplication", methodName));
             handlers.put(methodName, new Handler(obj, m));
         }
     }

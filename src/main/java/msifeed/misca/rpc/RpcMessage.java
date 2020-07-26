@@ -1,10 +1,10 @@
-package msifeed.rpc;
+package msifeed.misca.rpc;
 
 import io.netty.buffer.ByteBuf;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 
-class RpcMessage implements IMessage {
+public class RpcMessage implements IMessage {
     String method;
     Object[] args;
 
