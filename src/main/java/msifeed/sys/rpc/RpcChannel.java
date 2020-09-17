@@ -1,4 +1,4 @@
-package msifeed.misca.rpc;
+package msifeed.sys.rpc;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -117,6 +117,9 @@ public class RpcChannel implements IMessageHandler<RpcMessage, IMessage> {
                         .map(Class::getSimpleName)
                         .collect(Collectors.joining(","));
                 logger.error("Method '{}' called with invalid arguments. Expected types: '{}', actual types: '{}'", method, expected, actual);
+            } catch (RpcException e) {
+                logger.error("Method '{}' failed with rpc error: {}", method, e);
+                e.send();
             } catch (Exception e) {
                 logger.error("Method '{}' failed with exception: {}", method, e);
             }

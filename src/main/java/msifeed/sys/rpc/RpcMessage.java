@@ -1,4 +1,4 @@
-package msifeed.misca.rpc;
+package msifeed.sys.rpc;
 
 import io.netty.buffer.ByteBuf;
 import net.minecraftforge.fml.common.network.ByteBufUtils;

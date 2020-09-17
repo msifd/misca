@@ -1,7 +1,7 @@
 package msifeed.misca.chatex.server;
 
 import msifeed.misca.chatex.IChatexRpc;
-import msifeed.misca.rpc.RpcMethodHandler;
+import msifeed.sys.rpc.RpcMethodHandler;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 

@@ -1,4 +1,4 @@
-package msifeed.misca.rpc;
+package msifeed.sys.rpc;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;

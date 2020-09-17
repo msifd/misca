@@ -3,7 +3,7 @@ package msifeed.misca;
 import msifeed.misca.chatex.IChatexProxy;
 import msifeed.misca.cmd.RollCommand;
 import msifeed.misca.names.NamesExtension;
-import msifeed.misca.rpc.RpcChannel;
+import msifeed.sys.rpc.RpcChannel;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.SidedProxy;

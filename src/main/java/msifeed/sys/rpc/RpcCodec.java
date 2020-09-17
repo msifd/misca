@@ -1,4 +1,4 @@
-package msifeed.misca.rpc;
+package msifeed.sys.rpc;
 
 import com.google.common.primitives.Primitives;
 import io.netty.buffer.ByteBuf;
