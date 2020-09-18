@@ -2,6 +2,7 @@ package msifeed.misca;
 
 import msifeed.misca.chatex.IChatexProxy;
 import msifeed.misca.cmd.RollCommand;
+import msifeed.misca.genesis.Genesis;
 import msifeed.misca.names.NamesExtension;
 import msifeed.sys.rpc.RpcChannel;
 import net.minecraftforge.fml.common.Mod;
@@ -19,6 +20,8 @@ public class Misca {
 
     public static RpcChannel RPC = new RpcChannel(Misca.MODID + ".rpc");
 
+    @SidedProxy(clientSide = "msifeed.misca.genesis.client.GenesisClient", serverSide = "msifeed.misca.genesis.Genesis")
+    private static Genesis genesis;
     @SidedProxy(clientSide = "msifeed.misca.chatex.client.ChatexClient", serverSide = "msifeed.misca.chatex.server.ChatexServer")
     private static IChatexProxy chatex;
 
@@ -26,6 +29,7 @@ public class Misca {
 
     @EventHandler
     public void preInit(FMLPreInitializationEvent event) {
+        genesis.preInit();
     }
 
     @EventHandler
