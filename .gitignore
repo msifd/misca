@@ -23,3 +23,7 @@ run
 
 # Files from Forge MDK
 forge*changelog.txt
+
+# exclude genesis
+!run/config/genesis/
+!run/resourcepacks/

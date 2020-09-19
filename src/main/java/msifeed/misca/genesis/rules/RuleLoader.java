@@ -10,24 +10,28 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 
-public class RuleLoader<T extends IGenesisRule> {
+public class RuleLoader {
     private final Type listOfRulesType;
     private final Gson gson = new Gson();
 
-    public RuleLoader(Class<T> ruleType) {
+    public RuleLoader(Class<? extends IGenesisRule> ruleType) {
         this.listOfRulesType = TypeToken.getParameterized(List.class, ruleType).getType();
     }
 
-    public void load(File genesisDir) throws IOException {
-        Files.walk(genesisDir.toPath())
-                .filter(Files::isRegularFile)
-                .filter(path -> path.toString().endsWith(".json"))
-                .forEach(this::loadFile);
+    public void load(File genesisDir) {
+        try {
+            Files.walk(genesisDir.toPath())
+                    .filter(Files::isRegularFile)
+                    .filter(path -> path.toString().endsWith(".json"))
+                    .forEach(this::loadFile);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private void loadFile(Path path) {
         try {
-            final List<T> rules = gson.fromJson(Files.newBufferedReader(path), listOfRulesType);
+            final List<IGenesisRule> rules = gson.fromJson(Files.newBufferedReader(path), listOfRulesType);
             for (IGenesisRule rule : rules)
                 rule.generate();
         } catch (IOException e) {

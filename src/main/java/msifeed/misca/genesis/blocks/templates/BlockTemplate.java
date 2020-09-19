@@ -1,6 +1,6 @@
-package msifeed.misca.genesis.generator.block.templates;
+package msifeed.misca.genesis.blocks.templates;
 
-import msifeed.misca.genesis.generator.block.BlockRule;
+import msifeed.misca.genesis.blocks.BlockRule;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 

@@ -1,13 +1,12 @@
-package msifeed.misca.genesis.generator.block;
+package msifeed.misca.genesis.blocks;
 
 import msifeed.misca.Misca;
-import msifeed.misca.genesis.generator.block.templates.BlockTemplate;
+import msifeed.misca.genesis.blocks.templates.BlockTemplate;
 import msifeed.misca.genesis.rules.IGenesisRule;
 import net.minecraft.block.Block;
 import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
-import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraftforge.fml.common.registry.ForgeRegistries;
 
 import java.util.Objects;
 
@@ -21,9 +20,10 @@ public class BlockRule implements IGenesisRule {
     public void generate() {
         BlockTemplate block = new BlockTemplate(this);
         block.setRegistryName(Misca.MODID, id);
+        block.setUnlocalizedName(id);
         block.setCreativeTab(CreativeTabs.TRANSPORTATION);
 
-        GameRegistry.findRegistry(Block.class).register(block);
+        ForgeRegistries.BLOCKS.register(block);
 
         if (generateItemBlock)
             generateBlockItem(block);
@@ -31,9 +31,9 @@ public class BlockRule implements IGenesisRule {
 
     private void generateBlockItem(Block block) {
         final ItemBlock itemBlock = new ItemBlock(block);
-        itemBlock.setUnlocalizedName(title);
+        itemBlock.setUnlocalizedName(id);
 
         itemBlock.setRegistryName(Objects.requireNonNull(block.getRegistryName()));
-        GameRegistry.findRegistry(Item.class).register(itemBlock);
+        ForgeRegistries.ITEMS.register(itemBlock);
     }
 }
