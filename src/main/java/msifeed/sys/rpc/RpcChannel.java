@@ -70,40 +70,50 @@ public class RpcChannel implements IMessageHandler<RpcMessage, IMessage> {
                 throw new RuntimeException(String.format("RPC method '%s::%s' is not accessible", clazz.getName(), m.getName()));
 
             final Class<?>[] types = m.getParameterTypes();
-            if (types.length == 0 || types[0] != MessageContext.class)
-                throw new RuntimeException(String.format("RPC method '%s': missing leading MessageContext arg", methodName));
 
-            for (int i = 1; i < types.length; ++i)
+            final ContextType ct;
+            if (types.length > 0 && types[0] == MessageContext.class) ct = ContextType.MSG_CTX;
+            else ct = ContextType.NONE;
+
+            final int argsStart = ct == ContextType.NONE ? 0 : 1;
+            for (int i = argsStart; i < types.length; ++i)
                 if (!RpcCodec.INSTANCE.hasCodec(types[i]))
                     throw new RuntimeException(String.format("RPC method '%s': param %d (%s) is not supported", methodName, i + 1, types[i].getSimpleName()));
 
             if (handlers.containsKey(methodName))
                 throw new RuntimeException(String.format("RPC method '%s': method duplication", methodName));
-            handlers.put(methodName, new Handler(obj, m));
+            handlers.put(methodName, new Handler(obj, m, ct));
         }
     }
 
     @Override
     public IMessage onMessage(RpcMessage message, MessageContext ctx) {
         final Handler handler = handlers.get(message.method);
-        if (handler == null)
-            return null;
-
-        final Object[] args = new Object[message.args.length + 1];
-        args[0] = ctx;
-        System.arraycopy(message.args, 0, args, 1, message.args.length);
-
-        handler.invoke(args);
+        if (handler != null)
+            handler.invoke(handler.rearrangeArgs(message.args, ctx));
         return null;
     }
 
     private class Handler {
-        Object object;
-        Method method;
+        private final Object object;
+        private final Method method;
+        private final ContextType contextType;
 
-        Handler(Object o, Method m) {
+        Handler(Object o, Method m, ContextType ct) {
             this.object = o;
             this.method = m;
+            this.contextType = ct;
+        }
+
+        Object[] rearrangeArgs(Object[] args, MessageContext msgCtx) {
+            if (contextType == ContextType.NONE)
+                return args;
+
+            final Object[] argsWithCtx = new Object[args.length + 1];
+            argsWithCtx[0] = msgCtx;
+            System.arraycopy(args, 0, argsWithCtx, 1, args.length);
+
+            return argsWithCtx;
         }
 
         void invoke(Object[] args) {
@@ -124,5 +134,9 @@ public class RpcChannel implements IMessageHandler<RpcMessage, IMessage> {
                 logger.error("Method '{}' failed with exception: {}", method, e);
             }
         }
+    }
+
+    private enum ContextType {
+        NONE, MSG_CTX
     }
 }

@@ -16,7 +16,7 @@ import java.util.UUID;
 
 public class ChatexClientRpc implements IChatexRpc {
     @RpcMethodHandler(speech)
-    public void onSpeech(MessageContext ctx, UUID speakerId, int range, String msg) {
+    public void onSpeech(UUID speakerId, int range, String msg) {
         final EntityPlayerSP self = Minecraft.getMinecraft().player;
         final EntityPlayer speaker = self.world.getPlayerEntityByUUID(speakerId);
         if (speaker == null) return;
@@ -24,7 +24,7 @@ public class ChatexClientRpc implements IChatexRpc {
     }
 
     @RpcMethodHandler(global)
-    public void onGlobal(MessageContext ctx, String speaker, String msg) {
+    public void onGlobal(String speaker, String msg) {
         final EntityPlayerSP self = Minecraft.getMinecraft().player;
         self.sendMessage(GlobalFormat.format(self, speaker, msg));
     }
@@ -44,7 +44,7 @@ public class ChatexClientRpc implements IChatexRpc {
     // // // //
 
     @RpcMethodHandler(broadcastTyping)
-    public void onBroadcastTyping(MessageContext ctx, int entityId, long time) {
+    public void onBroadcastTyping(int entityId, long time) {
         TypingHandler.updateTyping(entityId, time);
     }
 }

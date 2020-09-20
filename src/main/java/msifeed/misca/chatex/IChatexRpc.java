@@ -18,8 +18,7 @@ public interface IChatexRpc {
 
     static void sendGlobal(EntityPlayerMP player, String msg) {
         // TODO: get name from charsheet
-        Misca.RPC.sendToAllTracking(player, global, player.getDisplayName(), msg);
-        Misca.RPC.sendTo(player, global, player.getDisplayName(), msg);
+        Misca.RPC.sendToAll(global, player.getDisplayName(), msg);
     }
 
     static void sendRoll(EntityPlayerMP sender, String spec, long result) {
