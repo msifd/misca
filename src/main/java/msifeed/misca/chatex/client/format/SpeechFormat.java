@@ -1,6 +1,7 @@
 package msifeed.misca.chatex.client.format;
 
 import msifeed.misca.MiscaConfig;
+import msifeed.misca.charsheet.cap.CharsheetProvider;
 import msifeed.misca.chatex.ChatexConfig;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.text.ITextComponent;
@@ -29,7 +30,9 @@ public class SpeechFormat {
     }
 
     private static ITextComponent makeNamePrefix(EntityPlayer player, boolean isSelf) {
-        final ITextComponent cc = player.getDisplayName();
+        final String csName = player.getCapability(CharsheetProvider.CAP, null).getName();
+
+        final ITextComponent cc = csName.isEmpty() ? player.getDisplayName() : new TextComponentString(csName);
         cc.getStyle().setColor(isSelf ? TextFormatting.YELLOW : TextFormatting.GREEN);
         return cc;
     }
