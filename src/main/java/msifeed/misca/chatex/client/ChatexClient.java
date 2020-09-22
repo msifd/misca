@@ -1,12 +1,11 @@
 package msifeed.misca.chatex.client;
 
 import msifeed.misca.Misca;
-import msifeed.misca.chatex.server.ChatexServer;
+import msifeed.misca.chatex.ChatexServer;
 
-public class ChatexClient extends ChatexServer {
-    @Override
+public class ChatexClient {
     public void init() {
-        super.init();
+        Misca.RPC.register(new ChatexClientRpc());
         Misca.RPC.register(new ChatexClientRpc());
     }
 }

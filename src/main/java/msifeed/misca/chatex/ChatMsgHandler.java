@@ -1,4 +1,4 @@
-package msifeed.misca.chatex.server;
+package msifeed.misca.chatex;
 
 import msifeed.misca.chatex.ChatexUtils;
 import msifeed.misca.chatex.IChatexRpc;

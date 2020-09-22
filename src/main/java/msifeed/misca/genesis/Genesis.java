@@ -15,28 +15,28 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import java.io.File;
 
 public class Genesis {
+    private File genesisDir;
+
     public void preInit() {
+        genesisDir = new File(Loader.instance().getConfigDir(), MiscaConfig.genesis.genesisDir);
         MinecraftForge.EVENT_BUS.register(this);
     }
 
     @SubscribeEvent
     public void registerBlocks(RegistryEvent.Register<Block> event) {
-        load(BlockRule.class, MiscaConfig.genesis.blocksDir);
+        load(BlockRule.class, new File(genesisDir, MiscaConfig.genesis.blocksDir));
     }
 
     @SubscribeEvent
     public void registerItems(RegistryEvent.Register<Item> event) {
-        load(ItemRule.class, MiscaConfig.genesis.itemsDir);
+        load(ItemRule.class, new File(genesisDir, MiscaConfig.genesis.itemsDir));
     }
 
-    private void load(Class<? extends IGenesisRule> ruleType, String subfolder) {
-        final File genesisDir = new File(Loader.instance().getConfigDir(), MiscaConfig.genesis.genesisDir);
-        final File subDir = new File(genesisDir, subfolder);
-        if (!subDir.exists()) {
-            subDir.mkdirs();
-        }
+    private void load(Class<? extends IGenesisRule> ruleType, File directory) {
+        if (!directory.exists())
+            directory.mkdirs();
 
         final RuleLoader loader = new RuleLoader(ruleType);
-        loader.load(subDir);
+        loader.load(directory);
     }
 }

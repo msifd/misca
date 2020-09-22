@@ -1,15 +1,13 @@
 package msifeed.misca;
 
 import msifeed.misca.charsheet.cap.CharsheetHandler;
-import msifeed.misca.chatex.IChatexProxy;
-import msifeed.misca.client.MiscaClient;
+import msifeed.misca.chatex.ChatexServer;
 import msifeed.misca.cmd.RollCommand;
 import msifeed.misca.genesis.Genesis;
-import msifeed.misca.names.NamesExtension;
 import msifeed.sys.rpc.RpcChannel;
+import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
-import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
@@ -22,15 +20,10 @@ public class Misca {
 
     public static RpcChannel RPC = new RpcChannel(Misca.MODID + ".rpc");
 
-    @SidedProxy(clientSide = "msifeed.misca.genesis.client.GenesisClient", serverSide = "msifeed.misca.genesis.Genesis")
-    private static Genesis genesis;
-    @SidedProxy(clientSide = "msifeed.misca.chatex.client.ChatexClient", serverSide = "msifeed.misca.chatex.server.ChatexServer")
-    private static IChatexProxy chatex;
+    private final Genesis genesis = new Genesis();
+    private final ChatexServer chatex = new ChatexServer();
 
     private final CharsheetHandler charsheetHandler = new CharsheetHandler();
-    private final NamesExtension names = new NamesExtension();
-
-    private MiscaClient client = new MiscaClient();
 
     @EventHandler
     public void preInit(FMLPreInitializationEvent event) {
@@ -40,13 +33,13 @@ public class Misca {
 
     @EventHandler
     public void init(FMLInitializationEvent event) {
-        charsheetHandler.init();
-
         chatex.init();
-        names.init();
 
+        charsheetHandler.init();
         MiscaPerms.register();
-        client.init();
+
+        if (FMLCommonHandler.instance().getSide().isClient())
+            MiscaClient.INSTANCE.init();
     }
 
     @EventHandler

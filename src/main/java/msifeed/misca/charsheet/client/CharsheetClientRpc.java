@@ -23,7 +23,7 @@ public class CharsheetClientRpc implements ICharsheetRpc {
 
         if (sender.getUniqueID() == uuid)
             target = sender;
-        else if (PermissionAPI.hasPermission(sender, MiscaPerms.gameMaster))
+        else if (MiscaPerms.isGameMaster(sender))
             target = sender.world.getPlayerEntityByUUID(uuid);
         else
             throw new RpcException(sender, "Not a GameMaster!");

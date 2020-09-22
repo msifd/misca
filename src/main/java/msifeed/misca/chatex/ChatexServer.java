@@ -1,10 +1,9 @@
-package msifeed.misca.chatex.server;
+package msifeed.misca.chatex;
 
 import msifeed.misca.Misca;
-import msifeed.misca.chatex.IChatexProxy;
-import msifeed.misca.chatex.server.cmd.GlobalCommand;
-import msifeed.misca.chatex.server.cmd.WhisperCommand;
-import msifeed.misca.chatex.server.cmd.YellCommand;
+import msifeed.misca.chatex.cmd.GlobalCommand;
+import msifeed.misca.chatex.cmd.WhisperCommand;
+import msifeed.misca.chatex.cmd.YellCommand;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 
