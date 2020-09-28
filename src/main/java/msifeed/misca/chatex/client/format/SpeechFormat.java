@@ -13,7 +13,7 @@ import java.util.Random;
 
 public class SpeechFormat {
     public static ITextComponent format(EntityPlayer self, EntityPlayer speaker, int range, String msg) {
-        final boolean isMyMessage = self.getUniqueID() == speaker.getUniqueID();
+        final boolean isMyMessage = self.getUniqueID().equals(speaker.getUniqueID());
 
         final ITextComponent textComp;
         if (isMyMessage) {
@@ -30,7 +30,7 @@ public class SpeechFormat {
     }
 
     private static ITextComponent makeNamePrefix(EntityPlayer player, boolean isSelf) {
-        final String csName = player.getCapability(CharsheetProvider.CAP, null).getName();
+        final String csName = CharsheetProvider.get(player).getName();
 
         final ITextComponent cc = csName.isEmpty() ? player.getDisplayName() : new TextComponentString(csName);
         cc.getStyle().setColor(isSelf ? TextFormatting.YELLOW : TextFormatting.GREEN);

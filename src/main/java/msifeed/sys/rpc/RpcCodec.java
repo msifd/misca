@@ -55,8 +55,6 @@ public enum RpcCodec {
         final TypeCodec<T> codec = (TypeCodec<T>) codecsByType.get(objType);
         if (codec == null)
             throw new RuntimeException(String.format("Unknown codec for type '%s'", objType.getName()));
-//        if (!codec.type.isAssignableFrom(objType))
-//            throw new RuntimeException(String.format("Tried to encode '%s' with codec for '%s'", objType.getName(), codec.type.getName()));
         buf.writeByte(codec.id);
         codec.encoder.accept(buf, obj);
     }

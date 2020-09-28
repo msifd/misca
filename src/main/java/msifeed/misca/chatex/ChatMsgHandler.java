@@ -1,7 +1,5 @@
 package msifeed.misca.chatex;
 
-import msifeed.misca.chatex.ChatexUtils;
-import msifeed.misca.chatex.IChatexRpc;
 import net.minecraftforge.event.ServerChatEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;

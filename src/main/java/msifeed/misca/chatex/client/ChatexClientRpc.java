@@ -45,6 +45,6 @@ public class ChatexClientRpc implements IChatexRpc {
 
     @RpcMethodHandler(broadcastTyping)
     public void onBroadcastTyping(int entityId, long time) {
-        TypingHandler.updateTyping(entityId, time);
+        TypingState.updateTyping(entityId, time);
     }
 }

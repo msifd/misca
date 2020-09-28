@@ -1,6 +1,5 @@
 package msifeed.misca.charsheet.client;
 
-import msifeed.misca.charsheet.ICharsheetRpc;
 import msifeed.misca.charsheet.cap.CharsheetProvider;
 import msifeed.misca.charsheet.cap.ICharsheet;
 import net.minecraft.client.Minecraft;
@@ -18,7 +17,7 @@ public class GuiCharsheet extends GuiScreen {
 
     public GuiCharsheet(EntityPlayer player) {
         this.player = player;
-        this.charsheet = player.getCapability(CharsheetProvider.CAP, null);
+        this.charsheet = CharsheetProvider.get(player).clone();
     }
 
     @Override
@@ -50,9 +49,9 @@ public class GuiCharsheet extends GuiScreen {
 
         switch (button.id) {
             case 0:
-                charsheet.setName(nameEdit.getText());
+                charsheet.setName(nameEdit.getText().trim());
 
-                ICharsheetRpc.updateCharsheet(player, charsheet);
+                CharsheetClientRpc.postCharsheet(player, charsheet);
                 Minecraft.getMinecraft().displayGuiScreen(null);
                 break;
             case 1:

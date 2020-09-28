@@ -5,4 +5,5 @@ public interface ICharsheet {
     void setName(String name);
 
     void replaceWith(ICharsheet charsheet);
+    ICharsheet clone();
 }

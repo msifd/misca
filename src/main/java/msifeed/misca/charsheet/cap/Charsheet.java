@@ -17,4 +17,11 @@ public class Charsheet implements ICharsheet {
     public void replaceWith(ICharsheet charsheet) {
         name = charsheet.getName();
     }
+
+    @Override
+    public ICharsheet clone() {
+        final Charsheet clone = new Charsheet();
+        clone.name = name;
+        return clone;
+    }
 }

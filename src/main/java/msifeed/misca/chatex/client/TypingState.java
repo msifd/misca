@@ -5,7 +5,7 @@ import net.minecraft.entity.player.EntityPlayer;
 
 import java.util.HashMap;
 
-public class TypingHandler {
+public class TypingState {
     private static final int TYPING_PING_MS = 3000;
 
     private static final HashMap<Integer, Long> players = new HashMap<>();
@@ -15,7 +15,8 @@ public class TypingHandler {
         final Long typingStarted = players.get(player.getEntityId());
         if (typingStarted == null)
             return false;
-        return System.currentTimeMillis() - typingStarted > TYPING_PING_MS;
+        final long now = System.currentTimeMillis();
+        return now - typingStarted <= TYPING_PING_MS;
     }
 
     public static void notifyTyping() {

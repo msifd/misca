@@ -15,17 +15,17 @@ import org.lwjgl.input.Keyboard;
 public enum MiscaClient {
     INSTANCE;
 
-    public static KeyBinding keyBinding = new KeyBinding("key.misca.charsheet", Keyboard.KEY_I, "key.categories.misca");
+    public static KeyBinding charsheetKey = new KeyBinding("key.misca.charsheet", Keyboard.KEY_I, "key.categories.misca");
 
     public void init() {
         MinecraftForge.EVENT_BUS.register(this);
 
-        ClientRegistry.registerKeyBinding(keyBinding);
+        ClientRegistry.registerKeyBinding(charsheetKey);
     }
 
     @SubscribeEvent
     void onKeyTyped(InputEvent.KeyInputEvent event) {
-        if (keyBinding.isPressed())
+        if (charsheetKey.isPressed())
             Minecraft.getMinecraft().displayGuiScreen(new GuiCharsheet(Minecraft.getMinecraft().player));
     }
 }

@@ -3,20 +3,13 @@ package msifeed.misca.chatex.client;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiChat;
 import net.minecraftforge.client.event.GuiScreenEvent;
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import org.lwjgl.input.Keyboard;
 
-enum ChatGuiHandler {
-    INSTANCE;
-
+class TypingGuiHandler {
     private boolean chatIsOpened = false; // Ignore
     private char lastCharPressed = 0;
-
-    public static void init() {
-        MinecraftForge.EVENT_BUS.register(INSTANCE);
-    }
 
     @SubscribeEvent
     public void onClientTick(TickEvent.ClientTickEvent event) {
@@ -32,7 +25,7 @@ enum ChatGuiHandler {
         final char c = Keyboard.getEventCharacter();
         if (lastCharPressed != c && Character.isAlphabetic(c)) {
             if (chatIsOpened && c != 0)
-                TypingHandler.notifyTyping();
+                TypingState.notifyTyping();
             chatIsOpened = true;
             lastCharPressed = c;
         }

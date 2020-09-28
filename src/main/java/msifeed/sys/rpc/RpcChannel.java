@@ -2,6 +2,7 @@ package msifeed.sys.rpc;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
@@ -88,9 +89,11 @@ public class RpcChannel implements IMessageHandler<RpcMessage, IMessage> {
 
     @Override
     public IMessage onMessage(RpcMessage message, MessageContext ctx) {
-        final Handler handler = handlers.get(message.method);
-        if (handler != null)
-            handler.invoke(handler.rearrangeArgs(message.args, ctx));
+        FMLCommonHandler.instance().getWorldThread(ctx.netHandler).addScheduledTask(() -> {
+            final Handler handler = handlers.get(message.method);
+            if (handler != null)
+                handler.invoke(handler.rearrangeArgs(message.args, ctx));
+        });
         return null;
     }
 
@@ -131,7 +134,8 @@ public class RpcChannel implements IMessageHandler<RpcMessage, IMessage> {
                 logger.error("Method '{}' failed with rpc error: {}", method, e);
                 e.send();
             } catch (Exception e) {
-                logger.error("Method '{}' failed with exception: {}", method, e);
+                logger.error("Method '{}' failed with exception: {}", method, e.getCause());
+                logger.throwing(e.getCause());
             }
         }
     }

@@ -1,7 +1,7 @@
 package msifeed.misca;
 
-import msifeed.misca.charsheet.cap.CharsheetHandler;
-import msifeed.misca.chatex.ChatexServer;
+import msifeed.misca.charsheet.CharsheetHandler;
+import msifeed.misca.chatex.Chatex;
 import msifeed.misca.cmd.RollCommand;
 import msifeed.misca.genesis.Genesis;
 import msifeed.sys.rpc.RpcChannel;
@@ -18,10 +18,10 @@ public class Misca {
     public static final String NAME = "Misca";
     public static final String VERSION = "2.0";
 
-    public static RpcChannel RPC = new RpcChannel(Misca.MODID + ".rpc");
+    public static RpcChannel RPC = new RpcChannel(Misca.MODID);
 
     private final Genesis genesis = new Genesis();
-    private final ChatexServer chatex = new ChatexServer();
+    private final Chatex chatex = new Chatex();
 
     private final CharsheetHandler charsheetHandler = new CharsheetHandler();
 
