@@ -29,6 +29,9 @@ public class Misca {
     public void preInit(FMLPreInitializationEvent event) {
         genesis.preInit();
         charsheetHandler.preInit();
+
+        if (FMLCommonHandler.instance().getSide().isClient())
+            MiscaClient.INSTANCE.preInit();
     }
 
     @EventHandler

@@ -10,12 +10,17 @@ import net.minecraftforge.fml.common.gameevent.InputEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.input.Keyboard;
+import org.lwjgl.opengl.Display;
 
 @SideOnly(Side.CLIENT)
 public enum MiscaClient {
     INSTANCE;
 
     public static KeyBinding charsheetKey = new KeyBinding("key.misca.charsheet", Keyboard.KEY_I, "key.categories.misca");
+
+    public void preInit() {
+        Display.setTitle(MiscaConfig.windowTitle);
+    }
 
     public void init() {
         MinecraftForge.EVENT_BUS.register(this);
