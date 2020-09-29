@@ -16,9 +16,4 @@ public class BlockTemplate extends Block implements IBlockTemplate {
     public BlockRule getRule() {
         return rule;
     }
-
-    @Override
-    public String getLocalizedName() {
-        return rule.title;
-    }
 }

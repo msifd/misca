@@ -1,6 +1,5 @@
 package msifeed.misca.genesis;
 
-import msifeed.misca.MiscaConfig;
 import msifeed.misca.genesis.blocks.BlockRule;
 import msifeed.misca.genesis.items.ItemRule;
 import msifeed.misca.genesis.rules.IGenesisRule;
@@ -18,18 +17,18 @@ public class Genesis {
     private File genesisDir;
 
     public void preInit() {
-        genesisDir = new File(Loader.instance().getConfigDir(), MiscaConfig.genesis.genesisDir);
+        genesisDir = new File(Loader.instance().getConfigDir(), "genesis");
         MinecraftForge.EVENT_BUS.register(this);
     }
 
     @SubscribeEvent
     public void registerBlocks(RegistryEvent.Register<Block> event) {
-        load(BlockRule.class, new File(genesisDir, MiscaConfig.genesis.blocksDir));
+        load(BlockRule.class, new File(genesisDir, "blocks"));
     }
 
     @SubscribeEvent
     public void registerItems(RegistryEvent.Register<Item> event) {
-        load(ItemRule.class, new File(genesisDir, MiscaConfig.genesis.itemsDir));
+        load(ItemRule.class, new File(genesisDir, "items"));
     }
 
     private void load(Class<? extends IGenesisRule> ruleType, File directory) {
