@@ -4,14 +4,18 @@ import msifeed.misca.genesis.blocks.BlockRule;
 import msifeed.misca.genesis.items.ItemRule;
 import msifeed.misca.genesis.rules.IGenesisRule;
 import msifeed.misca.genesis.rules.RuleLoader;
+import msifeed.misca.genesis.tabs.CreativeTabRule;
 import net.minecraft.block.Block;
+import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegistryEvent;
+import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import java.io.File;
+import java.util.stream.Stream;
 
 public class Genesis {
     private File genesisDir;
@@ -19,6 +23,13 @@ public class Genesis {
     public void preInit() {
         genesisDir = new File(Loader.instance().getConfigDir(), "genesis");
         MinecraftForge.EVENT_BUS.register(this);
+
+        if (FMLCommonHandler.instance().getSide().isClient())
+            load(CreativeTabRule.class, new File(genesisDir, "tabs"));
+
+        Stream.of(CreativeTabs.CREATIVE_TAB_ARRAY).forEach(t -> {
+            System.out.println("tab: " + t);
+        });
     }
 
     @SubscribeEvent

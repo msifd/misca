@@ -1,6 +1,6 @@
 [
   {
-    "type": "block",
-    "id": "test_block"
+    "id": "test_block",
+    "tab": "misca.blocks"
   }
 ]
