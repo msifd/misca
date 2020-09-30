@@ -14,39 +14,53 @@ import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
-import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.stream.Stream;
 
 public class Genesis {
-    private File genesisDir;
+    private Path genesisDir;
 
     public void preInit() {
-        genesisDir = new File(Loader.instance().getConfigDir(), "genesis");
+        genesisDir = Loader.instance().getConfigDir().toPath().resolve("genesis");
         MinecraftForge.EVENT_BUS.register(this);
 
-        if (FMLCommonHandler.instance().getSide().isClient())
-            load(CreativeTabRule.class, new File(genesisDir, "tabs"));
+        if (FMLCommonHandler.instance().getSide().isClient()) {
+            registerTabs();
+        }
+    }
+
+    public void registerTabs() {
+        final RuleLoader loader = new RuleLoader(CreativeTabRule.class);
+        loader.loadFile(genesisDir.resolve("tabs.json"));
 
         Stream.of(CreativeTabs.CREATIVE_TAB_ARRAY).forEach(t -> {
-            System.out.println("tab: " + t);
+            System.out.println("tab: " + t.getTabLabel());
         });
     }
 
     @SubscribeEvent
     public void registerBlocks(RegistryEvent.Register<Block> event) {
-        load(BlockRule.class, new File(genesisDir, "blocks"));
+        loadDir(BlockRule.class, genesisDir.resolve("blocks"));
     }
 
     @SubscribeEvent
     public void registerItems(RegistryEvent.Register<Item> event) {
-        load(ItemRule.class, new File(genesisDir, "items"));
+        loadDir(ItemRule.class, genesisDir.resolve("items"));
     }
 
-    private void load(Class<? extends IGenesisRule> ruleType, File directory) {
-        if (!directory.exists())
-            directory.mkdirs();
+    private void loadDir(Class<? extends IGenesisRule> ruleType, Path dir) {
+        if (!Files.isDirectory(dir)) {
+            try {
+                Files.createDirectories(dir);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return;
+        }
 
         final RuleLoader loader = new RuleLoader(ruleType);
-        loader.load(directory);
+        loader.loadDir(dir);
     }
 }

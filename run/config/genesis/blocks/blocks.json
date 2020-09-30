@@ -2,5 +2,10 @@
   {
     "id": "test_block",
     "tab": "misca.blocks"
+  },
+  {
+    "id": "test_pillar",
+    "type": "pillar",
+    "tab": "misca.blocks"
   }
 ]

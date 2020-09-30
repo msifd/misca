@@ -6,7 +6,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import org.apache.logging.log4j.core.util.Assert;
+import org.apache.commons.lang3.Validate;
 
 import java.util.Objects;
 
@@ -17,9 +17,9 @@ public class CreativeTabRule implements IGenesisRule {
 
     @Override
     public void generate() {
-        Assert.requireNonEmpty(id);
-        Assert.requireNonEmpty(title);
-        Assert.requireNonEmpty(item);
+        Validate.notEmpty(id, "Tab `id` is empty!");
+        Validate.notEmpty(title, "Tab `title` is empty!");
+        Validate.notEmpty(item, "Tab `item` is empty!");
 
         new CreativeTabs(id) {
             @SideOnly(Side.CLIENT)

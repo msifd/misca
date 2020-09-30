@@ -3,7 +3,6 @@ package msifeed.misca.genesis.rules;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
-import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.nio.file.Files;
@@ -18,18 +17,21 @@ public class RuleLoader {
         this.listOfRulesType = TypeToken.getParameterized(List.class, ruleType).getType();
     }
 
-    public void load(File genesisDir) {
+    public void loadDir(Path path) {
         try {
-            Files.walk(genesisDir.toPath())
+            Files.walk(path)
                     .filter(Files::isRegularFile)
-                    .filter(path -> path.toString().endsWith(".json"))
+                    .filter(f -> f.toString().endsWith(".json"))
                     .forEach(this::loadFile);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    private void loadFile(Path path) {
+    public void loadFile(Path path) {
+        if (!Files.isRegularFile(path))
+            return;
+
         try {
             final List<IGenesisRule> rules = gson.fromJson(Files.newBufferedReader(path), listOfRulesType);
             for (IGenesisRule rule : rules)

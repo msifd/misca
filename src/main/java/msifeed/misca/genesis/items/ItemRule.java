@@ -10,7 +10,9 @@ import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.apache.commons.lang3.Validate;
 
+import java.util.Objects;
 import java.util.stream.Stream;
 
 public class ItemRule implements IGenesisRule {
@@ -20,6 +22,9 @@ public class ItemRule implements IGenesisRule {
 
     @Override
     public void generate() {
+        Validate.notEmpty(modId, "Item `modId` is empty!");
+        Validate.notEmpty(id, "Item `id` is empty!");
+
         final Item item = new ItemTemplate(this);
         item.setRegistryName(modId, id);
         item.setUnlocalizedName(id);
@@ -45,6 +50,6 @@ public class ItemRule implements IGenesisRule {
     @SideOnly(Side.CLIENT)
     private void registerModels(Item item) {
         ModelLoader.setCustomModelResourceLocation(item, 0,
-                new ModelResourceLocation(item.getRegistryName(), "inventory"));
+                new ModelResourceLocation(Objects.requireNonNull(item.getRegistryName()), "inventory"));
     }
 }
