@@ -25,9 +25,10 @@ public class BlockRule implements IGenesisRule {
     public float resistance = 1;
     public float hardness = 1;
     public float slipperiness = 0.6f;
-
     public int lightOpacity = 0;
     public float lightLevel = 0;
+
+    public int containerCapacity = 27;
 
     public boolean generateItemBlock = true;
 

@@ -1,6 +1,7 @@
 [
   {
     "id": "test_block",
+    "type": "container",
     "tab": "misca.blocks"
   },
   {
