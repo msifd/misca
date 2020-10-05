@@ -4,6 +4,7 @@ import msifeed.misca.charsheet.CharsheetHandler;
 import msifeed.misca.chatex.Chatex;
 import msifeed.misca.cmd.RollCommand;
 import msifeed.misca.genesis.Genesis;
+import msifeed.misca.supplies.InvoiceCommand;
 import msifeed.sys.rpc.RpcChannel;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.Mod;
@@ -50,5 +51,6 @@ public class Misca {
         chatex.registerCommands(event);
 
         event.registerServerCommand(new RollCommand());
+        event.registerServerCommand(new InvoiceCommand());
     }
 }

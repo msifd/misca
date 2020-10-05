@@ -28,12 +28,16 @@ public class CharsheetStorage implements Capability.IStorage<ICharsheet> {
         instance.setName(nbt.getString(Tag.name));
 
         final int[] abilitiesArr = nbt.getIntArray(Tag.abilities);
-        for (CharAbility abi : CharAbility.values())
-            instance.setAbility(abi, abilitiesArr[abi.ordinal()]);
+        if (abilitiesArr.length == CharAbility.values().length) {
+            for (CharAbility abi : CharAbility.values())
+                instance.setAbility(abi, abilitiesArr[abi.ordinal()]);
+        }
 
         final int[] countersArr = nbt.getIntArray(Tag.counters);
-        for (CharCounter ctr : CharCounter.values())
-            instance.setCounter(ctr, countersArr[ctr.ordinal()]);
+        if (countersArr.length == CharCounter.values().length) {
+            for (CharCounter ctr : CharCounter.values())
+                instance.setCounter(ctr, countersArr[ctr.ordinal()]);
+        }
     }
 
     private static class Tag {

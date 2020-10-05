@@ -1,7 +1,7 @@
 package msifeed.misca.genesis.blocks.templates;
 
 import msifeed.misca.genesis.blocks.BlockRule;
-import msifeed.misca.genesis.blocks.tiles.TileEntityContainer;
+import msifeed.misca.genesis.blocks.tiles.TileEntityGenesisContainer;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -37,7 +37,7 @@ public class BlockContainerTemplate extends BlockContainer implements IBlockTemp
     @Nullable
     @Override
     public TileEntity createNewTileEntity(World worldIn, int meta) {
-        return new TileEntityContainer(rule);
+        return new TileEntityGenesisContainer(rule);
     }
 
     public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
@@ -45,7 +45,7 @@ public class BlockContainerTemplate extends BlockContainer implements IBlockTemp
             return true;
 
         final TileEntity tile = worldIn.getTileEntity(pos);
-        if (!(tile instanceof TileEntityContainer))
+        if (!(tile instanceof TileEntityGenesisContainer))
             return false;
         playerIn.displayGUIChest((ILockableContainer) tile);
 

@@ -28,7 +28,7 @@ public class BlockRule implements IGenesisRule {
     public int lightOpacity = 0;
     public float lightLevel = 0;
 
-    public int containerCapacity = 27;
+    public int containerCapacity = 9;
 
     public boolean generateItemBlock = true;
 
