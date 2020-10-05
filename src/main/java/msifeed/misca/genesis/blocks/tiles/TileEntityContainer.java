@@ -2,7 +2,6 @@ package msifeed.misca.genesis.blocks.tiles;
 
 import msifeed.misca.Misca;
 import msifeed.misca.genesis.blocks.BlockRule;
-import net.minecraft.block.BlockChest;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
@@ -31,7 +30,7 @@ public class TileEntityContainer extends TileEntityLockable {
         this.capacity = rule.containerCapacity;
         this.content = NonNullList.<ItemStack>withSize(rule.containerCapacity, ItemStack.EMPTY);
     }
-    
+
     @Override
     public void readFromNBT(NBTTagCompound compound) {
         super.readFromNBT(compound);
