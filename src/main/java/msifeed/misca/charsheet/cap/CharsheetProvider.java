@@ -1,6 +1,6 @@
 package msifeed.misca.charsheet.cap;
 
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
@@ -17,11 +17,11 @@ public class CharsheetProvider implements ICapabilitySerializable<NBTBase> {
     public static Capability<ICharsheet> CAP = null;
 
     private final Capability.IStorage<ICharsheet> storage = CAP.getStorage();
-    private final ICharsheet instance = CAP.getDefaultInstance();
+    private final ICharsheet instance = Objects.requireNonNull(CAP.getDefaultInstance());
 
     @Nonnull
-    public static ICharsheet get(EntityPlayer player) {
-        return Objects.requireNonNull(player.getCapability(CharsheetProvider.CAP, null));
+    public static ICharsheet get(EntityLivingBase entity) {
+        return Objects.requireNonNull(entity.getCapability(CharsheetProvider.CAP, null));
     }
 
     public static NBTTagCompound encode(ICharsheet charsheet) {
@@ -32,6 +32,11 @@ public class CharsheetProvider implements ICapabilitySerializable<NBTBase> {
         final ICharsheet cs = CAP.getDefaultInstance();
         CAP.getStorage().readNBT(CAP, cs, null, nbt);
         return cs;
+    }
+
+    public CharsheetProvider(boolean isPlayer) {
+        if (isPlayer)
+            instance.markPlayer();
     }
 
     @Override

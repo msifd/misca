@@ -1,5 +1,6 @@
 package msifeed.misca.genesis;
 
+import com.google.common.collect.Lists;
 import msifeed.misca.genesis.blocks.BlockRule;
 import msifeed.misca.genesis.blocks.tiles.TileEntityGenesisContainer;
 import msifeed.misca.genesis.items.ItemRule;
@@ -7,6 +8,7 @@ import msifeed.misca.genesis.rules.IGenesisRule;
 import msifeed.misca.genesis.rules.RuleLoader;
 import msifeed.misca.genesis.tabs.CreativeTabRule;
 import msifeed.misca.supplies.ItemSuppliesInvoice;
+import msifeed.misca.tools.ItemDebugTool;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.item.Item;
@@ -21,6 +23,7 @@ import net.minecraftforge.fml.common.registry.GameRegistry;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 import java.util.Objects;
 
 public class Genesis {
@@ -49,12 +52,18 @@ public class Genesis {
 
     @SubscribeEvent
     public void registerItems(RegistryEvent.Register<Item> event) {
-        final ItemSuppliesInvoice suppliesInvoice = new ItemSuppliesInvoice();
-        event.getRegistry().register(suppliesInvoice);
+        final List<Item> items = Lists.newArrayList(
+                new ItemSuppliesInvoice(),
+                new ItemDebugTool()
+        );
 
-        if (FMLCommonHandler.instance().getSide().isClient()) {
-            ModelLoader.setCustomModelResourceLocation(suppliesInvoice, 0,
-                    new ModelResourceLocation(Objects.requireNonNull(suppliesInvoice.getRegistryName()), "inventory"));
+        for (Item i : items) {
+            event.getRegistry().register(i);
+
+            if (FMLCommonHandler.instance().getSide().isClient()) {
+                ModelLoader.setCustomModelResourceLocation(i, 0,
+                        new ModelResourceLocation(Objects.requireNonNull(i.getRegistryName()), "inventory"));
+            }
         }
 
         loadDir(ItemRule.class, genesisDir.resolve("items"));

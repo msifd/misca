@@ -1,6 +1,7 @@
 package msifeed.misca;
 
 import msifeed.misca.charsheet.client.GuiCharsheet;
+import msifeed.misca.tools.client.DebugRender;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraftforge.common.MinecraftForge;
@@ -24,6 +25,7 @@ public enum MiscaClient {
 
     public void init() {
         MinecraftForge.EVENT_BUS.register(this);
+        MinecraftForge.EVENT_BUS.register(new DebugRender());
 
         ClientRegistry.registerKeyBinding(charsheetKey);
     }

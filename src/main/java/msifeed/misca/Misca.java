@@ -3,9 +3,13 @@ package msifeed.misca;
 import msifeed.misca.charsheet.CharsheetHandler;
 import msifeed.misca.chatex.Chatex;
 import msifeed.misca.cmd.RollCommand;
+import msifeed.misca.combat.Combat;
 import msifeed.misca.genesis.Genesis;
+import msifeed.misca.rename.RenameCommand;
+import msifeed.misca.rename.RenameItems;
 import msifeed.misca.supplies.InvoiceCommand;
 import msifeed.sys.rpc.RpcChannel;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
@@ -19,10 +23,11 @@ public class Misca {
     public static final String NAME = "Misca";
     public static final String VERSION = "2.0";
 
-    public static RpcChannel RPC = new RpcChannel(Misca.MODID);
+    public static RpcChannel RPC = new RpcChannel(new ResourceLocation(MODID, "rpc"));
 
     private final Genesis genesis = new Genesis();
     private final Chatex chatex = new Chatex();
+    private final Combat combat = new Combat();
 
     private final CharsheetHandler charsheetHandler = new CharsheetHandler();
 
@@ -38,9 +43,11 @@ public class Misca {
     @EventHandler
     public void init(FMLInitializationEvent event) {
         chatex.init();
+        combat.init();
 
         charsheetHandler.init();
         MiscaPerms.register();
+        RenameItems.register();
 
         if (FMLCommonHandler.instance().getSide().isClient())
             MiscaClient.INSTANCE.init();
@@ -52,5 +59,6 @@ public class Misca {
 
         event.registerServerCommand(new RollCommand());
         event.registerServerCommand(new InvoiceCommand());
+        event.registerServerCommand(new RenameCommand());
     }
 }

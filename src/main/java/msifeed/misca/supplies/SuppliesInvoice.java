@@ -45,6 +45,9 @@ public class SuppliesInvoice {
             final ItemStack joinedStack = stack.copy();
             joinedStack.setCount(stack.getCount() * deliveries);
             storeProduct(inv, joinedStack);
+
+            if (joinedStack.getCount() > 0) // inventory is full
+                break;
         }
 
         lastDelivery = now;
@@ -73,7 +76,7 @@ public class SuppliesInvoice {
                 inv.setInventorySlotContents(i, slot);
             }
 
-            if (joinedStack.isEmpty())
+            if (joinedStack.getCount() == 0)
                 return;
         }
     }

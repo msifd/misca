@@ -14,9 +14,13 @@ public class CharsheetStorage implements Capability.IStorage<ICharsheet> {
     public NBTBase writeNBT(Capability<ICharsheet> capability, ICharsheet instance, EnumFacing side) {
         final NBTTagCompound nbt = new NBTTagCompound();
 
-        nbt.setString(Tag.name, instance.getName());
-        nbt.setIntArray(Tag.abilities, Stream.of(CharAbility.values()).mapToInt(instance::getAbility).toArray());
-        nbt.setIntArray(Tag.counters, Stream.of(CharCounter.values()).mapToInt(instance::getCounter).toArray());
+        nbt.setIntArray(Tag.attributes, Stream.of(CharAttribute.values()).mapToInt(instance::getAttribute).toArray());
+
+        if (instance.isPlayer()) {
+            nbt.setBoolean("IsPlayer", true);
+            nbt.setString(Tag.name, instance.getName());
+            nbt.setIntArray(Tag.counters, Stream.of(CharCounter.values()).mapToInt(instance::getCounter).toArray());
+        }
 
         return nbt;
     }
@@ -25,24 +29,25 @@ public class CharsheetStorage implements Capability.IStorage<ICharsheet> {
     public void readNBT(Capability<ICharsheet> capability, ICharsheet instance, EnumFacing side, NBTBase nbtBase) {
         final NBTTagCompound nbt = (NBTTagCompound) nbtBase;
 
-        instance.setName(nbt.getString(Tag.name));
-
-        final int[] abilitiesArr = nbt.getIntArray(Tag.abilities);
-        if (abilitiesArr.length == CharAbility.values().length) {
-            for (CharAbility abi : CharAbility.values())
-                instance.setAbility(abi, abilitiesArr[abi.ordinal()]);
+        final int[] attributesArr = nbt.getIntArray(Tag.attributes);
+        if (attributesArr.length == CharAttribute.values().length) {
+            for (CharAttribute attr : CharAttribute.values())
+                instance.setAttribute(attr, attributesArr[attr.ordinal()]);
         }
 
-        final int[] countersArr = nbt.getIntArray(Tag.counters);
-        if (countersArr.length == CharCounter.values().length) {
-            for (CharCounter ctr : CharCounter.values())
-                instance.setCounter(ctr, countersArr[ctr.ordinal()]);
+        if (nbt.hasKey("IsPlayer")) {
+            instance.setName(nbt.getString(Tag.name));
+            final int[] countersArr = nbt.getIntArray(Tag.counters);
+            if (countersArr.length == CharCounter.values().length) {
+                for (CharCounter ctr : CharCounter.values())
+                    instance.setCounter(ctr, countersArr[ctr.ordinal()]);
+            }
         }
     }
 
     private static class Tag {
         private static final String name = "name";
-        private static final String abilities = "abilities";
+        private static final String attributes = "attributes";
         private static final String counters = "counters";
     }
 }

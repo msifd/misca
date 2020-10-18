@@ -1,0 +1,8 @@
+{
+  "chatex.chat_message": {
+    "category": "player",
+    "sounds": [
+      "misca:chat_message"
+    ]
+  }
+}

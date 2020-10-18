@@ -7,6 +7,7 @@ import msifeed.misca.charsheet.cap.CharsheetStorage;
 import msifeed.misca.charsheet.cap.ICharsheet;
 import msifeed.misca.charsheet.client.CharsheetClientRpc;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
@@ -35,8 +36,8 @@ public class CharsheetHandler {
 
     @SubscribeEvent
     public void onAttachCapability(AttachCapabilitiesEvent<Entity> event) {
-        if (event.getObject() instanceof EntityPlayer)
-            event.addCapability(CAP, new CharsheetProvider());
+        if (event.getObject() instanceof EntityLivingBase)
+            event.addCapability(CAP, new CharsheetProvider(event.getObject() instanceof EntityPlayer));
     }
 
     @SubscribeEvent
@@ -65,9 +66,9 @@ public class CharsheetHandler {
 
     @SubscribeEvent
     public void onPlayerTracking(net.minecraftforge.event.entity.player.PlayerEvent.StartTracking event) {
-        if (!(event.getTarget() instanceof EntityPlayer))
+        if (!(event.getTarget() instanceof EntityLivingBase))
             return;
-        syncCharsheet((EntityPlayerMP) event.getEntityPlayer(), (EntityPlayer) event.getTarget());
+        syncCharsheet((EntityPlayerMP) event.getEntityPlayer(), (EntityLivingBase) event.getTarget());
     }
 
     @SubscribeEvent
@@ -77,7 +78,7 @@ public class CharsheetHandler {
         cloned.replaceWith(original);
     }
 
-    private void syncCharsheet(EntityPlayerMP receiver, EntityPlayer target) {
+    private void syncCharsheet(EntityPlayerMP receiver, EntityLivingBase target) {
         final NBTTagCompound nbt = CharsheetProvider.encode(CharsheetProvider.get(target));
         Misca.RPC.sendTo(receiver, ICharsheetRpc.sync, target.getUniqueID(), nbt);
     }

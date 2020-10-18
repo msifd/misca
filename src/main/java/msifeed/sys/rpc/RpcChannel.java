@@ -2,6 +2,7 @@ package msifeed.sys.rpc;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
@@ -24,12 +25,12 @@ public class RpcChannel implements IMessageHandler<RpcMessage, IMessage> {
 
     private final Logger logger;
 
-    public RpcChannel(String channel) {
-        this.channel = NetworkRegistry.INSTANCE.newSimpleChannel(channel);
+    public RpcChannel(ResourceLocation key) {
+        this.channel = NetworkRegistry.INSTANCE.newSimpleChannel(key.toString());
         this.channel.registerMessage(this, RpcMessage.class, 0, Side.CLIENT);
         this.channel.registerMessage(this, RpcMessage.class, 1, Side.SERVER);
 
-        logger = LogManager.getLogger("RPC:" + channel);
+        logger = LogManager.getLogger("RPC:" + key.toString());
     }
 
     public void sendToAll(String method, Object... args) {

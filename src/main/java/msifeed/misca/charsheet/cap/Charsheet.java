@@ -3,9 +3,20 @@ package msifeed.misca.charsheet.cap;
 import java.util.EnumMap;
 
 public class Charsheet implements ICharsheet {
+    private boolean isPlayer = false;
     private String name = "";
-    private EnumMap<CharAbility, Integer> abilities = new EnumMap<>(CharAbility.class);
+    private EnumMap<CharAttribute, Integer> attributes = new EnumMap<>(CharAttribute.class);
     private EnumMap<CharCounter, Integer> counters = new EnumMap<>(CharCounter.class);
+
+    @Override
+    public boolean isPlayer() {
+        return isPlayer;
+    }
+
+    @Override
+    public void markPlayer() {
+        isPlayer = true;
+    }
 
     @Override
     public String getName() {
@@ -18,13 +29,13 @@ public class Charsheet implements ICharsheet {
     }
 
     @Override
-    public int getAbility(CharAbility abi) {
-        return abilities.getOrDefault(abi, 0);
+    public int getAttribute(CharAttribute attr) {
+        return attributes.getOrDefault(attr, 0);
     }
 
     @Override
-    public void setAbility(CharAbility abi, int value) {
-        abilities.put(abi, value);
+    public void setAttribute(CharAttribute attr, int value) {
+        attributes.put(attr, value);
     }
 
     @Override
@@ -40,8 +51,8 @@ public class Charsheet implements ICharsheet {
     @Override
     public void replaceWith(ICharsheet charsheet) {
         name = charsheet.getName();
-        for (CharAbility feat : CharAbility.values())
-            abilities.put(feat, charsheet.getAbility(feat));
+        for (CharAttribute feat : CharAttribute.values())
+            attributes.put(feat, charsheet.getAttribute(feat));
         for (CharCounter feat : CharCounter.values())
             counters.put(feat, charsheet.getCounter(feat));
     }
@@ -56,7 +67,7 @@ public class Charsheet implements ICharsheet {
         }
 
         clone.name = name;
-        clone.abilities = abilities.clone();
+        clone.attributes = attributes.clone();
         clone.counters = counters.clone();
 
         return clone;
