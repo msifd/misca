@@ -5,8 +5,8 @@ import java.util.EnumMap;
 public class Charsheet implements ICharsheet {
     private boolean isPlayer = false;
     private String name = "";
-    private EnumMap<CharAttribute, Integer> attributes = new EnumMap<>(CharAttribute.class);
-    private EnumMap<CharCounter, Integer> counters = new EnumMap<>(CharCounter.class);
+    private final EnumMap<CharAttribute, Integer> attributes = new EnumMap<>(CharAttribute.class);
+    private final EnumMap<CharCounter, Integer> counters = new EnumMap<>(CharCounter.class);
 
     @Override
     public boolean isPlayer() {
@@ -59,17 +59,10 @@ public class Charsheet implements ICharsheet {
 
     @Override
     public ICharsheet clone() {
-        final Charsheet clone;
         try {
-            clone = (Charsheet) super.clone();
-        } catch(CloneNotSupportedException e) {
+            return (Charsheet) super.clone();
+        } catch (CloneNotSupportedException e) {
             throw new AssertionError();
         }
-
-        clone.name = name;
-        clone.attributes = attributes.clone();
-        clone.counters = counters.clone();
-
-        return clone;
     }
 }

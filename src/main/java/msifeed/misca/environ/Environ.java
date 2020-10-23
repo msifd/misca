@@ -16,7 +16,8 @@ public class Environ {
     public void onTick(TickEvent.WorldTickEvent event) {
         if (event.phase != TickEvent.Phase.END) return;
 
-        final EnvironRule rule = MiscaConfig.environ.get(event.world.getWorldInfo().getWorldName());
+//        final EnvironRule rule = MiscaConfig.environ.get(event.world.getWorldInfo().getWorldName());
+        final EnvironRule rule = null;
         if (rule == null) return;
 
         final EnvironWorldData data = EnvironWorldData.get(event.world);

@@ -1,5 +1,6 @@
 package msifeed.misca.charsheet.client;
 
+import msifeed.misca.charsheet.cap.CharAttribute;
 import msifeed.misca.charsheet.cap.CharsheetProvider;
 import msifeed.misca.charsheet.cap.ICharsheet;
 import net.minecraft.client.Minecraft;
@@ -9,11 +10,14 @@ import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.entity.player.EntityPlayer;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 public class GuiCharsheet extends GuiScreen {
     private final EntityPlayer player;
     private final ICharsheet charsheet;
+
     private GuiTextField nameEdit;
+    private final ArrayList<GuiTextField> attrFields = new ArrayList<>();
 
     public GuiCharsheet(EntityPlayer player) {
         this.player = player;
@@ -28,19 +32,23 @@ public class GuiCharsheet extends GuiScreen {
 
         nameEdit = new GuiTextField(2, this.fontRenderer, this.width / 2 - 100, 60, 200, 20);
         nameEdit.setText(charsheet.getName());
-    }
 
-    @Override
-    public void updateScreen() {
-        nameEdit.updateCursorCounter();
-    }
-
-    @Override
-    public void drawScreen(int mouseX, int mouseY, float partialTicks) {
-        drawDefaultBackground();
-        nameEdit.drawTextBox();
-
-        super.drawScreen(mouseX, mouseY, partialTicks);
+        attrFields.clear();
+        for (CharAttribute attr : CharAttribute.values()) {
+            final GuiTextField f = new GuiTextField(10 + attr.ordinal(), fontRenderer, 10, 10 + attr.ordinal() * 22, 50, 20);
+            f.setText(Integer.toString(charsheet.getAttribute(attr)));
+            f.setValidator(input -> {
+                try {
+                    if (input == null) return false;
+                    if (input.isEmpty()) return true;
+                    final int i = Integer.parseUnsignedInt(input);
+                    return i >= 0 && i <= 25;
+                } catch (NumberFormatException e) {
+                    return false;
+                }
+            });
+            attrFields.add(f);
+        }
     }
 
     @Override
@@ -50,6 +58,11 @@ public class GuiCharsheet extends GuiScreen {
         switch (button.id) {
             case 0:
                 charsheet.setName(nameEdit.getText().trim());
+                for (int i = 0; i < attrFields.size(); i++) {
+                    final CharAttribute attr = CharAttribute.values()[i];
+                    final String input = attrFields.get(i).getText().trim();
+                    charsheet.setAttribute(attr, input.isEmpty() ? 0 : Integer.parseInt(input));
+                }
 
                 CharsheetClientRpc.postCharsheet(player, charsheet);
                 Minecraft.getMinecraft().displayGuiScreen(null);
@@ -61,14 +74,32 @@ public class GuiCharsheet extends GuiScreen {
     }
 
     @Override
+    public void updateScreen() {
+        nameEdit.updateCursorCounter();
+        attrFields.forEach(GuiTextField::updateCursorCounter);
+    }
+
+    @Override
+    public void drawScreen(int mouseX, int mouseY, float partialTicks) {
+        drawDefaultBackground();
+
+        nameEdit.drawTextBox();
+        attrFields.forEach(GuiTextField::drawTextBox);
+
+        super.drawScreen(mouseX, mouseY, partialTicks);
+    }
+
+    @Override
     protected void keyTyped(char typedChar, int keyCode) throws IOException {
         nameEdit.textboxKeyTyped(typedChar, keyCode);
+        attrFields.forEach(f -> f.textboxKeyTyped(typedChar, keyCode));
         super.keyTyped(typedChar, keyCode);
     }
 
     @Override
     protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
         nameEdit.mouseClicked(mouseX, mouseY, mouseButton);
+        attrFields.forEach(f -> f.mouseClicked(mouseX, mouseY, mouseButton));
         super.mouseClicked(mouseX, mouseY, mouseButton);
     }
 }

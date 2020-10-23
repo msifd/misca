@@ -1,16 +1,15 @@
 package msifeed.misca.combat;
 
-import msifeed.misca.charsheet.cap.CharAttribute;
-import msifeed.misca.charsheet.cap.Charsheet;
+import java.util.Random;
 
 public class Dices {
-    public float hitChance(Charsheet cs) {
-        // (Weapon Skill + (Agility / 5) + (Luck / 10)) * (0.75 + 0.5 * Current Fatigue / Maximum Fatigue) + Fortify Attack Magnitude + Blind Magnitude
+    private static final Random rand = new Random();
 
-        final int agility = cs.getAttribute(CharAttribute.agi);
-        final int luck = cs.getAttribute(CharAttribute.lck);
+    public static boolean check(float chance) {
+        return rand.nextFloat() < chance;
+    }
 
-
-        return (agility / 5 + luck / 10);
+    public static float checkFloat(float chance) {
+        return rand.nextFloat() < chance ? 1 : 0;
     }
 }

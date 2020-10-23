@@ -1,6 +1,6 @@
 package msifeed.misca.charsheet.cap;
 
-public interface ICharsheet {
+public interface ICharsheet extends Cloneable {
     boolean isPlayer();
     void markPlayer();
 

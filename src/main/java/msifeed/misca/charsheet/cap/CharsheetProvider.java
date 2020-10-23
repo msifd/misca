@@ -24,6 +24,12 @@ public class CharsheetProvider implements ICapabilitySerializable<NBTBase> {
         return Objects.requireNonNull(entity.getCapability(CharsheetProvider.CAP, null));
     }
 
+    @Nonnull
+    public static ICharsheet getOr(EntityLivingBase entity, ICharsheet def) {
+        final ICharsheet cs = entity.getCapability(CharsheetProvider.CAP, null);
+        return cs != null ? cs : def;
+    }
+
     public static NBTTagCompound encode(ICharsheet charsheet) {
         return (NBTTagCompound) CAP.getStorage().writeNBT(CAP, charsheet, null);
     }

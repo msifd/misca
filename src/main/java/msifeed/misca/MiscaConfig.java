@@ -10,7 +10,6 @@ import java.util.Map;
 @Config(modid = Misca.MODID)
 public class MiscaConfig {
     public static ChatexConfig chat = new ChatexConfig();
-    public static Map<String, EnvironRule> environ = new HashMap<>();
 
     public static String windowTitle = "Ariadna";
 }
