@@ -1,19 +1,18 @@
 package msifeed.misca.rename;
 
+import msifeed.sys.rpc.RpcContext;
 import msifeed.sys.rpc.RpcMethodHandler;
-import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumHand;
-import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
 import java.util.Objects;
 
 public class RenameServerRpc implements IRenameRpc {
     @RpcMethodHandler(rename)
-    public void onRename(MessageContext ctx, NBTTagCompound display) {
-        final EntityPlayer player = Minecraft.getMinecraft().player;
+    public void onRename(RpcContext ctx, NBTTagCompound display) {
+        final EntityPlayer player = ctx.getServerHandler().player;
         final ItemStack stack = player.getHeldItem(EnumHand.MAIN_HAND);
 
         if (!stack.hasTagCompound()) stack.setTagCompound(new NBTTagCompound());
@@ -22,8 +21,8 @@ public class RenameServerRpc implements IRenameRpc {
     }
 
     @RpcMethodHandler(clear)
-    public void onRename(MessageContext ctx) {
-        final EntityPlayer player = Minecraft.getMinecraft().player;
+    public void onRename(RpcContext ctx) {
+        final EntityPlayer player = ctx.getServerHandler().player;
         final ItemStack stack = player.getHeldItem(EnumHand.MAIN_HAND);
 
         final NBTTagCompound display = stack.getSubCompound("display");

@@ -1,6 +1,5 @@
 package msifeed.misca.environ;
 
-import msifeed.misca.MiscaConfig;
 import net.minecraft.world.World;
 import net.minecraft.world.storage.WorldInfo;
 import net.minecraftforge.common.MinecraftForge;

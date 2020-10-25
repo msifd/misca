@@ -1,11 +1,9 @@
 package msifeed.misca.combat.rpc;
 
-import msifeed.misca.Misca;
 import msifeed.misca.combat.battle.BattleManager;
+import msifeed.sys.rpc.RpcContext;
 import msifeed.sys.rpc.RpcMethodHandler;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.util.text.TextComponentString;
-import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
 
 public class CombatServerRpc implements ICombatRpc {
@@ -16,7 +14,7 @@ public class CombatServerRpc implements ICombatRpc {
     }
 
     @RpcMethodHandler(candidate)
-    public void onCandidate(MessageContext ctx) {
+    public void onCandidate(RpcContext ctx) {
         final EntityPlayerMP sender = ctx.getServerHandler().player;
         battleManager.candidate(sender);
     }

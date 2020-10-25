@@ -12,13 +12,11 @@ import java.util.UUID;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
-public enum RpcCodec {
-    INSTANCE;
-
+public class RpcCodec {
     private final ArrayList<TypeCodec<?>> codecsById = new ArrayList<>(Byte.MAX_VALUE);
     private final HashMap<Class<?>, TypeCodec<?>> codecsByType = new HashMap<>();
 
-    RpcCodec() {
+    public RpcCodec() {
         addType(Boolean.class, ByteBuf::writeBoolean, ByteBuf::readBoolean);
         addType(Byte.class, (BiConsumer<ByteBuf, Byte>) ByteBuf::writeByte, ByteBuf::readByte);
         addType(Short.class, (BiConsumer<ByteBuf, Short>) ByteBuf::writeShort, ByteBuf::readShort);
@@ -46,7 +44,7 @@ public enum RpcCodec {
         addAlias(TextComponentTranslation.class, ITextComponent.class);
     }
 
-    public boolean hasCodec(Class<?> c) {
+    public boolean hasCodecForType(Class<?> c) {
         return codecsByType.containsKey(c);
     }
 
@@ -68,7 +66,7 @@ public enum RpcCodec {
     }
 
     public <T> void addType(Class<T> type, BiConsumer<ByteBuf, T> encoder, Function<ByteBuf, T> decoder) {
-        if (hasCodec(type))
+        if (hasCodecForType(type))
             throw new RuntimeException(String.format("Duplicate codec for type '%s'", type.getName()));
 
         final int id = codecsById.size();

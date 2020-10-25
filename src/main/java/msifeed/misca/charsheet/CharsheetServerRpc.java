@@ -3,17 +3,17 @@ package msifeed.misca.charsheet;
 import msifeed.misca.Misca;
 import msifeed.misca.MiscaPerms;
 import msifeed.misca.charsheet.cap.CharsheetProvider;
+import msifeed.sys.rpc.RpcContext;
 import msifeed.sys.rpc.RpcException;
 import msifeed.sys.rpc.RpcMethodHandler;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
 import java.util.UUID;
 
 public class CharsheetServerRpc implements ICharsheetRpc {
     @RpcMethodHandler(post)
-    public void onCharsheetPost(MessageContext ctx, UUID uuid, NBTTagCompound nbt) {
+    public void onCharsheetPost(RpcContext ctx, UUID uuid, NBTTagCompound nbt) {
         final EntityPlayerMP sender = ctx.getServerHandler().player;
         final EntityPlayerMP target;
 

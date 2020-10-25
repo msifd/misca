@@ -30,18 +30,16 @@ public class Rules {
     }
 
     public static float criticalHit(ICharsheet cs) {
-        final int strength = cs.attrs().get(CharAttribute.str);
         final int perception = cs.attrs().get(CharAttribute.per);
         final int luck = cs.attrs().get(CharAttribute.lck);
 
-        return 0.01f + strength * 0.0025f + perception * 0.0025f + luck * 0.005f;
+        return 0.01f + perception * 0.0025f + luck * 0.0075f;
     }
 
     public static float criticalEvasion(ICharsheet cs) {
-        final int endurance = cs.attrs().get(CharAttribute.end);
         final int agility = cs.attrs().get(CharAttribute.agi);
         final int luck = cs.attrs().get(CharAttribute.lck);
 
-        return 0.01f + endurance * 0.0025f + agility * 0.0025f + luck * 0.005f;
+        return 0.01f + + agility * 0.0025f + luck * 0.0075f;
     }
 }

@@ -1,65 +1,80 @@
 package msifeed.sys.rpc;
 
-import com.google.common.collect.Multimap;
-import com.google.common.collect.MultimapBuilder;
+import io.netty.channel.ChannelFutureListener;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.common.network.FMLEmbeddedChannel;
+import net.minecraftforge.fml.common.network.FMLOutboundHandler;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
-import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
-import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import net.minecraftforge.fml.relauncher.Side;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import sun.reflect.Reflection;
 
 import java.lang.reflect.Method;
-import java.util.concurrent.Future;
+import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class RpcChannel implements IMessageHandler<RpcMessage, IMessage> {
-    private final SimpleNetworkWrapper channel;
-    private final Multimap<String, Handler> handlers = MultimapBuilder.hashKeys().arrayListValues().build();
+public class RpcChannel {
+    private final EnumMap<Side, FMLEmbeddedChannel> channels;
+    private final HashMap<String, Handler> handlers = new HashMap<>();
+    private final RpcCodec codec;
     private final Logger logger;
 
     public RpcChannel(ResourceLocation key) {
-        this.channel = NetworkRegistry.INSTANCE.newSimpleChannel(key.toString());
-        this.channel.registerMessage(this, RpcMessage.class, 0, Side.CLIENT);
-        this.channel.registerMessage(this, RpcMessage.class, 1, Side.SERVER);
+        this(key, new RpcCodec());
+    }
 
+    public RpcChannel(ResourceLocation key, RpcCodec codec) {
+        this.channels = NetworkRegistry.INSTANCE.newChannel(key.toString(), new RpcPacketCodec(codec));
+        this.codec = codec;
         this.logger = LogManager.getLogger("RPC:" + key.toString());
+
+        channels.get(Side.SERVER).pipeline().addLast(new RpcChannelHandler(this, Side.SERVER));
+        channels.get(Side.CLIENT).pipeline().addLast(new RpcChannelHandler(this, Side.CLIENT));
     }
 
     public void sendToAll(String method, Object... args) {
-        channel.sendToAll(new RpcMessage(method, args));
+        channels.get(Side.SERVER).attr(FMLOutboundHandler.FML_MESSAGETARGET).set(FMLOutboundHandler.OutboundTarget.ALL);
+        channels.get(Side.SERVER).writeAndFlush(new RpcMessage(method, args)).addListener(ChannelFutureListener.FIRE_EXCEPTION_ON_FAILURE);
     }
 
     public void sendTo(EntityPlayerMP player, String method, Object... args) {
-        channel.sendTo(new RpcMessage(method, args), player);
+        channels.get(Side.SERVER).attr(FMLOutboundHandler.FML_MESSAGETARGET).set(FMLOutboundHandler.OutboundTarget.PLAYER);
+        channels.get(Side.SERVER).attr(FMLOutboundHandler.FML_MESSAGETARGETARGS).set(player);
+        channels.get(Side.SERVER).writeAndFlush(new RpcMessage(method, args)).addListener(ChannelFutureListener.FIRE_EXCEPTION_ON_FAILURE);
     }
 
     public void sendToAllAround(NetworkRegistry.TargetPoint point, String method, Object... args) {
-        channel.sendToAllAround(new RpcMessage(method, args), point);
+        channels.get(Side.SERVER).attr(FMLOutboundHandler.FML_MESSAGETARGET).set(FMLOutboundHandler.OutboundTarget.ALLAROUNDPOINT);
+        channels.get(Side.SERVER).attr(FMLOutboundHandler.FML_MESSAGETARGETARGS).set(point);
+        channels.get(Side.SERVER).writeAndFlush(new RpcMessage(method, args)).addListener(ChannelFutureListener.FIRE_EXCEPTION_ON_FAILURE);
     }
 
     public void sendToAllTracking(NetworkRegistry.TargetPoint point, String method, Object... args) {
-        channel.sendToAllTracking(new RpcMessage(method, args), point);
+        channels.get(Side.SERVER).attr(FMLOutboundHandler.FML_MESSAGETARGET).set(FMLOutboundHandler.OutboundTarget.TRACKING_POINT);
+        channels.get(Side.SERVER).attr(FMLOutboundHandler.FML_MESSAGETARGETARGS).set(point);
+        channels.get(Side.SERVER).writeAndFlush(new RpcMessage(method, args)).addListener(ChannelFutureListener.FIRE_EXCEPTION_ON_FAILURE);
     }
 
     public void sendToAllTracking(Entity entity, String method, Object... args) {
-        channel.sendToAllTracking(new RpcMessage(method, args), entity);
+        channels.get(Side.SERVER).attr(FMLOutboundHandler.FML_MESSAGETARGET).set(FMLOutboundHandler.OutboundTarget.TRACKING_ENTITY);
+        channels.get(Side.SERVER).attr(FMLOutboundHandler.FML_MESSAGETARGETARGS).set(entity);
+        channels.get(Side.SERVER).writeAndFlush(new RpcMessage(method, args)).addListener(ChannelFutureListener.FIRE_EXCEPTION_ON_FAILURE);
     }
 
     public void sendToDimension(int dimensionId, String method, Object... args) {
-        channel.sendToDimension(new RpcMessage(method, args), dimensionId);
+        channels.get(Side.SERVER).attr(FMLOutboundHandler.FML_MESSAGETARGET).set(FMLOutboundHandler.OutboundTarget.DIMENSION);
+        channels.get(Side.SERVER).attr(FMLOutboundHandler.FML_MESSAGETARGETARGS).set(dimensionId);
+        channels.get(Side.SERVER).writeAndFlush(new RpcMessage(method, args)).addListener(ChannelFutureListener.FIRE_EXCEPTION_ON_FAILURE);
     }
 
     public void sendToServer(String method, Object... args) {
-        channel.sendToServer(new RpcMessage(method, args));
+        channels.get(Side.CLIENT).attr(FMLOutboundHandler.FML_MESSAGETARGET).set(FMLOutboundHandler.OutboundTarget.TOSERVER);
+        channels.get(Side.CLIENT).writeAndFlush(new RpcMessage(method, args)).addListener(ChannelFutureListener.FIRE_EXCEPTION_ON_FAILURE);
     }
 
     public void register(Object obj) {
@@ -75,25 +90,22 @@ public class RpcChannel implements IMessageHandler<RpcMessage, IMessage> {
             final Class<?>[] types = m.getParameterTypes();
 
             final ContextType ct;
-            if (types.length > 0 && types[0] == MessageContext.class) ct = ContextType.MSG_CTX;
+            if (types.length > 0 && types[0] == RpcContext.class) ct = ContextType.CTX;
             else ct = ContextType.NONE;
 
             final int argsStart = ct == ContextType.NONE ? 0 : 1;
             for (int i = argsStart; i < types.length; ++i)
-                if (!RpcCodec.INSTANCE.hasCodec(types[i]))
+                if (!codec.hasCodecForType(types[i]))
                     throw new RuntimeException(String.format("RPC method '%s': param %d (%s) is not supported", methodName, i + 1, types[i].getSimpleName()));
 
             handlers.put(methodName, new Handler(obj, m, ct));
         }
     }
 
-    @Override
-    public IMessage onMessage(RpcMessage message, MessageContext ctx) {
-        FMLCommonHandler.instance().getWorldThread(ctx.netHandler).addScheduledTask(() -> {
-            for (Handler handler : handlers.get(message.method))
-                handler.invoke(handler.rearrangeArgs(message.args, ctx));
-        });
-        return null;
+    void invoke(RpcContext ctx, RpcMessage message) {
+        final Handler handler = handlers.get(message.method);
+        if (handler != null)
+            handler.invoke(handler.rearrangeArgs(message.args, ctx));
     }
 
     private class Handler {
@@ -107,12 +119,12 @@ public class RpcChannel implements IMessageHandler<RpcMessage, IMessage> {
             this.contextType = ct;
         }
 
-        Object[] rearrangeArgs(Object[] args, MessageContext msgCtx) {
+        Object[] rearrangeArgs(Object[] args, RpcContext ctx) {
             if (contextType == ContextType.NONE)
                 return args;
 
             final Object[] argsWithCtx = new Object[args.length + 1];
-            argsWithCtx[0] = msgCtx;
+            argsWithCtx[0] = ctx;
             System.arraycopy(args, 0, argsWithCtx, 1, args.length);
 
             return argsWithCtx;
@@ -140,6 +152,6 @@ public class RpcChannel implements IMessageHandler<RpcMessage, IMessage> {
     }
 
     private enum ContextType {
-        NONE, MSG_CTX
+        NONE, CTX
     }
 }

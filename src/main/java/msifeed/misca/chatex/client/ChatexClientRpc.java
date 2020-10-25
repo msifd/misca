@@ -4,6 +4,7 @@ import msifeed.misca.Misca;
 import msifeed.misca.chatex.IChatexRpc;
 import msifeed.misca.chatex.client.format.GlobalFormat;
 import msifeed.misca.chatex.client.format.SpeechFormat;
+import msifeed.sys.rpc.RpcContext;
 import msifeed.sys.rpc.RpcMethodHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
@@ -16,7 +17,6 @@ import net.minecraft.util.SoundEvent;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraftforge.fml.client.FMLClientHandler;
-import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
 import java.util.Objects;
 import java.util.UUID;
@@ -40,7 +40,7 @@ public class ChatexClientRpc implements IChatexRpc {
     }
 
     @RpcMethodHandler(roll)
-    public void onRoll(MessageContext ctx, UUID uuid, String spec, long result) {
+    public void onRoll(RpcContext ctx, UUID uuid, String spec, long result) {
         final NetworkPlayerInfo info = Objects.requireNonNull(ctx.getClientHandler().getPlayerInfo(uuid));
         final String name = info.getDisplayName() != null
                 ? info.getDisplayName().getFormattedText()
