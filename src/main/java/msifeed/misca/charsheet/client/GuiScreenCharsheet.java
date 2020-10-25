@@ -12,14 +12,14 @@ import net.minecraft.entity.player.EntityPlayer;
 import java.io.IOException;
 import java.util.ArrayList;
 
-public class GuiCharsheet extends GuiScreen {
+public class GuiScreenCharsheet extends GuiScreen {
     private final EntityPlayer player;
     private final ICharsheet charsheet;
 
     private GuiTextField nameEdit;
     private final ArrayList<GuiTextField> attrFields = new ArrayList<>();
 
-    public GuiCharsheet(EntityPlayer player) {
+    public GuiScreenCharsheet(EntityPlayer player) {
         this.player = player;
         this.charsheet = CharsheetProvider.get(player).clone();
     }
@@ -36,7 +36,7 @@ public class GuiCharsheet extends GuiScreen {
         attrFields.clear();
         for (CharAttribute attr : CharAttribute.values()) {
             final GuiTextField f = new GuiTextField(10 + attr.ordinal(), fontRenderer, 10, 10 + attr.ordinal() * 22, 50, 20);
-            f.setText(Integer.toString(charsheet.getAttribute(attr)));
+            f.setText(Integer.toString(charsheet.attrs().get(attr)));
             f.setValidator(input -> {
                 try {
                     if (input == null) return false;
@@ -61,7 +61,7 @@ public class GuiCharsheet extends GuiScreen {
                 for (int i = 0; i < attrFields.size(); i++) {
                     final CharAttribute attr = CharAttribute.values()[i];
                     final String input = attrFields.get(i).getText().trim();
-                    charsheet.setAttribute(attr, input.isEmpty() ? 0 : Integer.parseInt(input));
+                    charsheet.attrs().set(attr, input.isEmpty() ? 0 : Integer.parseInt(input));
                 }
 
                 CharsheetClientRpc.postCharsheet(player, charsheet);

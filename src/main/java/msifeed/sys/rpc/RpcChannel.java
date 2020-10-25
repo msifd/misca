@@ -1,5 +1,7 @@
 package msifeed.sys.rpc;
 
+import com.google.common.collect.Multimap;
+import com.google.common.collect.MultimapBuilder;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.ResourceLocation;
@@ -15,14 +17,13 @@ import org.apache.logging.log4j.Logger;
 import sun.reflect.Reflection;
 
 import java.lang.reflect.Method;
-import java.util.HashMap;
+import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class RpcChannel implements IMessageHandler<RpcMessage, IMessage> {
     private final SimpleNetworkWrapper channel;
-    private final HashMap<String, Handler> handlers = new HashMap<>();
-
+    private final Multimap<String, Handler> handlers = MultimapBuilder.hashKeys().arrayListValues().build();
     private final Logger logger;
 
     public RpcChannel(ResourceLocation key) {
@@ -30,7 +31,7 @@ public class RpcChannel implements IMessageHandler<RpcMessage, IMessage> {
         this.channel.registerMessage(this, RpcMessage.class, 0, Side.CLIENT);
         this.channel.registerMessage(this, RpcMessage.class, 1, Side.SERVER);
 
-        logger = LogManager.getLogger("RPC:" + key.toString());
+        this.logger = LogManager.getLogger("RPC:" + key.toString());
     }
 
     public void sendToAll(String method, Object... args) {
@@ -82,8 +83,6 @@ public class RpcChannel implements IMessageHandler<RpcMessage, IMessage> {
                 if (!RpcCodec.INSTANCE.hasCodec(types[i]))
                     throw new RuntimeException(String.format("RPC method '%s': param %d (%s) is not supported", methodName, i + 1, types[i].getSimpleName()));
 
-            if (handlers.containsKey(methodName))
-                throw new RuntimeException(String.format("RPC method '%s': method duplication", methodName));
             handlers.put(methodName, new Handler(obj, m, ct));
         }
     }
@@ -91,8 +90,7 @@ public class RpcChannel implements IMessageHandler<RpcMessage, IMessage> {
     @Override
     public IMessage onMessage(RpcMessage message, MessageContext ctx) {
         FMLCommonHandler.instance().getWorldThread(ctx.netHandler).addScheduledTask(() -> {
-            final Handler handler = handlers.get(message.method);
-            if (handler != null)
+            for (Handler handler : handlers.get(message.method))
                 handler.invoke(handler.rearrangeArgs(message.args, ctx));
         });
         return null;

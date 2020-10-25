@@ -12,4 +12,8 @@ public class Dices {
     public static float checkFloat(float chance) {
         return rand.nextFloat() < chance ? 1 : 0;
     }
+
+    public static int d20() {
+        return rand.nextInt(20) + 1;
+    }
 }

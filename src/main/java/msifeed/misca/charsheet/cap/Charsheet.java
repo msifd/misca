@@ -1,12 +1,10 @@
 package msifeed.misca.charsheet.cap;
 
-import java.util.EnumMap;
-
 public class Charsheet implements ICharsheet {
     private boolean isPlayer = false;
     private String name = "";
-    private final EnumMap<CharAttribute, Integer> attributes = new EnumMap<>(CharAttribute.class);
-    private final EnumMap<CharCounter, Integer> counters = new EnumMap<>(CharCounter.class);
+    private final ValueContainer<CharAttribute> attributes = new ValueContainer<>(CharAttribute.class, 0, 25);
+    private final ValueContainer<CharResource> resources = new ValueContainer<>(CharResource.class, 0, 1000);
 
     @Override
     public boolean isPlayer() {
@@ -29,40 +27,30 @@ public class Charsheet implements ICharsheet {
     }
 
     @Override
-    public int getAttribute(CharAttribute attr) {
-        return attributes.getOrDefault(attr, 0);
+    public ValueContainer<CharAttribute> attrs() {
+        return attributes;
     }
 
     @Override
-    public void setAttribute(CharAttribute attr, int value) {
-        attributes.put(attr, value);
-    }
-
-    @Override
-    public int getCounter(CharCounter ctr) {
-        return counters.getOrDefault(ctr, 0);
-    }
-
-    @Override
-    public void setCounter(CharCounter ctr, int value) {
-        counters.put(ctr, value);
+    public ValueContainer<CharResource> resources() {
+        return resources;
     }
 
     @Override
     public void replaceWith(ICharsheet charsheet) {
         name = charsheet.getName();
-        for (CharAttribute feat : CharAttribute.values())
-            attributes.put(feat, charsheet.getAttribute(feat));
-        for (CharCounter feat : CharCounter.values())
-            counters.put(feat, charsheet.getCounter(feat));
+        attributes.replaceWith(charsheet.attrs());
+        resources.replaceWith(charsheet.resources());
     }
 
     @Override
     public ICharsheet clone() {
+        final Charsheet clone;
         try {
-            return (Charsheet) super.clone();
+            clone = (Charsheet) super.clone();
         } catch (CloneNotSupportedException e) {
             throw new AssertionError();
         }
+        return clone;
     }
 }
