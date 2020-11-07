@@ -1,6 +1,8 @@
-package msifeed.misca.charsheet;
+package msifeed.misca.charsheet.cap;
 
 import msifeed.misca.Misca;
+import msifeed.misca.charsheet.CharsheetServerRpc;
+import msifeed.misca.charsheet.ICharsheetRpc;
 import msifeed.misca.charsheet.cap.Charsheet;
 import msifeed.misca.charsheet.cap.CharsheetProvider;
 import msifeed.misca.charsheet.cap.CharsheetStorage;

@@ -3,14 +3,19 @@ package msifeed.sys.rpc;
 import com.google.common.primitives.Primitives;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.*;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.UUID;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
+import java.util.zip.DeflaterOutputStream;
+import java.util.zip.InflaterOutputStream;
 
 public class RpcCodec {
     private final ArrayList<TypeCodec<?>> codecsById = new ArrayList<>(Byte.MAX_VALUE);
@@ -32,6 +37,11 @@ public class RpcCodec {
                     buf.writeLong(uuid.getLeastSignificantBits());
                 },
                 buf -> new UUID(buf.readLong(), buf.readLong()));
+        addType(BlockPos.class,
+                (buf, pos) -> buf.writeLong(pos.toLong()),
+                buf -> BlockPos.fromLong(buf.readLong()));
+
+        addType(byte[].class, RpcCodec::writeCompressed, RpcCodec::readCompressed);
 
         addType(ITextComponent.class,
                 (buf, comp) -> ByteBufUtils.writeUTF8String(buf, ITextComponent.Serializer.componentToJson(comp)),
@@ -84,6 +94,32 @@ public class RpcCodec {
             throw new RuntimeException(String.format("Unknown codec for alias '%s'", alias.getName()));
 
         codecsByType.put(type, codec);
+    }
+
+    private static void writeCompressed(ByteBuf buf, byte[] bb) {
+        try {
+            final ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            final DeflaterOutputStream out = new DeflaterOutputStream(bos);
+            out.write(bb);
+            out.close();
+
+            buf.writeInt(bos.size());
+            buf.writeBytes(bos.toByteArray());
+        } catch (IOException e) {
+            throw new RuntimeException("failed to deflate bytes");
+        }
+    }
+
+    private static byte[] readCompressed(ByteBuf buf) {
+        try {
+            final ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            final InflaterOutputStream out = new InflaterOutputStream(bos);
+            buf.readBytes(out, buf.readInt());
+            out.close();
+            return bos.toByteArray();
+        } catch (IOException e) {
+            throw new RuntimeException("failed to inflate bytes");
+        }
     }
 
     private static class TypeCodec<T> {

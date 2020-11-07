@@ -1,6 +1,5 @@
 package msifeed.misca.charsheet;
 
-import msifeed.misca.Misca;
 import msifeed.misca.MiscaPerms;
 import msifeed.misca.charsheet.cap.CharsheetProvider;
 import msifeed.sys.rpc.RpcContext;
@@ -29,8 +28,7 @@ public class CharsheetServerRpc implements ICharsheetRpc {
 
         CharsheetProvider.get(target).replaceWith(CharsheetProvider.decode(nbt));
 
-        Misca.RPC.sendTo(target, syncSelf, nbt);
-//        Misca.RPC.sendToDimension(target.dimension, sync, uuid, nbt);
-        Misca.RPC.sendToAllTracking(target, sync, uuid, nbt);
+        ctx.rpc.sendTo(target, syncSelf, nbt);
+        ctx.rpc.sendToAllTracking(target, sync, uuid, nbt);
     }
 }

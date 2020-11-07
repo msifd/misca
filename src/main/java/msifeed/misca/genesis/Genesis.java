@@ -8,6 +8,7 @@ import msifeed.misca.genesis.rules.IGenesisRule;
 import msifeed.misca.genesis.rules.RuleLoader;
 import msifeed.misca.genesis.tabs.CreativeTabRule;
 import msifeed.misca.supplies.ItemSuppliesInvoice;
+import msifeed.misca.combat.ItemCombatTool;
 import msifeed.misca.tools.ItemDebugTool;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
@@ -54,7 +55,8 @@ public class Genesis {
     public void registerItems(RegistryEvent.Register<Item> event) {
         final List<Item> items = Lists.newArrayList(
                 new ItemSuppliesInvoice(),
-                new ItemDebugTool()
+                new ItemDebugTool(),
+                new ItemCombatTool()
         );
 
         for (Item i : items) {

@@ -1,9 +1,11 @@
 package msifeed.misca;
 
-import msifeed.misca.charsheet.CharsheetHandler;
+import msifeed.misca.charsheet.cap.CharsheetHandler;
 import msifeed.misca.chatex.Chatex;
 import msifeed.misca.cmd.RollCommand;
 import msifeed.misca.combat.Combat;
+import msifeed.misca.combat.CombatCommand;
+import msifeed.misca.combat.cap.CombatantHandler;
 import msifeed.misca.environ.Environ;
 import msifeed.misca.environ.EnvironCommand;
 import msifeed.misca.genesis.Genesis;
@@ -35,11 +37,13 @@ public class Misca {
     private final Environ environ = new Environ();
 
     private final CharsheetHandler charsheetHandler = new CharsheetHandler();
+    private final CombatantHandler combatantHandler = new CombatantHandler();
 
     @EventHandler
     public void preInit(FMLPreInitializationEvent event) {
         genesis.preInit();
         charsheetHandler.preInit();
+        combatantHandler.preInit();
 
         if (FMLCommonHandler.instance().getSide().isClient())
             MiscaClient.INSTANCE.preInit();
@@ -67,5 +71,6 @@ public class Misca {
         event.registerServerCommand(new InvoiceCommand());
         event.registerServerCommand(new RenameCommand());
         event.registerServerCommand(new EnvironCommand());
+        event.registerServerCommand(new CombatCommand());
     }
 }

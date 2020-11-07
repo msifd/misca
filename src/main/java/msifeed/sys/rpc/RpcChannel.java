@@ -3,6 +3,7 @@ package msifeed.sys.rpc;
 import io.netty.channel.ChannelFutureListener;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.network.INetHandler;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.network.FMLEmbeddedChannel;
 import net.minecraftforge.fml.common.network.FMLOutboundHandler;
@@ -89,45 +90,43 @@ public class RpcChannel {
 
             final Class<?>[] types = m.getParameterTypes();
 
-            final ContextType ct;
-            if (types.length > 0 && types[0] == RpcContext.class) ct = ContextType.CTX;
-            else ct = ContextType.NONE;
-
-            final int argsStart = ct == ContextType.NONE ? 0 : 1;
+            final boolean hasContext = types.length > 0 && types[0] == RpcContext.class;
+            final int argsStart = hasContext ? 1 : 0;
             for (int i = argsStart; i < types.length; ++i)
                 if (!codec.hasCodecForType(types[i]))
                     throw new RuntimeException(String.format("RPC method '%s': param %d (%s) is not supported", methodName, i + 1, types[i].getSimpleName()));
 
-            handlers.put(methodName, new Handler(obj, m, ct));
+            handlers.put(methodName, new Handler(obj, m, hasContext));
         }
     }
 
-    void invoke(RpcContext ctx, RpcMessage message) {
+    void invoke(RpcMessage message, INetHandler netHandler, Side side) {
         final Handler handler = handlers.get(message.method);
-        if (handler != null)
-            handler.invoke(handler.rearrangeArgs(message.args, ctx));
+        if (handler == null) return;
+
+        if (handler.hasContext)
+            handler.invoke(message.args, new RpcContext(this, netHandler, side));
+        else
+            handler.invoke(message.args);
     }
 
     private class Handler {
         private final Object object;
         private final Method method;
-        private final ContextType contextType;
+        private final boolean hasContext;
 
-        Handler(Object o, Method m, ContextType ct) {
+        Handler(Object o, Method m, boolean hasContext) {
             this.object = o;
             this.method = m;
-            this.contextType = ct;
+            this.hasContext = hasContext;
         }
 
-        Object[] rearrangeArgs(Object[] args, RpcContext ctx) {
-            if (contextType == ContextType.NONE)
-                return args;
-
+        void invoke(Object[] args, RpcContext ctx) {
             final Object[] argsWithCtx = new Object[args.length + 1];
             argsWithCtx[0] = ctx;
             System.arraycopy(args, 0, argsWithCtx, 1, args.length);
 
-            return argsWithCtx;
+            invoke(argsWithCtx);
         }
 
         void invoke(Object[] args) {
@@ -149,9 +148,5 @@ public class RpcChannel {
                 logger.throwing(e.getCause());
             }
         }
-    }
-
-    private enum ContextType {
-        NONE, CTX
     }
 }

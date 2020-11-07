@@ -3,10 +3,16 @@ package msifeed.misca.combat.client;
 import msifeed.misca.combat.rpc.ICombatRpc;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.entity.EntityLivingBase;
 
 import java.io.IOException;
 
 public class GuiScreenCombat extends GuiScreen {
+    private final EntityLivingBase entity;
+
+    public GuiScreenCombat(EntityLivingBase entity) {
+        this.entity = entity;
+    }
 
     @Override
     public void initGui() {
@@ -18,7 +24,6 @@ public class GuiScreenCombat extends GuiScreen {
     protected void actionPerformed(GuiButton button) throws IOException {
         switch (button.id) {
             case 0:
-                ICombatRpc.candidate();
                 break;
         }
     }

@@ -6,10 +6,12 @@ import net.minecraft.network.NetHandlerPlayServer;
 import net.minecraftforge.fml.relauncher.Side;
 
 public class RpcContext {
+    public final RpcChannel rpc;
     public final INetHandler netHandler;
     public final Side side;
 
-    RpcContext(INetHandler netHandler, Side side) {
+    RpcContext(RpcChannel rpc, INetHandler netHandler, Side side) {
+        this.rpc = rpc;
         this.netHandler = netHandler;
         this.side = side;
     }

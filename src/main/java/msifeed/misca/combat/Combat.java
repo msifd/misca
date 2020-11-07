@@ -4,13 +4,17 @@ import msifeed.misca.Misca;
 import msifeed.misca.combat.battle.BattleManager;
 import msifeed.misca.combat.rpc.CombatServerRpc;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.common.FMLCommonHandler;
 
 public class Combat {
-    private final BattleManager battleManager = new BattleManager();
+    public static final BattleManager MANAGER = new BattleManager();
 
     public void init() {
-        MinecraftForge.EVENT_BUS.register(battleManager);
-        MinecraftForge.EVENT_BUS.register(new DamageHandler(battleManager));
-        Misca.RPC.register(new CombatServerRpc(battleManager));
+        MinecraftForge.EVENT_BUS.register(MANAGER);
+        MinecraftForge.EVENT_BUS.register(new DamageHandler());
+
+        Misca.RPC.register(new CombatServerRpc(MANAGER));
+        if (FMLCommonHandler.instance().getSide().isClient())
+            Misca.RPC.register(new CombatServerRpc(MANAGER));
     }
 }

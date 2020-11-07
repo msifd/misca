@@ -10,9 +10,9 @@ import java.util.stream.Stream;
 public class ValueContainer<K extends Enum<K>> implements Cloneable {
     private final EnumMap<K, Integer> values;
 
-    private final K[] keys;
-    private final int min;
-    private final int max;
+    private final transient K[] keys;
+    private final transient int min;
+    private final transient int max;
 
     public ValueContainer(Class<K> enumType, int min, int max) {
         this.values = new EnumMap<>(enumType);

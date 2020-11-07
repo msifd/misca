@@ -8,7 +8,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class ItemDebugTool extends Item {
-    public static final String ID = "misca_debug_tool";
+    public static final String ID = "debug_tool";
 
     public ItemDebugTool() {
         setRegistryName(Misca.MODID, ID);

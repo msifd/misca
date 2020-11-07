@@ -4,7 +4,8 @@ import msifeed.misca.charsheet.cap.Charsheet;
 import msifeed.misca.charsheet.cap.CharsheetProvider;
 import msifeed.misca.charsheet.cap.ICharsheet;
 import msifeed.misca.combat.battle.Battle;
-import msifeed.misca.combat.battle.BattleManager;
+import msifeed.misca.combat.cap.CombatantProvider;
+import msifeed.misca.combat.cap.ICombatant;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.DamageSource;
@@ -18,11 +19,9 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 public class DamageHandler {
     private static final String CRITICAL_EVASION_TYPE = "criticalEvasion";
 
-    private final BattleManager battleManager;
     private final Charsheet defaultCharsheet = new Charsheet();
 
-    DamageHandler(BattleManager battleManager) {
-        this.battleManager = battleManager;
+    DamageHandler() {
         this.defaultCharsheet.attrs().setAll(5);
     }
 
@@ -35,13 +34,12 @@ public class DamageHandler {
         if (!(src.getTrueSource() instanceof EntityLivingBase)) return;
 
         final EntityLivingBase srcEntity = (EntityLivingBase) src.getTrueSource();
-        final Battle battle = battleManager.getBattle(srcEntity.getUniqueID());
-        if (battle == null) return;
-
-        if (!battle.isLeader(srcEntity.getUniqueID())) {
-            event.setCanceled(true);
-            notifyActionBar("not your turn", srcEntity);
-        }
+        Combat.MANAGER.getEntityBattle(srcEntity).ifPresent(battle -> {
+            if (!battle.isLeader(srcEntity.getUniqueID())) {
+                event.setCanceled(true);
+                notifyActionBar("not your turn", srcEntity);
+            }
+        });
     }
 
     @SubscribeEvent
@@ -53,14 +51,14 @@ public class DamageHandler {
         if (!(src.getTrueSource() instanceof EntityLivingBase)) return;
 
         final EntityLivingBase srcEntity = (EntityLivingBase) src.getTrueSource();
-
         checkChances(event, srcEntity);
         updateTurn(srcEntity);
     }
 
     private void checkChances(LivingHurtEvent event, EntityLivingBase srcEntity) {
+        final EntityLivingBase victim = event.getEntityLiving();
         final ICharsheet srcCs = CharsheetProvider.getOr(srcEntity, defaultCharsheet);
-        final ICharsheet vicCs = CharsheetProvider.getOr(event.getEntityLiving(), defaultCharsheet);
+        final ICharsheet vicCs = CharsheetProvider.getOr(victim, defaultCharsheet);
 
         final float hitChance = Rules.hitRate(srcCs) - Rules.evasion(vicCs);
         final float criticality = Dices.checkFloat(Rules.criticalHit(srcCs)) - Dices.checkFloat(Rules.criticalEvasion(vicCs));
@@ -74,6 +72,14 @@ public class DamageHandler {
             }
 
             event.setAmount(event.getAmount() * damageMultiplier);
+
+            final boolean training = Combat.MANAGER.getEntityBattle(victim).map(Battle::isTraining).orElse(false);
+            final boolean mortalWound = victim.getHealth() - event.getAmount() <= 0;
+            if (training && mortalWound) {
+                victim.setHealth(CombatantProvider.get(victim).getTrainingHealth());
+                if (victim instanceof EntityPlayer)
+                    ((EntityPlayer) victim).sendStatusMessage(new TextComponentString("u dead"), false);
+            }
         } else {
             event.setCanceled(true);
 
@@ -87,10 +93,10 @@ public class DamageHandler {
     }
 
     private void updateTurn(EntityLivingBase entity) {
-        final Battle battle = battleManager.getBattle(entity.getUniqueID());
-        if (battle == null || !battle.isLeader(entity.getUniqueID())) return;
-
-        battle.makeAction();
+        Combat.MANAGER.getEntityBattle(entity).ifPresent(battle -> {
+            if (battle.isLeader(entity.getUniqueID()))
+                battle.makeAction();
+        });
     }
 
     private static void notifyActionBar(String msg, EntityLivingBase... entities) {

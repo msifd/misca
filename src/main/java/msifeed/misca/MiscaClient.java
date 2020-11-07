@@ -40,6 +40,6 @@ public enum MiscaClient {
         if (charsheetKey.isPressed())
             Minecraft.getMinecraft().displayGuiScreen(new GuiScreenCharsheet(Minecraft.getMinecraft().player));
         if (combatKey.isPressed())
-            Minecraft.getMinecraft().displayGuiScreen(new GuiScreenCombat());
+            Minecraft.getMinecraft().displayGuiScreen(new GuiScreenCombat(Minecraft.getMinecraft().player));
     }
 }
