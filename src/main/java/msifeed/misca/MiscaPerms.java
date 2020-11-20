@@ -1,6 +1,9 @@
 package msifeed.misca;
 
+import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.network.rcon.RConConsoleSource;
+import net.minecraft.server.MinecraftServer;
 import net.minecraftforge.server.permission.DefaultPermissionLevel;
 import net.minecraftforge.server.permission.PermissionAPI;
 
@@ -11,7 +14,10 @@ public final class MiscaPerms {
         PermissionAPI.registerNode(gameMaster, DefaultPermissionLevel.NONE, "Gives access to GameMaster abilities");
     }
 
-    public static boolean isGameMaster(EntityPlayer player) {
-        return PermissionAPI.hasPermission(player, gameMaster);
+    public static boolean isGameMaster(ICommandSender sender) {
+        if (sender instanceof EntityPlayer)
+            return PermissionAPI.hasPermission((EntityPlayer) sender, gameMaster);
+        else
+            return sender instanceof MinecraftServer || sender instanceof RConConsoleSource;
     }
 }

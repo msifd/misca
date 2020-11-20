@@ -5,7 +5,6 @@ import msifeed.misca.charsheet.cap.CharsheetProvider;
 import msifeed.misca.charsheet.cap.ICharsheet;
 import msifeed.misca.combat.battle.Battle;
 import msifeed.misca.combat.cap.CombatantProvider;
-import msifeed.misca.combat.cap.ICombatant;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.DamageSource;

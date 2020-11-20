@@ -4,7 +4,6 @@ import msifeed.misca.Misca;
 import msifeed.misca.combat.battle.BattleManager;
 import msifeed.sys.rpc.RpcContext;
 import msifeed.sys.rpc.RpcMethodHandler;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 
 import java.util.UUID;

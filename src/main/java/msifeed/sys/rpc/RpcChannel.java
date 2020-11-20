@@ -4,7 +4,6 @@ import io.netty.channel.ChannelFutureListener;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.network.INetHandler;
-import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.network.FMLEmbeddedChannel;
 import net.minecraftforge.fml.common.network.FMLOutboundHandler;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
@@ -25,14 +24,14 @@ public class RpcChannel {
     private final RpcCodec codec;
     private final Logger logger;
 
-    public RpcChannel(ResourceLocation key) {
-        this(key, new RpcCodec());
+    public RpcChannel(String channel) {
+        this(channel, new RpcCodec());
     }
 
-    public RpcChannel(ResourceLocation key, RpcCodec codec) {
-        this.channels = NetworkRegistry.INSTANCE.newChannel(key.toString(), new RpcPacketCodec(codec));
+    public RpcChannel(String channel, RpcCodec codec) {
+        this.channels = NetworkRegistry.INSTANCE.newChannel(channel, new RpcPacketCodec(codec));
         this.codec = codec;
-        this.logger = LogManager.getLogger("RPC:" + key.toString());
+        this.logger = LogManager.getLogger("RPC:" + channel);
 
         channels.get(Side.SERVER).pipeline().addLast(new RpcChannelHandler(this, Side.SERVER));
         channels.get(Side.CLIENT).pipeline().addLast(new RpcChannelHandler(this, Side.CLIENT));
@@ -80,24 +79,28 @@ public class RpcChannel {
 
     public void register(Object obj) {
         final Class<?> clazz = obj.getClass();
-        for (Method m : clazz.getDeclaredMethods()) {
-            if (!m.isAnnotationPresent(RpcMethodHandler.class))
+        for (Method method : clazz.getDeclaredMethods()) {
+            if (!method.isAnnotationPresent(RpcMethodHandler.class))
                 continue;
-            final String methodName = m.getAnnotation(RpcMethodHandler.class).value();
-
-            if (!m.isAccessible() && !Reflection.quickCheckMemberAccess(clazz, m.getModifiers()))
-                throw new RuntimeException(String.format("RPC method '%s::%s' is not accessible", clazz.getName(), m.getName()));
-
-            final Class<?>[] types = m.getParameterTypes();
-
-            final boolean hasContext = types.length > 0 && types[0] == RpcContext.class;
-            final int argsStart = hasContext ? 1 : 0;
-            for (int i = argsStart; i < types.length; ++i)
-                if (!codec.hasCodecForType(types[i]))
-                    throw new RuntimeException(String.format("RPC method '%s': param %d (%s) is not supported", methodName, i + 1, types[i].getSimpleName()));
-
-            handlers.put(methodName, new Handler(obj, m, hasContext));
+            final String rpcMethod = method.getAnnotation(RpcMethodHandler.class).value();
+            register(rpcMethod, obj, method);
         }
+    }
+
+    public void register(String rpcMethod, Object obj, Method m) {
+        final Class<?> clazz = obj.getClass();
+        if (!m.isAccessible() && !Reflection.quickCheckMemberAccess(clazz, m.getModifiers()))
+            throw new RuntimeException(String.format("RPC method '%s::%s' is not accessible", clazz.getName(), m.getName()));
+
+        final Class<?>[] types = m.getParameterTypes();
+
+        final boolean hasContext = types.length > 0 && types[0] == RpcContext.class;
+        final int argsStart = hasContext ? 1 : 0;
+        for (int i = argsStart; i < types.length; ++i)
+            if (!codec.hasCodecForType(types[i]))
+                throw new RuntimeException(String.format("RPC method '%s': param %d (%s) is not supported", rpcMethod, i + 1, types[i].getSimpleName()));
+
+        handlers.put(rpcMethod, new Handler(obj, m, hasContext));
     }
 
     void invoke(RpcMessage message, INetHandler netHandler, Side side) {

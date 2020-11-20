@@ -3,7 +3,6 @@ package msifeed.misca.combat.battle;
 import msifeed.misca.charsheet.cap.CharsheetProvider;
 import msifeed.misca.charsheet.cap.ICharsheet;
 import msifeed.misca.combat.cap.CombatantProvider;
-import msifeed.misca.combat.cap.ICombatant;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;

@@ -1,5 +1,6 @@
 package msifeed.misca.environ;
 
+import msifeed.misca.Misca;
 import net.minecraft.world.World;
 import net.minecraft.world.storage.WorldInfo;
 import net.minecraftforge.common.MinecraftForge;
@@ -15,8 +16,7 @@ public class Environ {
     public void onTick(TickEvent.WorldTickEvent event) {
         if (event.phase != TickEvent.Phase.END) return;
 
-//        final EnvironRule rule = MiscaConfig.environ.get(event.world.getWorldInfo().getWorldName());
-        final EnvironRule rule = null;
+        final EnvironRule rule = Misca.getSharedConfig().environ.get(event.world.provider.getDimension());
         if (rule == null) return;
 
         final EnvironWorldData data = EnvironWorldData.get(event.world);
@@ -38,7 +38,8 @@ public class Environ {
             }
         } else {
             data.rainAcc += r.income;
-            final boolean roll = (data.rainAcc >= r.min) && world.rand.nextInt(r.dice) == 0;
+            final boolean shouldRoll = data.rainAcc >= r.min && r.dice > 0;
+            final boolean roll = shouldRoll && world.rand.nextInt(r.dice) == 0;
             if (roll) {
                 System.out.println(String.format("Environ: [%s] successful rainfall dice roll (while %d>=%d)",
                         wi.getWorldName(), data.rainAcc, r.min));

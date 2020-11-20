@@ -1,5 +1,6 @@
 package msifeed.misca.environ;
 
+import msifeed.misca.Misca;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
@@ -44,8 +45,15 @@ public class EnvironCommand extends CommandBase {
 
     private void worldList(MinecraftServer server, ICommandSender sender) {
         sender.sendMessage(new TextComponentString(joinNiceStringFromCollection(
-                Arrays.stream(server.worlds).map(w -> w.getWorldInfo().getWorldName()).collect(Collectors.toList()))));
-        sender.sendMessage(new TextComponentString("Current: " + sender.getEntityWorld().getWorldInfo().getWorldName()));
+                Arrays.stream(server.worlds)
+                        .map(EnvironCommand::worldInfo)
+                        .collect(Collectors.toList()))));
+        sender.sendMessage(new TextComponentString("Current: " + worldInfo(sender.getEntityWorld())));
+    }
+
+    private static String worldInfo(World w) {
+        return String.format("%d - '%s'",
+                w.provider.getDimension(), w.getWorldInfo().getWorldName());
     }
 
     private void handleRain(MinecraftServer server, ICommandSender sender, String[] args) {
@@ -56,11 +64,13 @@ public class EnvironCommand extends CommandBase {
 
         final World world = sender.getEntityWorld();
 
+
         switch (args[1]) {
             case "show":
+                showRain(sender, world);
                 break;
             case "toggle":
-
+                world.getWorldInfo().setRaining(!world.getWorldInfo().isRaining());
 //                sender.sendMessage(new TextComponentString("Now: " + ()));
                 break;
             case "acc":
@@ -75,8 +85,24 @@ public class EnvironCommand extends CommandBase {
         throw new CommandException("Unknown world: %s", worldName);
     }
 
-    private void showRain(World world) {
+    private void showRain(ICommandSender sender, World world) {
+        final EnvironRule rule = Misca.getSharedConfig().environ.get(world.provider.getDimension());
+        if (rule == null) {
+            sender.sendMessage(new TextComponentString("No rules for this world"));
+            return;
+        }
 
+        final EnvironWorldData data = EnvironWorldData.get(world);
+        final EnvironRule.Rain r = rule.rain;
+
+        final String format = "<Environ - Rain>\n" +
+                "world: %s\n" +
+                "acc: %d\n" +
+                "in/out: +%d / -%d\n" +
+                "min/max: %d / %d\n" +
+                "thunder/dice: %d / %d\n";
+        final String s = String.format(format, worldInfo(world), data.rainAcc, r.income, r.outcome, r.min, r.max, r.thunder, r.dice);
+        sender.sendMessage(new TextComponentString(s));
     }
 
     private void toggleRain(World world) {
@@ -85,15 +111,15 @@ public class EnvironCommand extends CommandBase {
     }
 
     private void sendHelp(ICommandSender sender) {
-        String s = "<Misca Environ>\n" +
-                "Usage: /environ <category> <sub-command...>" +
-                "Categories:" +
-                "world\n" +
-                "- list - list world names\n" +
-                "rain\n" +
-                "- show [world] - show rain values\n" +
-                "- toggle [world] - toggle rain\n" +
-                "- acc <delta> [world] - modify rain accumulator\n";
+        final String s = "<Misca Environ>\n" +
+                "Usage: /environ <category> <sub-command...>\n" +
+                "Categories:\n" +
+                "- world\n" +
+                "-- list - list world names\n" +
+                "- rain\n" +
+                "-- show [world] - show rain values\n" +
+                "-- toggle [world] - toggle rain\n" +
+                "-- acc <delta> [world] - modify rain accumulator\n";
         sender.sendMessage(new TextComponentString(s));
     }
 }

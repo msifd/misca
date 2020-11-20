@@ -1,6 +1,6 @@
 package msifeed.misca.chatex;
 
-import msifeed.misca.MiscaConfig;
+import msifeed.misca.Misca;
 
 public class ChatexUtils {
     public static int getSpeechRange(String text) {
@@ -23,6 +23,6 @@ public class ChatexUtils {
                 break;
         }
 
-        return MiscaConfig.chat.getSpeechRange(level);
+        return Misca.getSharedConfig().chat.getSpeechRange(level);
     }
 }

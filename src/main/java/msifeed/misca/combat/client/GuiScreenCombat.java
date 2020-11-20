@@ -1,6 +1,5 @@
 package msifeed.misca.combat.client;
 
-import msifeed.misca.combat.rpc.ICombatRpc;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.EntityLivingBase;

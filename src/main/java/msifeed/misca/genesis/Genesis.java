@@ -1,6 +1,7 @@
 package msifeed.misca.genesis;
 
 import com.google.common.collect.Lists;
+import msifeed.misca.combat.ItemCombatTool;
 import msifeed.misca.genesis.blocks.BlockRule;
 import msifeed.misca.genesis.blocks.tiles.TileEntityGenesisContainer;
 import msifeed.misca.genesis.items.ItemRule;
@@ -8,7 +9,6 @@ import msifeed.misca.genesis.rules.IGenesisRule;
 import msifeed.misca.genesis.rules.RuleLoader;
 import msifeed.misca.genesis.tabs.CreativeTabRule;
 import msifeed.misca.supplies.ItemSuppliesInvoice;
-import msifeed.misca.combat.ItemCombatTool;
 import msifeed.misca.tools.ItemDebugTool;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;

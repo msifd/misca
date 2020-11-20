@@ -1,6 +1,6 @@
 package msifeed.misca.chatex.client.format;
 
-import msifeed.misca.MiscaConfig;
+import msifeed.misca.Misca;
 import msifeed.misca.charsheet.cap.CharsheetProvider;
 import msifeed.misca.chatex.ChatexConfig;
 import net.minecraft.entity.player.EntityPlayer;
@@ -38,7 +38,7 @@ public class SpeechFormat {
     }
 
     private static ITextComponent makeTextComp(String msg, double distance, int range) {
-        final int thresholdDistance = MiscaConfig.chat.garble.thresholdDistance;
+        final int thresholdDistance = Misca.getSharedConfig().chat.garble.thresholdDistance;
 
         if (distance > thresholdDistance) {
             final double garblness = (distance - thresholdDistance) / (double) range;
@@ -52,7 +52,7 @@ public class SpeechFormat {
         if (input.isEmpty())
             return new TextComponentString("");
 
-        final ChatexConfig.GarbleSettings settings = MiscaConfig.chat.garble;
+        final ChatexConfig.GarbleSettings settings = Misca.getSharedConfig().chat.garble;
 
         final Random rand = new Random();
 

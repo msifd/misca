@@ -1,0 +1,29 @@
+{
+  "chat": {
+    "speechRanges": [
+      2,
+      5,
+      15,
+      30,
+      60
+    ],
+    "garble": {
+      "thresholdDistance": 4,
+      "grayThreshold": 0.33,
+      "darkGrayThreshold": 0.66,
+      "missThreshold": 0.9
+    }
+  },
+  "environ": {
+    "0": {
+      "rain": {
+        "income": 10,
+        "outcome": 1,
+        "thunder":  10000,
+        "min": 1000,
+        "max":  5000,
+        "dice": 0
+      }
+    }
+  }
+}
