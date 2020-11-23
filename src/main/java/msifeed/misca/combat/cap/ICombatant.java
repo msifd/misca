@@ -1,26 +1,41 @@
 package msifeed.misca.combat.cap;
 
+import net.minecraft.util.math.Vec3d;
+
 import javax.annotation.Nonnull;
-import java.util.UUID;
 
 public interface ICombatant {
-    UUID NULL_ID = new UUID(0, 0);
-
     default boolean isInBattle() {
-        return !getBattleId().equals(NULL_ID);
+        return getBattleId() != 0;
     }
+    long getBattleId();
+    void setBattleId(long value);
 
-    @Nonnull
-    UUID getBattleId();
+    float getActionPoints();
+    void setActionPoints(float value);
 
-    void setBattleId(@Nonnull UUID battleId);
+    float getActionPointsOverhead();
+    void setActionPointsOverhead(float value);
+
+    Vec3d getPosition();
+    void setPosition(@Nonnull Vec3d value);
 
     float getTrainingHealth();
+    void setTrainingHealth(float value);
 
-    void setTrainingHealth(float health);
+    default void replaceWith(@Nonnull ICombatant com) {
+        setBattleId(com.getBattleId());
+        setActionPoints(com.getActionPoints());
+        setActionPointsOverhead(com.getActionPointsOverhead());
+        setPosition(com.getPosition());
+        setTrainingHealth(com.getTrainingHealth());
+    }
 
-    default void replaceWith(@Nonnull ICombatant combatant) {
-        setBattleId(combatant.getBattleId());
-        setTrainingHealth(combatant.getTrainingHealth());
+    default void reset() {
+        setBattleId(0);
+        setActionPoints(0);
+        setActionPointsOverhead(0);
+        setPosition(Vec3d.ZERO);
+        setTrainingHealth(0);
     }
 }

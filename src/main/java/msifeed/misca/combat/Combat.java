@@ -11,7 +11,7 @@ public class Combat {
 
     public void init() {
         MinecraftForge.EVENT_BUS.register(MANAGER);
-        MinecraftForge.EVENT_BUS.register(new DamageHandler());
+        MinecraftForge.EVENT_BUS.register(new CombatHandler());
 
         Misca.RPC.register(new CombatServerRpc(MANAGER));
         if (FMLCommonHandler.instance().getSide().isClient())

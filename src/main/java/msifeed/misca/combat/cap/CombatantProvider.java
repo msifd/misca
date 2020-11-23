@@ -21,7 +21,7 @@ public class CombatantProvider implements ICapabilitySerializable<NBTBase> {
 
     @Nonnull
     public static ICombatant get(@Nonnull EntityLivingBase entity) {
-        return Objects.requireNonNull(entity.getCapability(CombatantProvider.CAP, null));
+        return Objects.requireNonNull(entity.getCapability(CAP, null));
     }
 
     public static NBTTagCompound encode(ICombatant charsheet) {

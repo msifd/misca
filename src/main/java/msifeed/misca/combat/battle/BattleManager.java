@@ -8,20 +8,25 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
+import javax.annotation.Nullable;
 import java.util.HashMap;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.Map;
 
 public class BattleManager {
-    private final HashMap<UUID, Battle> battles = new HashMap<>();
+    private final Map<Long, Battle> battles = new HashMap<>();
 
-    public Optional<Battle> getEntityBattle(EntityLivingBase entity) {
-        final UUID bid = CombatantProvider.get(entity).getBattleId();
-        return Optional.ofNullable(battles.get(bid));
+    @Nullable
+    public Battle getEntityBattle(EntityLivingBase entity) {
+        return getBattle(CombatantProvider.get(entity).getBattleId());
+    }
+
+    @Nullable
+    public Battle getBattle(long bid) {
+        return battles.get(bid);
     }
 
     public void initBattle(EntityPlayer player, boolean training) {
-        if (getEntityBattle(player).isPresent()) return;
+        if (getEntityBattle(player) != null) return;
 
         final Battle b = new Battle(training);
         b.addMember(player);
@@ -30,13 +35,20 @@ public class BattleManager {
     }
 
     public void startBattle(EntityPlayer player) {
-        getEntityBattle(player)
-                .filter(b -> !b.isStarted())
-                .ifPresent(Battle::start);
+        final Battle battle = getEntityBattle(player);
+//        if (battle != null && !battle.isStarted())
+        if (battle != null)
+            battle.start();
+    }
+
+    public void repositionMembers(EntityLivingBase entity) {
+        final Battle battle = getEntityBattle(entity);
+        if (battle != null)
+            battle.repositionMembers();
     }
 
     public void leaveFromBattle(EntityLivingBase entity) {
-        final Battle battle = getEntityBattle(entity).orElse(null);
+        final Battle battle = getEntityBattle(entity);
         if (battle == null) return;
 
         battle.removeMember(entity.getUniqueID());
@@ -47,10 +59,11 @@ public class BattleManager {
     }
 
     public void destroyBattle(EntityPlayer player) {
-        getEntityBattle(player).ifPresent(battle -> {
-            battle.clear();
-            battles.remove(battle.getId());
-        });
+        final Battle battle = getEntityBattle(player);
+        if (battle == null) return;
+
+        battle.clear();
+        battles.remove(battle.getId());
     }
 
     public void addToBattle(EntityPlayer player, EntityLivingBase newbie) {
@@ -59,9 +72,15 @@ public class BattleManager {
             sheet.attrs().setAll(5);
         }
 
-        getEntityBattle(player).ifPresent(battle -> {
+        final Battle battle = getEntityBattle(player);
+        if (battle != null)
             battle.addMember(newbie);
-        });
+    }
+
+    public void rejoinToBattle(EntityPlayer player) {
+        final Battle battle = getEntityBattle(player);
+        if (battle != null)
+            battle.updateEntity(player);
     }
 
     @SubscribeEvent

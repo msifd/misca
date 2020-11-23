@@ -1,4 +1,4 @@
-package msifeed.misca.combat;
+package msifeed.misca.combat.rules;
 
 import java.util.Random;
 

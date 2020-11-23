@@ -1,7 +1,14 @@
-package msifeed.misca.combat;
+package msifeed.misca.combat.rules;
 
 import msifeed.misca.charsheet.cap.CharAttribute;
 import msifeed.misca.charsheet.cap.ICharsheet;
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.SharedMonsterAttributes;
+import net.minecraft.entity.ai.attributes.IAttribute;
+import net.minecraft.entity.ai.attributes.IAttributeInstance;
+import net.minecraft.item.ItemStack;
+
+import javax.annotation.Nullable;
 
 /**
  * You know the rules and so do I
@@ -41,5 +48,18 @@ public class Rules {
         final int luck = cs.attrs().get(CharAttribute.lck);
 
         return 0.01f + + agility * 0.0025f + luck * 0.0075f;
+    }
+
+    public static float attackActionPoints(EntityLivingBase entity) {
+        final IAttributeInstance attackSpeed = entity.getEntityAttribute(SharedMonsterAttributes.ATTACK_SPEED);
+        if (attackSpeed != null) {
+            return 6 - (float) attackSpeed.getAttributeValue();
+        } else {
+            return 4;
+        }
+    }
+
+    public static float maxActionPoints(ICharsheet cs) {
+        return cs.attrs().get(CharAttribute.agi) * 4;
     }
 }

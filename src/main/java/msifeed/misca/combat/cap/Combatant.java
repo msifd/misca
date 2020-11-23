@@ -1,21 +1,54 @@
 package msifeed.misca.combat.cap;
 
+import net.minecraft.util.math.Vec3d;
+
 import javax.annotation.Nonnull;
-import java.util.UUID;
 
 public class Combatant implements ICombatant {
-    private UUID battleId = NULL_ID;
+    private long battleId = 0;
+    private float actionPoints = 0;
+    private float actionPointsOverhead = 0;
+    private Vec3d position = Vec3d.ZERO;
     private float trainingHealth = 0;
 
     @Override
-    @Nonnull
-    public UUID getBattleId() {
+    public long getBattleId() {
         return battleId;
     }
 
     @Override
-    public void setBattleId(@Nonnull UUID battleId) {
-        this.battleId = battleId;
+    public void setBattleId(long value) {
+        this.battleId = value;
+    }
+
+    @Override
+    public float getActionPoints() {
+        return actionPoints;
+    }
+
+    @Override
+    public void setActionPoints(float value) {
+        this.actionPoints = value;
+    }
+
+    @Override
+    public float getActionPointsOverhead() {
+        return actionPointsOverhead;
+    }
+
+    @Override
+    public void setActionPointsOverhead(float value) {
+        this.actionPointsOverhead = value;
+    }
+
+    @Override
+    public Vec3d getPosition() {
+        return position;
+    }
+
+    @Override
+    public void setPosition(@Nonnull Vec3d value) {
+        this.position = value;
     }
 
     @Override
@@ -24,7 +57,7 @@ public class Combatant implements ICombatant {
     }
 
     @Override
-    public void setTrainingHealth(float health) {
-        trainingHealth = health;
+    public void setTrainingHealth(float value) {
+        this.trainingHealth = value;
     }
 }
