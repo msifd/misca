@@ -11,11 +11,11 @@ public interface ICombatant {
     long getBattleId();
     void setBattleId(long value);
 
-    float getActionPoints();
-    void setActionPoints(float value);
+    double getActionPoints();
+    void setActionPoints(double value);
 
-    float getActionPointsOverhead();
-    void setActionPointsOverhead(float value);
+    double getActionPointsOverhead();
+    void setActionPointsOverhead(double value);
 
     Vec3d getPosition();
     void setPosition(@Nonnull Vec3d value);

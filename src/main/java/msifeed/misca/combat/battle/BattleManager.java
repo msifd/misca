@@ -52,10 +52,15 @@ public class BattleManager {
         if (battle == null) return;
 
         battle.removeMember(entity.getUniqueID());
-        if (!battle.hasPlayerMember()) {
+        if (!battle.hasPlayerMember() || battle.getMembers().size() < 2) {
             battle.clear();
             battles.remove(battle.getId());
         }
+    }
+
+    public void destroyBattle(Battle battle) {
+        battle.clear();
+        battles.remove(battle.getId());
     }
 
     public void destroyBattle(EntityPlayer player) {

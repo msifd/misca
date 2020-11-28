@@ -7,6 +7,7 @@ import msifeed.misca.combat.cap.CombatantHandler;
 import msifeed.misca.combat.cap.CombatantProvider;
 import msifeed.misca.combat.cap.ICombatant;
 import msifeed.misca.combat.rules.Rules;
+import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.MathHelper;
@@ -91,14 +92,16 @@ public class Battle {
                 .map(members::get)
                 .map(Reference::get)
                 .filter(Objects::nonNull)
-                .filter(e -> !isLeader(e.getUniqueID()))
                 .forEach(entity -> {
+                    setMobAI(entity, false);
                     final ICombatant com = CombatantProvider.get(entity);
-                    com.setActionPoints(5);
+                    com.setActionPoints(0);
                     com.setActionPointsOverhead(0);
                     com.setPosition(entity.getPositionVector());
                     CombatantHandler.sync(entity);
                 });
+
+        prepareLeader();
 
         phase = BattlePhase.WAIT;
         actions = 0;
@@ -153,6 +156,7 @@ public class Battle {
             tc.getStyle().setColor(TextFormatting.RED);
             ((EntityPlayer) leader).sendStatusMessage(tc, true);
         }
+        setMobAI(leader, false);
 
         queue.add(queue.remove());
         phase = BattlePhase.WAIT;
@@ -160,39 +164,41 @@ public class Battle {
         actionsStart = 0;
 
         if (queue.size() < 2) {
-//            clear();
-            if (leader instanceof EntityPlayer) {
-                Combat.MANAGER.destroyBattle((EntityPlayer) leader);
-                final ITextComponent tc = new TextComponentString("battle closed");
-                tc.getStyle().setColor(TextFormatting.RED);
-                ((EntityPlayer) leader).sendStatusMessage(tc, false);
-            }
+            Combat.MANAGER.destroyBattle(this);
             return;
         }
 
-        final EntityLivingBase newLeader = members.get(getLeader()).get();
-        if (newLeader == null) return;
-        final ICombatant newCom = CombatantProvider.get(newLeader);
-        newCom.setActionPoints(newCom.getActionPoints() + 5);
-        CombatantHandler.sync(newLeader);
+        prepareLeader();
+    }
 
-        if (newLeader instanceof EntityPlayer) {
+    private void prepareLeader() {
+        final EntityLivingBase leader = members.get(getLeader()).get();
+        if (leader == null) return;
+
+        setMobAI(leader, true);
+        final ICharsheet cs = CharsheetProvider.get(leader);
+        final ICombatant com = CombatantProvider.get(leader);
+        com.setActionPoints(com.getActionPoints() + Rules.actionPointsPerMove(cs));
+        com.setPosition(leader.getPositionVector());
+        CombatantHandler.sync(leader);
+
+        if (leader instanceof EntityPlayer) {
             final ITextComponent tc = new TextComponentString("your turn");
             tc.getStyle().setColor(TextFormatting.GREEN);
-            ((EntityPlayer) newLeader).sendStatusMessage(tc, true);
+            ((EntityPlayer) leader).sendStatusMessage(tc, true);
         }
     }
 
     private void consumeActionAp(EntityLivingBase entity, ICombatant com) {
-        final float apOverhead = com.getActionPointsOverhead();
-        final float ap = Rules.attackActionPoints(entity);
+        final double apOverhead = com.getActionPointsOverhead();
+        final double ap = Rules.attackActionPoints(entity);
         com.setActionPoints(com.getActionPoints() - ap - apOverhead);
         com.setActionPointsOverhead(apOverhead + ap / 2);
     }
 
     private void consumeMovementAp(EntityLivingBase entity, ICombatant com) {
         final Vec3d pos = entity.getPositionVector();
-        final float newAp = com.getActionPoints() - (float) com.getPosition().distanceTo(pos);
+        final double newAp = com.getActionPoints() - Rules.movementActionPoints(com.getPosition(), pos);
         com.setActionPoints(newAp);
         com.setPosition(pos);
     }
@@ -242,6 +248,8 @@ public class Battle {
     private void removeEntity(EntityLivingBase entity) {
         if (isTraining())
             restoreHealth(entity);
+        setMobAI(entity, true);
+
         final ICombatant com = CombatantProvider.get(entity);
         com.reset();
         CombatantHandler.sync(entity);
@@ -252,5 +260,10 @@ public class Battle {
         entity.setHealth(com.getTrainingHealth());
         com.setTrainingHealth(0);
         CombatantHandler.sync(entity);
+    }
+
+    private void setMobAI(EntityLivingBase entity, boolean enabled) {
+        if (entity instanceof EntityLiving)
+            ((EntityLiving) entity).setNoAI(!enabled);
     }
 }

@@ -1,8 +1,6 @@
 package msifeed.misca.combat;
 
 import msifeed.misca.combat.battle.Battle;
-import msifeed.misca.combat.cap.CombatantProvider;
-import msifeed.misca.combat.cap.ICombatant;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
@@ -82,12 +80,18 @@ public class CombatCommand extends CommandBase {
                 Combat.MANAGER.leaveFromBattle(player);
                 player.sendStatusMessage(new TextComponentString("leave"), true);
                 break;
+            case "q":
+                Combat.MANAGER.initBattle(player, args.length > 1);
             case "a":
             case "add": {
                 for (Entity e : player.world.getEntitiesWithinAABBExcludingEntity(player, player.getEntityBoundingBox().grow(2))) {
                     if (!(e instanceof EntityLivingBase)) continue;
                     Combat.MANAGER.addToBattle(player, (EntityLivingBase) e);
                     player.sendStatusMessage(new TextComponentString("combat add " + e.getName()), false);
+                }
+
+                if (args[0].equals("q")) {
+                    Combat.MANAGER.startBattle(player);
                 }
                 break;
             }

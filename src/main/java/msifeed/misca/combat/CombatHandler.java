@@ -4,21 +4,17 @@ import msifeed.misca.charsheet.cap.Charsheet;
 import msifeed.misca.charsheet.cap.CharsheetProvider;
 import msifeed.misca.charsheet.cap.ICharsheet;
 import msifeed.misca.combat.battle.Battle;
-import msifeed.misca.combat.battle.BattlePhase;
 import msifeed.misca.combat.cap.CombatantProvider;
 import msifeed.misca.combat.cap.ICombatant;
 import msifeed.misca.combat.rules.Dices;
 import msifeed.misca.combat.rules.Rules;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EntityDamageSource;
 import net.minecraft.util.EntityDamageSourceIndirect;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
-import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
@@ -29,34 +25,6 @@ public class CombatHandler {
 
     CombatHandler() {
         this.defaultCharsheet.attrs().setAll(5);
-    }
-
-    @SubscribeEvent
-    public void onEntityMovement(LivingEvent.LivingUpdateEvent event) {
-        final EntityLivingBase entity = event.getEntityLiving();
-        final ICombatant com = CombatantProvider.get(entity);
-        if (!com.isInBattle()) return;
-
-        final Battle battle = Combat.MANAGER.getBattle(com.getBattleId());
-        if (battle == null || !battle.isStarted()) return;
-
-        if (battle.isLeader(entity.getUniqueID())) {
-            // Keep leader inside their movement area
-            final Vec3d nextPos = entity.getPositionVector()
-                    .addVector(entity.motionX * 2, entity.motionY * 2, entity.motionZ * 2);
-            final double movementAp = com.getPosition().distanceTo(nextPos);
-            if (movementAp > com.getActionPoints()) {
-                entity.setPositionAndUpdate(entity.prevPosX, entity.prevPosY, entity.prevPosZ);
-            }
-        } else if (!(entity instanceof EntityPlayer)) {
-            // Stop any non-player
-            entity.setPositionAndUpdate(entity.prevPosX, entity.prevPosY, entity.prevPosZ);
-        } else {
-            // Stop players in action phase
-            if (battle.getPhase() == BattlePhase.ACTION && !entity.getPositionVector().equals(com.getPosition())) {
-                entity.setPositionAndUpdate(entity.prevPosX, entity.prevPosY, entity.prevPosZ);
-            }
-        }
     }
 
     @SubscribeEvent
@@ -74,6 +42,21 @@ public class CombatHandler {
         if (!battle.isLeader(srcEntity.getUniqueID())) {
             event.setCanceled(true);
             notifyActionBar("not your turn", srcEntity);
+            return;
+        }
+
+        final ICombatant com = CombatantProvider.get(srcEntity);
+        final double movementAp = Rules.movementActionPoints(com.getPosition(), srcEntity.getPositionVector());
+        final double attackAp = Rules.attackActionPoints(srcEntity);
+        final double totalAp = movementAp + attackAp;
+
+        if (com.getActionPoints() < totalAp) {
+            event.setCanceled(true);
+            final boolean movementCheck = !(srcEntity instanceof EntityPlayer) || movementAp < 1;
+            final double targetAp = srcEntity instanceof EntityPlayer ? attackAp : totalAp;
+            if (movementCheck && com.getActionPoints() < targetAp) {
+                battle.finishTurn();
+            }
         }
     }
 
@@ -96,18 +79,18 @@ public class CombatHandler {
         final ICharsheet srcCs = CharsheetProvider.getOr(srcEntity, defaultCharsheet);
         final ICharsheet vicCs = CharsheetProvider.getOr(victim, defaultCharsheet);
 
-        final float hitChance = Rules.hitRate(srcCs) - Rules.evasion(vicCs);
-        final float criticality = Dices.checkFloat(Rules.criticalHit(srcCs)) - Dices.checkFloat(Rules.criticalEvasion(vicCs));
+        final double hitChance = Rules.hitRate(srcCs) - Rules.evasion(vicCs);
+        final double criticality = Dices.checkFloat(Rules.criticalHit(srcCs)) - Dices.checkFloat(Rules.criticalEvasion(vicCs));
 
         if (Dices.check(hitChance + criticality)) {
-            float damageMultiplier = 1 + Rules.damageIncrease(srcCs) + Rules.damageAbsorption(vicCs);
+            double damageMultiplier = 1 + Rules.damageIncrease(srcCs) + Rules.damageAbsorption(vicCs);
 
             if (criticality > 0) {
                 damageMultiplier += 1;
                 notifyActionBar("crit hit", event.getEntityLiving(), srcEntity);
             }
 
-            event.setAmount(event.getAmount() * damageMultiplier);
+            event.setAmount((float) (event.getAmount() * damageMultiplier));
 
             final Battle battle = Combat.MANAGER.getEntityBattle(srcEntity);
             final boolean training = battle != null && battle.isTraining();
@@ -121,9 +104,9 @@ public class CombatHandler {
             event.setCanceled(true);
 
             if (criticality < 0) {
-                final float damageMultiplier = 1 + Rules.damageIncrease(srcCs) + Rules.damageAbsorption(srcCs);
+                final double damageMultiplier = 1 + Rules.damageIncrease(srcCs) + Rules.damageAbsorption(srcCs);
                 final DamageSource ds = new EntityDamageSourceIndirect(CRITICAL_EVASION_DAMAGE_TYPE, srcEntity, event.getEntity());
-                srcEntity.attackEntityFrom(ds, event.getAmount() * damageMultiplier);
+                srcEntity.attackEntityFrom(ds, (float) (event.getAmount() * damageMultiplier));
                 notifyActionBar("crit evasion", event.getEntityLiving(), srcEntity);
             }
         }
@@ -131,7 +114,7 @@ public class CombatHandler {
 
     private void checkActionPoints(LivingHurtEvent event, EntityLivingBase entity) {
         final ICombatant com = CombatantProvider.get(entity);
-        final float requiredAp = com.getActionPointsOverhead() + Rules.attackActionPoints(entity);
+        final double requiredAp = com.getActionPointsOverhead() + Rules.attackActionPoints(entity);
         if (com.getActionPoints() < requiredAp)
             event.setCanceled(true);
     }

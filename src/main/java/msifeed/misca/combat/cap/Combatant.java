@@ -6,8 +6,8 @@ import javax.annotation.Nonnull;
 
 public class Combatant implements ICombatant {
     private long battleId = 0;
-    private float actionPoints = 0;
-    private float actionPointsOverhead = 0;
+    private double actionPoints = 0;
+    private double actionPointsOverhead = 0;
     private Vec3d position = Vec3d.ZERO;
     private float trainingHealth = 0;
 
@@ -22,22 +22,22 @@ public class Combatant implements ICombatant {
     }
 
     @Override
-    public float getActionPoints() {
+    public double getActionPoints() {
         return actionPoints;
     }
 
     @Override
-    public void setActionPoints(float value) {
+    public void setActionPoints(double value) {
         this.actionPoints = value;
     }
 
     @Override
-    public float getActionPointsOverhead() {
+    public double getActionPointsOverhead() {
         return actionPointsOverhead;
     }
 
     @Override
-    public void setActionPointsOverhead(float value) {
+    public void setActionPointsOverhead(double value) {
         this.actionPointsOverhead = value;
     }
 

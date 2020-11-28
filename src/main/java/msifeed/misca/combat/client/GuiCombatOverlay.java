@@ -40,6 +40,8 @@ public class GuiCombatOverlay {
         final String joinedMembers = battle.getMembers().stream()
                 .map(uuid -> uuidToEntityName(player.world, uuid))
                 .collect(Collectors.joining(", "));
+        final double moveAp = Rules.movementActionPoints(com.getPosition(), player.getPositionVector());
+        final double attackAp = Rules.attackActionPoints(player);
 
         final String[] lines = {
                 "queue: " + joinedQueue,
@@ -49,12 +51,22 @@ public class GuiCombatOverlay {
                 "action points: " + com.getActionPoints(),
                 "pos: " + com.getPosition(),
                 "training hp: " + com.getTrainingHealth(),
-                "ap: " + Rules.attackActionPoints(player)
+                "----",
+                "MOVEMENT: " + formatActionPoints(moveAp, com.getActionPoints()),
+                "ATTACK: " + formatActionPoints(attackAp, com.getActionPoints()),
+                "TOTAL: " + formatActionPoints(moveAp + attackAp, com.getActionPoints()) + " / " + com.getActionPoints()
         };
 
         final FontRenderer fr = Minecraft.getMinecraft().fontRenderer;
         for (int i = 0; i < lines.length; i++)
             fr.drawString(lines[i], 10, 10 + fr.FONT_HEIGHT * i, 0xffffffff);
+    }
+
+    private String formatActionPoints(double ap, double total) {
+        if (total > ap)
+            return String.format("%.2f", ap);
+        else
+            return String.format("\u00a74%.2f\u00a7r", ap);
     }
 
     @SubscribeEvent

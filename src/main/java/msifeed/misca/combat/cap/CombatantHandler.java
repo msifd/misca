@@ -37,8 +37,8 @@ public class CombatantHandler implements Capability.IStorage<ICombatant> {
         final NBTTagCompound nbt = new NBTTagCompound();
         if (instance.isInBattle()) {
             nbt.setLong("bid", instance.getBattleId());
-            nbt.setFloat("ap", instance.getActionPoints());
-            nbt.setFloat("apo", instance.getActionPointsOverhead());
+            nbt.setFloat("ap", (float) instance.getActionPoints());
+            nbt.setFloat("apo", (float) instance.getActionPointsOverhead());
             nbt.setDouble("posX", instance.getPosition().x);
             nbt.setDouble("posY", instance.getPosition().y);
             nbt.setDouble("posZ", instance.getPosition().z);
