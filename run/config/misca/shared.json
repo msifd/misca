@@ -25,5 +25,11 @@
         "dice": 0
       }
     }
+  },
+  "locks": {
+    "tileless": {
+      "minecraft:trapdoor": "single",
+      "minecraft:wooden_door": "door"
+    }
   }
 }

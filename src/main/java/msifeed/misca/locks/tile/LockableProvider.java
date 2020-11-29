@@ -1,7 +1,6 @@
-package msifeed.misca.locks;
+package msifeed.misca.locks.tile;
 
 import net.minecraft.nbt.NBTBase;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraftforge.common.capabilities.Capability;
@@ -19,23 +18,9 @@ public class LockableProvider implements ICapabilitySerializable<NBTBase> {
     private final Capability.IStorage<ILockable> storage = CAP.getStorage();
     private final ILockable instance = Objects.requireNonNull(CAP.getDefaultInstance());
 
-    public static boolean has(TileEntity tile) {
-        return tile.hasCapability(LockableProvider.CAP, null);
-    }
-
     @Nullable
     public static ILockable get(TileEntity tile) {
         return tile.getCapability(LockableProvider.CAP, null);
-    }
-
-    public static NBTTagCompound encode(ILockable cap) {
-        return (NBTTagCompound) CAP.getStorage().writeNBT(CAP, cap, null);
-    }
-
-    public static ILockable decode(NBTTagCompound nbt) {
-        final ILockable cap = CAP.getDefaultInstance();
-        CAP.getStorage().readNBT(CAP, cap, null, nbt);
-        return cap;
     }
 
     @Override

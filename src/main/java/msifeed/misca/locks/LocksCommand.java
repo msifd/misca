@@ -1,11 +1,12 @@
 package msifeed.misca.locks;
 
+import msifeed.misca.locks.tile.ILockable;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
@@ -54,81 +55,45 @@ public class LocksCommand extends CommandBase {
     }
 
     private static void toggle(EntityPlayerMP player, String key) {
-        final TileEntity tile = rayTraceTile(player);
-        if (tile == null) return;
+        final BlockPos pos = rayTracePos(player);
+        if (pos == null) return;
 
-        final ILockable lock = LockableProvider.get(tile);
-        if (lock == null) return;
-
-        if (!lock.hasSecret()) {
-            sendStatus(player, "Block is not locked!", TextFormatting.RED);
-            return;
+        if (Locks.toggleLock(player.world, pos, key)) {
+            final ILockable lock = Locks.getLock(player.world, pos);
+            sendStatus(player, "Block " + (lock.isLocked() ? "locked" : "opened"), TextFormatting.GREEN);
+        } else {
+            sendStatus(player, "Failed to toggle lock", TextFormatting.RED);
         }
-
-        if (!lock.canOpenWith(key)) {
-            sendStatus(player, "Wrong key!", TextFormatting.RED);
-            return;
-        }
-
-        lock.setLocked(!lock.isLocked());
-        tile.markDirty();
-
-        sendStatus(player, "Block " + (lock.isLocked() ? " locked" : "opened"), TextFormatting.GREEN);
     }
 
     private static void addLock(EntityPlayerMP player, String secret) {
-        // TODO: add tiles to doors
-        final TileEntity tile = rayTraceTile(player);
-        if (tile == null) return;
+        final BlockPos pos = rayTracePos(player);
+        if (pos == null) return;
 
-        final ILockable lock = LockableProvider.get(tile);
-        if (lock == null) return;
-
-        if (lock.isLocked()) {
-            sendStatus(player, "Block is locked!", TextFormatting.RED);
-            return;
-        }
-
-        lock.setLocked(false);
-        lock.setSecret(secret);
-        tile.markDirty();
-
-        sendStatus(player, "Lock added", TextFormatting.GREEN);
+        if (Locks.addLock(player.world, pos, secret))
+            sendStatus(player, "Lock added", TextFormatting.GREEN);
+        else
+            sendStatus(player, "Failed to add lock", TextFormatting.RED);
     }
 
     private static void removeLock(EntityPlayerMP player, @Nullable String key) {
-        final TileEntity tile = rayTraceTile(player);
-        if (tile == null) return;
+        final BlockPos pos = rayTracePos(player);
+        if (pos == null) return;
 
-        final ILockable lock = LockableProvider.get(tile);
-        if (lock == null) return;
-
-        if (lock.isLocked() && lock.hasSecret()) {
-            if (key == null) {
-                sendStatus(player, "Block is locked!", TextFormatting.RED);
-                return;
-            } else if (!lock.canOpenWith(key)){
-                sendStatus(player, "Wrong key!", TextFormatting.RED);
-                return;
-            }
-        }
-
-        // TODO: remove tile from doors (maybe)
-        lock.setLocked(false);
-        lock.setSecret(ILockable.NO_SECRET);
-        tile.markDirty();
-
-        sendStatus(player, "Lock removed", TextFormatting.GREEN);
+        if (Locks.removeLock(player.world, pos))
+            sendStatus(player, "Lock removed", TextFormatting.GREEN);
+        else
+            sendStatus(player, "Failed to remove lock", TextFormatting.RED);
     }
 
-    private static TileEntity rayTraceTile(EntityPlayerMP player) {
+    private static BlockPos rayTracePos(EntityPlayerMP player) {
         final RayTraceResult ray = ForgeHooks.rayTraceEyes(player, 5);
         if (ray == null || ray.typeOfHit != RayTraceResult.Type.BLOCK) {
             sendStatus(player, "Look at block!", TextFormatting.RED);
             return null;
         }
 
-        return player.world.getTileEntity(ray.getBlockPos());
+        return ray.getBlockPos();
     }
 
     private static void sendStatus(EntityPlayerMP player, String message, TextFormatting color) {

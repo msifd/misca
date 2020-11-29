@@ -5,6 +5,7 @@ import com.google.gson.GsonBuilder;
 import msifeed.sys.rpc.RpcChannel;
 import msifeed.sys.rpc.RpcContext;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -23,7 +24,10 @@ public class SyncChannel<T> {
     private final RpcChannel rpc;
     private final String rpcSyncMethod;
     private final Path filePath;
-    private final Gson gson = new GsonBuilder().setPrettyPrinting().create();
+    private final Gson gson = new GsonBuilder()
+            .registerTypeAdapter(ResourceLocation.class, new ResourceLocation.Serializer())
+            .setPrettyPrinting()
+            .create();
 
     private T value;
 

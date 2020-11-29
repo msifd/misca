@@ -1,4 +1,4 @@
-package msifeed.misca.locks;
+package msifeed.misca.locks.tile;
 
 public interface ILockable {
     String NO_SECRET = "";
