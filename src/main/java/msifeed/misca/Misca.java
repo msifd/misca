@@ -9,6 +9,8 @@ import msifeed.misca.combat.CombatCommand;
 import msifeed.misca.combat.cap.CombatantHandler;
 import msifeed.misca.environ.Environ;
 import msifeed.misca.environ.EnvironCommand;
+import msifeed.misca.locks.Locks;
+import msifeed.misca.locks.LocksCommand;
 import msifeed.misca.rename.RenameCommand;
 import msifeed.misca.rename.RenameItems;
 import msifeed.misca.supplies.InvoiceCommand;
@@ -36,6 +38,7 @@ public class Misca {
     private final Chatex chatex = new Chatex();
     private final Combat combat = new Combat();
     private final Environ environ = new Environ();
+    private final Locks locks = new Locks();
 
     private final CharsheetHandler charsheetHandler = new CharsheetHandler();
     private final CombatantHandler combatantHandler = new CombatantHandler();
@@ -49,6 +52,7 @@ public class Misca {
         MiscaThings.init();
         charsheetHandler.preInit();
         combatantHandler.preInit();
+        locks.preInit();
 
         if (FMLCommonHandler.instance().getSide().isClient())
             MiscaClient.INSTANCE.preInit();
@@ -59,6 +63,7 @@ public class Misca {
         chatex.init();
         combat.init();
         environ.init();
+        locks.init();
 
         charsheetHandler.init();
         MiscaPerms.register();
@@ -83,5 +88,6 @@ public class Misca {
         event.registerServerCommand(new RenameCommand());
         event.registerServerCommand(new EnvironCommand());
         event.registerServerCommand(new CombatCommand());
+        event.registerServerCommand(new LocksCommand());
     }
 }
