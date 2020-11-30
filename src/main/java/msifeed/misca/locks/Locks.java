@@ -31,6 +31,7 @@ import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.event.world.ChunkEvent;
 import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import javax.annotation.Nullable;
@@ -68,7 +69,7 @@ public class Locks {
             ILockRpc.requestChunkLocks(event.getChunk());
     }
 
-    @SubscribeEvent
+    @SubscribeEvent(priority = EventPriority.HIGH)
     public void onBlockInteract(PlayerInteractEvent.RightClickBlock event) {
         final ILockable lock = getLock(event.getWorld(), event.getPos());
         if (lock == null) return;
@@ -82,8 +83,7 @@ public class Locks {
         }
     }
 
-
-    @SubscribeEvent
+    @SubscribeEvent(priority = EventPriority.HIGH)
     public void onBlockBreak(BlockEvent.BreakEvent event) {
         final ILockable lock = getLock(event.getWorld(), event.getPos());
         if (lock == null) return;
@@ -95,7 +95,7 @@ public class Locks {
         }
     }
 
-    @SubscribeEvent
+    @SubscribeEvent(priority = EventPriority.HIGH)
     public void onBlockBreakSpeed(PlayerEvent.BreakSpeed event) {
         final ILockable lock = getLock(event.getEntityPlayer().world, event.getPos());
         if (lock != null && lock.isLocked()) {
