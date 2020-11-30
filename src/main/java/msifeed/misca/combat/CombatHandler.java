@@ -69,6 +69,8 @@ public class CombatHandler {
         if (!(src.getTrueSource() instanceof EntityLivingBase)) return;
 
         final EntityLivingBase srcEntity = (EntityLivingBase) src.getTrueSource();
+        if (!CombatantProvider.get(srcEntity).isInBattle()) return;
+
         checkChances(event, srcEntity);
         checkActionPoints(event, srcEntity);
         updateTurn(srcEntity);

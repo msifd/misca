@@ -1,5 +1,6 @@
 package msifeed.misca.combat.client;
 
+import msifeed.misca.MiscaConfig;
 import msifeed.misca.combat.Combat;
 import msifeed.misca.combat.battle.Battle;
 import msifeed.misca.combat.cap.CombatantProvider;
@@ -24,8 +25,8 @@ import java.util.stream.Collectors;
 public class GuiCombatOverlay {
     @SubscribeEvent
     public void onRenderOverlay(RenderGameOverlayEvent.Post event) {
+        if (!MiscaConfig.combatDebug) return;
         if (event.getType() != RenderGameOverlayEvent.ElementType.ALL) return;
-
 
         final EntityPlayer player = Minecraft.getMinecraft().player;
         if (player.getHeldItemMainhand().isEmpty()) return;
@@ -76,11 +77,11 @@ public class GuiCombatOverlay {
         if (!com.isInBattle()) return;
 
         renderTextAt("pos", com.getPosition().x, com.getPosition().y + 1, com.getPosition().z, true);
-
     }
 
     @SubscribeEvent
     public void onRenderEntity(RenderLivingEvent.Post<EntityLivingBase> event) {
+        if (!MiscaConfig.combatDebug) return;
         final EntityLivingBase entity = event.getEntity();
 
         final String hpStr = String.format("%.1f/%.1f", entity.getHealth(), entity.getMaxHealth());
