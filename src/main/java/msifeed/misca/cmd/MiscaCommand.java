@@ -41,6 +41,11 @@ public class MiscaCommand extends CommandBase {
 
     @Override
     public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
+        if (args.length < 1) {
+            sender.sendMessage(new TextComponentString(getUsage(sender)));
+            return;
+        }
+
         switch (args[0]) {
             case "config":
                 syncConfig(sender);

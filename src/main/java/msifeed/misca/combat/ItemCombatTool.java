@@ -29,6 +29,7 @@ public class ItemCombatTool extends Item {
         return true;
     }
 
+    @SideOnly(Side.CLIENT)
     @Override
     public boolean itemInteractionForEntity(ItemStack stack, EntityPlayer playerIn, EntityLivingBase target, EnumHand hand) {
         if (MiscaPerms.isGameMaster(playerIn)) return false;

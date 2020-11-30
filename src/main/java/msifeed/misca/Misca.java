@@ -11,7 +11,6 @@ import msifeed.misca.environ.Environ;
 import msifeed.misca.environ.EnvironCommand;
 import msifeed.misca.locks.Locks;
 import msifeed.misca.locks.LocksCommand;
-import msifeed.misca.rename.RenameCommand;
 import msifeed.misca.rename.RenameItems;
 import msifeed.misca.supplies.BackgroundSupplies;
 import msifeed.misca.supplies.InvoiceCommand;
@@ -87,7 +86,7 @@ public class Misca {
         chatex.registerCommands(event);
         event.registerServerCommand(new MiscaCommand());
         event.registerServerCommand(new RollCommand());
-        event.registerServerCommand(new RenameCommand());
+//        event.registerServerCommand(new RenameCommand());
         event.registerServerCommand(new EnvironCommand());
         event.registerServerCommand(new CombatCommand());
         event.registerServerCommand(new LocksCommand());
