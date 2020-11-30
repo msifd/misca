@@ -2,7 +2,6 @@ package msifeed.misca.genesis.blocks.tiles;
 
 import msifeed.misca.Misca;
 import msifeed.misca.genesis.blocks.BlockRule;
-import msifeed.misca.supplies.SuppliesInvoice;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
@@ -22,7 +21,6 @@ public class TileEntityGenesisContainer extends TileEntityLockable {
 
     private int capacity;
     private NonNullList<ItemStack> content;
-    private SuppliesInvoice invoice;
 
     private int numPlayersUsing;
 
@@ -33,16 +31,6 @@ public class TileEntityGenesisContainer extends TileEntityLockable {
     public TileEntityGenesisContainer(BlockRule rule) {
         this.capacity = rule.containerCapacity;
         this.content = NonNullList.<ItemStack>withSize(rule.containerCapacity, ItemStack.EMPTY);
-    }
-
-    public SuppliesInvoice getInvoice() {
-        return invoice;
-    }
-
-    public void setInvoice(SuppliesInvoice invoice) {
-        this.invoice = invoice;
-        this.invoice.lastDelivery = System.currentTimeMillis();
-        markDirty();
     }
 
     public List<ItemStack> getItems() {
@@ -56,11 +44,6 @@ public class TileEntityGenesisContainer extends TileEntityLockable {
         this.capacity = compound.getInteger("Capacity");
         this.content = NonNullList.withSize(capacity, ItemStack.EMPTY);
         ItemStackHelper.loadAllItems(compound, content);
-
-        if (compound.hasKey("Invoice")) {
-            this.invoice = new SuppliesInvoice();
-            invoice.readFromNBT(compound.getCompoundTag("Invoice"));
-        }
     }
 
     @Override
@@ -69,12 +52,6 @@ public class TileEntityGenesisContainer extends TileEntityLockable {
 
         compound.setInteger("Capacity", capacity);
         ItemStackHelper.saveAllItems(compound, content);
-
-        if (invoice != null) {
-            final NBTTagCompound inv = new NBTTagCompound();
-            invoice.writeToNBT(inv);
-            compound.setTag("Invoice", inv);
-        }
 
         return compound;
     }
@@ -134,9 +111,6 @@ public class TileEntityGenesisContainer extends TileEntityLockable {
     public void openInventory(EntityPlayer player) {
         if (player.isSpectator())
             return;
-
-        if (invoice != null && !this.world.isRemote)
-            invoice.deliver(this);
 
         if (this.numPlayersUsing < 0)
             this.numPlayersUsing = 0;
