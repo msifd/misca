@@ -3,8 +3,8 @@ package msifeed.misca.combat.battle;
 import msifeed.misca.charsheet.cap.CharsheetProvider;
 import msifeed.misca.charsheet.cap.ICharsheet;
 import msifeed.misca.combat.Combat;
-import msifeed.misca.combat.cap.CombatantHandler;
 import msifeed.misca.combat.cap.CombatantProvider;
+import msifeed.misca.combat.cap.CombatantSync;
 import msifeed.misca.combat.cap.ICombatant;
 import msifeed.misca.combat.rules.Rules;
 import net.minecraft.entity.EntityLiving;
@@ -98,7 +98,7 @@ public class Battle {
                     com.setActionPoints(0);
                     com.setActionPointsOverhead(0);
                     com.setPosition(entity.getPositionVector());
-                    CombatantHandler.sync(entity);
+                    CombatantSync.sync(entity);
                 });
 
         prepareLeader();
@@ -140,7 +140,7 @@ public class Battle {
             if (turnExpired)
                 finishTurn();
 
-            CombatantHandler.sync(leader);
+            CombatantSync.sync(leader);
         } else {
             finishTurn();
         }
@@ -180,7 +180,7 @@ public class Battle {
         final ICombatant com = CombatantProvider.get(leader);
         com.setActionPoints(com.getActionPoints() + Rules.actionPointsPerMove(cs));
         com.setPosition(leader.getPositionVector());
-        CombatantHandler.sync(leader);
+        CombatantSync.sync(leader);
 
         if (leader instanceof EntityPlayer) {
             final ITextComponent tc = new TextComponentString("your turn");
@@ -216,7 +216,7 @@ public class Battle {
         com.setPosition(entity.getPositionVector());
         if (training)
             com.setTrainingHealth(entity.getHealth());
-        CombatantHandler.sync(entity);
+        CombatantSync.sync(entity);
     }
 
     public void updateEntity(EntityLivingBase entity) {
@@ -252,14 +252,14 @@ public class Battle {
 
         final ICombatant com = CombatantProvider.get(entity);
         com.reset();
-        CombatantHandler.sync(entity);
+        CombatantSync.sync(entity);
     }
 
     private void restoreHealth(EntityLivingBase entity) {
         final ICombatant com = CombatantProvider.get(entity);
         entity.setHealth(com.getTrainingHealth());
         com.setTrainingHealth(0);
-        CombatantHandler.sync(entity);
+        CombatantSync.sync(entity);
     }
 
     private void setMobAI(EntityLivingBase entity, boolean enabled) {

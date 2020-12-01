@@ -17,6 +17,7 @@ public class BattleManager {
 
     @Nullable
     public Battle getEntityBattle(EntityLivingBase entity) {
+        if (entity == null) return null;
         return getBattle(CombatantProvider.get(entity).getBattleId());
     }
 

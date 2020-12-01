@@ -36,16 +36,17 @@ public class CombatHandler {
         if (!(src.getTrueSource() instanceof EntityLivingBase)) return;
 
         final EntityLivingBase srcEntity = (EntityLivingBase) src.getTrueSource();
-        final Battle battle = Combat.MANAGER.getEntityBattle(srcEntity);
-        if (battle == null) return;
+        final ICombatant com = CombatantProvider.get(srcEntity);
+        if (!com.isInBattle()) return;
 
+        final Battle battle = Combat.MANAGER.getBattle(com.getBattleId());
+        if (battle == null) return;
         if (!battle.isLeader(srcEntity.getUniqueID())) {
             event.setCanceled(true);
             notifyActionBar("not your turn", srcEntity);
             return;
         }
 
-        final ICombatant com = CombatantProvider.get(srcEntity);
         final double movementAp = Rules.movementActionPoints(com.getPosition(), srcEntity.getPositionVector());
         final double attackAp = Rules.attackActionPoints(srcEntity);
         final double totalAp = movementAp + attackAp;
@@ -69,10 +70,11 @@ public class CombatHandler {
         if (!(src.getTrueSource() instanceof EntityLivingBase)) return;
 
         final EntityLivingBase srcEntity = (EntityLivingBase) src.getTrueSource();
-        if (!CombatantProvider.get(srcEntity).isInBattle()) return;
+        final ICombatant srcCom = CombatantProvider.get(srcEntity);
+        if (!srcCom.isInBattle()) return;
 
         checkChances(event, srcEntity);
-        checkActionPoints(event, srcEntity);
+        checkActionPoints(event, srcEntity, srcCom);
         updateTurn(srcEntity);
     }
 
@@ -114,8 +116,7 @@ public class CombatHandler {
         }
     }
 
-    private void checkActionPoints(LivingHurtEvent event, EntityLivingBase entity) {
-        final ICombatant com = CombatantProvider.get(entity);
+    private void checkActionPoints(LivingHurtEvent event, EntityLivingBase entity, ICombatant com) {
         final double requiredAp = com.getActionPointsOverhead() + Rules.attackActionPoints(entity);
         if (com.getActionPoints() < requiredAp)
             event.setCanceled(true);

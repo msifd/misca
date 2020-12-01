@@ -31,10 +31,10 @@ public class GuiCombatOverlay {
         final EntityPlayer player = Minecraft.getMinecraft().player;
         if (player.getHeldItemMainhand().isEmpty()) return;
 
-        final Battle battle = Combat.MANAGER.getEntityBattle(player);
+        final ICombatant com = CombatantProvider.get(player);
+        final Battle battle = Combat.MANAGER.getBattle(com.getBattleId());
         if (battle == null) return;
 
-        final ICombatant com = CombatantProvider.get(player);
         final String joinedQueue = battle.getQueue().stream()
                 .map(uuid -> uuidToEntityName(player.world, uuid))
                 .collect(Collectors.joining(", "));

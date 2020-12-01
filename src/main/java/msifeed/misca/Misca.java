@@ -6,7 +6,6 @@ import msifeed.misca.cmd.MiscaCommand;
 import msifeed.misca.cmd.RollCommand;
 import msifeed.misca.combat.Combat;
 import msifeed.misca.combat.CombatCommand;
-import msifeed.misca.combat.cap.CombatantHandler;
 import msifeed.misca.environ.Environ;
 import msifeed.misca.environ.EnvironCommand;
 import msifeed.misca.locks.Locks;
@@ -25,11 +24,10 @@ import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 
 import java.nio.file.Paths;
 
-@Mod(modid = Misca.MODID, name = Misca.NAME, version = Misca.VERSION)
+@Mod(modid = Misca.MODID, name = Misca.NAME)
 public class Misca {
     public static final String MODID = "misca";
     public static final String NAME = "Misca";
-    public static final String VERSION = "2.0";
 
     public static final RpcChannel RPC = new RpcChannel(MODID + ":rpc");
     public static final SyncChannel<MiscaSharedConfig> SHARED
@@ -42,7 +40,6 @@ public class Misca {
     private final BackgroundSupplies supplies = new BackgroundSupplies();
 
     private final CharsheetHandler charsheetHandler = new CharsheetHandler();
-    private final CombatantHandler combatantHandler = new CombatantHandler();
 
     public static MiscaSharedConfig getSharedConfig() {
         return SHARED.get();
@@ -51,8 +48,8 @@ public class Misca {
     @EventHandler
     public void preInit(FMLPreInitializationEvent event) {
         MiscaThings.init();
+        combat.preInit();
         charsheetHandler.preInit();
-        combatantHandler.preInit();
         locks.preInit();
         supplies.preInit();
 

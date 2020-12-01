@@ -1,10 +1,14 @@
 package msifeed.misca.combat.cap;
 
+import msifeed.misca.Misca;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.Vec3d;
 
 import javax.annotation.Nonnull;
 
 public interface ICombatant {
+    ResourceLocation KEY = new ResourceLocation(Misca.MODID, "combat");
+
     default boolean isInBattle() {
         return getBattleId() != 0;
     }

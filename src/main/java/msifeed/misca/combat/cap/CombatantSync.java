@@ -1,23 +1,43 @@
 package msifeed.misca.combat.cap;
 
+import msifeed.misca.Misca;
 import msifeed.sys.rpc.RpcContext;
 import msifeed.sys.rpc.RpcMethodHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.UUID;
 
-public class CombatantClientRpc {
-    public static final String post = "combatant.post";
+public class CombatantSync {
     public static final String sync = "combatant.sync";
     public static final String syncSelf = "combatant.syncSelf";
 
+    public static void sync(EntityPlayerMP receiver, EntityLivingBase target) {
+        final NBTTagCompound nbt = CombatantProvider.encode(CombatantProvider.get(target));
+        if (receiver == target)
+            Misca.RPC.sendTo(receiver, CombatantSync.syncSelf, nbt);
+        else
+            Misca.RPC.sendTo(receiver, CombatantSync.sync, target.getUniqueID(), nbt);
+    }
+
+    public static void sync(EntityLivingBase target) {
+        final NBTTagCompound nbt = CombatantProvider.encode(CombatantProvider.get(target));
+        if (target instanceof EntityPlayerMP)
+            Misca.RPC.sendTo((EntityPlayerMP) target, CombatantSync.syncSelf, nbt);
+        Misca.RPC.sendToAllTracking(target, CombatantSync.sync, target.getUniqueID(), nbt);
+    }
+
+    @SideOnly(Side.CLIENT)
     @RpcMethodHandler(syncSelf)
     public void onSyncSelf(RpcContext ctx, NBTTagCompound nbt) {
         update(Minecraft.getMinecraft().player, nbt);
     }
 
+    @SideOnly(Side.CLIENT)
     @RpcMethodHandler(sync)
     public void onSync(RpcContext ctx, UUID uuid, NBTTagCompound nbt) {
         Minecraft.getMinecraft().world.loadedEntityList.stream()
@@ -27,6 +47,7 @@ public class CombatantClientRpc {
                 .ifPresent(e -> update((EntityLivingBase) e, nbt));
     }
 
+    @SideOnly(Side.CLIENT)
     private void update(EntityLivingBase target, NBTTagCompound nbt) {
         CombatantProvider.get(target).replaceWith(CombatantProvider.decode(nbt));
     }
