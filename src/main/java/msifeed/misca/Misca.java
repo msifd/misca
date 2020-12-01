@@ -1,6 +1,6 @@
 package msifeed.misca;
 
-import msifeed.misca.charsheet.cap.CharsheetHandler;
+import msifeed.misca.charsheet.CharsheetProvider;
 import msifeed.misca.chatex.Chatex;
 import msifeed.misca.cmd.MiscaCommand;
 import msifeed.misca.cmd.RollCommand;
@@ -39,8 +39,6 @@ public class Misca {
     private final Locks locks = new Locks();
     private final BackgroundSupplies supplies = new BackgroundSupplies();
 
-    private final CharsheetHandler charsheetHandler = new CharsheetHandler();
-
     public static MiscaSharedConfig getSharedConfig() {
         return SHARED.get();
     }
@@ -48,8 +46,8 @@ public class Misca {
     @EventHandler
     public void preInit(FMLPreInitializationEvent event) {
         MiscaThings.init();
+        CharsheetProvider.preInit();
         combat.preInit();
-        charsheetHandler.preInit();
         locks.preInit();
         supplies.preInit();
 
@@ -64,7 +62,6 @@ public class Misca {
         environ.init();
         locks.init();
 
-        charsheetHandler.init();
         MiscaPerms.register();
         RenameItems.register();
 

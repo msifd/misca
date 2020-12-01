@@ -1,7 +1,7 @@
 package msifeed.misca.combat.battle;
 
-import msifeed.misca.charsheet.cap.CharsheetProvider;
-import msifeed.misca.charsheet.cap.ICharsheet;
+import msifeed.misca.charsheet.CharsheetProvider;
+import msifeed.misca.charsheet.ICharsheet;
 import msifeed.misca.combat.cap.CombatantProvider;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;

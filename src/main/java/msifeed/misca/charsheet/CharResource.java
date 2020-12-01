@@ -1,4 +1,4 @@
-package msifeed.misca.charsheet.cap;
+package msifeed.misca.charsheet;
 
 public enum CharResource {
     est, ord, seal

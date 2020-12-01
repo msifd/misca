@@ -1,11 +1,14 @@
-package msifeed.misca.charsheet.cap;
+package msifeed.misca.charsheet;
 
+import msifeed.misca.Misca;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
+import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.common.capabilities.ICapabilitySerializable;
 
 import javax.annotation.Nonnull;
@@ -18,6 +21,12 @@ public class CharsheetProvider implements ICapabilitySerializable<NBTBase> {
 
     private final Capability.IStorage<ICharsheet> storage = CAP.getStorage();
     private final ICharsheet instance = Objects.requireNonNull(CAP.getDefaultInstance());
+
+    public static void preInit() {
+        CapabilityManager.INSTANCE.register(ICharsheet.class, new CharsheetStorage(), Charsheet::new);
+        MinecraftForge.EVENT_BUS.register(new CharsheetEventHandler());
+        Misca.RPC.register(new CharsheetSync());
+    }
 
     @Nonnull
     public static ICharsheet get(EntityLivingBase entity) {

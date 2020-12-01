@@ -1,7 +1,7 @@
 package msifeed.misca.chatex.client;
 
-import msifeed.misca.charsheet.cap.CharsheetProvider;
-import msifeed.misca.charsheet.cap.ICharsheet;
+import msifeed.misca.charsheet.CharsheetProvider;
+import msifeed.misca.charsheet.ICharsheet;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.client.event.RenderLivingEvent;

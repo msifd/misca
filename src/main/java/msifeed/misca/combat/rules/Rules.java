@@ -1,7 +1,7 @@
 package msifeed.misca.combat.rules;
 
-import msifeed.misca.charsheet.cap.CharAttribute;
-import msifeed.misca.charsheet.cap.ICharsheet;
+import msifeed.misca.charsheet.CharAttribute;
+import msifeed.misca.charsheet.ICharsheet;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.attributes.IAttributeInstance;

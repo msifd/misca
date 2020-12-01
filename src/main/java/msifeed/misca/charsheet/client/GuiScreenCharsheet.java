@@ -1,8 +1,9 @@
 package msifeed.misca.charsheet.client;
 
-import msifeed.misca.charsheet.cap.CharAttribute;
-import msifeed.misca.charsheet.cap.CharsheetProvider;
-import msifeed.misca.charsheet.cap.ICharsheet;
+import msifeed.misca.charsheet.CharAttribute;
+import msifeed.misca.charsheet.CharsheetProvider;
+import msifeed.misca.charsheet.CharsheetSync;
+import msifeed.misca.charsheet.ICharsheet;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
@@ -64,7 +65,7 @@ public class GuiScreenCharsheet extends GuiScreen {
                     charsheet.attrs().set(attr, input.isEmpty() ? 0 : Integer.parseInt(input));
                 }
 
-                CharsheetClientRpc.postCharsheet(player, charsheet);
+                CharsheetSync.post(player, charsheet);
                 Minecraft.getMinecraft().displayGuiScreen(null);
                 break;
             case 1:
