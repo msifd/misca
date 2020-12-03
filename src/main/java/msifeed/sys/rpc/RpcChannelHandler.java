@@ -8,12 +8,12 @@ import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 
 public class RpcChannelHandler extends SimpleChannelInboundHandler<RpcMessage> {
-    private final RpcChannel rpc;
+    private final RpcHandlerRegistry registry;
     private final Side side;
 
-    public RpcChannelHandler(RpcChannel rpc, Side side) {
+    public RpcChannelHandler(RpcHandlerRegistry registry, Side side) {
         super(RpcMessage.class);
-        this.rpc = rpc;
+        this.registry = registry;
         this.side = side;
     }
 
@@ -21,7 +21,7 @@ public class RpcChannelHandler extends SimpleChannelInboundHandler<RpcMessage> {
     protected void channelRead0(ChannelHandlerContext ctx, RpcMessage msg) throws Exception {
         final INetHandler netHandler = ctx.channel().attr(NetworkRegistry.NET_HANDLER).get();
         FMLCommonHandler.instance().getWorldThread(netHandler).addScheduledTask(() -> {
-            rpc.invoke(msg, netHandler, side);
+            registry.invoke(msg, netHandler, side);
         });
     }
 }

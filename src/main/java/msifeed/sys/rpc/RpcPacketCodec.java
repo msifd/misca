@@ -15,9 +15,11 @@ import java.util.List;
 
 @ChannelHandler.Sharable
 public class RpcPacketCodec extends MessageToMessageCodec<FMLProxyPacket, RpcMessage> {
+    private final RpcHandlerRegistry registry;
     private final RpcCodec codec;
 
-    public RpcPacketCodec(RpcCodec codec) {
+    public RpcPacketCodec(RpcHandlerRegistry registry, RpcCodec codec) {
+        this.registry = registry;
         this.codec = codec;
     }
 
@@ -48,7 +50,7 @@ public class RpcPacketCodec extends MessageToMessageCodec<FMLProxyPacket, RpcMes
             return;
         }
 
-        final RpcMessage message = new RpcMessage(codec, payload);
+        final RpcMessage message = new RpcMessage(registry, codec, payload);
         ctx.channel().attr(FMLIndexedMessageToMessageCodec.INBOUNDPACKETTRACKER).get().set(new WeakReference<>(msg));
         out.add(message);
     }

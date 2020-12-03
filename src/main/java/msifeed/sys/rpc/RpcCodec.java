@@ -9,7 +9,6 @@ import net.minecraftforge.fml.common.network.ByteBufUtils;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.UUID;
 import java.util.function.BiConsumer;
@@ -18,7 +17,6 @@ import java.util.zip.DeflaterOutputStream;
 import java.util.zip.InflaterOutputStream;
 
 public class RpcCodec {
-    private final ArrayList<TypeCodec<?>> codecsById = new ArrayList<>(Byte.MAX_VALUE);
     private final HashMap<Class<?>, TypeCodec<?>> codecsByType = new HashMap<>();
 
     public RpcCodec() {
@@ -63,25 +61,18 @@ public class RpcCodec {
         final TypeCodec<T> codec = (TypeCodec<T>) codecsByType.get(objType);
         if (codec == null)
             throw new RuntimeException(String.format("Unknown codec for type '%s'", objType.getName()));
-        buf.writeByte(codec.id);
         codec.encoder.accept(buf, obj);
     }
 
-    public Object decode(ByteBuf buf) {
-        final int id = buf.readByte();
-        if (id < 0 || id >= codecsById.size())
-            throw new RuntimeException(String.format("Invalid codec id '%d'", id));
-        final TypeCodec<?> codec = codecsById.get(id);
-        return codec.decoder.apply(buf);
+    public <T> Object decode(Class<T> type, ByteBuf buf) {
+        return codecsByType.get(type).decoder.apply(buf);
     }
 
     public <T> void addType(Class<T> type, BiConsumer<ByteBuf, T> encoder, Function<ByteBuf, T> decoder) {
         if (hasCodecForType(type))
             throw new RuntimeException(String.format("Duplicate codec for type '%s'", type.getName()));
 
-        final int id = codecsById.size();
-        final TypeCodec<T> codec = new TypeCodec<>(id, type, encoder, decoder);
-        codecsById.add(codec);
+        final TypeCodec<T> codec = new TypeCodec<>(type, encoder, decoder);
         codecsByType.put(type, codec);
 
         if (Primitives.isWrapperType(type))
@@ -89,6 +80,9 @@ public class RpcCodec {
     }
 
     public <T> void addAlias(Class<? extends T> type, Class<T> alias) {
+        if (hasCodecForType(type))
+            throw new RuntimeException(String.format("Duplicate codec for type '%s'", type.getName()));
+
         final TypeCodec<T> codec = (TypeCodec<T>) codecsByType.get(alias);
         if (codec == null)
             throw new RuntimeException(String.format("Unknown codec for alias '%s'", alias.getName()));
@@ -123,13 +117,11 @@ public class RpcCodec {
     }
 
     private static class TypeCodec<T> {
-        public final int id;
         public final Class<T> type;
         public final BiConsumer<ByteBuf, T> encoder;
         public final Function<ByteBuf, T> decoder;
 
-        TypeCodec(int id, Class<T> type, BiConsumer<ByteBuf, T> enc, Function<ByteBuf, T> dec) {
-            this.id = id;
+        TypeCodec(Class<T> type, BiConsumer<ByteBuf, T> enc, Function<ByteBuf, T> dec) {
             this.type = type;
             this.encoder = enc;
             this.decoder = dec;

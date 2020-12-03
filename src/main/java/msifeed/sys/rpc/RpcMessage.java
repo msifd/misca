@@ -13,11 +13,18 @@ public class RpcMessage {
         this.args = args;
     }
 
-    RpcMessage(RpcCodec codec, ByteBuf buf) {
+    RpcMessage(RpcHandlerRegistry registry, RpcCodec codec, ByteBuf buf) throws Exception {
         method = ByteBufUtils.readUTF8String(buf);
         args = new Object[buf.readByte()];
+
+        final Class<?>[] params = registry.getMethodParams(method);
+        if (params == null)
+            throw new Exception("Unknown RPC method: " + method);
+        if (args.length != params.length)
+            throw new Exception(String.format("Invalid RPC arg number exp %d, got %d", params.length, args.length));
+
         for (int i = 0; i < args.length; i++)
-            args[i] = codec.decode(buf);
+            args[i] = codec.decode(params[i], buf);
     }
 
     ByteBuf encode(RpcCodec codec) {
