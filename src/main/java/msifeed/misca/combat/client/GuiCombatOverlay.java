@@ -11,6 +11,7 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderLivingEvent;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
@@ -35,6 +36,8 @@ public class GuiCombatOverlay {
         if (!com.isInBattle()) return;
         final BattleStateClient state = BattleStateClient.INSTANCE;
 
+        final Vec3d pos = com.getPosition();
+
         final String joinedMembers = state.getMembers().entrySet().stream()
                 .map(GuiCombatOverlay::getMemberEntryName)
                 .collect(Collectors.joining(", "));
@@ -42,6 +45,7 @@ public class GuiCombatOverlay {
                 .map(GuiCombatOverlay::getMemberName)
                 .collect(Collectors.joining(", "));
         final String leaderName = getNameOrUuid(state.getLeaderUuid(), state.getMember(state.getLeaderUuid()));
+        final String posStr = String.format("x: %.2f, y: %.2f, z: %.2f", pos.x, pos.y, pos.z);
         final double moveAp = Rules.movementActionPoints(com.getPosition(), player.getPositionVector());
         final double attackAp = Rules.attackActionPoints(player);
 
@@ -50,8 +54,8 @@ public class GuiCombatOverlay {
                 "queue: " + joinedQueue,
                 "leader: " + leaderName,
                 "----",
-                "action points: " + com.getActionPoints(),
-                "pos: " + com.getPosition(),
+                "action points: " + String.format("%.2f", com.getActionPoints()),
+                "pos: " + posStr,
                 "training hp: " + com.getTrainingHealth(),
                 "----",
                 "MOVEMENT: " + formatActionPoints(moveAp, com.getActionPoints()),
