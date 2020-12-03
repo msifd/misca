@@ -44,7 +44,7 @@ public class RpcPacketCodec extends MessageToMessageCodec<FMLProxyPacket, RpcMes
 
     @Override
     protected void decode(ChannelHandlerContext ctx, FMLProxyPacket msg, List<Object> out) throws Exception {
-        final ByteBuf payload = msg.payload();
+        final ByteBuf payload = msg.payload().duplicate();
         if (payload.readableBytes() < 1) {
             FMLLog.log.error("The RpcPacketCodec has received an empty buffer on channel {}, likely a result of a LAN server issue. Pipeline parts : {}", ctx.channel().attr(NetworkRegistry.FML_CHANNEL), ctx.pipeline().toString());
             return;
@@ -53,5 +53,6 @@ public class RpcPacketCodec extends MessageToMessageCodec<FMLProxyPacket, RpcMes
         final RpcMessage message = new RpcMessage(registry, codec, payload);
         ctx.channel().attr(FMLIndexedMessageToMessageCodec.INBOUNDPACKETTRACKER).get().set(new WeakReference<>(msg));
         out.add(message);
+        payload.release();
     }
 }
