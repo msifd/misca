@@ -2,8 +2,8 @@ package msifeed.misca.combat;
 
 import msifeed.misca.Misca;
 import msifeed.misca.combat.battle.BattleManager;
+import msifeed.misca.combat.battle.BattleStateSync;
 import msifeed.misca.combat.cap.*;
-import msifeed.misca.combat.rpc.CombatServerRpc;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.fml.common.FMLCommonHandler;
@@ -20,11 +20,9 @@ public class Combat {
         MinecraftForge.EVENT_BUS.register(MANAGER);
         MinecraftForge.EVENT_BUS.register(new CombatHandler());
 
-        Misca.RPC.register(new CombatServerRpc(MANAGER));
-
         if (FMLCommonHandler.instance().getSide().isClient()) {
             Misca.RPC.register(new CombatantSync());
-            Misca.RPC.register(new CombatServerRpc(MANAGER));
+            Misca.RPC.register(new BattleStateSync());
         }
     }
 }

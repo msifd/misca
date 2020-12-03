@@ -11,7 +11,9 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
 
+import java.lang.ref.WeakReference;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -41,11 +43,8 @@ public class CombatCommand extends CommandBase {
                     .map(Optional::get)
                     .map(Entity::getName)
                     .collect(Collectors.toList());
-            final List<String> members = battle.getMembers().stream()
-                    .map(uuid -> uuidToEntity(player.world, uuid))
-                    .filter(Optional::isPresent)
-                    .map(Optional::get)
-                    .map(Entity::getName)
+            final List<String> members = battle.getMembers().entrySet().stream()
+                    .map(CombatCommand::getEntityName)
                     .collect(Collectors.toList());
             final String leader = uuidToEntity(player.world, battle.getLeader()).map(Entity::getName).orElse("dunno");
             player.sendStatusMessage(new TextComponentString("training: " + battle.isTraining()), false);
@@ -119,5 +118,13 @@ public class CombatCommand extends CommandBase {
                 .filter(e -> e.getUniqueID().equals(uuid))
                 .findAny()
                 .map(e -> (EntityLivingBase) e);
+    }
+
+    private static String getEntityName(Map.Entry<UUID, WeakReference<EntityLivingBase>> entry) {
+        final EntityLivingBase entity = entry.getValue().get();
+        if (entity != null)
+            return entity.getName();
+        else
+            return entry.getKey().toString().substring(0, 6);
     }
 }

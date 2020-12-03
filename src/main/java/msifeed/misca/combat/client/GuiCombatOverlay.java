@@ -1,8 +1,7 @@
 package msifeed.misca.combat.client;
 
 import msifeed.misca.MiscaConfig;
-import msifeed.misca.combat.Combat;
-import msifeed.misca.combat.battle.Battle;
+import msifeed.misca.combat.battle.BattleStateClient;
 import msifeed.misca.combat.cap.CombatantProvider;
 import msifeed.misca.combat.cap.ICombatant;
 import msifeed.misca.combat.rules.Rules;
@@ -10,15 +9,16 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.entity.RenderManager;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.world.World;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderLivingEvent;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
+import javax.annotation.Nullable;
+import java.lang.ref.WeakReference;
+import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -29,25 +29,26 @@ public class GuiCombatOverlay {
         if (event.getType() != RenderGameOverlayEvent.ElementType.ALL) return;
 
         final EntityPlayer player = Minecraft.getMinecraft().player;
-        if (player.getHeldItemMainhand().isEmpty()) return;
+//        if (player.getHeldItemMainhand().isEmpty()) return;
 
         final ICombatant com = CombatantProvider.get(player);
-        final Battle battle = Combat.MANAGER.getBattle(com.getBattleId());
-        if (battle == null) return;
+        if (!com.isInBattle()) return;
+        final BattleStateClient state = BattleStateClient.INSTANCE;
 
-        final String joinedQueue = battle.getQueue().stream()
-                .map(uuid -> uuidToEntityName(player.world, uuid))
+        final String joinedMembers = state.getMembers().entrySet().stream()
+                .map(GuiCombatOverlay::getMemberEntryName)
                 .collect(Collectors.joining(", "));
-        final String joinedMembers = battle.getMembers().stream()
-                .map(uuid -> uuidToEntityName(player.world, uuid))
+        final String joinedQueue = state.getQueue().stream()
+                .map(GuiCombatOverlay::getMemberName)
                 .collect(Collectors.joining(", "));
+        final String leaderName = getNameOrUuid(state.getLeaderUuid(), state.getMember(state.getLeaderUuid()));
         final double moveAp = Rules.movementActionPoints(com.getPosition(), player.getPositionVector());
         final double attackAp = Rules.attackActionPoints(player);
 
         final String[] lines = {
-                "queue: " + joinedQueue,
-                "leader: " + uuidToEntityName(player.world, battle.getLeader()),
                 "members: " + joinedMembers,
+                "queue: " + joinedQueue,
+                "leader: " + leaderName,
                 "----",
                 "action points: " + com.getActionPoints(),
                 "pos: " + com.getPosition(),
@@ -114,13 +115,21 @@ public class GuiCombatOverlay {
         GlStateManager.popMatrix();
     }
 
-    private static String uuidToEntityName(World w, UUID uuid) {
-        if (uuid == null) return "null";
-        return w.loadedEntityList.stream()
-                .filter(e -> e instanceof EntityLivingBase)
-                .filter(e -> e.getUniqueID().equals(uuid))
-                .findAny()
-                .map(Entity::getName)
-                .orElse(uuid.toString());
+    private static String getMemberName(UUID uuid) {
+        return getNameOrUuid(uuid, BattleStateClient.INSTANCE.getMember(uuid));
+    }
+
+    private static String getMemberEntryName(Map.Entry<UUID, WeakReference<EntityLivingBase>> entry) {
+        return getNameOrUuid(entry.getKey(), entry.getValue());
+    }
+
+    private static String getNameOrUuid(@Nullable UUID uuid, @Nullable WeakReference<EntityLivingBase> ref) {
+        final EntityLivingBase entity = ref != null ? ref.get() : null;
+        if (entity != null)
+            return entity.getName();
+        else if (uuid != null)
+            return uuid.toString().substring(0, 6);
+        else
+            return "unknown";
     }
 }

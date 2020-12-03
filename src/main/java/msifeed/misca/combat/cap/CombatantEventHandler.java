@@ -25,7 +25,7 @@ public class CombatantEventHandler {
     @SubscribeEvent
     public void onPlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
         if (!event.player.world.isRemote) {
-            Combat.MANAGER.rejoinToBattle(event.player);
+            Combat.MANAGER.rejoinToBattle((EntityPlayerMP) event.player);
             CombatantSync.sync((EntityPlayerMP) event.player, event.player);
         }
     }

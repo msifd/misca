@@ -10,6 +10,7 @@ import msifeed.misca.combat.rules.Rules;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.ITextComponent;
@@ -20,6 +21,7 @@ import javax.annotation.Nullable;
 import java.lang.ref.Reference;
 import java.lang.ref.WeakReference;
 import java.util.*;
+import java.util.stream.Stream;
 
 public class Battle {
     private final long bid;
@@ -45,14 +47,21 @@ public class Battle {
         return bid;
     }
 
-    public boolean hasPlayerMember() {
-        return members.values().stream()
+    public boolean hasEnoughMembers() {
+        return queue.size() > 1 && members.values().stream()
                 .map(Reference::get)
                 .anyMatch(ref -> ref instanceof EntityPlayer);
     }
 
-    public Collection<UUID> getMembers() {
-        return members.keySet();
+    public Map<UUID, WeakReference<EntityLivingBase>> getMembers() {
+        return members;
+    }
+
+    public Stream<EntityPlayerMP> getPlayers() {
+        return members.values().stream()
+                .map(Reference::get)
+                .filter(e -> e instanceof EntityPlayerMP)
+                .map(e -> (EntityPlayerMP) e);
     }
 
     @Nullable
@@ -175,18 +184,24 @@ public class Battle {
         final EntityLivingBase leader = members.get(getLeader()).get();
         if (leader == null) return;
 
-        setMobAI(leader, true);
         final ICharsheet cs = CharsheetProvider.get(leader);
         final ICombatant com = CombatantProvider.get(leader);
         com.setActionPoints(com.getActionPoints() + Rules.actionPointsPerMove(cs));
         com.setPosition(leader.getPositionVector());
+
         CombatantSync.sync(leader);
+
+//        final Vec3d pos = com.getPosition();
+//        leader.setPositionAndUpdate(pos.x, pos.y, pos.z);
+        setMobAI(leader, true);
 
         if (leader instanceof EntityPlayer) {
             final ITextComponent tc = new TextComponentString("your turn");
             tc.getStyle().setColor(TextFormatting.GREEN);
             ((EntityPlayer) leader).sendStatusMessage(tc, true);
         }
+
+        BattleStateSync.syncQueue(this);
     }
 
     private void consumeActionAp(EntityLivingBase entity, ICombatant com) {
@@ -216,6 +231,10 @@ public class Battle {
         com.setPosition(entity.getPositionVector());
         if (training)
             com.setTrainingHealth(entity.getHealth());
+
+        if (isStarted())
+            setMobAI(entity, false);
+
         CombatantSync.sync(entity);
     }
 
@@ -265,5 +284,9 @@ public class Battle {
     private void setMobAI(EntityLivingBase entity, boolean enabled) {
         if (entity instanceof EntityLiving)
             ((EntityLiving) entity).setNoAI(!enabled);
+    }
+
+    private void notifyQueueUpdate() {
+
     }
 }

@@ -5,6 +5,7 @@ import msifeed.misca.charsheet.ICharsheet;
 import msifeed.misca.combat.cap.CombatantProvider;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
@@ -29,17 +30,19 @@ public class BattleManager {
     public void initBattle(EntityPlayer player, boolean training) {
         if (getEntityBattle(player) != null) return;
 
-        final Battle b = new Battle(training);
-        b.addMember(player);
+        final Battle battle = new Battle(training);
+        battle.addMember(player);
 
-        battles.put(b.getId(), b);
+        battles.put(battle.getId(), battle);
+        BattleStateSync.sync(battle);
     }
 
     public void startBattle(EntityPlayer player) {
         final Battle battle = getEntityBattle(player);
-//        if (battle != null && !battle.isStarted())
-        if (battle != null)
-            battle.start();
+        if (battle == null || battle.isStarted()) return;
+
+        battle.start();
+        BattleStateSync.sync(battle);
     }
 
     public void repositionMembers(EntityLivingBase entity) {
@@ -53,9 +56,11 @@ public class BattleManager {
         if (battle == null) return;
 
         battle.removeMember(entity.getUniqueID());
-        if (!battle.hasPlayerMember() || battle.getMembers().size() < 2) {
+        if (!battle.hasEnoughMembers()) {
             battle.clear();
             battles.remove(battle.getId());
+        } else {
+            BattleStateSync.sync(battle);
         }
     }
 
@@ -79,14 +84,18 @@ public class BattleManager {
         }
 
         final Battle battle = getEntityBattle(player);
-        if (battle != null)
-            battle.addMember(newbie);
+        if (battle == null) return;
+
+        battle.addMember(newbie);
+        BattleStateSync.sync(battle);
     }
 
-    public void rejoinToBattle(EntityPlayer player) {
+    public void rejoinToBattle(EntityPlayerMP player) {
         final Battle battle = getEntityBattle(player);
-        if (battle != null)
-            battle.updateEntity(player);
+        if (battle == null) return;
+
+        battle.updateEntity(player);
+        BattleStateSync.sync(player, battle);
     }
 
     @SubscribeEvent
