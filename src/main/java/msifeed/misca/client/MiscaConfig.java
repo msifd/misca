@@ -1,5 +1,6 @@
-package msifeed.misca;
+package msifeed.misca.client;
 
+import msifeed.misca.Misca;
 import net.minecraftforge.common.config.Config;
 
 @Config(modid = Misca.MODID)

@@ -1,4 +1,4 @@
-package msifeed.misca.tools.client;
+package msifeed.misca.client;
 
 import com.google.gson.GsonBuilder;
 import msifeed.misca.charsheet.CharsheetProvider;

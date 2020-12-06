@@ -1,9 +1,8 @@
-package msifeed.misca;
+package msifeed.misca.client;
 
 import msifeed.misca.charsheet.client.GuiScreenCharsheet;
 import msifeed.misca.combat.client.GuiCombatOverlay;
 import msifeed.misca.combat.client.GuiScreenCombat;
-import msifeed.misca.tools.client.DebugRender;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraftforge.common.MinecraftForge;
@@ -31,6 +30,7 @@ public enum MiscaClient {
         MinecraftForge.EVENT_BUS.register(new DebugRender());
         MinecraftForge.EVENT_BUS.register(new GuiCombatOverlay());
 
+        MiscaTheme.load();
         ClientRegistry.registerKeyBinding(charsheetKey);
         ClientRegistry.registerKeyBinding(combatKey);
     }

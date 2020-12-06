@@ -1,6 +1,6 @@
 package msifeed.misca.combat.client;
 
-import msifeed.misca.MiscaConfig;
+import msifeed.misca.client.MiscaConfig;
 import msifeed.misca.combat.battle.Battle;
 import msifeed.misca.combat.battle.BattleStateClient;
 import msifeed.misca.combat.cap.CombatantProvider;

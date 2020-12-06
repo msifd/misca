@@ -2,6 +2,7 @@ package msifeed.misca;
 
 import msifeed.misca.charsheet.CharsheetProvider;
 import msifeed.misca.chatex.Chatex;
+import msifeed.misca.client.MiscaClient;
 import msifeed.misca.cmd.MiscaCommand;
 import msifeed.misca.cmd.RollCommand;
 import msifeed.misca.combat.Combat;

@@ -13,11 +13,9 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import java.util.Objects;
 
-//@GameRegistry.ObjectHolder(Misca.MODID)
 public enum  MiscaThings {
     INSTANCE;
 
-//    @GameRegistry.ObjectHolder(ItemSuppliesInvoice.ID)
     public static final ItemSuppliesInvoice invoice = new ItemSuppliesInvoice();
 
     public static void init() {
