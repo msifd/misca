@@ -1,6 +1,7 @@
 package msifeed.misca.combat.client;
 
 import msifeed.misca.MiscaConfig;
+import msifeed.misca.combat.battle.Battle;
 import msifeed.misca.combat.battle.BattleStateClient;
 import msifeed.misca.combat.cap.CombatantProvider;
 import msifeed.misca.combat.cap.ICombatant;
@@ -34,7 +35,7 @@ public class GuiCombatOverlay {
 
         final ICombatant com = CombatantProvider.get(player);
         if (!com.isInBattle()) return;
-        final BattleStateClient state = BattleStateClient.INSTANCE;
+        final Battle state = BattleStateClient.STATE;
 
         final Vec3d pos = com.getPosition();
 
@@ -44,10 +45,11 @@ public class GuiCombatOverlay {
         final String joinedQueue = state.getQueue().stream()
                 .map(GuiCombatOverlay::getMemberName)
                 .collect(Collectors.joining(", "));
-        final String leaderName = getNameOrUuid(state.getLeaderUuid(), state.getMember(state.getLeaderUuid()));
+        final String leaderName = getNameOrUuid(state.getLeaderUuid(), state.getLeader());
         final String posStr = String.format("x: %.2f, y: %.2f, z: %.2f", pos.x, pos.y, pos.z);
         final double moveAp = Rules.movementActionPoints(com.getPosition(), player.getPositionVector());
-        final double attackAp = Rules.attackActionPoints(player);
+        final double overheadAp = com.getActionPointsOverhead();
+        final double attackAp = Rules.attackActionPoints(player) + overheadAp;
 
         final String[] lines = {
                 "members: " + joinedMembers,
@@ -59,7 +61,7 @@ public class GuiCombatOverlay {
                 "training hp: " + com.getTrainingHealth(),
                 "----",
                 "MOVEMENT: " + formatActionPoints(moveAp, com.getActionPoints()),
-                "ATTACK: " + formatActionPoints(attackAp, com.getActionPoints()),
+                "ATTACK: " + formatActionPoints(attackAp, com.getActionPoints()) + String.format(" (overhead: %.2f)", overheadAp),
                 "TOTAL: " + formatActionPoints(moveAp + attackAp, com.getActionPoints()) + " / " + com.getActionPoints()
         };
 
@@ -89,7 +91,13 @@ public class GuiCombatOverlay {
         if (!MiscaConfig.combatDebug) return;
         final EntityLivingBase entity = event.getEntity();
 
-        final String hpStr = String.format("%.1f/%.1f", entity.getHealth(), entity.getMaxHealth());
+        final ICombatant com = CombatantProvider.get(entity);
+        final double atkAp = Rules.attackActionPoints(entity) + com.getActionPointsOverhead();
+        final double movAp = Rules.movementActionPoints(com.getPosition(), entity.getPositionVector());
+        final String apStr = String.format("ap: %.1f, atk: %.1f, mov: %.1f", com.getActionPoints(), atkAp, movAp);
+        renderTextAt(apStr, event.getX(), event.getY() + event.getEntity().getEyeHeight() + 0.8, event.getZ(), false);
+
+        final String hpStr = String.format("hp: %.1f/%.1f", entity.getHealth(), entity.getMaxHealth());
         renderTextAt(hpStr, event.getX(), event.getY() + event.getEntity().getEyeHeight() + 0.6, event.getZ(), false);
     }
 
@@ -120,15 +128,15 @@ public class GuiCombatOverlay {
     }
 
     private static String getMemberName(UUID uuid) {
-        return getNameOrUuid(uuid, BattleStateClient.INSTANCE.getMember(uuid));
+        return getNameOrUuid(uuid, BattleStateClient.STATE.getMember(uuid));
     }
 
     private static String getMemberEntryName(Map.Entry<UUID, WeakReference<EntityLivingBase>> entry) {
-        return getNameOrUuid(entry.getKey(), entry.getValue());
+        return getNameOrUuid(entry.getKey(), entry.getValue().get());
     }
 
-    private static String getNameOrUuid(@Nullable UUID uuid, @Nullable WeakReference<EntityLivingBase> ref) {
-        final EntityLivingBase entity = ref != null ? ref.get() : null;
+    private static String getNameOrUuid(@Nullable UUID uuid, @Nullable EntityLivingBase entity) {
+//        final EntityLivingBase entity = ref != null ? ref.get() : null;
         if (entity != null)
             return entity.getName();
         else if (uuid != null)

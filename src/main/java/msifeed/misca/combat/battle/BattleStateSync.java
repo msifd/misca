@@ -39,7 +39,7 @@ public class BattleStateSync {
     public void onMembersUpdate(NBTTagCompound nbt) {
         final Set<UUID> uuids = new HashSet<>();
         decodeUuidsInto(nbt, uuids);
-        BattleStateClient.INSTANCE.updateMembers(uuids);
+        BattleStateClient.updateMembers(uuids);
     }
 
     @SideOnly(Side.CLIENT)
@@ -47,7 +47,7 @@ public class BattleStateSync {
     public void onQueueUpdate(NBTTagCompound nbt) {
         final List<UUID> uuids = new ArrayList<>();
         decodeUuidsInto(nbt, uuids);
-        BattleStateClient.INSTANCE.updateQueue(uuids);
+        BattleStateClient.updateQueue(uuids);
     }
 
     static NBTTagCompound encodeUuids(Collection<UUID> delta) {

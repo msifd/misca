@@ -1,6 +1,7 @@
 package msifeed.misca.combat.cap;
 
 import msifeed.misca.Misca;
+import msifeed.misca.combat.battle.BattleStateClient;
 import msifeed.sys.rpc.RpcContext;
 import msifeed.sys.rpc.RpcMethodHandler;
 import net.minecraft.client.Minecraft;
@@ -34,7 +35,9 @@ public class CombatantSync {
     @SideOnly(Side.CLIENT)
     @RpcMethodHandler(syncSelf)
     public void onSyncSelf(RpcContext ctx, NBTTagCompound nbt) {
-        update(Minecraft.getMinecraft().player, nbt);
+        final ICombatant com = update(Minecraft.getMinecraft().player, nbt);
+        if (!com.isInBattle())
+            BattleStateClient.clear();
     }
 
     @SideOnly(Side.CLIENT)
@@ -48,7 +51,9 @@ public class CombatantSync {
     }
 
     @SideOnly(Side.CLIENT)
-    private void update(EntityLivingBase target, NBTTagCompound nbt) {
-        CombatantProvider.get(target).replaceWith(CombatantProvider.decode(nbt));
+    private ICombatant update(EntityLivingBase target, NBTTagCompound nbt) {
+        final ICombatant com = CombatantProvider.get(target);
+        com.replaceWith(CombatantProvider.decode(nbt));
+        return com;
     }
 }

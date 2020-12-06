@@ -1,6 +1,9 @@
 package msifeed.misca.combat;
 
 import msifeed.misca.combat.battle.Battle;
+import msifeed.misca.combat.battle.BattleManager;
+import msifeed.misca.combat.cap.CombatantProvider;
+import msifeed.misca.combat.cap.ICombatant;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
@@ -46,9 +49,8 @@ public class CombatCommand extends CommandBase {
             final List<String> members = battle.getMembers().entrySet().stream()
                     .map(CombatCommand::getEntityName)
                     .collect(Collectors.toList());
-            final String leader = uuidToEntity(player.world, battle.getLeader()).map(Entity::getName).orElse("dunno");
+            final String leader = uuidToEntity(player.world, battle.getLeaderUuid()).map(Entity::getName).orElse("dunno");
             player.sendStatusMessage(new TextComponentString("training: " + battle.isTraining()), false);
-            player.sendStatusMessage(new TextComponentString("phase: " + battle.getPhase()), false);
             player.sendStatusMessage(new TextComponentString("leader: " + leader), false);
             player.sendStatusMessage(new TextComponentString("queue: " + joinNiceStringFromCollection(queue)), false);
             player.sendStatusMessage(new TextComponentString("members: " + joinNiceStringFromCollection(members)), false);
@@ -56,57 +58,58 @@ public class CombatCommand extends CommandBase {
             return;
         }
 
+        final BattleManager manager = Combat.MANAGER;
+        final ICombatant com = CombatantProvider.get(player);
+
         switch (args[0]) {
-            default: {
-//                final ICombatant com = CombatantProvider.get(player);
-//                final String s = String.format("ap: %f, pos: %s, thp: %f", com.getActionPoints(), com.getPosition(), com.getTrainingHealth());
-//                player.sendStatusMessage(new TextComponentString(s), false);
+            default:
                 player.sendStatusMessage(new TextComponentString("unknown command"), true);
                 break;
-            }
             case "i":
             case "init":
-                Combat.MANAGER.initBattle(player, args.length > 1);
+                manager.initBattle(player, args.length > 1);
                 player.sendStatusMessage(new TextComponentString("init"), true);
                 break;
             case "s":
             case "start":
-                Combat.MANAGER.startBattle(player);
+                manager.startBattle(player);
                 player.sendStatusMessage(new TextComponentString("start"), true);
                 break;
             case "l":
             case "leave":
-                Combat.MANAGER.leaveFromBattle(player);
+                manager.leaveFromBattle(player);
                 player.sendStatusMessage(new TextComponentString("leave"), true);
                 break;
             case "q":
-                Combat.MANAGER.initBattle(player, args.length > 1);
+                // quick start for testing
+                manager.initBattle(player, args.length > 1);
             case "a":
-            case "add": {
-                for (Entity e : player.world.getEntitiesWithinAABBExcludingEntity(player, player.getEntityBoundingBox().grow(2))) {
-                    if (!(e instanceof EntityLivingBase)) continue;
-                    Combat.MANAGER.addToBattle(player, (EntityLivingBase) e);
-                    player.sendStatusMessage(new TextComponentString("combat add " + e.getName()), false);
-                }
+            case "add":
+                if (!com.isInBattle()) break;
+                player.world.getEntitiesWithinAABBExcludingEntity(player, player.getEntityBoundingBox().grow(2)).stream()
+                        .filter(e -> e instanceof EntityLivingBase)
+                        .map(e -> (EntityLivingBase) e)
+                        .forEach(e -> {
+                            manager.addToBattle(com.getBattleId(), e);
+                            player.sendStatusMessage(new TextComponentString("combat add " + e.getName()), false);
+                        });
 
                 if (args[0].equals("q")) {
-                    Combat.MANAGER.startBattle(player);
+                    manager.startBattle(player);
                 }
                 break;
-            }
             case "next": {
-                final Battle battle = Combat.MANAGER.getEntityBattle(player);
-                if (battle == null) return;
-
-                battle.finishTurn();
+                if (!com.isInBattle()) break;
+                manager.nextTurn(manager.getBattle(com.getBattleId()));
                 player.sendStatusMessage(new TextComponentString("next"), true);
                 break;
             }
             case "pos":
-                Combat.MANAGER.repositionMembers(player);
+                manager.repositionMembers(player);
                 break;
             case "destroy":
-                Combat.MANAGER.destroyBattle(player);
+                if (!com.isInBattle()) break;
+                manager.destroyBattle(manager.getBattle(com.getBattleId()));
                 player.sendStatusMessage(new TextComponentString("destroy"), true);
                 break;
         }

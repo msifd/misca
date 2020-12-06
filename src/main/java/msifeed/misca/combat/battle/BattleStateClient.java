@@ -6,40 +6,20 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-import javax.annotation.Nullable;
-import java.lang.ref.WeakReference;
-import java.util.*;
+import java.util.List;
+import java.util.Set;
+import java.util.UUID;
 
 @SideOnly(Side.CLIENT)
-public enum BattleStateClient {
-    INSTANCE;
+public class BattleStateClient {
+    public static final Battle STATE = new Battle(false);
 
-    private final Map<UUID, WeakReference<EntityLivingBase>> members = new HashMap<>();
-    private final List<UUID> queue = new ArrayList<>();
-
-    public UUID getLeaderUuid() {
-        return !queue.isEmpty() ? queue.get(0) : null;
-    }
-
-    public List<UUID> getQueue() {
-        return queue;
-    }
-
-    public Map<UUID, WeakReference<EntityLivingBase>> getMembers() {
-        return members;
-    }
-
-    @Nullable
-    public WeakReference<EntityLivingBase> getMember(UUID key) {
-        return members.get(key);
-    }
-
-    public void updateMembers(Set<UUID> newMembers) {
+    public static void updateMembers(Set<UUID> newMembers) {
         final World world = Minecraft.getMinecraft().world;
 
         for (UUID uuid : newMembers) {
-            final WeakReference<EntityLivingBase> currEntity = getMember(uuid);
-            if (currEntity != null && currEntity.get() != null) continue;
+            final EntityLivingBase currEntity = STATE.getMember(uuid);
+            if (currEntity != null) continue;
 
             // Lookup entity
             world.loadedEntityList.stream()
@@ -47,22 +27,19 @@ public enum BattleStateClient {
                     .filter(entity -> entity.getUniqueID().equals(uuid))
                     .findAny()
                     .map(entity -> (EntityLivingBase) entity)
-                    .ifPresent(entity -> {
-                        this.members.put(uuid, new WeakReference<>(entity));
-                    });
+                    .ifPresent(STATE::addMember);
         }
 
         // Cleanup removed members
-        this.members.entrySet().removeIf(e -> !newMembers.contains(e.getKey()));
+        STATE.getMembers().entrySet().removeIf(e -> !newMembers.contains(e.getKey()));
     }
 
-    public void updateQueue(List<UUID> newQueue) {
-        this.queue.clear();
-        this.queue.addAll(newQueue);
+    public static void updateQueue(List<UUID> newQueue) {
+        STATE.getQueue().clear();
+        STATE.getQueue().addAll(newQueue);
     }
 
-    public void clear() {
-        this.members.clear();
-        this.queue.clear();
+    public static void clear() {
+        STATE.clear();
     }
 }

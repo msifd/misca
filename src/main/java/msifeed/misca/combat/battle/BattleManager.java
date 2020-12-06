@@ -1,8 +1,11 @@
 package msifeed.misca.combat.battle;
 
 import msifeed.misca.charsheet.CharsheetProvider;
+import msifeed.misca.charsheet.CharsheetSync;
 import msifeed.misca.charsheet.ICharsheet;
 import msifeed.misca.combat.cap.CombatantProvider;
+import msifeed.misca.combat.cap.CombatantSync;
+import msifeed.misca.combat.cap.ICombatant;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -35,67 +38,116 @@ public class BattleManager {
 
         battles.put(battle.getId(), battle);
         BattleStateSync.sync(battle);
+
+        final ICombatant com = CombatantProvider.get(player);
+        com.setBattleId(battle.getId());
+        CombatantSync.sync(player);
     }
 
     public void startBattle(EntityPlayer player) {
         final Battle battle = getEntityBattle(player);
         if (battle == null || battle.isStarted()) return;
 
-        battle.start();
-        BattleStateSync.sync(battle);
+        BattleFlow.formQueue(battle);
+        if (BattleFlow.selectNextLeader(battle)) {
+            BattleFlow.prepareLeader(battle.getLeader());
+            BattleStateSync.sync(battle);
+        } else {
+            destroyBattle(battle);
+        }
+    }
+
+    public void nextTurn(Battle battle) {
+        BattleFlow.finishTurn(battle);
+        if (BattleFlow.selectNextLeader(battle)) {
+            BattleFlow.prepareLeader(battle.getLeader());
+            BattleStateSync.syncQueue(battle);
+        } else {
+            destroyBattle(battle);
+        }
     }
 
     public void repositionMembers(EntityLivingBase entity) {
         final Battle battle = getEntityBattle(entity);
-        if (battle != null)
-            battle.repositionMembers();
+        if (battle == null) return;
+
+        battle.getCombatants().forEach(BattleFlow::repositionCombatant);
+    }
+
+    public void destroyBattle(Battle battle) {
+        if (battle == null) return;
+
+        if (battle.isTraining())
+            battle.getMemberEntities().forEach(BattleFlow::restoreCombatantHealth);
+        battle.getMemberEntities().forEach(BattleFlow::disengageEntity);
+
+        battle.clear();
+        battles.remove(battle.getId());
+    }
+
+    public void addToBattle(long bid, EntityLivingBase entity) {
+        final Battle battle = getBattle(bid);
+        if (battle == null) return;
+
+        battle.addMember(entity);
+        if (battle.isStarted()) {
+            battle.joinQueue(entity.getUniqueID());
+            BattleFlow.engageEntity(entity);
+        }
+        BattleStateSync.sync(battle);
+
+        final ICombatant com = CombatantProvider.get(entity);
+        com.setBattleId(bid);
+        CombatantSync.sync(entity);
+
+        if (!(entity instanceof EntityPlayer)) {
+            final ICharsheet cs = CharsheetProvider.get(entity);
+            cs.attrs().setAll(5);
+            CharsheetSync.sync(entity);
+        }
     }
 
     public void leaveFromBattle(EntityLivingBase entity) {
         final Battle battle = getEntityBattle(entity);
         if (battle == null) return;
 
+        if (battle.isTraining())
+            BattleFlow.restoreCombatantHealth(entity);
+        BattleFlow.disengageEntity(entity);
+
+        final boolean leaderRemoved = battle.isLeader(entity.getUniqueID());
         battle.removeMember(entity.getUniqueID());
-        if (!battle.hasEnoughMembers()) {
-            battle.clear();
-            battles.remove(battle.getId());
-        } else {
+
+        if (leaderRemoved) {
+            if (BattleFlow.selectNextLeader(battle)) {
+                BattleFlow.prepareLeader(battle.getLeader());
+            } else {
+                destroyBattle(battle);
+                return;
+            }
+        }
+
+        if (BattleFlow.hasEnoughMembers(battle)) {
             BattleStateSync.sync(battle);
+        } else {
+            destroyBattle(battle);
         }
-    }
-
-    public void destroyBattle(Battle battle) {
-        battle.clear();
-        battles.remove(battle.getId());
-    }
-
-    public void destroyBattle(EntityPlayer player) {
-        final Battle battle = getEntityBattle(player);
-        if (battle == null) return;
-
-        battle.clear();
-        battles.remove(battle.getId());
-    }
-
-    public void addToBattle(EntityPlayer player, EntityLivingBase newbie) {
-        if (!(newbie instanceof EntityPlayer)) {
-            final ICharsheet sheet = CharsheetProvider.get(newbie);
-            sheet.attrs().setAll(5);
-        }
-
-        final Battle battle = getEntityBattle(player);
-        if (battle == null) return;
-
-        battle.addMember(newbie);
-        BattleStateSync.sync(battle);
     }
 
     public void rejoinToBattle(EntityPlayerMP player) {
-        final Battle battle = getEntityBattle(player);
-        if (battle == null) return;
+        final ICombatant com = CombatantProvider.get(player);
+        if (!com.isInBattle()) return;
 
-        battle.updateEntity(player);
-        BattleStateSync.sync(player, battle);
+        final Battle battle = getBattle(com.getBattleId());
+        if (battle != null) {
+            battle.addMember(player);
+            BattleFlow.engageEntity(player);
+            BattleStateSync.sync(player, battle);
+        } else {
+            com.reset();
+        }
+
+        CombatantSync.sync(player);
     }
 
     @SubscribeEvent
