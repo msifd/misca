@@ -118,12 +118,10 @@ public class BattleFlow {
 
     public static void consumeActionAp(EntityLivingBase entity) {
         final ICombatant com = CombatantProvider.get(entity);
-        final double ap = Rules.attackActionPoints(entity);
         final double apWithOh = Rules.attackActionPoints(entity) + com.getActionPointsOverhead();
         if (com.getActionPoints() >= apWithOh) {
-//            System.out.printf("[hit] ap: %.1f, atk: %.1f\n", com.getActionPoints(), apWithOh);
             com.setActionPoints(com.getActionPoints() - apWithOh);
-            com.setActionPointsOverhead(com.getActionPointsOverhead() + ap / 2);
+            com.setActionPointsOverhead(com.getActionPointsOverhead() + apWithOh / 2);
         }
     }
 

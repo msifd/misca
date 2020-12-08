@@ -70,7 +70,7 @@ public class Battle {
     }
 
     public boolean isStarted() {
-        return queue.isEmpty();
+        return !queue.isEmpty();
     }
 
     public Queue<UUID> getQueue() {

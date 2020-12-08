@@ -97,7 +97,9 @@ public class Misca {
 
     @SubscribeEvent
     public void onConfigChangedEvent(ConfigChangedEvent.OnConfigChangedEvent event) {
-        if (event.getModID().equals(MODID))
-            ConfigManager.sync(MODID, Config.Type.INSTANCE);
+        if (!event.getModID().equals(MODID)) return;
+
+        ConfigManager.sync(MODID, Config.Type.INSTANCE);
+
     }
 }

@@ -1,5 +1,8 @@
 package msifeed.misca.combat.client;
 
+import msifeed.mellow.render.RenderShapes;
+import msifeed.mellow.sprite.FlatSprite;
+import msifeed.mellow.utils.Geom;
 import msifeed.misca.client.MiscaConfig;
 import msifeed.misca.combat.battle.Battle;
 import msifeed.misca.combat.battle.BattleStateClient;
@@ -25,6 +28,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 public class GuiCombatOverlay {
+
     @SubscribeEvent
     public void onRenderOverlay(RenderGameOverlayEvent.Post event) {
         if (!MiscaConfig.combatDebug) return;
@@ -62,12 +66,62 @@ public class GuiCombatOverlay {
                 "----",
                 "MOVEMENT: " + formatActionPoints(moveAp, com.getActionPoints()),
                 "ATTACK: " + formatActionPoints(attackAp, com.getActionPoints()) + String.format(" (overhead: %.2f)", overheadAp),
-                "TOTAL: " + formatActionPoints(moveAp + attackAp, com.getActionPoints()) + " / " + com.getActionPoints()
+                "TOTAL: " + formatActionPoints(moveAp + attackAp, com.getActionPoints())
+                        + String.format(" / %.2f", com.getActionPoints())
         };
 
         final FontRenderer fr = Minecraft.getMinecraft().fontRenderer;
         for (int i = 0; i < lines.length; i++)
             fr.drawString(lines[i], 10, 10 + fr.FONT_HEIGHT * i, 0xffffffff);
+
+        drawNewHud();
+    }
+
+    private void drawNewHud() {
+        final Battle state = BattleStateClient.STATE;
+
+        final int[] xOffset = {150};
+        state.getCombatants().forEach(entity -> {
+            final FlatSprite face = EntityFaceSprites.INSTANCE.getFaceSprite(entity);
+            if (face == null) return;
+
+            face.render(new Geom(xOffset[0] + 1, 3, 24, 24));
+            CombatTheme.combatantFrame.render(new Geom(xOffset[0], 2, 26, 31));
+
+            xOffset[0] += 26 + 1;
+        });
+
+        // action points bar
+
+        final EntityPlayer player = Minecraft.getMinecraft().player;
+        final ICombatant com = CombatantProvider.get(player);
+
+        final double fullAp = com.getActionPoints();
+        final double moveAp = Rules.movementActionPoints(com.getPosition(), player.getPositionVector());
+        final double actionAp = Rules.attackActionPoints(player);
+        final double ap = Math.max(com.getActionPoints() - moveAp, 0);
+
+        final int xPos = 5, yPos = 5;
+        final int bgColor = ap > 0 ? 0xffffffff : 0xffff0000;
+        final int barWidth = 100;
+        final double pxPerAp = barWidth / fullAp;
+
+        final Geom geom = new Geom(xPos - 1, yPos - 1, barWidth + 2, 7);
+        RenderShapes.rect(geom, bgColor);
+
+        geom.set(xPos, yPos, (int) (ap * pxPerAp), 5);
+        RenderShapes.rect(geom, 0xff000000);
+
+        geom.setSize(1, 5);
+        double consumedAp = 0;
+        double nextAp = actionAp + com.getActionPointsOverhead();
+        while (ap >= consumedAp + nextAp) {
+            geom.x = (int) (xPos + (consumedAp + nextAp) * pxPerAp);
+            RenderShapes.rect(geom, bgColor);
+
+            consumedAp += nextAp;
+            nextAp += nextAp / 2;
+        }
     }
 
     private String formatActionPoints(double ap, double total) {

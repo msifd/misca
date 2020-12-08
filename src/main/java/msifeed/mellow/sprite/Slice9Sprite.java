@@ -4,14 +4,26 @@ import msifeed.mellow.utils.Geom;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.texture.ITextureObject;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import org.lwjgl.opengl.GL11;
 
 public class Slice9Sprite implements ISprite {
-    private final SizedTexture texture;
+    private final ITextureObject texture;
     private final Slice[] slices;
     private final int fixedWidth, fixedHeight;
+    private final int txw, txh;
 
     public Slice9Sprite(SizedTexture tex,
+                        int u, int v,
+                        int w1, int h1,
+                        int w2, int h2,
+                        int w3, int h3) {
+//        this(tex, tex.getWidth(), tex.getHeight(), u, v, w1, h1, w2, h2, w3, h3);
+        this(tex, 256, 256, u, v, w1, h1, w2, h2, w3, h3);
+    }
+
+    public Slice9Sprite(ITextureObject tex, int txw, int txh,
                         int u, int v,
                         int w1, int h1,
                         int w2, int h2,
@@ -30,17 +42,20 @@ public class Slice9Sprite implements ISprite {
         };
         this.fixedWidth = w1 + w3;
         this.fixedHeight = h1 + h3;
+        this.txw = txw;
+        this.txh = txh;
     }
 
     @Override
     public void render(Geom geom) {
         GlStateManager.bindTexture(texture.getGlTextureId());
-        final double rx = 1. / texture.getWidth();
-        final double ry = 1. / texture.getHeight();
+        final double rx = 1. / txw;
+        final double ry = 1. / txh;
 
         final Tessellator tessellator = Tessellator.getInstance();
         final BufferBuilder buffer = tessellator.getBuffer();
-        buffer.begin(7, DefaultVertexFormats.POSITION_TEX);
+        // TODO: optimize quads
+        buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
 
         final double midWidth = Math.max(geom.w - fixedWidth, 0);
         final double midHeight = Math.max(geom.w - fixedHeight, 0);
