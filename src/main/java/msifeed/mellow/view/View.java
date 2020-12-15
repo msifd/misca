@@ -1,4 +1,4 @@
-package msifeed.mellow.widget;
+package msifeed.mellow.view;
 
 import msifeed.mellow.utils.Geom;
 

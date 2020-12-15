@@ -100,6 +100,5 @@ public class Misca {
         if (!event.getModID().equals(MODID)) return;
 
         ConfigManager.sync(MODID, Config.Type.INSTANCE);
-
     }
 }

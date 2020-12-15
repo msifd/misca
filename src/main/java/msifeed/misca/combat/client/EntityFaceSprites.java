@@ -50,7 +50,7 @@ public enum EntityFaceSprites {
     private FlatSprite createEntitySprite(Entity entity) {
         // TODO: return some default sprite
         final RenderManager renderManager = Minecraft.getMinecraft().getRenderManager();
-        final Render<?> someRender = renderManager.getEntityRenderObject(entity);
+        final Render<? extends Entity> someRender = renderManager.getEntityRenderObject(entity);
         if (!(someRender instanceof RenderLivingBase)) return null;
 
         final RenderLivingBase<?> render = (RenderLivingBase<?>) someRender;
@@ -72,7 +72,7 @@ public enum EntityFaceSprites {
     }
 
     @Nullable
-    private ResourceLocation getTexture(RenderLivingBase<?> render, Entity entity) {
+    private ResourceLocation getTexture(RenderLivingBase<? extends Entity> render, Entity entity) {
         try {
             return (ResourceLocation) getTextureMethod.invoke(render, entity);
         } catch (Exception e) {

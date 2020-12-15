@@ -1,6 +1,6 @@
 package msifeed.misca.chatex.cmd;
 
-import msifeed.misca.chatex.IChatexRpc;
+import msifeed.misca.chatex.ChatexRpc;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -35,6 +35,6 @@ public class GlobalCommand extends CommandBase {
 
         final String text = String.join(" ", args);
 
-        IChatexRpc.sendGlobal((EntityPlayerMP) sender, text);
+        ChatexRpc.sendGlobal((EntityPlayerMP) sender, text);
     }
 }

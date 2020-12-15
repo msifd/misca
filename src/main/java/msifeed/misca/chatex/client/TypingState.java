@@ -1,6 +1,6 @@
 package msifeed.misca.chatex.client;
 
-import msifeed.misca.chatex.IChatexRpc;
+import msifeed.misca.chatex.ChatexRpc;
 import net.minecraft.entity.player.EntityPlayer;
 
 import java.util.HashMap;
@@ -23,7 +23,7 @@ public class TypingState {
         final long now = System.currentTimeMillis();
         if (now - lastNotify > TYPING_PING_MS / 2) {
             lastNotify = now;
-            IChatexRpc.notifyTyping();
+            ChatexRpc.notifyTyping();
         }
     }
 

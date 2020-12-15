@@ -1,6 +1,6 @@
 package msifeed.misca.cmd;
 
-import msifeed.misca.chatex.IChatexRpc;
+import msifeed.misca.chatex.ChatexRpc;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.command.NumberInvalidException;
@@ -62,7 +62,7 @@ public class RollCommand extends CommandBase {
         result += modifier;
 
         if (sender instanceof EntityPlayerMP) {
-            IChatexRpc.sendRoll((EntityPlayerMP) sender, joined, result);
+            ChatexRpc.sendRoll((EntityPlayerMP) sender, joined, result);
         } else {
             final String name = sender.getDisplayName().getFormattedText();
             final String msg = String.format("[ROLL] %s: %s = %d", name, joined, result);

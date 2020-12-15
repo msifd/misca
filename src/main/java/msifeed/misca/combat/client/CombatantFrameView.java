@@ -3,7 +3,7 @@ package msifeed.misca.combat.client;
 import msifeed.mellow.render.RenderShapes;
 import msifeed.mellow.sprite.FlatSprite;
 import msifeed.mellow.utils.Geom;
-import msifeed.mellow.widget.View;
+import msifeed.mellow.view.View;
 import net.minecraft.entity.EntityLivingBase;
 
 public class CombatantFrameView extends View {

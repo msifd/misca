@@ -2,7 +2,7 @@ package msifeed.misca.combat.client;
 
 import msifeed.mellow.render.RenderShapes;
 import msifeed.mellow.utils.Geom;
-import msifeed.mellow.widget.View;
+import msifeed.mellow.view.View;
 import msifeed.misca.combat.cap.CombatantProvider;
 import msifeed.misca.combat.cap.ICombatant;
 import msifeed.misca.combat.rules.Rules;

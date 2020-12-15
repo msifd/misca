@@ -1,4 +1,4 @@
-package msifeed.mellow.widget;
+package msifeed.mellow.view;
 
 public abstract class ViewContainer extends View {
 }

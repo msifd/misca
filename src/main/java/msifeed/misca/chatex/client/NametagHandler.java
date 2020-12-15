@@ -8,8 +8,11 @@ import net.minecraftforge.client.event.RenderLivingEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
-class NametagHandler {
+@SideOnly(Side.CLIENT)
+public class NametagHandler {
     private static final int NAME_VISIBILITY_RANGE = 4;
     private static final int TYPING_DOTS_INTERVAL_MS = 400;
     private static final String[] TYPING_DOTS = {"..", "...", "...."};

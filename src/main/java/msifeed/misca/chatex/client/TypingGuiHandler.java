@@ -5,9 +5,12 @@ import net.minecraft.client.gui.GuiChat;
 import net.minecraftforge.client.event.GuiScreenEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.input.Keyboard;
 
-class TypingGuiHandler {
+@SideOnly(Side.CLIENT)
+public class TypingGuiHandler {
     private boolean chatIsOpened = false; // Ignore
     private char lastCharPressed = 0;
 

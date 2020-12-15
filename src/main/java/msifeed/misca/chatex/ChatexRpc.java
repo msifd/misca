@@ -1,7 +1,7 @@
-package msifeed.misca.chatex.client;
+package msifeed.misca.chatex;
 
 import msifeed.misca.Misca;
-import msifeed.misca.chatex.IChatexRpc;
+import msifeed.misca.chatex.client.TypingState;
 import msifeed.misca.chatex.client.format.GlobalFormat;
 import msifeed.misca.chatex.client.format.SpeechFormat;
 import msifeed.sys.rpc.RpcContext;
@@ -11,18 +11,60 @@ import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.client.network.NetworkPlayerInfo;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraftforge.fml.client.FMLClientHandler;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.Objects;
 import java.util.UUID;
 
-public class ChatexClientRpc implements IChatexRpc {
+@SideOnly(Side.CLIENT)
+public class ChatexRpc {
+    private static final String speech = "chatex.speech";
+    private static final String global = "chatex.global";
+    private static final String roll = "chatex.roll";
+    private static final String notifyTyping = "chatex.typing.notify";
+    private static final String broadcastTyping = "chatex.typing.broadcast";
+
+    @SideOnly(Side.CLIENT)
     private static final SoundEvent chatSound = new SoundEvent(new ResourceLocation(Misca.MODID, "chatex.chat_message"));
+
+    public static void sendSpeech(EntityPlayerMP player, int range, String msg) {
+        Misca.RPC.sendToAllTracking(player, speech, player.getUniqueID(), range, msg);
+        Misca.RPC.sendTo(player, speech, player.getUniqueID(), range, msg);
+    }
+
+    public static void sendGlobal(EntityPlayerMP player, String msg) {
+        // TODO: get name from charsheet
+        Misca.RPC.sendToAll(global, player.getDisplayNameString(), msg);
+    }
+
+    public static void sendRoll(EntityPlayerMP sender, String spec, long result) {
+        Misca.RPC.sendToAllTracking(sender, roll, sender.getUniqueID(), spec, result);
+        Misca.RPC.sendTo(sender, roll, sender.getUniqueID(), spec, result);
+    }
+
+    public static void notifyTyping() {
+        Misca.RPC.sendToServer(notifyTyping);
+    }
+
+    // // // // Server handlers
+
+    @RpcMethodHandler(notifyTyping)
+    public void onNotifyTyping(RpcContext ctx) {
+        final EntityPlayerMP sender = ctx.getServerHandler().player;
+        final long now = System.currentTimeMillis();
+        Misca.RPC.sendToAllTracking(sender, broadcastTyping, sender.getEntityId(), now);
+    }
+
+
+    // // // // Client handlers
 
     @RpcMethodHandler(speech)
     public void onSpeech(UUID speakerId, int range, String msg) {

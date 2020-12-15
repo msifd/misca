@@ -1,7 +1,7 @@
 package msifeed.misca.chatex.cmd;
 
 import msifeed.misca.Misca;
-import msifeed.misca.chatex.IChatexRpc;
+import msifeed.misca.chatex.ChatexRpc;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -30,6 +30,6 @@ public class WhisperCommand extends CommandBase {
         final int range = Misca.getSharedConfig().chat.getSpeechRange(-2);
         final String text = String.join(" ", args);
 
-        IChatexRpc.sendSpeech((EntityPlayerMP) sender, range, text);
+        ChatexRpc.sendSpeech((EntityPlayerMP) sender, range, text);
     }
 }

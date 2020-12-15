@@ -1,25 +1,25 @@
 buildscript {
     repositories {
         maven { url = 'https://files.minecraftforge.net/maven' }
+        maven { url = 'https://dist.creeper.host/Sponge/maven' }
         jcenter()
-        mavenCentral()
     }
     dependencies {
-        classpath 'net.minecraftforge.gradle:ForgeGradle:3.0.185'
+        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '3.+', changing: true
+        classpath 'org.spongepowered:mixingradle:0.7-SNAPSHOT'
     }
 }
 
 apply plugin: 'net.minecraftforge.gradle'
+apply plugin: 'org.spongepowered.mixin'
 apply plugin: 'idea'
 
 version = '2.0.0-alpha.2'
 group = 'msifeed.misca'
 archivesBaseName = 'misca'
 
-sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8' // Need this here so eclipse task generates correctly.
-
-compileJava.options.encoding = "UTF-8"
-compileTestJava.options.encoding = "UTF-8"
+sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8'
+compileJava.options.encoding = compileTestJava.options.encoding = 'UTF-8'
 
 minecraft {
     mappings channel: 'snapshot', version: '20171003-1.12'
@@ -28,23 +28,20 @@ minecraft {
     runs {
         client {
             workingDirectory project.file('run')
-            // Recommended logging data for a userdev environment
-            property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
-            // Recommended logging level for the console
-            property 'forge.logging.console.level', 'debug'
+            arg '--tweakClass=org.spongepowered.asm.launch.MixinTweaker'
+            arg '--mixin=misca.mixins.json'
         }
 
         server {
-            // Recommended logging data for a userdev environment
-            property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
-            // Recommended logging level for the console
-            property 'forge.logging.console.level', 'debug'
+            arg '--tweakClass=org.spongepowered.asm.launch.MixinTweaker'
+            arg '--mixin=misca.mixins.json'
         }
     }
 }
 
 dependencies {
     minecraft 'net.minecraftforge:forge:1.12.2-14.23.5.2854'
+    compile 'org.spongepowered:mixin:0.8.1'
 }
 
 processResources {
@@ -65,6 +62,20 @@ sourceSets {
         output.resourcesDir = file('out/production/classes')
         output.classesDir = file('out/production/classes')
     }
+}
+
+jar {
+    manifest.attributes(
+            'TweakClass': 'org.spongepowered.asm.launch.MixinTweaker',
+            'MixinConfigs': 'misca.mixins.json',
+            'FMLCorePluginContainsFMLMod': 'true',
+            'ForceLoadAsMod': 'true',
+    )
+}
+
+
+mixin {
+    add sourceSets.main, "misca.refmap.json"
 }
 
 // Example configuration to allow publishing using the maven-publish task
