@@ -1,8 +1,6 @@
 package msifeed.misca.combat.client;
 
-import msifeed.mellow.render.RenderShapes;
-import msifeed.mellow.sprite.FlatSprite;
-import msifeed.mellow.utils.Geom;
+import msifeed.mellow.render.RenderUtils;
 import msifeed.misca.client.MiscaConfig;
 import msifeed.misca.combat.battle.Battle;
 import msifeed.misca.combat.battle.BattleStateClient;
@@ -11,6 +9,7 @@ import msifeed.misca.combat.cap.ICombatant;
 import msifeed.misca.combat.rules.Rules;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.EntityLivingBase;
@@ -28,6 +27,8 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 public class GuiCombatOverlay {
+    private final CombatantFrameView frame = new CombatantFrameView();
+    private final ActionPointsBarView bar = new ActionPointsBarView();
 
     @SubscribeEvent
     public void onRenderOverlay(RenderGameOverlayEvent.Post event) {
@@ -35,14 +36,39 @@ public class GuiCombatOverlay {
         if (event.getType() != RenderGameOverlayEvent.ElementType.ALL) return;
 
         final EntityPlayer player = Minecraft.getMinecraft().player;
-//        if (player.getHeldItemMainhand().isEmpty()) return;
+        if (!CombatantProvider.get(player).isInBattle()) return;
 
+        drawTextInfo();
+        drawHud();
+    }
+
+    private void drawHud() {
+        final Battle state = BattleStateClient.STATE;
+
+        final ScaledResolution resolution = RenderUtils.getScaledResolution();
+        final int pxPerFrame = frame.getGeom().w + 1;
+        final int frameOffset = (resolution.getScaledWidth() - state.getQueue().size() * pxPerFrame) / 2;
+
+        frame.setPos(0, 0, 0);
+        frame.translate(frameOffset, 0, 0);
+
+        state.getCombatants().forEach(entity -> {
+            frame.setFace(entity);
+            frame.render();
+            frame.translate(pxPerFrame, 0, 0);
+        });
+
+        bar.setPos(0, 0, 0);
+        bar.translate(frameOffset - bar.getGeom().w - 5, 5, 0);
+        bar.render();
+    }
+
+    private static void drawTextInfo() {
+        final EntityPlayer player = Minecraft.getMinecraft().player;
         final ICombatant com = CombatantProvider.get(player);
-        if (!com.isInBattle()) return;
         final Battle state = BattleStateClient.STATE;
 
         final Vec3d pos = com.getPosition();
-
         final String joinedMembers = state.getMembers().entrySet().stream()
                 .map(GuiCombatOverlay::getMemberEntryName)
                 .collect(Collectors.joining(", "));
@@ -73,58 +99,9 @@ public class GuiCombatOverlay {
         final FontRenderer fr = Minecraft.getMinecraft().fontRenderer;
         for (int i = 0; i < lines.length; i++)
             fr.drawString(lines[i], 10, 10 + fr.FONT_HEIGHT * i, 0xffffffff);
-
-        drawNewHud();
     }
 
-    private void drawNewHud() {
-        final Battle state = BattleStateClient.STATE;
-
-        final int[] xOffset = {150};
-        state.getCombatants().forEach(entity -> {
-            final FlatSprite face = EntityFaceSprites.INSTANCE.getFaceSprite(entity);
-            if (face == null) return;
-
-            face.render(new Geom(xOffset[0] + 1, 3, 24, 24));
-            CombatTheme.combatantFrame.render(new Geom(xOffset[0], 2, 26, 31));
-
-            xOffset[0] += 26 + 1;
-        });
-
-        // action points bar
-
-        final EntityPlayer player = Minecraft.getMinecraft().player;
-        final ICombatant com = CombatantProvider.get(player);
-
-        final double fullAp = com.getActionPoints();
-        final double moveAp = Rules.movementActionPoints(com.getPosition(), player.getPositionVector());
-        final double actionAp = Rules.attackActionPoints(player);
-        final double ap = Math.max(com.getActionPoints() - moveAp, 0);
-
-        final int xPos = 5, yPos = 5;
-        final int bgColor = ap > 0 ? 0xffffffff : 0xffff0000;
-        final int barWidth = 100;
-        final double pxPerAp = barWidth / fullAp;
-
-        final Geom geom = new Geom(xPos - 1, yPos - 1, barWidth + 2, 7);
-        RenderShapes.rect(geom, bgColor);
-
-        geom.set(xPos, yPos, (int) (ap * pxPerAp), 5);
-        RenderShapes.rect(geom, 0xff000000);
-
-        geom.setSize(1, 5);
-        double consumedAp = 0;
-        double nextAp = actionAp + com.getActionPointsOverhead();
-        while (ap >= consumedAp + nextAp) {
-            geom.x = (int) (xPos + (consumedAp + nextAp) * pxPerAp);
-            RenderShapes.rect(geom, bgColor);
-
-            consumedAp += nextAp;
-            nextAp += nextAp / 2;
-        }
-    }
-
-    private String formatActionPoints(double ap, double total) {
+    private static String formatActionPoints(double ap, double total) {
         if (total > ap)
             return String.format("%.2f", ap);
         else

@@ -12,26 +12,26 @@ public class Geom implements Cloneable {
     }
 
     public void reset() {
-        this.x = 0;
-        this.y = 0;
-        this.z = 0;
-        this.w = 0;
-        this.h = 0;
+        set(0, 0, 0, 0, 0);
     }
 
     public void set(int x, int y, int w, int h) {
+        set(x, y, this.z, w, h);
+    }
+
+    public void set(int x, int y, int z, int w, int h) {
         this.x = x;
         this.y = y;
+        this.z = z;
         this.w = w;
         this.h = h;
     }
 
-    public void set(Geom r) {
-        this.x = r.x;
-        this.y = r.y;
-        this.z = r.z;
-        this.w = r.w;
-        this.h = r.h;
+    public void add(int x, int y, int w, int h) {
+        this.x += x;
+        this.y += y;
+        this.w += w;
+        this.h += h;
     }
 
     public void setPos(int x, int y) {
@@ -72,10 +72,10 @@ public class Geom implements Cloneable {
         this.h = h;
     }
 
-    public void setSize(Point p) {
-        this.w = p.x;
-        this.h = p.y;
-    }
+//    public void resize(Point p) {
+//        this.w = p.x;
+//        this.h = p.y;
+//    }
 
     public void addSize(int w, int h) {
         this.w += w;
@@ -93,10 +93,11 @@ public class Geom implements Cloneable {
 //    }
 
     public boolean contains(Point p) {
-        return p.x >= this.x && p.x <= this.x + this.w
-                && p.y >= this.y && p.y <= this.y + this.h;
+        return p.x >= this.x && p.x <= this.x + this.w &&
+                p.y >= this.y && p.y <= this.y + this.h;
     }
 
+    @Override
     public Geom clone() {
         try {
             return (Geom) super.clone();
