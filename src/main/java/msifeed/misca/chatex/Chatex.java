@@ -3,7 +3,7 @@ package msifeed.misca.chatex;
 import msifeed.misca.Misca;
 import msifeed.misca.chatex.client.NametagHandler;
 import msifeed.misca.chatex.client.TypingGuiHandler;
-import msifeed.misca.chatex.client.gui.ChatGuiHandler;
+import msifeed.misca.chatex.client.ChatGuiHandler;
 import msifeed.misca.chatex.cmd.GlobalCommand;
 import msifeed.misca.chatex.cmd.WhisperCommand;
 import msifeed.misca.chatex.cmd.YellCommand;

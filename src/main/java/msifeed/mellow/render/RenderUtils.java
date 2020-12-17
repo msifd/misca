@@ -18,4 +18,8 @@ public final class RenderUtils {
 
         return scaledResolution;
     }
+
+    public static int lineHeight() {
+        return Minecraft.getMinecraft().fontRenderer.FONT_HEIGHT;
+    }
 }

@@ -1,5 +1,6 @@
 package msifeed.mellow.view;
 
+import msifeed.mellow.FocusState;
 import msifeed.mellow.utils.Geom;
 
 public abstract class View {
@@ -19,6 +20,10 @@ public abstract class View {
 
     public void setSize(int w, int h) {
         geometry.setSize(w, h);
+    }
+
+    public void focus() {
+        FocusState.INSTANCE.setFocus(this);
     }
 
     public abstract void render();

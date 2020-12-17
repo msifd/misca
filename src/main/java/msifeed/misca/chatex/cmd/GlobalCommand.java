@@ -35,6 +35,6 @@ public class GlobalCommand extends CommandBase {
 
         final String text = String.join(" ", args);
 
-        ChatexRpc.sendGlobal((EntityPlayerMP) sender, text);
+        ChatexRpc.broadcastGlobal((EntityPlayerMP) sender, text);
     }
 }

@@ -8,7 +8,7 @@ public class ChatMsgHandler {
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public void onChatMessage(ServerChatEvent event) {
         final int range = ChatexUtils.getSpeechRange(event.getMessage());
-        ChatexRpc.sendSpeech(event.getPlayer(), range, event.getMessage());
+        ChatexRpc.broadcastSpeech(event.getPlayer(), range, event.getMessage());
         event.setCanceled(true);
     }
 }

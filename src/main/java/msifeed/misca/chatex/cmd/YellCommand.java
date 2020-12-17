@@ -30,6 +30,6 @@ public class YellCommand extends CommandBase {
         final int range = Misca.getSharedConfig().chat.getSpeechRange(+1);
         final String text = String.join(" ", args);
 
-        ChatexRpc.sendSpeech((EntityPlayerMP) sender, range, text);
+        ChatexRpc.broadcastSpeech((EntityPlayerMP) sender, range, text);
     }
 }

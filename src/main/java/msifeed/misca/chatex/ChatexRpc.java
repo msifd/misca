@@ -35,17 +35,37 @@ public class ChatexRpc {
     @SideOnly(Side.CLIENT)
     private static final SoundEvent chatSound = new SoundEvent(new ResourceLocation(Misca.MODID, "chatex.chat_message"));
 
-    public static void sendSpeech(EntityPlayerMP player, int range, String msg) {
+    // // // // Shared handlers
+
+    @RpcMethodHandler(speech)
+    public void onSpeech(RpcContext ctx, UUID speakerId, int range, String msg) {
+        if (ctx.side.isServer()) {
+            final EntityPlayerMP sender = ctx.getServerHandler().player;
+            final EntityPlayer speaker = sender.world.getPlayerEntityByUUID(speakerId);
+            if (speaker instanceof EntityPlayerMP)
+                broadcastSpeech((EntityPlayerMP) speaker, range, msg);
+        } else {
+            final EntityPlayerSP self = Minecraft.getMinecraft().player;
+            final EntityPlayer speaker = self.world.getPlayerEntityByUUID(speakerId);
+            if (speaker == null) return;
+            self.sendMessage(SpeechFormat.format(self, speaker, range, msg));
+            playNotificationSound(speaker);
+        }
+    }
+
+    // // // // Server senders
+
+    public static void broadcastSpeech(EntityPlayerMP player, int range, String msg) {
         Misca.RPC.sendToAllTracking(player, speech, player.getUniqueID(), range, msg);
         Misca.RPC.sendTo(player, speech, player.getUniqueID(), range, msg);
     }
 
-    public static void sendGlobal(EntityPlayerMP player, String msg) {
+    public static void broadcastGlobal(EntityPlayerMP player, String msg) {
         // TODO: get name from charsheet
         Misca.RPC.sendToAll(global, player.getDisplayNameString(), msg);
     }
 
-    public static void sendRoll(EntityPlayerMP sender, String spec, long result) {
+    public static void broadcastRoll(EntityPlayerMP sender, String spec, long result) {
         Misca.RPC.sendToAllTracking(sender, roll, sender.getUniqueID(), spec, result);
         Misca.RPC.sendTo(sender, roll, sender.getUniqueID(), spec, result);
     }
@@ -63,17 +83,13 @@ public class ChatexRpc {
         Misca.RPC.sendToAllTracking(sender, broadcastTyping, sender.getEntityId(), now);
     }
 
+    // // // // Client senders
+
+    public static void sendSpeech(UUID speakerId, int range, String msg) {
+        Misca.RPC.sendToServer(speech, speakerId, range, msg);
+    }
 
     // // // // Client handlers
-
-    @RpcMethodHandler(speech)
-    public void onSpeech(UUID speakerId, int range, String msg) {
-        final EntityPlayerSP self = Minecraft.getMinecraft().player;
-        final EntityPlayer speaker = self.world.getPlayerEntityByUUID(speakerId);
-        if (speaker == null) return;
-        self.sendMessage(SpeechFormat.format(self, speaker, range, msg));
-        playNotificationSound(speaker);
-    }
 
     @RpcMethodHandler(global)
     public void onGlobal(String speaker, String msg) {
