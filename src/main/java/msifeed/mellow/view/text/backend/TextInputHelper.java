@@ -1,5 +1,8 @@
 package msifeed.mellow.view.text.backend;
 
+import msifeed.mellow.render.RenderUtils;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiScreen;
 import org.lwjgl.input.Keyboard;
 
@@ -10,6 +13,18 @@ public class TextInputHelper {
     public TextInputHelper(TextEditorBackend backend, NavMode navMode) {
         this.backend = backend;
         this.navMode = navMode;
+    }
+
+    public void setCursorAtPos(int inboundX, int inboundY) {
+        final FontRenderer fr = Minecraft.getMinecraft().fontRenderer;
+        final int tune = 1;
+
+        final int line = backend.getView().y + inboundY / RenderUtils.lineHeight();
+
+        final String visibleLine = backend.getLine(line).sb.substring(backend.getView().x); // Cut front part
+        final int column = backend.getView().x + fr.trimStringToWidth(visibleLine, inboundX + tune).length();
+
+        backend.setCursor(line, column);
     }
 
     public void onKeyboard(char c, int key) {
@@ -89,8 +104,6 @@ public class TextInputHelper {
 //                    moveOffsetLine(1);
                 break;
         }
-
-//        lastTimePressed = System.currentTimeMillis();
     }
 
     public int getCursorLineInView() {

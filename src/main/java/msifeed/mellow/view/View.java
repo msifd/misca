@@ -22,6 +22,10 @@ public abstract class View {
         geometry.setSize(w, h);
     }
 
+    public boolean isFocused() {
+        return FocusState.INSTANCE.isFocused(this);
+    }
+
     public void focus() {
         FocusState.INSTANCE.setFocus(this);
     }

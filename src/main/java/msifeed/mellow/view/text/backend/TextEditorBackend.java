@@ -114,6 +114,10 @@ public class TextEditorBackend {
         return lines.stream().map(l -> l.sb.toString());
     }
 
+    public Stream<Line> getRawLines() {
+        return lines.stream();
+    }
+
     public String toJoinedString() {
         final StringBuilder sb = new StringBuilder();
         for (Line l : lines) {

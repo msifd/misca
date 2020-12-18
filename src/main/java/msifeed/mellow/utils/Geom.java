@@ -92,9 +92,9 @@ public class Geom implements Cloneable {
 //        this.h -= m.top + m.bottom;
 //    }
 
-    public boolean contains(Point p) {
-        return p.x >= this.x && p.x <= this.x + this.w &&
-                p.y >= this.y && p.y <= this.y + this.h;
+    public boolean contains(int x, int y) {
+        return x >= this.x && x <= this.x + this.w &&
+                y >= this.y && y <= this.y + this.h;
     }
 
     @Override
