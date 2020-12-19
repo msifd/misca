@@ -13,11 +13,15 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.stream.Collectors;
 
 public class ChatexScreen extends MellowScreen {
     private final TextInput input = new TextInput();
     private final ChatexHud hud = (ChatexHud) Minecraft.getMinecraft().ingameGUI.getChatGUI();
+
+    private int historyCursor = 0;
+    private String historyInputBuffer = "";
 
     public ChatexScreen(String text) {
         input.insert(text);
@@ -67,9 +71,8 @@ public class ChatexScreen extends MellowScreen {
 
     @Override
     protected void keyTyped(char c, int key) {
-        // TODO: history on up/down keys
-
         final int linesBefore = input.getBackend().getLineCount();
+        final boolean shiftPressed = Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT);
 
         switch (key) {
             case Keyboard.KEY_ESCAPE:
@@ -77,18 +80,29 @@ public class ChatexScreen extends MellowScreen {
                 return;
             case Keyboard.KEY_RETURN:
             case Keyboard.KEY_NUMPADENTER:
-                if (!Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
-                    commitMessage();
-                    break;
-                }
-                // fall through to input
+                if (shiftPressed) inputKey(c, key);
+                else commitMessage();
+                break;
+            case Keyboard.KEY_UP:
+                if (shiftPressed) setHistoryMessage(1);
+                else inputKey(c, key);
+                break;
+            case Keyboard.KEY_DOWN:
+                if (shiftPressed) setHistoryMessage(-1);
+                else inputKey(c, key);
+                break;
             default:
-                super.keyTyped(c, key);
+                inputKey(c, key);
         }
 
         final int linesAfter = input.getBackend().getLineCount();
         if (linesAfter != linesBefore)
             initGui();
+    }
+
+    private void inputKey(char c, int key) {
+        if (input.onKeyboard(c, key))
+            historyCursor = 0;
     }
 
     private void commitMessage() {
@@ -102,6 +116,27 @@ public class ChatexScreen extends MellowScreen {
             final EntityPlayerSP self = Minecraft.getMinecraft().player;
             ChatexRpc.sendSpeech(self.getUniqueID(), Misca.getSharedConfig().chat.getSpeechRange(0), text);
         }
+
+        hud.addToSentMessages(text);
+        historyCursor = 0;
+    }
+
+    private void setHistoryMessage(int cursorDelta) {
+        final List<String> history = hud.getSentMessages();
+        final int cursor = MathHelper.clamp(historyCursor + cursorDelta, 0, history.size());
+        if (historyCursor == cursor) return;
+
+        if (historyCursor == 0) {
+            historyInputBuffer = input.getText();
+        }
+
+        final String text = cursor == 0 ? historyInputBuffer : history.get(history.size() - cursor);
+
+        input.clear();
+        for (String line : text.split("\\R", -1))
+            input.insert(line);
+
+        historyCursor = cursor;
     }
 
     @Override

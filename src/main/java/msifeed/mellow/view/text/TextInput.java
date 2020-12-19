@@ -42,9 +42,9 @@ public class TextInput extends View implements InputHandler.Keyboard, InputHandl
     }
 
     @Override
-    public void onKeyboard(char c, int key) {
-        inputHelper.onKeyboard(c, key);
+    public boolean onKeyboard(char c, int key) {
         lastTimePressed = System.currentTimeMillis();
+        return inputHelper.onKeyboard(c, key);
     }
 
     @Override

@@ -27,7 +27,7 @@ public class TextInputHelper {
         backend.setCursor(line, column);
     }
 
-    public void onKeyboard(char c, int key) {
+    public boolean onKeyboard(char c, int key) {
         switch (c) {
 //            case 1:
 //                this.setCursorPositionEnd();
@@ -35,10 +35,10 @@ public class TextInputHelper {
 //                return true;
             case 3:
                 GuiScreen.setClipboardString(backend.toJoinedString());
-                return;
+                return false;
             case 22:
                 backend.insert(GuiScreen.getClipboardString());
-                return;
+                return true;
 //            case 24:
 //                GuiScreen.setClipboardString(this.getSelectedText());
 //
@@ -54,55 +54,52 @@ public class TextInputHelper {
         switch (key) {
             case Keyboard.KEY_LEFT:
                 backend.moveCursorColumn(false);
-                break;
+                return false;
             case Keyboard.KEY_RIGHT:
                 backend.moveCursorColumn(true);
-                break;
+                return false;
             case Keyboard.KEY_UP:
                 if (curLine == 0 && backend.getView().y > 0)
                     moveOffsetLine(-1);
                 backend.moveCursorLine(-1);
-                break;
+                return false;
             case Keyboard.KEY_DOWN:
                 backend.moveCursorLine(1);
                 if (curLine == backend.getLinesPerView() - 1 && curLine + 1 < backend.getLineCount())
                     moveOffsetLine(1);
-                break;
+                return false;
             case Keyboard.KEY_DELETE:
-                backend.remove(true);
-                break;
+                return backend.remove(true);
             case Keyboard.KEY_BACK:
-                backend.remove(false);
+                final boolean modified = backend.remove(false);
                 if (curLine == 0 && getCursorLineInView() > 0 || backend.getView().y >= backend.getLineCount())
                     moveOffsetLine(-1);
-                break;
+                return modified;
             case Keyboard.KEY_RETURN:
-                if (backend.breakLine() && curLine == backend.getLinesPerView() - 1 && curLine + 1 < backend.getLineCount())
+                final boolean newline = backend.breakLine();
+                if (newline && curLine == backend.getLinesPerView() - 1 && curLine + 1 < backend.getLineCount())
                     moveOffsetLine(1);
-                break;
+                return newline;
             case Keyboard.KEY_HOME:
                 backend.setCursor(backend.getCursor().y, 0);
-                break;
+                return false;
             case Keyboard.KEY_END:
                 backend.setCursor(backend.getCursor().y, backend.getCurrentLine().columns);
-                break;
+                return false;
             case Keyboard.KEY_PRIOR: // Page Up
                 if (navMode == NavMode.PAGES)
                     backend.moveCursorLine(-(backend.getLinesPerView() + getCursorLineInView()));
                 else
                     backend.moveCursorLine(-backend.getLinesPerView());
-                break;
+                return false;
             case Keyboard.KEY_NEXT: // Page Down
                 if (navMode == NavMode.PAGES)
                     backend.moveCursorLine(backend.getLinesPerView() - getCursorLineInView());
                 else
                     backend.moveCursorLine(backend.getLinesPerView());
-                break;
+                return false;
             default:
-                backend.insert(c);
-//                if (controller.insert(c) && curLine == controller.getLinesPerView() - 1 && curLine + 1 < controller.getLineCount())
-//                    moveOffsetLine(1);
-                break;
+                return backend.insert(c);
         }
     }
 

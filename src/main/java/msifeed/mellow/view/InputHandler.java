@@ -2,7 +2,7 @@ package msifeed.mellow.view;
 
 public interface InputHandler {
     interface Keyboard {
-        void onKeyboard(char c, int key);
+        boolean onKeyboard(char c, int key);
     }
 
     interface MouseClick {

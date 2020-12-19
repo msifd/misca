@@ -206,23 +206,22 @@ public class TextEditorBackend {
         }
     }
 
-    public void remove(boolean right) {
+    public boolean remove(boolean right) {
         final Line line = lines.get(cursor.y);
         final int target = getColumnTarget(line.sb, right);
 
         if (cursor.x == target)
-            return;
+            return false;
 
         final int start = Math.min(cursor.x, target);
         final int end = Math.max(cursor.x, target);
 
         if (start < 0) { // backspace line
             if (cursor.y == 0)
-                return;
+                return false;
             if (line.sb.length() == 0) {
                 lines.remove(cursor.y);
                 setCursor(cursor.y - 1, getLine(cursor.y - 1).sb.length());
-                cacheInvalid = true;
             } else {
                 final Line prevLn = lines.get(cursor.y - 1);
                 final int targetColumn = prevLn.columns;
@@ -233,19 +232,20 @@ public class TextEditorBackend {
                 else
                     line.remove(0, line.columns - leftover.length());
                 setCursor(cursor.y, targetColumn);
-                cacheInvalid = true;
             }
         } else if (end > line.sb.length()) { // delete line
             if (cursor.y == lines.size() - 1)
-                return;
+                return false;
             if (line.sb.length() == 0) {
                 lines.remove(cursor.y);
-                cacheInvalid = true;
             }
-        } else {
+        } else { //
             if (line.remove(start, end) && !right)
                 setCursor(cursor.y, target);
         }
+
+        cacheInvalid = true;
+        return true;
     }
 
     private int getColumnTarget(StringBuilder sb, boolean right) {
