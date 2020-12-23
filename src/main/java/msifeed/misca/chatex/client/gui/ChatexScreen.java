@@ -127,14 +127,17 @@ public class ChatexScreen extends MellowScreen {
         if (historyCursor == cursor) return;
 
         if (historyCursor == 0) {
-            historyInputBuffer = input.getText();
+            historyInputBuffer = input.getText().trim();
         }
 
         final String text = cursor == 0 ? historyInputBuffer : history.get(history.size() - cursor);
 
         input.clear();
-        for (String line : text.split("\\R", -1))
-            input.insert(line);
+        for (String line : text.split("\\R", -1)) {
+            if (!input.isEmpty())
+                input.insert("\n");
+            input.insert(line.trim());
+        }
 
         historyCursor = cursor;
     }

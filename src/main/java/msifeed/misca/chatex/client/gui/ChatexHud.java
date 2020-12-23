@@ -4,11 +4,10 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiNewChat;
 
 public class ChatexHud extends GuiNewChat {
-    private final Minecraft mc;
+    private final Minecraft mc = Minecraft.getMinecraft();
 
-    public ChatexHud(Minecraft mc) {
-        super(mc);
-        this.mc = mc;
+    public ChatexHud() {
+        super(Minecraft.getMinecraft());
     }
 
     @Override

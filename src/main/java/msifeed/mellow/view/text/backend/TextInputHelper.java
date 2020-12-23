@@ -77,8 +77,8 @@ public class TextInputHelper {
                 return modified;
             case Keyboard.KEY_RETURN:
                 final boolean newline = backend.breakLine();
-                if (newline && curLine == backend.getLinesPerView() - 1 && curLine + 1 < backend.getLineCount())
-                    moveOffsetLine(1);
+//                if (newline && curLine == backend.getLinesPerView() - 1 && curLine + 1 < backend.getLineCount())
+//                    moveOffsetLine(1);
                 return newline;
             case Keyboard.KEY_HOME:
                 backend.setCursor(backend.getCursor().y, 0);

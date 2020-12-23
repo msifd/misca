@@ -207,7 +207,7 @@ public class TextEditorBackend {
     }
 
     public boolean remove(boolean right) {
-        final Line line = lines.get(cursor.y);
+        final Line line = getCurrentLine();
         final int target = getColumnTarget(line.sb, right);
 
         if (cursor.x == target)
@@ -223,21 +223,27 @@ public class TextEditorBackend {
                 lines.remove(cursor.y);
                 setCursor(cursor.y - 1, getLine(cursor.y - 1).sb.length());
             } else {
-                final Line prevLn = lines.get(cursor.y - 1);
-                final int targetColumn = prevLn.columns;
-                cursor.x = targetColumn;
-                final String leftover = prevLn.insert(line.sb.toString());
+                final Line prevLine = lines.get(cursor.y - 1);
+                final int targetColumn = prevLine.columns;
+                final String leftover = prevLine.insertAtPos(line.sb.toString(), cursor.x);
                 if (leftover.isEmpty())
                     lines.remove(cursor.y);
                 else
                     line.remove(0, line.columns - leftover.length());
-                setCursor(cursor.y, targetColumn);
+                setCursor(cursor.y - 1, targetColumn);
             }
         } else if (end > line.sb.length()) { // delete line
             if (cursor.y == lines.size() - 1)
                 return false;
             if (line.sb.length() == 0) {
                 lines.remove(cursor.y);
+            } else {
+                final Line nextLine = lines.get(cursor.y + 1);
+                final String leftover = line.insertAtPos(nextLine.sb.toString(), cursor.x);
+                if (leftover.isEmpty())
+                    lines.remove(cursor.y + 1);
+                else
+                    line.remove(0, nextLine.columns - leftover.length());
             }
         } else { //
             if (line.remove(start, end) && !right)
@@ -310,12 +316,12 @@ public class TextEditorBackend {
         if (getLineCount() >= maxLines)
             return false;
 
-        final String ending = getCurrentLine().sb.substring(cursor.x);
-        if (ending.isEmpty()) {
+        final String tail = getCurrentLine().sb.substring(cursor.x);
+        if (tail.isEmpty()) {
             lines.add(cursor.y + 1, new Line());
         } else {
-            getCurrentLine().remove(cursor.x, cursor.x + ending.length());
-            lines.add(cursor.y + 1, new Line(ending));
+            getCurrentLine().remove(cursor.x, cursor.x + tail.length());
+            lines.add(cursor.y + 1, new Line(tail));
         }
 
         cursor.y++;
@@ -360,17 +366,23 @@ public class TextEditorBackend {
         }
 
         public String insert(String s) {
-            final String ts = fontRenderer.trimStringToWidth(s, maxWidth - width);
-            if (ts.isEmpty())
+            final String leftover = insertAtPos(s, cursor.x);
+            cursor.x += s.length() - leftover.length();
+
+            return leftover;
+        }
+
+        public String insertAtPos(String s, int pos) {
+            final String trimmed = fontRenderer.trimStringToWidth(s, maxWidth - width);
+            if (trimmed.isEmpty())
                 return s;
 
-            sb.insert(cursor.x, ts);
-            columns += ts.length();
-            width += fontRenderer.getStringWidth(ts);
-            cursor.x += ts.length();
+            sb.insert(pos, trimmed);
+            columns += trimmed.length();
+            width += fontRenderer.getStringWidth(trimmed);
             cacheInvalid = true;
 
-            return s.substring(ts.length());
+            return s.substring(trimmed.length());
         }
 
         public boolean remove(int start, int end) {
