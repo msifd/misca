@@ -2,12 +2,14 @@ package msifeed.misca.chatex.client.format;
 
 import msifeed.misca.Misca;
 import msifeed.misca.charsheet.CharsheetProvider;
+import msifeed.misca.charsheet.ICharsheet;
 import msifeed.misca.chatex.ChatexConfig;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.TextFormatting;
+import net.minecraft.util.text.event.ClickEvent;
 
 import java.util.Random;
 
@@ -34,6 +36,11 @@ public class SpeechFormat {
 
         final ITextComponent cc = csName.isEmpty() ? player.getDisplayName() : new TextComponentString(csName);
         cc.getStyle().setColor(isSelf ? TextFormatting.YELLOW : TextFormatting.GREEN);
+
+        final ICharsheet cs = CharsheetProvider.get(player);
+        final String wikiUrl = Misca.getSharedConfig().chat.wikiUrlBase + cs.getWikiPage();
+        cc.getStyle().setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, wikiUrl));
+
         return cc;
     }
 

@@ -18,6 +18,7 @@ public class CharsheetStorage implements Capability.IStorage<ICharsheet> {
         if (instance.isPlayer()) {
             nbt.setBoolean("IsPlayer", true);
             nbt.setString(Tag.name, instance.getName());
+            nbt.setString(Tag.wikiPage, instance.getWikiPage());
             instance.resources().writeNBT(nbt, Tag.resources);
         }
 
@@ -32,12 +33,14 @@ public class CharsheetStorage implements Capability.IStorage<ICharsheet> {
 
         if (nbt.hasKey("IsPlayer")) {
             instance.setName(nbt.getString(Tag.name));
+            instance.setWikiPage(nbt.getString(Tag.wikiPage));
             instance.resources().readNBT(nbt, Tag.resources);
         }
     }
 
     private static class Tag {
         private static final String name = "name";
+        private static final String wikiPage = "wiki";
         private static final String attributes = "attributes";
         private static final String resources = "resources";
     }

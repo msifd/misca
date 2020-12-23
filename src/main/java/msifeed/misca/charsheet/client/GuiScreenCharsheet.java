@@ -18,6 +18,7 @@ public class GuiScreenCharsheet extends GuiScreen {
     private final ICharsheet charsheet;
 
     private GuiTextField nameEdit;
+    private GuiTextField wikiEdit;
     private final ArrayList<GuiTextField> attrFields = new ArrayList<>();
 
     public GuiScreenCharsheet(EntityPlayer player) {
@@ -31,8 +32,11 @@ public class GuiScreenCharsheet extends GuiScreen {
         buttonList.add(new GuiButton(0, this.width / 2 - 100, this.height / 4 + 24 + 12, "Submit"));
         buttonList.add(new GuiButton(1, this.width / 2 - 100, this.height / 4 + 48 + 12, "Cancel"));
 
-        nameEdit = new GuiTextField(2, this.fontRenderer, this.width / 2 - 100, 60, 200, 20);
+        nameEdit = new GuiTextField(2, this.fontRenderer, this.width / 2 - 100, 50, 200, 20);
         nameEdit.setText(charsheet.getName());
+
+        wikiEdit = new GuiTextField(3, this.fontRenderer, this.width / 2 - 100, 70, 200, 20);
+        wikiEdit.setText(charsheet.getWikiPage());
 
         attrFields.clear();
         for (CharAttribute attr : CharAttribute.values()) {
@@ -59,6 +63,7 @@ public class GuiScreenCharsheet extends GuiScreen {
         switch (button.id) {
             case 0:
                 charsheet.setName(nameEdit.getText().trim());
+                charsheet.setWikiPage(wikiEdit.getText().trim());
                 for (int i = 0; i < attrFields.size(); i++) {
                     final CharAttribute attr = CharAttribute.values()[i];
                     final String input = attrFields.get(i).getText().trim();
@@ -77,6 +82,7 @@ public class GuiScreenCharsheet extends GuiScreen {
     @Override
     public void updateScreen() {
         nameEdit.updateCursorCounter();
+        wikiEdit.updateCursorCounter();
         attrFields.forEach(GuiTextField::updateCursorCounter);
     }
 
@@ -85,6 +91,7 @@ public class GuiScreenCharsheet extends GuiScreen {
         drawDefaultBackground();
 
         nameEdit.drawTextBox();
+        wikiEdit.drawTextBox();
         attrFields.forEach(GuiTextField::drawTextBox);
 
         super.drawScreen(mouseX, mouseY, partialTicks);
@@ -93,6 +100,7 @@ public class GuiScreenCharsheet extends GuiScreen {
     @Override
     protected void keyTyped(char typedChar, int keyCode) throws IOException {
         nameEdit.textboxKeyTyped(typedChar, keyCode);
+        wikiEdit.textboxKeyTyped(typedChar, keyCode);
         attrFields.forEach(f -> f.textboxKeyTyped(typedChar, keyCode));
         super.keyTyped(typedChar, keyCode);
     }
@@ -100,6 +108,7 @@ public class GuiScreenCharsheet extends GuiScreen {
     @Override
     protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
         nameEdit.mouseClicked(mouseX, mouseY, mouseButton);
+        wikiEdit.mouseClicked(mouseX, mouseY, mouseButton);
         attrFields.forEach(f -> f.mouseClicked(mouseX, mouseY, mouseButton));
         super.mouseClicked(mouseX, mouseY, mouseButton);
     }

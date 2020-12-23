@@ -3,6 +3,7 @@ package msifeed.misca.charsheet;
 public class Charsheet implements ICharsheet {
     private boolean isPlayer = false;
     private String name = "";
+    private String wikiPage = "";
     private final ValueContainer<CharAttribute> attributes = new ValueContainer<>(CharAttribute.class, 0, 25);
     private final ValueContainer<CharResource> resources = new ValueContainer<>(CharResource.class, 0, 1000);
 
@@ -27,6 +28,16 @@ public class Charsheet implements ICharsheet {
     }
 
     @Override
+    public String getWikiPage() {
+        return wikiPage;
+    }
+
+    @Override
+    public void setWikiPage(String page) {
+        this.wikiPage = page;
+    }
+
+    @Override
     public ValueContainer<CharAttribute> attrs() {
         return attributes;
     }
@@ -39,6 +50,7 @@ public class Charsheet implements ICharsheet {
     @Override
     public void replaceWith(ICharsheet charsheet) {
         name = charsheet.getName();
+        wikiPage = charsheet.getWikiPage();
         attributes.replaceWith(charsheet.attrs());
         resources.replaceWith(charsheet.resources());
     }

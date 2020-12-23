@@ -12,6 +12,9 @@ public interface ICharsheet extends Cloneable {
     String getName();
     void setName(String name);
 
+    String getWikiPage();
+    void setWikiPage(String page);
+
     ValueContainer<CharAttribute> attrs();
     ValueContainer<CharResource> resources();
 
