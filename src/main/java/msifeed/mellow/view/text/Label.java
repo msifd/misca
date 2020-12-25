@@ -36,6 +36,6 @@ public class Label extends View {
 
     @Override
     public void render() {
-        RenderParts.string(text, this.geometry, pref);
+        RenderParts.string(text, getRenderGeom(), pref);
     }
 }

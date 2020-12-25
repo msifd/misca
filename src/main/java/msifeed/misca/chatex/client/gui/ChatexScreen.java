@@ -1,5 +1,6 @@
 package msifeed.misca.chatex.client.gui;
 
+import msifeed.mellow.FocusState;
 import msifeed.mellow.MellowScreen;
 import msifeed.mellow.render.RenderUtils;
 import msifeed.mellow.view.text.TextInput;
@@ -9,6 +10,8 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraftforge.common.config.Config;
+import net.minecraftforge.common.config.ConfigManager;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 
@@ -17,8 +20,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class ChatexScreen extends MellowScreen {
-    private final TextInput input = new TextInput();
     private final ChatexHud hud = (ChatexHud) Minecraft.getMinecraft().ingameGUI.getChatGUI();
+    private final TextInput input = new TextInput();
+    private final ResizeHandle resizer = new ResizeHandle();
 
     private int historyCursor = 0;
     private String historyInputBuffer = "";
@@ -26,7 +30,9 @@ public class ChatexScreen extends MellowScreen {
     public ChatexScreen(String text) {
         input.insert(text);
         input.focus();
+
         container.addView(input);
+        container.addView(resizer);
     }
 
     @Override
@@ -40,11 +46,15 @@ public class ChatexScreen extends MellowScreen {
         input.setSize(inputWidth, inputHeight);
         input.getBackend().getView().setSize(inputWidth, inputHeight);
         // FIXME: fix input field view size
+
+        resizer.getScreenSize().set(width, height);
+        resizer.resetPos();
     }
 
     @Override
     public void closeGui() {
         Keyboard.enableRepeatEvents(false);
+        ConfigManager.sync(Misca.MODID, Config.Type.INSTANCE);
     }
 
     @Override
@@ -54,19 +64,20 @@ public class ChatexScreen extends MellowScreen {
         if (Mouse.hasWheel()) {
             hud.scroll(MathHelper.clamp(Mouse.getDWheel(), -5, 5));
         }
+
+        if (!FocusState.INSTANCE.getFocus().isPresent())
+            input.focus();
     }
 
     @Override
     protected void mouseClicked(int mouseX, int mouseY, int mouseButton) {
         if (mouseButton == 0) {
             final ITextComponent tc = this.mc.ingameGUI.getChatGUI().getChatComponent(Mouse.getX(), Mouse.getY());
-            if (tc != null && this.handleComponentClick(tc)) {
+            if (tc != null && this.handleComponentClick(tc))
                 return;
-            }
         }
 
-        input.onMouseClick(mouseX, mouseY, mouseButton);
-//        super.mouseClicked(mouseX, mouseY, mouseButton);
+        super.mouseClicked(mouseX, mouseY, mouseButton);
     }
 
     @Override

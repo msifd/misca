@@ -9,6 +9,7 @@ public enum FocusState {
     INSTANCE;
 
     private WeakReference<View> focus;
+    private WeakReference<View> press;
 
     public boolean isFocused(View view) {
         return focus != null && focus.get() == view;
@@ -24,5 +25,17 @@ public enum FocusState {
 
     public void clearFocus() {
         focus = null;
+    }
+
+    public Optional<View> getPress() {
+        return press == null ? Optional.empty() : Optional.ofNullable(press.get());
+    }
+
+    public void setPress(View view) {
+        press = new WeakReference<>(view);
+    }
+
+    public void clearPress() {
+        press = null;
     }
 }

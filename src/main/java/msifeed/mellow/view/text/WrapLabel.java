@@ -39,6 +39,6 @@ public class WrapLabel extends Label {
 
     @Override
     public void render() {
-        RenderParts.lines(lines, this.geometry, this.pref);
+        RenderParts.lines(lines, getRenderGeom(), this.pref);
     }
 }

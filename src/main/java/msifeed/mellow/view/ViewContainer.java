@@ -18,8 +18,8 @@ public class ViewContainer extends View {
 
     public Stream<View> getViewsAtPoint(int x, int y) {
         return viewList.stream()
-                .filter(view -> view.geometry.contains(x, y))
-                .sorted(Comparator.comparingInt(v -> v.geometry.z));
+                .filter(view -> view.getRenderGeom().contains(x, y))
+                .sorted(Comparator.comparingInt(v -> v.getRenderGeom().z));
     }
 
     @Override

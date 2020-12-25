@@ -44,12 +44,40 @@ public abstract class MellowScreen extends GuiScreen {
     @Override
     protected void mouseClicked(int mouseX, int mouseY, int mouseButton) {
         final View view = container.getViewsAtPoint(mouseX, mouseY).findFirst().orElse(null);
-        if (view instanceof InputHandler.MouseClick) {
+
+        if (view instanceof InputHandler) {
             FocusState.INSTANCE.setFocus(view);
-            ((InputHandler.MouseClick) view).onMouseClick(mouseX, mouseY, mouseButton);
+            FocusState.INSTANCE.setPress(view);
         } else {
             FocusState.INSTANCE.clearFocus();
         }
+
+        if (view instanceof InputHandler.Mouse)
+            ((InputHandler.Mouse) view).onMousePress(mouseX, mouseY, mouseButton);
+    }
+
+    @Override
+    protected void mouseClickMove(int mouseX, int mouseY, int clickedMouseButton, long timeSinceLastClick) {
+        final View press = FocusState.INSTANCE.getPress().orElse(null);
+        if (press == null) return;
+
+        if (press instanceof InputHandler.Mouse)
+            ((InputHandler.Mouse) press).onMouseMove(mouseX, mouseY, clickedMouseButton);
+    }
+
+    @Override
+    protected void mouseReleased(int mouseX, int mouseY, int state) {
+        final View press = FocusState.INSTANCE.getPress().orElse(null);
+        if (press == null) return;
+
+        if (press instanceof InputHandler.Mouse)
+            ((InputHandler.Mouse) press).onMouseRelease(mouseX, mouseY, state);
+
+        final View hover = container.getViewsAtPoint(mouseX, mouseY).findFirst().orElse(null);
+        if (press == hover && press instanceof InputHandler.MouseClick)
+            ((InputHandler.MouseClick) press).onMouseClick(mouseX, mouseY, state);
+
+        FocusState.INSTANCE.clearPress();
     }
 
     @Override

@@ -14,7 +14,6 @@ public class TextInput extends View implements InputHandler.Keyboard, InputHandl
     protected TextInputHelper inputHelper = new TextInputHelper(backend, TextInputHelper.NavMode.LINES);
     protected RenderParts.TextPref pref = new RenderParts.TextPref();
 
-    protected Geom textGeom = new Geom();
     protected long lastTimePressed = 0;
 
     public boolean isEmpty() {
@@ -53,15 +52,9 @@ public class TextInput extends View implements InputHandler.Keyboard, InputHandl
     }
 
     @Override
-    public void setPos(int x, int y, int z) {
-        super.setPos(x, y, z);
-        textGeom.setPos(x + 2, y + 3, z);
-    }
-
-    @Override
     public void render() {
-        RenderShapes.rect(this.geometry, 0xbb000000);
-        RenderParts.lines(backend.getViewLines(), textGeom, pref);
+        RenderShapes.rect(getRenderGeom(), 0xbb000000);
+        RenderParts.lines(backend.getViewLines(), getTextGeom(), pref);
         renderCursor();
     }
 
@@ -72,10 +65,16 @@ public class TextInput extends View implements InputHandler.Keyboard, InputHandl
         final int lineHeight = RenderUtils.lineHeight() + pref.gap;
 
 //        final Geom cursorGeom = this.getGeomWithMargin();
-        final Geom cursorGeom = textGeom.clone();
-        cursorGeom.translate(backend.getCursorXOffset(), lineHeight * inputHelper.getCursorLineInView() - 2);
-        cursorGeom.setSize(2, lineHeight);
+        final Geom geom = getTextGeom();
+        geom.translate(backend.getCursorXOffset(), lineHeight * inputHelper.getCursorLineInView() - 2);
+        geom.setSize(2, lineHeight);
 
-        RenderShapes.rect(cursorGeom, pref.color);
+        RenderShapes.rect(geom, pref.color);
+    }
+
+    protected Geom getTextGeom() {
+        final Geom geom = getRenderGeom();
+        geom.translate(2, 3, 0);
+        return geom;
     }
 }

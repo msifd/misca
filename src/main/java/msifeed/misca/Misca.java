@@ -26,6 +26,7 @@ import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
+import net.minecraftforge.fml.common.event.FMLServerStoppingEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import java.nio.file.Paths;
@@ -65,6 +66,8 @@ public class Misca {
 
     @EventHandler
     public void init(FMLInitializationEvent event) {
+        ConfigManager.sync(MODID, Config.Type.INSTANCE);
+
         chatex.init();
         combat.init();
         environ.init();
@@ -95,10 +98,14 @@ public class Misca {
         event.registerServerCommand(new InvoiceCommand());
     }
 
+    @EventHandler
+    public void serverStopping(FMLServerStoppingEvent event) {
+        ConfigManager.sync(MODID, Config.Type.INSTANCE);
+    }
+
     @SubscribeEvent
     public void onConfigChangedEvent(ConfigChangedEvent.OnConfigChangedEvent event) {
-        if (!event.getModID().equals(MODID)) return;
-
-        ConfigManager.sync(MODID, Config.Type.INSTANCE);
+        if (event.getModID().equals(MODID))
+            ConfigManager.sync(MODID, Config.Type.INSTANCE);
     }
 }

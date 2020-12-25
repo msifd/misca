@@ -1,5 +1,6 @@
 package msifeed.misca.chatex.client.gui;
 
+import msifeed.misca.client.MiscaConfig;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiNewChat;
 
@@ -13,5 +14,15 @@ public class ChatexHud extends GuiNewChat {
     @Override
     public boolean getChatOpen() {
         return mc.currentScreen instanceof ChatexScreen;
+    }
+
+    @Override
+    public int getChatWidth() {
+        return MiscaConfig.chatSize.x;
+    }
+
+    @Override
+    public int getChatHeight() {
+        return MiscaConfig.chatSize.y;
     }
 }

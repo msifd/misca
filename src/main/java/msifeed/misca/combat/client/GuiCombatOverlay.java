@@ -46,7 +46,7 @@ public class GuiCombatOverlay {
         final Battle state = BattleStateClient.STATE;
 
         final ScaledResolution resolution = RenderUtils.getScaledResolution();
-        final int pxPerFrame = frame.getGeom().w + 1;
+        final int pxPerFrame = frame.getRenderGeom().w + 1;
         final int frameOffset = (resolution.getScaledWidth() - state.getQueue().size() * pxPerFrame) / 2;
 
         frame.setPos(0, 0, 0);
@@ -59,7 +59,7 @@ public class GuiCombatOverlay {
         });
 
         bar.setPos(0, 0, 0);
-        bar.translate(frameOffset - bar.getGeom().w - 5, 5, 0);
+        bar.translate(frameOffset - bar.getRenderGeom().w - 5, 5, 0);
         bar.render();
     }
 
