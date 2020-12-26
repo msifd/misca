@@ -1,6 +1,5 @@
 package msifeed.misca.combat;
 
-import msifeed.misca.charsheet.Charsheet;
 import msifeed.misca.charsheet.CharsheetProvider;
 import msifeed.misca.charsheet.ICharsheet;
 import msifeed.misca.combat.battle.Battle;
@@ -24,12 +23,6 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 public class CombatHandler {
     private static final String CRITICAL_EVASION_DAMAGE_TYPE = "criticalEvasion";
 
-    private final Charsheet defaultCharsheet = new Charsheet();
-
-    CombatHandler() {
-        this.defaultCharsheet.attrs().setAll(5);
-    }
-
     @SubscribeEvent
     public void onEntityUpdate(LivingEvent.LivingUpdateEvent event) {
         final EntityLivingBase entity = event.getEntityLiving();
@@ -40,7 +33,7 @@ public class CombatHandler {
         final Battle battle = Combat.MANAGER.getBattle(com.getBattleId());
         if (battle == null || !battle.isLeader(entity.getUniqueID())) return;
 
-        final double movementAp = Rules.movementActionPoints(com.getPosition(), entity.getPositionVector());
+        final double movementAp = Combat.getRules().movementActionPoints(com.getPosition(), entity.getPositionVector());
         if (com.getActionPoints() < movementAp) {
 //            final double atkAp = Rules.attackActionPoints(entity) + com.getActionPointsOverhead();
 //            final double movAp = Rules.movementActionPoints(com.getPosition(), entity.getPositionVector());
@@ -71,8 +64,9 @@ public class CombatHandler {
             return;
         }
 
-        final double movementAp = Rules.movementActionPoints(com.getPosition(), srcEntity.getPositionVector());
-        final double attackAp = Rules.attackActionPoints(srcEntity);
+        final Rules rules = Combat.getRules();
+        final double movementAp = rules.movementActionPoints(com.getPosition(), srcEntity.getPositionVector());
+        final double attackAp = rules.attackActionPoints(srcEntity);
         final double totalAp = movementAp + attackAp;
 
         if (com.getActionPoints() < totalAp) {
@@ -104,21 +98,26 @@ public class CombatHandler {
 
     private void checkChances(LivingHurtEvent event, EntityLivingBase srcEntity) {
         final EntityLivingBase victim = event.getEntityLiving();
-        final ICharsheet srcCs = CharsheetProvider.getOr(srcEntity, defaultCharsheet);
-        final ICharsheet vicCs = CharsheetProvider.getOr(victim, defaultCharsheet);
+        final ICharsheet srcCs = CharsheetProvider.get(srcEntity);
+        final ICharsheet vicCs = CharsheetProvider.get(victim);
 
-        final double hitChance = Rules.hitRate(srcCs) - Rules.evasion(vicCs);
-        final double criticality = Dices.checkFloat(Rules.criticalHit(srcCs)) - Dices.checkFloat(Rules.criticalEvasion(vicCs));
+        final Rules rules = Combat.getRules();
+        final double hitChance = rules.hitRate(srcCs, srcEntity) - rules.evasion(vicCs);
+        final double criticality = Dices.checkFloat(rules.criticalHit(srcCs)) - Dices.checkFloat(rules.criticalEvasion(vicCs));
+
+        final double overrideDamage = Combat.getConfig().getWeaponOverride(srcEntity)
+                .map(wo -> wo.damage).orElse(0d);
+        final double damageAmount = event.getAmount() + overrideDamage;
 
         if (Dices.check(hitChance + criticality)) {
-            double damageMultiplier = 1 + Rules.damageIncrease(srcCs) + Rules.damageAbsorption(vicCs);
+            double damageMultiplier = 1 + rules.damageIncrease(srcCs) + rules.damageAbsorption(vicCs);
 
             if (criticality > 0) {
                 damageMultiplier += 1;
                 notifyActionBar("crit hit", event.getEntityLiving(), srcEntity);
             }
 
-            event.setAmount((float) (event.getAmount() * damageMultiplier));
+            event.setAmount((float) (damageAmount * damageMultiplier));
 
             final Battle battle = Combat.MANAGER.getEntityBattle(srcEntity);
             final boolean training = battle != null && battle.isTraining();
@@ -132,17 +131,18 @@ public class CombatHandler {
             event.setCanceled(true);
 
             if (criticality < 0) {
-                final double damageMultiplier = 1 + Rules.damageIncrease(srcCs) + Rules.damageAbsorption(srcCs);
+                final double damageMultiplier = 1 + rules.damageIncrease(srcCs) + rules.damageAbsorption(srcCs);
                 final DamageSource ds = new EntityDamageSourceIndirect(CRITICAL_EVASION_DAMAGE_TYPE, srcEntity, event.getEntity());
-                srcEntity.attackEntityFrom(ds, (float) (event.getAmount() * damageMultiplier));
+                srcEntity.attackEntityFrom(ds, (float) (damageAmount * damageMultiplier));
                 notifyActionBar("crit evasion", event.getEntityLiving(), srcEntity);
             }
         }
     }
 
     private boolean isApDepleted(EntityLivingBase entity, ICombatant com) {
-        final double mov = Rules.movementActionPoints(com.getPosition(), entity.getPositionVector());
-        final double atk = Rules.attackActionPoints(entity) + com.getActionPointsOverhead();
+        final Rules rules = Combat.getRules();
+        final double mov = rules.movementActionPoints(com.getPosition(), entity.getPositionVector());
+        final double atk = rules.attackActionPoints(entity) + com.getActionPointsOverhead();
         return com.getActionPoints() < (mov + atk);
     }
 

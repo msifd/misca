@@ -2,10 +2,10 @@ package msifeed.misca.combat.battle;
 
 import msifeed.misca.charsheet.CharsheetProvider;
 import msifeed.misca.charsheet.ICharsheet;
+import msifeed.misca.combat.Combat;
 import msifeed.misca.combat.cap.CombatantProvider;
 import msifeed.misca.combat.cap.CombatantSync;
 import msifeed.misca.combat.cap.ICombatant;
-import msifeed.misca.combat.rules.Rules;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
@@ -53,7 +53,7 @@ public class BattleFlow {
 
         final ICharsheet cs = CharsheetProvider.get(leader);
         final ICombatant com = CombatantProvider.get(leader);
-        com.setActionPoints(MathHelper.clamp(com.getActionPoints(), 0, Rules.maxActionPoints(cs)));
+        com.setActionPoints(MathHelper.clamp(com.getActionPoints(), 0, Combat.getRules().maxActionPoints(cs)));
         com.setActionPointsOverhead(0);
         com.setPosition(leader.getPositionVector());
         CombatantSync.sync(leader);
@@ -89,7 +89,7 @@ public class BattleFlow {
     public static void prepareLeader(EntityLivingBase entity) {
         final ICharsheet cs = CharsheetProvider.get(entity);
         final ICombatant com = CombatantProvider.get(entity);
-        com.setActionPoints(com.getActionPoints() + Rules.actionPointsPerMove(cs));
+        com.setActionPoints(com.getActionPoints() + Combat.getRules().actionPointsPerMove(cs));
         com.setPosition(entity.getPositionVector());
         CombatantSync.sync(entity);
 
@@ -118,7 +118,7 @@ public class BattleFlow {
 
     public static void consumeActionAp(EntityLivingBase entity) {
         final ICombatant com = CombatantProvider.get(entity);
-        final double apWithOh = Rules.attackActionPoints(entity) + com.getActionPointsOverhead();
+        final double apWithOh = Combat.getRules().attackActionPoints(entity) + com.getActionPointsOverhead();
         if (com.getActionPoints() >= apWithOh) {
             com.setActionPoints(com.getActionPoints() - apWithOh);
             com.setActionPointsOverhead(com.getActionPointsOverhead() + apWithOh / 2);
@@ -127,7 +127,7 @@ public class BattleFlow {
 
     public static void consumeMovementAp(EntityLivingBase entity) {
         final ICombatant com = CombatantProvider.get(entity);
-        final double ap = Rules.movementActionPoints(com.getPosition(), entity.getPositionVector());
+        final double ap = Combat.getRules().movementActionPoints(com.getPosition(), entity.getPositionVector());
         com.setPosition(entity.getPositionVector());
         com.setActionPoints(Math.max(com.getActionPoints() - ap, 0));
     }

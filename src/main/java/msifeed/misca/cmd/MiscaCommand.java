@@ -1,6 +1,7 @@
 package msifeed.misca.cmd;
 
 import msifeed.misca.Misca;
+import msifeed.misca.combat.Combat;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
@@ -60,6 +61,7 @@ public class MiscaCommand extends CommandBase {
         try {
             ConfigManager.sync(Misca.MODID, Config.Type.INSTANCE);
             Misca.SHARED.load();
+            Combat.CONFIG.load();
             sender.sendMessage(new TextComponentString("[Misca] Sync config ok"));
         } catch (Exception e) {
             e.printStackTrace();

@@ -3,7 +3,6 @@ package msifeed.sys.sync;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import msifeed.sys.rpc.RpcChannel;
-import msifeed.sys.rpc.RpcContext;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
@@ -39,7 +38,7 @@ public class SyncChannel<T> {
         this.value = getDefaultInstance();
 
         try {
-            final Method syncMethod = getClass().getDeclaredMethod("onSyncMessage", RpcContext.class, String.class);
+            final Method syncMethod = getClass().getDeclaredMethod("onSyncMessage", byte[].class);
             rpc.register(rpcSyncMethod, this, syncMethod);
         } catch (NoSuchMethodException e) {
             e.printStackTrace();
@@ -53,8 +52,8 @@ public class SyncChannel<T> {
         return value;
     }
 
-    public void onSyncMessage(RpcContext ctx, String json) {
-        updateValue(gson.fromJson(json, type));
+    public void onSyncMessage(byte[] jsonBytes) {
+        updateValue(gson.fromJson(new String(jsonBytes, StandardCharsets.UTF_8), type));
     }
 
     public void load() throws Exception {
@@ -74,13 +73,15 @@ public class SyncChannel<T> {
     }
 
     public void broadcast() {
-        rpc.sendToAll(rpcSyncMethod, gson.toJson(value));
+        final byte[] jsonBytes = gson.toJson(value).getBytes(StandardCharsets.UTF_8);
+        rpc.sendToAll(rpcSyncMethod, (Object) jsonBytes);
     }
 
     @SubscribeEvent
     public void onPlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
         if (event.player.world.isRemote) return;
-        rpc.sendTo((EntityPlayerMP) event.player, rpcSyncMethod, gson.toJson(value));
+        final byte[] jsonBytes = gson.toJson(value).getBytes(StandardCharsets.UTF_8);
+        rpc.sendTo((EntityPlayerMP) event.player, rpcSyncMethod, (Object) jsonBytes);
     }
 
     private T getDefaultInstance() {

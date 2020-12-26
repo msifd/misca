@@ -2,6 +2,7 @@ package msifeed.misca.combat.client;
 
 import msifeed.mellow.render.RenderUtils;
 import msifeed.misca.client.MiscaConfig;
+import msifeed.misca.combat.Combat;
 import msifeed.misca.combat.battle.Battle;
 import msifeed.misca.combat.battle.BattleStateClient;
 import msifeed.misca.combat.cap.CombatantProvider;
@@ -67,6 +68,7 @@ public class GuiCombatOverlay {
         final EntityPlayer player = Minecraft.getMinecraft().player;
         final ICombatant com = CombatantProvider.get(player);
         final Battle state = BattleStateClient.STATE;
+        final Rules rules = Combat.getRules();
 
         final Vec3d pos = com.getPosition();
         final String joinedMembers = state.getMembers().entrySet().stream()
@@ -77,9 +79,9 @@ public class GuiCombatOverlay {
                 .collect(Collectors.joining(", "));
         final String leaderName = getNameOrUuid(state.getLeaderUuid(), state.getLeader());
         final String posStr = String.format("x: %.2f, y: %.2f, z: %.2f", pos.x, pos.y, pos.z);
-        final double moveAp = Rules.movementActionPoints(com.getPosition(), player.getPositionVector());
+        final double moveAp = rules.movementActionPoints(com.getPosition(), player.getPositionVector());
         final double overheadAp = com.getActionPointsOverhead();
-        final double attackAp = Rules.attackActionPoints(player) + overheadAp;
+        final double attackAp = rules.attackActionPoints(player) + overheadAp;
 
         final String[] lines = {
                 "members: " + joinedMembers,
@@ -123,8 +125,9 @@ public class GuiCombatOverlay {
         final EntityLivingBase entity = event.getEntity();
 
         final ICombatant com = CombatantProvider.get(entity);
-        final double atkAp = Rules.attackActionPoints(entity) + com.getActionPointsOverhead();
-        final double movAp = Rules.movementActionPoints(com.getPosition(), entity.getPositionVector());
+        final Rules rules = Combat.getRules();
+        final double atkAp = rules.attackActionPoints(entity) + com.getActionPointsOverhead();
+        final double movAp = rules.movementActionPoints(com.getPosition(), entity.getPositionVector());
         final String apStr = String.format("ap: %.1f, atk: %.1f, mov: %.1f", com.getActionPoints(), atkAp, movAp);
         renderTextAt(apStr, event.getX(), event.getY() + event.getEntity().getEyeHeight() + 0.8, event.getZ(), false);
 

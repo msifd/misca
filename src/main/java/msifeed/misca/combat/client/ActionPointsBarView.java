@@ -3,6 +3,7 @@ package msifeed.misca.combat.client;
 import msifeed.mellow.render.RenderShapes;
 import msifeed.mellow.utils.Geom;
 import msifeed.mellow.view.View;
+import msifeed.misca.combat.Combat;
 import msifeed.misca.combat.cap.CombatantProvider;
 import msifeed.misca.combat.cap.ICombatant;
 import msifeed.misca.combat.rules.Rules;
@@ -19,9 +20,10 @@ public class ActionPointsBarView extends View {
         final EntityPlayer player = Minecraft.getMinecraft().player;
         final ICombatant com = CombatantProvider.get(player);
 
+        final Rules rules = Combat.getRules();
         final double fullAp = com.getActionPoints();
-        final double moveAp = Rules.movementActionPoints(com.getPosition(), player.getPositionVector());
-        final double actionAp = Rules.attackActionPoints(player);
+        final double moveAp = rules.movementActionPoints(com.getPosition(), player.getPositionVector());
+        final double actionAp = rules.attackActionPoints(player);
         final double ap = Math.max(com.getActionPoints() - moveAp, 0);
 
         final int bgColor = ap > 0 ? 0xffffffff : 0xffff0000;
