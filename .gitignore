@@ -28,5 +28,6 @@ forge*changelog.txt
 # exclude examples
 run/config/*
 !run/config
-!run/config/genesis
+!run/config/misca
 !run/resourcepacks
+/old_mellow

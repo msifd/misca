@@ -23,7 +23,7 @@ public class MiscaCommand extends CommandBase {
 
     @Override
     public String getUsage(ICommandSender sender) {
-        return "/misca <config>";
+        return "/misca <sync>";
     }
 
     @Override
@@ -35,7 +35,7 @@ public class MiscaCommand extends CommandBase {
     @Override
     public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender, String[] args, @Nullable BlockPos targetPos) {
         if (args.length == 0)
-            return Collections.singletonList("config");
+            return Collections.singletonList("sync");
         else
             return Collections.emptyList();
     }
@@ -48,7 +48,7 @@ public class MiscaCommand extends CommandBase {
         }
 
         switch (args[0]) {
-            case "config":
+            case "sync":
                 syncConfig(sender);
                 break;
             default:
@@ -60,8 +60,8 @@ public class MiscaCommand extends CommandBase {
     private void syncConfig(ICommandSender sender) {
         try {
             ConfigManager.sync(Misca.MODID, Config.Type.INSTANCE);
-            Misca.SHARED.load();
-            Combat.CONFIG.load();
+            Misca.SHARED.sync();
+            Combat.CONFIG.sync();
             sender.sendMessage(new TextComponentString("[Misca] Sync config ok"));
         } catch (Exception e) {
             e.printStackTrace();

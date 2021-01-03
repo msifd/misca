@@ -83,8 +83,8 @@ public class Misca {
     @EventHandler
     public void serverStarting(FMLServerStartingEvent event) {
         try {
-            SHARED.load();
-            Combat.CONFIG.load();
+            SHARED.sync();
+            Combat.CONFIG.sync();
         } catch (Exception e) {
             e.printStackTrace();
         }

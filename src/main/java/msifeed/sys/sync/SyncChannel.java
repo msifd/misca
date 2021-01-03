@@ -56,15 +56,21 @@ public class SyncChannel<T> {
         updateValue(gson.fromJson(new String(jsonBytes, StandardCharsets.UTF_8), type));
     }
 
-    public void load() throws Exception {
+    public void sync() throws Exception {
         if (!Files.isRegularFile(filePath)) {
             writeFile();
             return;
         }
 
+        final String oldState = gson.toJson(value);
         final BufferedReader reader = Files.newBufferedReader(filePath, StandardCharsets.UTF_8);
         updateValue(gson.fromJson(reader, type));
         broadcast();
+
+        final String newState = gson.toJson(value);
+        if (!oldState.equals(newState)) {
+            writeFile();
+        }
     }
 
     private void writeFile() throws IOException {

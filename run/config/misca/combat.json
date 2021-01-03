@@ -1,0 +1,40 @@
+{
+  "rules": {
+    "damageIncreaseMeleePerStr": 0.04,
+    "damageIncreaseRangePerStr": 0.02,
+    "damageAbsorptionPerEnd": 0.04,
+    "hitRateBase": 0.5,
+    "hitRateMeleePerPer": 0.015,
+    "hitRateRangePerPer": 0.03,
+    "hitRatePerLck": 0.005,
+    "evasionPerRef": 0.03,
+    "evasionPerLck": 0.005,
+    "meleeWithRangedEvasionPenalty": 0.02,
+    "criticalHitBase": 0.01,
+    "criticalHitPerPer": 0.0025,
+    "criticalHitPerLck": 0.0075,
+    "criticalEvasionBase": 0.01,
+    "criticalEvasionPerEnd": 0.0025,
+    "criticalEvasionPerLck": 0.0075,
+    "coverPerBlock": 0.5,
+    "attackApBase": 6.0,
+    "attackApDefault": 4.0,
+    "movementApFactor": 1.0,
+    "movementApRiseFactor": 1.0,
+    "movementApDescentFactor": 1.0,
+    "apPerMoveBase": 5.0,
+    "apPerMovePerAgi": 1.0,
+    "maxApBase": 0.0,
+    "maxApPerAgi": 4.0
+  },
+  "overrides": {
+    "minecraft:diamond_sword": {
+      "damage": 100.0,
+      "ap": 15.0,
+      "hitRate": 1.0,
+      "traits": [
+        "melee"
+      ]
+    }
+  }
+}
