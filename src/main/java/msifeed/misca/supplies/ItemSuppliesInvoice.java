@@ -19,14 +19,10 @@ import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
-import java.lang.ref.WeakReference;
 import java.util.List;
 
 public class ItemSuppliesInvoice extends Item {
     public static final String ID = "supplies_invoice";
-
-    private transient WeakReference<ItemStack> tmpStack = null;
-    private transient ISuppliesInvoice tmpInvoice = null;
 
     public ItemSuppliesInvoice() {
         setRegistryName(Misca.MODID, ID);
@@ -37,7 +33,7 @@ public class ItemSuppliesInvoice extends Item {
         final NBTTagCompound nbt = new NBTTagCompound();
         nbt.setTag("Invoice", SuppliesInvoiceProvider.encode(invoice));
 
-        final ItemStack item = new ItemStack(MiscaThings.invoice);
+        final ItemStack item = new ItemStack(MiscaThings.suppliesInvoice);
         item.setTagCompound(nbt);
 
         return item;
@@ -45,6 +41,7 @@ public class ItemSuppliesInvoice extends Item {
 
     @Override
     public EnumActionResult onItemUse(EntityPlayer player, World worldIn, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
+        if (worldIn.isRemote) return EnumActionResult.PASS;
         final TileEntity tile = worldIn.getTileEntity(pos);
         if (!(tile instanceof IInventory)) return EnumActionResult.FAIL;
         final ISuppliesInvoice supplies = SuppliesInvoiceProvider.get(tile);
@@ -61,8 +58,7 @@ public class ItemSuppliesInvoice extends Item {
 
     @Override
     public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn) {
-        if (tmpStack == null || tmpStack.get() != stack)
-            tmpInvoice = SuppliesInvoiceProvider.decode(stack.getSubCompound("Invoice"));
+        final ISuppliesInvoice tmpInvoice = SuppliesInvoiceProvider.decode(stack.getSubCompound("Invoice"));
         if (tmpInvoice == null || tmpInvoice.isEmpty()) {
             tooltip.add("Invoice is empty!: %d min");
             return;

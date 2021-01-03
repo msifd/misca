@@ -38,7 +38,8 @@ public class SpeechFormat {
         cc.getStyle().setColor(isSelf ? TextFormatting.YELLOW : TextFormatting.GREEN);
 
         final ICharsheet cs = CharsheetProvider.get(player);
-        final String wikiUrl = Misca.getSharedConfig().chat.wikiUrlBase + cs.getWikiPage();
+        final String wikiPage = cs.getWikiPage().isEmpty() ? cs.getName() : cs.getWikiPage();
+        final String wikiUrl = Misca.getSharedConfig().chat.wikiUrlBase + wikiPage;
         cc.getStyle().setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, wikiUrl));
 
         return cc;

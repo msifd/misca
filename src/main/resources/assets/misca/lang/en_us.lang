@@ -2,6 +2,7 @@ key.categories.misca=Misca
 key.misca.charsheet=Charsheet
 
 item.supplies_invoice.name=Supplies invoice
+item.supplies_beacon.name=Supplies beacon
 
 misca.chatex.speech=%s: %s
 misca.chatex.global=[GLOB] %s: %s

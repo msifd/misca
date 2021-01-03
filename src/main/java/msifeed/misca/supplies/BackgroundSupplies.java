@@ -40,7 +40,7 @@ public class BackgroundSupplies {
             deliver(supplies, (IInventory) tile);
     }
 
-    private static void deliver(ISuppliesInvoice supplies, IInventory inv) {
+    public static void deliver(ISuppliesInvoice supplies, IInventory inv) {
         final long interval = supplies.getDeliveryInterval();
         if (interval < 1)
             return;

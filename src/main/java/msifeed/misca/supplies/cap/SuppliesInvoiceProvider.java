@@ -1,5 +1,6 @@
 package msifeed.misca.supplies.cap;
 
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
@@ -22,6 +23,11 @@ public class SuppliesInvoiceProvider implements ICapabilitySerializable<NBTBase>
     @Nullable
     public static ISuppliesInvoice get(TileEntity tile) {
         return tile.getCapability(SuppliesInvoiceProvider.CAP, null);
+    }
+
+    @Nullable
+    public static ISuppliesInvoice get(ItemStack stack) {
+        return stack.getCapability(SuppliesInvoiceProvider.CAP, null);
     }
 
     public static NBTTagCompound encode(ISuppliesInvoice cap) {

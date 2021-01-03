@@ -1,5 +1,6 @@
 package msifeed.misca.supplies;
 
+import msifeed.misca.MiscaThings;
 import msifeed.misca.supplies.cap.ISuppliesInvoice;
 import msifeed.misca.supplies.cap.SuppliesInvoice;
 import msifeed.misca.supplies.cap.SuppliesInvoiceProvider;
@@ -16,6 +17,8 @@ import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraftforge.common.ForgeHooks;
 
+import javax.annotation.Nullable;
+
 public class InvoiceCommand extends CommandBase {
     @Override
     public String getName() {
@@ -24,7 +27,7 @@ public class InvoiceCommand extends CommandBase {
 
     @Override
     public String getUsage(ICommandSender sender) {
-        return "/invoice <interval minutes> <max sequence> OR without arguments";
+        return "/invoice <interval minutes> <max sequence> OR /invoice beacon OR without arguments";
     }
 
     @Override
@@ -33,55 +36,48 @@ public class InvoiceCommand extends CommandBase {
             return;
 
         final EntityPlayer player = (EntityPlayer) sender;
-        final RayTraceResult ray = ForgeHooks.rayTraceEyes(player, 5);
-        if (ray == null || ray.typeOfHit != RayTraceResult.Type.BLOCK) {
-            sender.sendMessage(new TextComponentString("Look at container!"));
-            return;
-        }
-
-        final TileEntity tile = player.world.getTileEntity(ray.getBlockPos());
-        if (!(tile instanceof IInventory)) {
-            sender.sendMessage(new TextComponentString("This is not a container!"));
-            return;
-        }
-        final ISuppliesInvoice supplies = SuppliesInvoiceProvider.get(tile);
-        if (supplies == null) {
-            sender.sendMessage(new TextComponentString("Supplies capability is somehow missing! :("));
-            return;
-        }
-
 
         if (args.length == 0) {
-            sender.sendMessage(new TextComponentString("=== Supplies ==="));
-            if (!supplies.isEmpty()) {
-                final long interval = supplies.getDeliveryInterval();
-                final long lastDelivery = supplies.getLastDeliveryTime();
-                final long maxSequence = supplies.getMaxDeliverySequence();
-                final long now = System.currentTimeMillis();
-                final double nextSupply = (now - lastDelivery) % interval / (double) interval;
+            handleShowInfo(player);
+        } else if (args[0].equals("beacon")) {
+            handleCreateBeacon(player);
+        } else if (args.length >= 2) {
+            handleCreateInvoice(player, args);
+        } else {
+            player.sendStatusMessage(new TextComponentString(getUsage(sender)), false);
+        }
+    }
 
-                sender.sendMessage(new TextComponentString(String.format("Interval: %d min, Max Sequence: %d",
-                        interval / 60000, maxSequence)));
-                sender.sendMessage(new TextComponentString(String.format("Next supply in: %.1f min", nextSupply)));
-                for (ItemStack is : supplies.getProducts()) {
-                    sender.sendMessage(new TextComponentString(String.format("* %d x %s",
-                            is.getCount(), is.getDisplayName())));
-                }
-            } else {
-                sender.sendMessage(new TextComponentString("No supplies!"));
-            }
+    private static void handleCreateBeacon(EntityPlayer player) {
+        final ItemStack stack = player.getHeldItemMainhand();
+        if (stack.getItem() != MiscaThings.suppliesInvoice) {
+            player.sendMessage(new TextComponentString("You need to take invoice in main hand!"));
             return;
         }
 
-        if (args.length != 2) {
-            sender.sendMessage(new TextComponentString("Look at Misca container and call command."));
-            sender.sendMessage(new TextComponentString(getUsage(sender)));
+        final ISuppliesInvoice invoice = SuppliesInvoiceProvider.decode(stack.getOrCreateSubCompound("Invoice"));
+        if (invoice.isEmpty()) {
+            player.sendMessage(new TextComponentString("This invoice is empty."));
             return;
         }
+
+        final ItemStack beacon = ItemSuppliesBeacon.createBeaconItem(invoice);
+        if (beacon == null) {
+            player.sendMessage(new TextComponentString("Cant create beacon from this invoice, somehow."));
+            return;
+        }
+
+        player.addItemStackToInventory(beacon);
+
+    }
+
+    private void handleCreateInvoice(EntityPlayer player, String[] args) throws CommandException {
+        final TileEntity tile = getPointingTile(player);
+        if (tile == null) return;
 
         final IInventory container = (IInventory) tile;
         if (container.isEmpty()) {
-            sender.sendMessage(new TextComponentString("Container is empty!"));
+            player.sendMessage(new TextComponentString("Container is empty!"));
             return;
         }
 
@@ -100,5 +96,52 @@ public class InvoiceCommand extends CommandBase {
         }
 
         player.addItemStackToInventory(ItemSuppliesInvoice.createInvoiceItem(invoice));
+    }
+
+    private static void handleShowInfo(EntityPlayer player) {
+        final TileEntity tile = getPointingTile(player);
+        if (tile == null) return;
+
+        final ISuppliesInvoice supplies = SuppliesInvoiceProvider.get(tile);
+        if (supplies == null) {
+            player.sendMessage(new TextComponentString("Supplies capability is somehow missing! :("));
+            return;
+        }
+
+        player.sendMessage(new TextComponentString("=== Supplies ==="));
+        if (!supplies.isEmpty()) {
+            final long interval = supplies.getDeliveryInterval();
+            final long lastDelivery = supplies.getLastDeliveryTime();
+            final long maxSequence = supplies.getMaxDeliverySequence();
+            final long now = System.currentTimeMillis();
+            final double nextSupply = (interval - (now - lastDelivery) % interval) / 60000d;
+
+            player.sendMessage(new TextComponentString(String.format("Interval: %d min, Max Sequence: %d",
+                    interval / 60000, maxSequence)));
+            player.sendMessage(new TextComponentString(String.format("Next supply in: %.1f min", nextSupply)));
+            for (ItemStack is : supplies.getProducts()) {
+                player.sendMessage(new TextComponentString(String.format("* %d x %s",
+                        is.getCount(), is.getDisplayName())));
+            }
+        } else {
+            player.sendMessage(new TextComponentString("No supplies!"));
+        }
+    }
+
+    @Nullable
+    private static TileEntity getPointingTile(EntityPlayer player) {
+        final RayTraceResult ray = ForgeHooks.rayTraceEyes(player, 5);
+        if (ray == null || ray.typeOfHit != RayTraceResult.Type.BLOCK) {
+            player.sendMessage(new TextComponentString("Look at container!"));
+            return null;
+        }
+
+        final TileEntity tile = player.world.getTileEntity(ray.getBlockPos());
+        if (!(tile instanceof IInventory)) {
+            player.sendMessage(new TextComponentString("This is not a container!"));
+            return null;
+        }
+
+        return tile;
     }
 }
