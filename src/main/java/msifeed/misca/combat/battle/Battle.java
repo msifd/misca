@@ -42,6 +42,10 @@ public class Battle {
         queue.remove(entityId);
     }
 
+    public void removeFromQueue(UUID entityId) {
+        queue.remove(entityId);
+    }
+
     public Stream<EntityLivingBase> getMemberEntities() {
         return members.values().stream()
                 .map(Reference::get)

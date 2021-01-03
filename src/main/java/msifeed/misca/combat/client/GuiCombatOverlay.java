@@ -95,7 +95,7 @@ public class GuiCombatOverlay {
                 "MOVEMENT: " + formatActionPoints(moveAp, com.getActionPoints()),
                 "ATTACK: " + formatActionPoints(attackAp, com.getActionPoints()) + String.format(" (overhead: %.2f)", overheadAp),
                 "TOTAL: " + formatActionPoints(moveAp + attackAp, com.getActionPoints())
-                        + String.format(" / %.2f", com.getActionPoints())
+                        + String.format(" / %.2f", com.getActionPoints()),
         };
 
         final FontRenderer fr = Minecraft.getMinecraft().fontRenderer;
@@ -116,13 +116,22 @@ public class GuiCombatOverlay {
         final ICombatant com = CombatantProvider.get(player);
         if (!com.isInBattle()) return;
 
-        renderTextAt("pos", com.getPosition().x, com.getPosition().y + 1, com.getPosition().z, true);
+        renderTextAt("pos", com.getPosition().x, com.getPosition().y + 1.2, com.getPosition().z, true);
     }
 
     @SubscribeEvent
     public void onRenderEntity(RenderLivingEvent.Post<EntityLivingBase> event) {
         if (!MiscaConfig.combatDebug) return;
+
+        final EntityPlayer self = Minecraft.getMinecraft().player;
         final EntityLivingBase entity = event.getEntity();
+        if (self == entity) return;
+
+        if (!CombatantProvider.get(self).isInBattle()) return;
+
+        final double cover = Combat.getRules().coverBlocks(self.world, self.getPositionVector(), entity.getPositionVector());
+        final String coverStr = String.format("cov: %.1f", cover);
+        renderTextAt(coverStr, event.getX(), event.getY() + event.getEntity().getEyeHeight() + 1.0, event.getZ(), false);
 
         final ICombatant com = CombatantProvider.get(entity);
         final Rules rules = Combat.getRules();
@@ -153,6 +162,7 @@ public class GuiCombatOverlay {
         GlStateManager.disableLighting();
         GlStateManager.depthMask(false);
 
+        GlStateManager.translate(-fr.getStringWidth(str) / 2f, 0, 0);
         fr.drawString(str, 0, 0, 0xffffffff);
 
         GlStateManager.depthMask(true);

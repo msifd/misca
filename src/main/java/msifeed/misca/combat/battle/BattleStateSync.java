@@ -15,7 +15,7 @@ public class BattleStateSync {
     private static final String members = "combat.members";
     private static final String queue = "combat.queue";
 
-    static void sync(Battle battle) {
+    public static void sync(Battle battle) {
         final NBTTagCompound nbtMembers = BattleStateSync.encodeUuids(battle.getMembers().keySet());
         final NBTTagCompound nbtQueue = BattleStateSync.encodeUuids(battle.getQueue());
         battle.getPlayers().forEach(p -> {
@@ -29,7 +29,7 @@ public class BattleStateSync {
         Misca.RPC.sendTo(player, queue, BattleStateSync.encodeUuids(battle.getQueue()));
     }
 
-    static void syncQueue(Battle battle) {
+    public static void syncQueue(Battle battle) {
         final NBTTagCompound nbt = BattleStateSync.encodeUuids(battle.getQueue());
         battle.getPlayers().forEach(p -> Misca.RPC.sendTo(p, queue, nbt));
     }

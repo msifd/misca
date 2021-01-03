@@ -1,7 +1,6 @@
 package msifeed.misca.combat;
 
 import msifeed.misca.Misca;
-import msifeed.misca.MiscaSharedConfig;
 import msifeed.misca.combat.battle.BattleManager;
 import msifeed.misca.combat.battle.BattleStateSync;
 import msifeed.misca.combat.cap.*;

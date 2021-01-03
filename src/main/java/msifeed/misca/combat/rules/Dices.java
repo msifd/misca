@@ -9,11 +9,7 @@ public class Dices {
         return rand.nextFloat() < chance;
     }
 
-    public static double checkFloat(double chance) {
+    public static int checkInt(double chance) {
         return rand.nextDouble() < chance ? 1 : 0;
-    }
-
-    public static int d20() {
-        return rand.nextInt(20) + 1;
     }
 }

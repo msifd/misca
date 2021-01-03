@@ -1,6 +1,5 @@
 package msifeed.misca.combat;
 
-import msifeed.misca.Misca;
 import msifeed.misca.combat.rules.Rules;
 import msifeed.misca.combat.rules.WeaponOverride;
 import net.minecraft.entity.EntityLivingBase;
@@ -13,10 +12,6 @@ import java.util.Optional;
 public class CombatConfig {
     public Rules rules = new Rules();
     public Map<ResourceLocation, WeaponOverride> overrides = new HashMap<>();
-
-    public CombatConfig() {
-        overrides.put(new ResourceLocation(Misca.MODID, "foobar"), new WeaponOverride());
-    }
 
     public Optional<WeaponOverride> getWeaponOverride(EntityLivingBase entity) {
         final ResourceLocation handLoc = entity.getHeldItemMainhand().getItem().getRegistryName();
