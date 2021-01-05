@@ -17,6 +17,7 @@ import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.ZoneId;
 
 public class SyncChannel<T> {
     private final Class<T> type;
@@ -25,6 +26,8 @@ public class SyncChannel<T> {
     private final Path filePath;
     private final Gson gson = new GsonBuilder()
             .registerTypeAdapter(ResourceLocation.class, new ResourceLocation.Serializer())
+            .registerTypeAdapter(ZoneId.class, new ZoneIdAdapter())
+            .serializeNulls()
             .setPrettyPrinting()
             .create();
 

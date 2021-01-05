@@ -18,12 +18,16 @@
   "environ": {
     "0": {
       "rain": {
-        "income": 10,
+        "income": 0,
         "outcome": 1,
         "thunder": 10000,
         "min": 1000,
         "max": 5000,
         "dice": 0
+      },
+      "time": {
+        "timezone": "+03:00",
+        "scale": 0.0
       }
     }
   },
