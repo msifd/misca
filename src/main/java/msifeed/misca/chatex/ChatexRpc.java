@@ -24,7 +24,6 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import java.util.Objects;
 import java.util.UUID;
 
-@SideOnly(Side.CLIENT)
 public class ChatexRpc {
     private static final String speech = "chatex.speech";
     private static final String global = "chatex.global";
@@ -32,7 +31,6 @@ public class ChatexRpc {
     private static final String notifyTyping = "chatex.typing.notify";
     private static final String broadcastTyping = "chatex.typing.broadcast";
 
-    @SideOnly(Side.CLIENT)
     private static final SoundEvent chatSound = new SoundEvent(new ResourceLocation(Misca.MODID, "chatex.chat_message"));
 
     // // // // Shared handlers
@@ -45,12 +43,17 @@ public class ChatexRpc {
             if (speaker instanceof EntityPlayerMP)
                 broadcastSpeech((EntityPlayerMP) speaker, range, msg);
         } else {
-            final EntityPlayerSP self = Minecraft.getMinecraft().player;
-            final EntityPlayer speaker = self.world.getPlayerEntityByUUID(speakerId);
-            if (speaker == null) return;
-            self.sendMessage(SpeechFormat.format(self, speaker, range, msg));
-            playNotificationSound(speaker);
+            onSpeechClient(speakerId, range, msg);
         }
+    }
+
+    @SideOnly(Side.CLIENT)
+    private void onSpeechClient(UUID speakerId, int range, String msg) {
+        final EntityPlayerSP self = Minecraft.getMinecraft().player;
+        final EntityPlayer speaker = self.world.getPlayerEntityByUUID(speakerId);
+        if (speaker == null) return;
+        self.sendMessage(SpeechFormat.format(self, speaker, range, msg));
+        playNotificationSound(speaker);
     }
 
     // // // // Server senders
@@ -91,12 +94,14 @@ public class ChatexRpc {
 
     // // // // Client handlers
 
+    @SideOnly(Side.CLIENT)
     @RpcMethodHandler(global)
     public void onGlobal(String speaker, String msg) {
         final EntityPlayerSP self = Minecraft.getMinecraft().player;
         displaySelfMessage(self, GlobalFormat.format(self, speaker, msg));
     }
 
+    @SideOnly(Side.CLIENT)
     @RpcMethodHandler(roll)
     public void onRoll(RpcContext ctx, UUID uuid, String spec, long result) {
         final NetworkPlayerInfo info = Objects.requireNonNull(ctx.getClientHandler().getPlayerInfo(uuid));
@@ -108,11 +113,13 @@ public class ChatexRpc {
         displaySelfMessage(Minecraft.getMinecraft().player, new TextComponentString(msg));
     }
 
+    @SideOnly(Side.CLIENT)
     private static void displaySelfMessage(EntityPlayer self, ITextComponent tx) {
         self.sendMessage(tx);
         playNotificationSound(self);
     }
 
+    @SideOnly(Side.CLIENT)
     private static void playNotificationSound(EntityPlayer p) {
         final WorldClient w = FMLClientHandler.instance().getWorldClient();
         w.playSound(p.posX, p.posY, p.posZ, chatSound, SoundCategory.PLAYERS, 1.0F, 0.7F, true);
@@ -120,6 +127,7 @@ public class ChatexRpc {
 
     // // // //
 
+    @SideOnly(Side.CLIENT)
     @RpcMethodHandler(broadcastTyping)
     public void onBroadcastTyping(int entityId, long time) {
         TypingState.updateTyping(entityId, time);
