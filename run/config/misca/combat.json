@@ -9,7 +9,7 @@
     "hitRatePerLck": 0.005,
     "evasionPerRef": 0.03,
     "evasionPerLck": 0.005,
-    "meleeWithRangedEvasionPenalty": 0.02,
+    "meleeEvasionPenalty": 0.2,
     "criticalHitBase": 0.01,
     "criticalHitPerPer": 0.0025,
     "criticalHitPerLck": 0.0075,

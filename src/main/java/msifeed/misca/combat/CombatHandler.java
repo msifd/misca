@@ -19,11 +19,17 @@ import net.minecraft.util.text.TextComponentString;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
+import net.minecraftforge.event.entity.living.LivingKnockBackEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 public class CombatHandler {
     private static final String IGNORE_PREFIX = "ignore-";
     private static final String CRITICAL_EVASION_DT = IGNORE_PREFIX + "criticalEvasion";
+
+    /**
+     * Shitty hack to disable knock back after evasion
+     */
+    private boolean attackEvaded = false;
 
     @SubscribeEvent
     public void onEntityUpdate(LivingEvent.LivingUpdateEvent event) {
@@ -89,19 +95,29 @@ public class CombatHandler {
         final ICombatant srcCom = CombatantProvider.get(srcEntity);
         if (!srcCom.isInBattle()) return;
 
+        final Battle battle = Combat.MANAGER.getBattle(srcCom.getBattleId());
+
         if (!event.getSource().getDamageType().startsWith(IGNORE_PREFIX)) {
-            checkChances(event, srcEntity);
+            alterDamage(event, srcEntity);
             checkActionPoints(event, srcEntity, srcCom);
             updateTurn(srcEntity, srcCom);
         }
 
-        handleDeadlyAttack(event, Combat.MANAGER.getBattle(srcCom.getBattleId()));
+        handleDeadlyAttack(event, battle);
     }
 
-    private static void checkChances(LivingHurtEvent event, EntityLivingBase srcEntity) {
+    @SubscribeEvent
+    public void onKnockBack(LivingKnockBackEvent event) {
+        if (attackEvaded) {
+            attackEvaded = false;
+            event.setCanceled(true);
+        }
+    }
+
+    private void alterDamage(LivingHurtEvent event, EntityLivingBase srcEntity) {
         final EntityLivingBase vicEntity = event.getEntityLiving();
 
-        final CombatantInfo srcInfo = new CombatantInfo(srcEntity, event);
+        final CombatantInfo srcInfo = new CombatantInfo(srcEntity, event.getSource());
         final CombatantInfo vicInfo = new CombatantInfo(vicEntity);
         final Rules rules = Combat.getRules();
 
@@ -128,6 +144,7 @@ public class CombatHandler {
 
             event.setAmount(damageAmount * damageFactor);
         } else {
+            attackEvaded = true;
             event.setCanceled(true);
 
             if (!hitCheck && criticalEvasion) {

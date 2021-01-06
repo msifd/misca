@@ -46,16 +46,27 @@ public class Rules {
 
     public double evasionPerRef = 0.03;
     public double evasionPerLck = 0.005;
-    public double meleeWithRangedEvasionPenalty = 0.02;
+    public double meleeEvasionPenalty = 0.2;
 
     public double evasion(EntityLivingBase victim, CombatantInfo vicInfo, CombatantInfo srcInfo) {
         final int reflexes = vicInfo.cs.attrs().get(CharAttribute.ref);
         final int luck = vicInfo.cs.attrs().get(CharAttribute.lck);
-        final double weaponTypePenalty = srcInfo.is(WeaponTrait.melee) && !vicInfo.is(WeaponTrait.melee)
-                ? meleeWithRangedEvasionPenalty : 0;
-        final double totalFactor = srcInfo.is(WeaponTrait.range) ? coverBlocks(victim.world, vicInfo.pos, srcInfo.pos) : 1;
+        final double penalty = evasionPenalty(vicInfo, srcInfo);
+        final double factor = evasionFactor(victim, vicInfo, srcInfo);
+        return (reflexes * evasionPerRef + luck * evasionPerLck - penalty) * factor;
+    }
 
-        return (reflexes * evasionPerRef + luck * evasionPerLck - weaponTypePenalty) * totalFactor;
+    public double evasionPenalty(CombatantInfo vicInfo, CombatantInfo srcInfo) {
+        if (srcInfo.is(WeaponTrait.melee)
+                && !vicInfo.is(WeaponTrait.melee)
+                && !vicInfo.is(WeaponTrait.evadeMelee)) return meleeEvasionPenalty;
+        return 0;
+    }
+
+    public double evasionFactor(EntityLivingBase victim, CombatantInfo vicInfo, CombatantInfo srcInfo) {
+        if (!srcInfo.is(WeaponTrait.range)) return 1;
+        if (vicInfo.is(WeaponTrait.evadeRange)) return 1;
+        return coverBlocks(victim.world, vicInfo.pos, srcInfo.pos);
     }
 
     public double criticalHitBase = 0.01;
@@ -77,13 +88,6 @@ public class Rules {
         final int luck = cs.attrs().get(CharAttribute.lck);
         return criticalEvasionBase + endurance * criticalEvasionPerEnd + luck * criticalEvasionPerLck;
     }
-
-//    public double magicMeleeAttack = 0.75;
-//    public double magicMeleeBackfire = 0.5;
-//
-//    public double magicBackfire() {
-//        return magicMeleeBackfire;
-//    }
 
     public double coverPerBlock = 0.5;
 

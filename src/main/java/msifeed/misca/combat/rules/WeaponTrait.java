@@ -2,19 +2,28 @@ package msifeed.misca.combat.rules;
 
 import msifeed.misca.combat.Combat;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.init.Items;
+import net.minecraft.item.Item;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EntityDamageSourceIndirect;
+import net.minecraft.util.ResourceLocation;
 
 import java.util.Collections;
 import java.util.Set;
 
 public enum WeaponTrait {
-    melee, range, magic;
+    melee, range,
+    evadeMelee, evadeRange
+    ;
 
     public static Set<WeaponTrait> get(EntityLivingBase entity) {
         return Combat.getConfig().getWeaponOverride(entity)
                 .map(wo -> wo.traits)
-                .orElse(Collections.singleton(melee));
+                .orElseGet(() -> {
+                    final Item item = entity.getHeldItemMainhand().getItem();
+                    final WeaponTrait type = item == Items.BOW ? range : melee;
+                    return Collections.singleton(type);
+                });
     }
 
     public static Set<WeaponTrait> get(DamageSource damageSource, EntityLivingBase entity) {

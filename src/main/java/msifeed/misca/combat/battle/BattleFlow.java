@@ -34,6 +34,8 @@ public class BattleFlow {
     public static boolean selectNextLeader(Battle battle) {
         final Map<UUID, WeakReference<EntityLivingBase>> members = battle.getMembers();
         final Queue<UUID> queue = battle.getQueue();
+        if (queue.size() < 2) return false;
+
         queue.add(queue.remove());
 
         // TODO: skip dead combatants
