@@ -1,7 +1,6 @@
 package msifeed.misca.supplies;
 
 import msifeed.misca.Misca;
-import msifeed.misca.MiscaThings;
 import msifeed.misca.supplies.cap.ISuppliesInvoice;
 import msifeed.misca.supplies.cap.SuppliesInvoiceProvider;
 import net.minecraft.client.util.ITooltipFlag;
@@ -17,6 +16,7 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
+import net.minecraftforge.common.capabilities.ICapabilityProvider;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -24,20 +24,39 @@ import java.util.List;
 public class ItemSuppliesInvoice extends Item {
     public static final String ID = "supplies_invoice";
 
+//    private final InvoiceProvider invoiceProvider = new InvoiceProvider();
+//    private final SuppliesProvider invoiceProvider = new SuppliesProvider();
+
     public ItemSuppliesInvoice() {
         setRegistryName(Misca.MODID, ID);
         setUnlocalizedName(ID);
     }
 
-    public static ItemStack createInvoiceItem(ISuppliesInvoice invoice) {
-        final NBTTagCompound nbt = new NBTTagCompound();
-        nbt.setTag("Invoice", SuppliesInvoiceProvider.encode(invoice));
-
-        final ItemStack item = new ItemStack(MiscaThings.suppliesInvoice);
-        item.setTagCompound(nbt);
-
-        return item;
+    @Nullable
+    @Override
+    public ICapabilityProvider initCapabilities(ItemStack stack, @Nullable NBTTagCompound nbt) {
+        return new SuppliesInvoiceProvider();
     }
+
+//    @Nullable
+//    @Override
+//    public NBTTagCompound getNBTShareTag(ItemStack stack) {
+//        NBTTagCompound nbt = super.getNBTShareTag(stack);
+//        if (nbt == null)
+//            nbt = new NBTTagCompound();
+//
+//        nbt.setTag("Invoice", SuppliesInvoiceProvider.encode(SuppliesInvoiceProvider.get(stack)));
+//
+//        return super.getNBTShareTag(stack);
+//    }
+//
+//    @Override
+//    public void readNBTShareTag(ItemStack stack, @Nullable NBTTagCompound nbt) {
+//        if (nbt != null)
+//            SuppliesInvoiceProvider.get(stack).replaceWith(SuppliesInvoiceProvider.decode(nbt));
+//
+//        super.readNBTShareTag(stack, nbt);
+//    }
 
     @Override
     public EnumActionResult onItemUse(EntityPlayer player, World worldIn, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
@@ -47,8 +66,8 @@ public class ItemSuppliesInvoice extends Item {
         final ISuppliesInvoice supplies = SuppliesInvoiceProvider.get(tile);
         if (supplies == null) return EnumActionResult.FAIL;
 
-        final ISuppliesInvoice invoice = SuppliesInvoiceProvider.decode(player.getHeldItem(hand).getOrCreateSubCompound("Invoice"));
-        if (invoice.isEmpty()) return EnumActionResult.FAIL;
+        final ISuppliesInvoice invoice = SuppliesInvoiceProvider.get(player.getHeldItem(hand));
+        if (invoice == null || invoice.isEmpty()) return EnumActionResult.FAIL;
 
         supplies.replaceWith(invoice);
         player.sendStatusMessage(new TextComponentString("Supplies are set!"), true);
@@ -58,20 +77,12 @@ public class ItemSuppliesInvoice extends Item {
 
     @Override
     public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn) {
-        final ISuppliesInvoice tmpInvoice = SuppliesInvoiceProvider.decode(stack.getSubCompound("Invoice"));
-        if (tmpInvoice == null || tmpInvoice.isEmpty()) {
-            tooltip.add("Invoice is empty!: %d min");
+        final ISuppliesInvoice invoice = SuppliesInvoiceProvider.get(stack);
+        if (invoice == null) {
+            tooltip.add("Can't get supplies info");
             return;
         }
 
-        tooltip.add(String.format("Interval: %d min", tmpInvoice.getDeliveryInterval() / 60000));
-        tooltip.add("Max Sequence: " + tmpInvoice.getMaxDeliverySequence());
-
-        tmpInvoice.getProducts().stream().limit(5).forEach(is -> {
-            tooltip.add(String.format("* %d x %s", is.getCount(), is.getDisplayName()));
-        });
-
-        if (tmpInvoice.getProducts().size() > 5)
-            tooltip.add(String.format("* and %d more", tmpInvoice.getProducts().size() - 5));
+        tooltip.addAll(BackgroundSupplies.getAbsoluteInfoLines(invoice));
     }
 }

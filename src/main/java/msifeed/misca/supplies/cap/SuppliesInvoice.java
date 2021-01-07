@@ -1,21 +1,21 @@
 package msifeed.misca.supplies.cap;
 
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.NonNullList;
+import java.util.ArrayList;
+import java.util.List;
 
 public class SuppliesInvoice implements ISuppliesInvoice {
     private long lastDelivery = 0;
     private long interval = 0;
     private int maxSequence = 0;
-    private NonNullList<ItemStack> products = NonNullList.create();
+    private final List<Batch> batches = new ArrayList<>();
 
     @Override
-    public long getLastDeliveryTime() {
+    public long getLastDeliveryIndex() {
         return lastDelivery;
     }
 
     @Override
-    public void setLastDeliveryTime(long value) {
+    public void setLastDeliveryIndex(long value) {
         this.lastDelivery = value;
     }
 
@@ -40,12 +40,12 @@ public class SuppliesInvoice implements ISuppliesInvoice {
     }
 
     @Override
-    public NonNullList<ItemStack> getProducts() {
-        return products;
+    public List<Batch> getBatches() {
+        return batches;
     }
 
     @Override
-    public void setProducts(NonNullList<ItemStack> list) {
-        this.products = list;
+    public void addBatch(Batch batch) {
+        batches.add(batch);
     }
 }

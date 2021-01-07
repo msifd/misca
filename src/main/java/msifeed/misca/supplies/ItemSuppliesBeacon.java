@@ -47,10 +47,11 @@ public class ItemSuppliesBeacon extends Item {
         final ISuppliesInvoice supplies = SuppliesInvoiceProvider.get(stack);
         if (supplies == null) return new ActionResult<>(EnumActionResult.FAIL, stack);
 
-        final long deliveryTime = supplies.getLastDeliveryTime();
-        BackgroundSupplies.deliver(supplies, player.inventory);
+        final long deliveryIndex = supplies.getLastDeliveryIndex();
+        BackgroundSupplies.gatherDelivery(supplies)
+                .forEach(player::addItemStackToInventory);
 
-        final EnumActionResult result = deliveryTime != supplies.getLastDeliveryTime()
+        final EnumActionResult result = deliveryIndex != supplies.getLastDeliveryIndex()
                 ? EnumActionResult.SUCCESS
                 : EnumActionResult.PASS;
 
@@ -59,26 +60,12 @@ public class ItemSuppliesBeacon extends Item {
 
     @Override
     public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn) {
-        final ISuppliesInvoice supplies = SuppliesInvoiceProvider.get(stack);
-        if (supplies == null) {
+        final ISuppliesInvoice invoice = SuppliesInvoiceProvider.get(stack);
+        if (invoice == null) {
             tooltip.add("Can't get supplies info");
             return;
         }
 
-        final long interval = supplies.getDeliveryInterval();
-        final long lastDelivery = supplies.getLastDeliveryTime();
-        final long maxSequence = supplies.getMaxDeliverySequence();
-        final long now = System.currentTimeMillis();
-        final long suppliesLanded = Math.min((now - lastDelivery) / interval, maxSequence);
-        final double nextSupply = (interval - (now - lastDelivery) % interval) / 60000d;
-        final int stacks = (int) supplies.getProducts().stream()
-                .mapToDouble(s -> Math.ceil(s.getCount() * suppliesLanded / (double) s.getMaxStackSize()))
-                .sum();
-
-        if (suppliesLanded < maxSequence)
-            tooltip.add(String.format("Supplies %d/%d. Next in %.1f min", suppliesLanded, maxSequence, nextSupply));
-        else
-            tooltip.add(String.format("Supplies %d/%d", suppliesLanded, maxSequence));
-        tooltip.add(String.format("Stacks of supplies: %d", stacks));
+        tooltip.addAll(BackgroundSupplies.getRelativeInfoLines(invoice));
     }
 }

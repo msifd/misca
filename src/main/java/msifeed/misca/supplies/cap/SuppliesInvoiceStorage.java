@@ -4,6 +4,7 @@ import net.minecraft.inventory.ItemStackHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.NonNullList;
 import net.minecraftforge.common.capabilities.Capability;
@@ -15,12 +16,19 @@ public class SuppliesInvoiceStorage implements Capability.IStorage<ISuppliesInvo
     @Override
     public NBTBase writeNBT(Capability<ISuppliesInvoice> capability, ISuppliesInvoice instance, EnumFacing side) {
         final NBTTagCompound nbt = new NBTTagCompound();
-        if (instance.isEmpty()) return nbt;
 
-        nbt.setLong("Last", instance.getLastDeliveryTime());
+        nbt.setLong("Last", instance.getLastDeliveryIndex());
         nbt.setLong("Int", instance.getDeliveryInterval());
         nbt.setInteger("MaxSeq", instance.getMaxDeliverySequence());
-        ItemStackHelper.saveAllItems(nbt, instance.getProducts());
+
+        final NBTTagList batchList = new NBTTagList();
+        for (ISuppliesInvoice.Batch batch : instance.getBatches()) {
+            final NBTTagCompound batchNbt = new NBTTagCompound();
+            batchNbt.setDouble("Chance", batch.chance);
+            ItemStackHelper.saveAllItems(batchNbt, batch.products);
+            batchList.appendTag(batchNbt);
+        }
+        nbt.setTag("Batches", batchList);
 
         return nbt;
     }
@@ -29,15 +37,21 @@ public class SuppliesInvoiceStorage implements Capability.IStorage<ISuppliesInvo
     public void readNBT(Capability<ISuppliesInvoice> capability, ISuppliesInvoice instance, EnumFacing side, NBTBase nbtBase) {
         final NBTTagCompound nbt = (NBTTagCompound) nbtBase;
 
-        final int productsSize = nbt.getTagList("Items", 10).tagCount();
-        if (productsSize <= 0) return;
-
-        final NonNullList<ItemStack> products = NonNullList.withSize(productsSize, ItemStack.EMPTY);
-        ItemStackHelper.loadAllItems(nbt, products);
-        instance.setProducts(products);
-
-        instance.setLastDeliveryTime(nbt.getLong("Last"));
+        instance.setLastDeliveryIndex(nbt.getLong("Last"));
         instance.setDeliveryInterval(nbt.getLong("Int"));
         instance.setMaxDeliverySequence(nbt.getInteger("MaxSeq"));
+
+        final NBTTagList batchList = nbt.getTagList("Batches", 10);
+        for (int i = 0; i < batchList.tagCount(); i++) {
+            final NBTTagCompound batchNbt = batchList.getCompoundTagAt(i);
+            final int productsSize = batchNbt.getTagList("Items", 10).tagCount();
+
+            final ISuppliesInvoice.Batch batch = new ISuppliesInvoice.Batch();
+            batch.chance = batchNbt.getDouble("Chance");
+            batch.products = NonNullList.withSize(productsSize, ItemStack.EMPTY);
+            ItemStackHelper.loadAllItems(batchNbt, batch.products);
+
+            instance.addBatch(batch);
+        }
     }
 }
