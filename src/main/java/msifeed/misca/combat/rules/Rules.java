@@ -93,14 +93,14 @@ public class Rules {
 
     public double coverBlocks(World world, Vec3d vPos, Vec3d sPos) {
         final Vec3d vec = sPos.subtract(vPos);
-        final EnumFacing facing = EnumFacing.getFacingFromVector((float) vec.x, 0, (float) vec.z);
 
-        final BlockPos pos = new BlockPos(vPos).offset(facing);
-        final BlockPos posLeft = pos.offset(facing.rotateYCCW());
-        final BlockPos posRight = pos.offset(facing.rotateY());
-        final double coverage = blockCoverage(world, pos) + blockCoverage(world, pos.up())
-                + blockCoverage(world, posLeft) + blockCoverage(world, posLeft.up())
-                + blockCoverage(world, posRight) + blockCoverage(world, posRight.up());
+        final EnumFacing facingX = EnumFacing.getFacingFromVector((float) vec.x, 0, 0);
+        final EnumFacing facingZ = EnumFacing.getFacingFromVector(0, 0, (float) vec.z);
+        final BlockPos posX = new BlockPos(vPos).offset(facingX);
+        final BlockPos posZ = new BlockPos(vPos).offset(facingZ);
+
+        final double coverage = blockCoverage(world, posX) + blockCoverage(world, posX.up())
+                + blockCoverage(world, posZ) + blockCoverage(world, posZ.up());
 
         return Math.min(coverage * coverPerBlock, 1);
     }
