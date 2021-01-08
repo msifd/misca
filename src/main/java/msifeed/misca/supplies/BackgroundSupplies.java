@@ -1,7 +1,10 @@
 package msifeed.misca.supplies;
 
 import msifeed.misca.Misca;
-import msifeed.misca.supplies.cap.*;
+import msifeed.misca.supplies.cap.ISuppliesInvoice;
+import msifeed.misca.supplies.cap.SuppliesInvoice;
+import msifeed.misca.supplies.cap.SuppliesInvoiceProvider;
+import msifeed.misca.supplies.cap.SuppliesInvoiceStorage;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;

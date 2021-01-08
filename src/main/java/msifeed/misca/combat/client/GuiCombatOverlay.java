@@ -82,6 +82,7 @@ public class GuiCombatOverlay {
         final double moveAp = rules.movementActionPoints(com.getPosition(), player.getPositionVector());
         final double overheadAp = com.getActionPointsOverhead();
         final double attackAp = rules.attackActionPoints(player) + overheadAp;
+        final double usageAp = rules.usageActionPoints() + overheadAp;
 
         final String[] lines = {
                 "members: " + joinedMembers,
@@ -94,6 +95,7 @@ public class GuiCombatOverlay {
                 "----",
                 "MOVEMENT: " + formatActionPoints(moveAp, com.getActionPoints()),
                 "ATTACK: " + formatActionPoints(attackAp, com.getActionPoints()) + String.format(" (overhead: %.2f)", overheadAp),
+                "USAGE: " + formatActionPoints(usageAp, com.getActionPoints()) + String.format(" (overhead: %.2f)", overheadAp),
                 "TOTAL: " + formatActionPoints(moveAp + attackAp, com.getActionPoints())
                         + String.format(" / %.2f", com.getActionPoints()),
         };
@@ -129,11 +131,13 @@ public class GuiCombatOverlay {
 
         if (!CombatantProvider.get(self).isInBattle()) return;
 
+        final ICombatant com = CombatantProvider.get(entity);
+        if (!com.isInBattle()) return;
+
         final double cover = Combat.getRules().coverBlocks(self.world, self.getPositionVector(), entity.getPositionVector());
         final String coverStr = String.format("cov: %.1f", cover);
         renderTextAt(coverStr, event.getX(), event.getY() + event.getEntity().getEyeHeight() + 1.0, event.getZ(), false);
 
-        final ICombatant com = CombatantProvider.get(entity);
         final Rules rules = Combat.getRules();
         final double atkAp = rules.attackActionPoints(entity) + com.getActionPointsOverhead();
         final double movAp = rules.movementActionPoints(com.getPosition(), entity.getPositionVector());

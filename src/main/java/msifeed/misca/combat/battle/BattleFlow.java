@@ -6,6 +6,7 @@ import msifeed.misca.combat.Combat;
 import msifeed.misca.combat.cap.CombatantProvider;
 import msifeed.misca.combat.cap.CombatantSync;
 import msifeed.misca.combat.cap.ICombatant;
+import msifeed.misca.combat.rules.Rules;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
@@ -91,7 +92,7 @@ public class BattleFlow {
     public static void prepareLeader(EntityLivingBase entity) {
         final ICharsheet cs = CharsheetProvider.get(entity);
         final ICombatant com = CombatantProvider.get(entity);
-        com.setActionPoints(com.getActionPoints() + Combat.getRules().actionPointsPerMove(cs));
+        com.addActionPoints(Combat.getRules().actionPointsPerMove(cs));
         com.setPosition(entity.getPositionVector());
         CombatantSync.sync(entity);
 
@@ -122,7 +123,16 @@ public class BattleFlow {
         final ICombatant com = CombatantProvider.get(entity);
         final double apWithOh = Combat.getRules().attackActionPoints(entity) + com.getActionPointsOverhead();
         if (com.getActionPoints() >= apWithOh) {
-            com.setActionPoints(com.getActionPoints() - apWithOh);
+            com.addActionPoints(-apWithOh);
+            com.setActionPointsOverhead(com.getActionPointsOverhead() + apWithOh / 2);
+        }
+    }
+
+    public static void consumeUsageAp(EntityLivingBase entity) {
+        final ICombatant com = CombatantProvider.get(entity);
+        final double apWithOh = Combat.getRules().usageActionPoints() + com.getActionPointsOverhead();
+        if (com.getActionPoints() >= apWithOh) {
+            com.addActionPoints(-apWithOh);
             com.setActionPointsOverhead(com.getActionPointsOverhead() + apWithOh / 2);
         }
     }
@@ -132,6 +142,23 @@ public class BattleFlow {
         final double ap = Combat.getRules().movementActionPoints(com.getPosition(), entity.getPositionVector());
         com.setPosition(entity.getPositionVector());
         com.setActionPoints(Math.max(com.getActionPoints() - ap, 0));
+    }
+
+    public static boolean isApDepleted(EntityLivingBase entity) {
+        final ICombatant com = CombatantProvider.get(entity);
+        final Rules rules = Combat.getRules();
+        final double atk = rules.attackActionPoints(entity);
+        final double use = rules.usageActionPoints();
+        final double act = Math.min(atk, use) + com.getActionPointsOverhead();
+        final double mov = rules.movementActionPoints(com.getPosition(), entity.getPositionVector());
+        return (mov + act) > com.getActionPoints();
+    }
+
+    public static boolean isEnoughAp(EntityLivingBase entity, ICombatant com, double ap) {
+        final Rules rules = Combat.getRules();
+        final double act = ap + com.getActionPointsOverhead();
+        final double mov = rules.movementActionPoints(com.getPosition(), entity.getPositionVector());
+        return (mov + act) < com.getActionPoints();
     }
 
     //// Utils

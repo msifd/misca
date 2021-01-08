@@ -17,6 +17,9 @@ public interface ICombatant {
 
     double getActionPoints();
     void setActionPoints(double value);
+    default void addActionPoints(double value) {
+        setActionPoints(getActionPoints() + value);
+    }
 
     double getActionPointsOverhead();
     void setActionPointsOverhead(double value);

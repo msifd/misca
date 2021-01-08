@@ -35,7 +35,7 @@ public class Rules {
     public double hitRatePerLck = 0.005;
 
     public double hitRate(EntityLivingBase entity, CombatantInfo info) {
-        final double overrideRate = Combat.getConfig().getWeaponOverride(entity)
+        final double overrideRate = Combat.getConfig().getWeaponInfo(entity)
                 .map(wo -> wo.hitRate).orElse(0d);
 
         final double perFactor = info.is(WeaponTrait.melee) ? hitRateMeleePerPer : hitRateRangePerPer;
@@ -115,7 +115,7 @@ public class Rules {
     public double attackApDefault = 4;
 
     public double attackActionPoints(EntityLivingBase entity) {
-        final double overrideAp = Combat.getConfig().getWeaponOverride(entity)
+        final double overrideAp = Combat.getConfig().getWeaponInfo(entity)
                 .map(wo -> wo.ap).orElse(0d);
 
         final IAttributeInstance attackSpeed = entity.getEntityAttribute(SharedMonsterAttributes.ATTACK_SPEED);
@@ -140,6 +140,12 @@ public class Rules {
         } else {
             return distance;
         }
+    }
+
+    public double usageApBase = 5;
+
+    public double usageActionPoints() {
+        return usageApBase;
     }
 
     public double apPerMoveBase = 5;

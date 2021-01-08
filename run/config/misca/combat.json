@@ -22,12 +22,13 @@
     "movementApFactor": 1.0,
     "movementApRiseFactor": 1.0,
     "movementApDescentFactor": 1.0,
+    "usageApBase": 5.0,
     "apPerMoveBase": 5.0,
     "apPerMovePerAgi": 1.0,
     "maxApBase": 0.0,
     "maxApPerAgi": 4.0
   },
-  "overrides": {
+  "weapons": {
     "minecraft:diamond_sword": {
       "damage": 100.0,
       "ap": 15.0,

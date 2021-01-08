@@ -12,14 +12,13 @@ import msifeed.misca.combat.rules.Rules;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.projectile.EntityPotion;
 import net.minecraft.util.CombatRules;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EntityDamageSource;
 import net.minecraft.util.text.TextComponentString;
-import net.minecraftforge.event.entity.living.LivingAttackEvent;
-import net.minecraftforge.event.entity.living.LivingEvent;
-import net.minecraftforge.event.entity.living.LivingHurtEvent;
-import net.minecraftforge.event.entity.living.LivingKnockBackEvent;
+import net.minecraftforge.event.entity.EntityJoinWorldEvent;
+import net.minecraftforge.event.entity.living.*;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 public class CombatHandler {
@@ -69,18 +68,16 @@ public class CombatHandler {
             return;
         }
 
-        final Rules rules = Combat.getRules();
-        final double movementAp = rules.movementActionPoints(com.getPosition(), srcEntity.getPositionVector());
-        final double attackAp = rules.attackActionPoints(srcEntity);
-        final double totalAp = movementAp + attackAp;
-
-        if (com.getActionPoints() < totalAp) {
+        final double attackAp = Combat.getRules().attackActionPoints(srcEntity);
+        if (!BattleFlow.isEnoughAp(srcEntity, com, attackAp)) {
             event.setCanceled(true);
-            final boolean movementCheck = !(srcEntity instanceof EntityPlayer) || movementAp < 1;
-            final double targetAp = srcEntity instanceof EntityPlayer ? attackAp : totalAp;
-            if (movementCheck && com.getActionPoints() < targetAp) {
-                Combat.MANAGER.nextTurn(battle);
-            }
+            Combat.MANAGER.nextTurn(battle);
+
+//            final boolean movementCheck = !(srcEntity instanceof EntityPlayer) || movementAp < 1;
+//            final double targetAp = srcEntity instanceof EntityPlayer ? attackAp : totalAp;
+//            if (movementCheck && com.getActionPoints() < targetAp) {
+//                Combat.MANAGER.nextTurn(battle);
+//            }
         }
     }
 
@@ -96,14 +93,95 @@ public class CombatHandler {
         if (!srcCom.isInBattle()) return;
 
         final Battle battle = Combat.MANAGER.getBattle(srcCom.getBattleId());
+        if (battle == null) return;
 
-        if (!event.getSource().getDamageType().startsWith(IGNORE_PREFIX)) {
+        if (!src.getDamageType().startsWith(IGNORE_PREFIX)) {
             alterDamage(event, srcEntity);
-            checkActionPoints(event, srcEntity, srcCom);
-            updateTurn(srcEntity, srcCom);
+
+            final boolean skipAttackAp = src.getImmediateSource() instanceof EntityPotion;
+            if (!skipAttackAp)
+                BattleFlow.consumeActionAp(srcEntity);
+            BattleFlow.consumeMovementAp(srcEntity);
+            CombatantSync.sync(srcEntity);
+
+            if (BattleFlow.isApDepleted(srcEntity)) {
+                Combat.MANAGER.nextTurn(battle);
+            }
         }
 
         handleDeadlyAttack(event, battle);
+    }
+
+    @SubscribeEvent
+    public void onItemUseStart(LivingEntityUseItemEvent.Start event) {
+        final EntityLivingBase entity = event.getEntityLiving();
+        final ICombatant com = CombatantProvider.get(entity);
+        if (!com.isInBattle()) return;
+
+        final Battle battle = Combat.MANAGER.getBattle(com.getBattleId());
+        if (battle == null) return;
+
+        final boolean isLeader = battle.isLeader(entity.getUniqueID());
+        final boolean isEnoughAp = BattleFlow.isEnoughAp(entity, com, Combat.getRules().usageActionPoints());
+        if (!isLeader || !isEnoughAp) {
+            event.setCanceled(true);
+        }
+    }
+
+    @SubscribeEvent
+    public void onItemUseFinish(LivingEntityUseItemEvent.Finish event) {
+        if (event.getEntityLiving().world.isRemote) return;
+
+        final EntityLivingBase entity = event.getEntityLiving();
+        final ICombatant com = CombatantProvider.get(entity);
+        if (!com.isInBattle()) return;
+
+        final Battle battle = Combat.MANAGER.getBattle(com.getBattleId());
+        if (battle == null) return;
+
+        System.out.println("use " + entity.world.isRemote);
+
+        BattleFlow.consumeUsageAp(entity);
+        BattleFlow.consumeMovementAp(entity);
+        CombatantSync.sync(entity);
+
+        if (BattleFlow.isApDepleted(entity)) {
+            Combat.MANAGER.nextTurn(battle);
+        }
+    }
+
+    @SubscribeEvent
+    public void onSplashPotion(EntityJoinWorldEvent event) {
+        if (event.getWorld().isRemote || !(event.getEntity() instanceof EntityPotion)) return;
+
+        final EntityPotion potion = (EntityPotion) event.getEntity();
+        final EntityLivingBase entity = potion.getThrower();
+        if (entity == null) return;
+
+        final ICombatant com = CombatantProvider.get(entity);
+        if (!com.isInBattle()) return;
+
+        final Battle battle = Combat.MANAGER.getBattle(com.getBattleId());
+        if (battle == null) return;
+
+        if (!battle.isLeader(entity.getUniqueID())) {
+            event.setCanceled(true);
+            return;
+        }
+
+        if (BattleFlow.isEnoughAp(entity, com, Combat.getRules().usageActionPoints())) {
+            System.out.println("throw " + entity.world.isRemote);
+
+            BattleFlow.consumeUsageAp(entity);
+            BattleFlow.consumeMovementAp(entity);
+            CombatantSync.sync(entity);
+        } else {
+            event.setCanceled(true);
+        }
+
+        if (BattleFlow.isApDepleted(entity)) {
+            Combat.MANAGER.nextTurn(battle);
+        }
     }
 
     @SubscribeEvent
@@ -129,7 +207,7 @@ public class CombatHandler {
         final boolean criticalEvasion = criticality < 0;
         final boolean successfulHit = (hitCheck || criticalHit) && !criticalEvasion;
 
-        final float overrideDamage = Combat.getConfig().getWeaponOverride(srcEntity)
+        final float overrideDamage = Combat.getConfig().getWeaponInfo(srcEntity)
                 .map(wo -> wo.damage)
                 .orElse(0f);
         final float damageAmount = event.getAmount() + overrideDamage;
@@ -157,31 +235,24 @@ public class CombatHandler {
         }
     }
 
-    private static void checkActionPoints(LivingHurtEvent event, EntityLivingBase entity, ICombatant com) {
-        if (isApDepleted(entity, com)) {
-            event.setCanceled(true);
-        }
-    }
+//    private static void checkActionPoints(Event event, EntityLivingBase entity, ICombatant com) {
+//        if (event.isCancelable() && isApDepleted(entity, com)) {
+//            event.setCanceled(true);
+//        }
+//    }
 
-    private static void updateTurn(EntityLivingBase entity, ICombatant com) {
-        final Battle battle = Combat.MANAGER.getEntityBattle(entity);
-        if (battle == null || !battle.isLeader(entity.getUniqueID())) return;
-
-        BattleFlow.consumeMovementAp(entity);
-        BattleFlow.consumeActionAp(entity);
-        CombatantSync.sync(entity);
-
-        if (isApDepleted(entity, com)) {
-            Combat.MANAGER.nextTurn(battle);
-        }
-    }
-
-    private static boolean isApDepleted(EntityLivingBase entity, ICombatant com) {
-        final Rules rules = Combat.getRules();
-        final double mov = rules.movementActionPoints(com.getPosition(), entity.getPositionVector());
-        final double atk = rules.attackActionPoints(entity) + com.getActionPointsOverhead();
-        return com.getActionPoints() < (mov + atk);
-    }
+//    private static void updateTurn(EntityLivingBase entity, ICombatant com) {
+//        final Battle battle = Combat.MANAGER.getEntityBattle(entity);
+//        if (battle == null || !battle.isLeader(entity.getUniqueID())) return;
+//
+//        BattleFlow.consumeMovementAp(entity);
+//        BattleFlow.consumeActionAp(entity);
+//        CombatantSync.sync(entity);
+//
+//        if (isApDepleted(entity, com)) {
+//            Combat.MANAGER.nextTurn(battle);
+//        }
+//    }
 
     private static void handleDeadlyAttack(LivingHurtEvent event, Battle battle) {
         final EntityLivingBase victim = event.getEntityLiving();
