@@ -1,7 +1,7 @@
 package msifeed.misca.chatex.client;
 
 import msifeed.misca.chatex.client.gui.ChatexScreen;
-import msifeed.misca.core.GuiChatMixin;
+import msifeed.misca.mixins.GuiChatMixin;
 import net.minecraft.client.gui.GuiChat;
 import net.minecraftforge.client.event.GuiOpenEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;

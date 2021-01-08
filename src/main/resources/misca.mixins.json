@@ -2,7 +2,7 @@
   "required": true,
   "minVersion": "0.8",
   "compatibilityLevel": "JAVA_8",
-  "package": "msifeed.misca.core",
+  "package": "msifeed.misca.mixins",
   "refmap": "misca.refmap.json",
   "mixins": [
     "GuiIngameMixin",

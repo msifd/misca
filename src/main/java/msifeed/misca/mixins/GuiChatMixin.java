@@ -1,4 +1,4 @@
-package msifeed.misca.core;
+package msifeed.misca.mixins;
 
 import net.minecraft.client.gui.GuiChat;
 import org.spongepowered.asm.mixin.Mixin;
