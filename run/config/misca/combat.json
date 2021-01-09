@@ -32,13 +32,13 @@
     "maxApPerAgi": 4.0
   },
   "weapons": {
-    "minecraft:diamond_sword": {
-      "damage": 100.0,
+    "minecraft:shield": {
+      "damage": 0.0,
       "apHit": 0.0,
       "apUse": 0.0,
-      "hitRate": 1.0,
+      "hitRate": 0.0,
       "traits": [
-        "melee"
+        "ignoreUsage"
       ]
     }
   }

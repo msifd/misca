@@ -11,6 +11,8 @@ import msifeed.misca.combat.rules.Rules;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Items;
+import net.minecraft.item.Item;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -136,9 +138,9 @@ public class BattleFlow {
         }
     }
 
-    public static void consumeUsageAp(EntityLivingBase entity) {
+    public static void consumeUsageAp(EntityLivingBase entity, Item item) {
         final ICombatant com = CombatantProvider.get(entity);
-        final double apWithOh = Combat.getRules().usageActionPoints(entity) + com.getActionPointsOverhead();
+        final double apWithOh = Combat.getRules().usageActionPoints(item) + com.getActionPointsOverhead();
         if (com.getActionPoints() >= apWithOh) {
             com.addActionPoints(-apWithOh);
             com.setActionPointsOverhead(com.getActionPointsOverhead() + apWithOh / 2);
@@ -156,7 +158,7 @@ public class BattleFlow {
         final ICombatant com = CombatantProvider.get(entity);
         final Rules rules = Combat.getRules();
         final double atk = rules.attackActionPoints(entity);
-        final double use = rules.usageActionPoints(entity);
+        final double use = rules.usageActionPoints(Items.AIR);
         final double act = Math.min(atk, use) + com.getActionPointsOverhead();
         final double mov = rules.movementActionPoints(com.getPosition(), entity.getPositionVector());
         return (mov + act) > com.getActionPoints();

@@ -82,7 +82,7 @@ public class GuiCombatOverlay {
         final double moveAp = rules.movementActionPoints(com.getPosition(), player.getPositionVector());
         final double overheadAp = com.getActionPointsOverhead();
         final double attackAp = rules.attackActionPoints(player) + overheadAp;
-        final double usageAp = rules.usageActionPoints(player) + overheadAp;
+        final double usageAp = rules.usageActionPoints(player.getHeldItemMainhand().getItem()) + overheadAp;
 
         final String[] lines = {
                 "members: " + joinedMembers,

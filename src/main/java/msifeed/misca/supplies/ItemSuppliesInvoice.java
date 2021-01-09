@@ -24,9 +24,6 @@ import java.util.List;
 public class ItemSuppliesInvoice extends Item {
     public static final String ID = "supplies_invoice";
 
-//    private final InvoiceProvider invoiceProvider = new InvoiceProvider();
-//    private final SuppliesProvider invoiceProvider = new SuppliesProvider();
-
     public ItemSuppliesInvoice() {
         setRegistryName(Misca.MODID, ID);
         setUnlocalizedName(ID);
@@ -37,26 +34,6 @@ public class ItemSuppliesInvoice extends Item {
     public ICapabilityProvider initCapabilities(ItemStack stack, @Nullable NBTTagCompound nbt) {
         return new SuppliesInvoiceProvider();
     }
-
-//    @Nullable
-//    @Override
-//    public NBTTagCompound getNBTShareTag(ItemStack stack) {
-//        NBTTagCompound nbt = super.getNBTShareTag(stack);
-//        if (nbt == null)
-//            nbt = new NBTTagCompound();
-//
-//        nbt.setTag("Invoice", SuppliesInvoiceProvider.encode(SuppliesInvoiceProvider.get(stack)));
-//
-//        return super.getNBTShareTag(stack);
-//    }
-//
-//    @Override
-//    public void readNBTShareTag(ItemStack stack, @Nullable NBTTagCompound nbt) {
-//        if (nbt != null)
-//            SuppliesInvoiceProvider.get(stack).replaceWith(SuppliesInvoiceProvider.decode(nbt));
-//
-//        super.readNBTShareTag(stack, nbt);
-//    }
 
     @Override
     public EnumActionResult onItemUse(EntityPlayer player, World worldIn, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {

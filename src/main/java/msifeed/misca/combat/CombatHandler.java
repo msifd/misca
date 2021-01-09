@@ -6,21 +6,22 @@ import msifeed.misca.combat.battle.BattleStateSync;
 import msifeed.misca.combat.cap.CombatantProvider;
 import msifeed.misca.combat.cap.CombatantSync;
 import msifeed.misca.combat.cap.ICombatant;
-import msifeed.misca.combat.rules.CombatantInfo;
-import msifeed.misca.combat.rules.Dices;
-import msifeed.misca.combat.rules.Rules;
-import msifeed.misca.combat.rules.WeaponTrait;
+import msifeed.misca.combat.rules.*;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.projectile.EntityPotion;
+import net.minecraft.init.Items;
 import net.minecraft.util.CombatRules;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EntityDamageSource;
+import net.minecraft.util.EnumHand;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.*;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+
+import java.util.Optional;
 
 public class CombatHandler {
     private static final String IGNORE_PREFIX = "ignore-";
@@ -136,6 +137,10 @@ public class CombatHandler {
 
     @SubscribeEvent
     public void onItemUseStart(LivingEntityUseItemEvent.Start event) {
+        final Optional<WeaponInfo> infoOpt = Combat.getConfig().getWeaponInfo(event.getItem().getItem());
+        final boolean ignoreUsage = infoOpt.map(i -> i.traits.contains(WeaponTrait.ignoreUsage)).orElse(false);
+        if (ignoreUsage) return;
+
         final EntityLivingBase entity = event.getEntityLiving();
         final ICombatant com = CombatantProvider.get(entity);
         if (!com.isInBattle()) return;
@@ -144,7 +149,8 @@ public class CombatHandler {
         if (battle == null) return;
 
         final boolean isLeader = battle.isLeader(entity.getUniqueID());
-        final boolean isEnoughAp = BattleFlow.isEnoughAp(entity, com, Combat.getRules().usageActionPoints(entity));
+        final double usageAp = Combat.getRules().usageActionPoints(event.getItem().getItem());
+        final boolean isEnoughAp = BattleFlow.isEnoughAp(entity, com, usageAp);
         if (!isLeader || !isEnoughAp) {
             event.setCanceled(true);
         }
@@ -154,6 +160,10 @@ public class CombatHandler {
     public void onItemUseFinish(LivingEntityUseItemEvent.Finish event) {
         if (event.getEntityLiving().world.isRemote) return;
 
+        final Optional<WeaponInfo> infoOpt = Combat.getConfig().getWeaponInfo(event.getItem().getItem());
+        final boolean ignoreUsage = infoOpt.map(i -> i.traits.contains(WeaponTrait.ignoreUsage)).orElse(false);
+        if (ignoreUsage) return;
+
         final EntityLivingBase entity = event.getEntityLiving();
         final ICombatant com = CombatantProvider.get(entity);
         if (!com.isInBattle()) return;
@@ -161,9 +171,7 @@ public class CombatHandler {
         final Battle battle = Combat.MANAGER.getBattle(com.getBattleId());
         if (battle == null) return;
 
-        if (WeaponTrait.get(entity).contains(WeaponTrait.ignoreUsage)) return;
-
-        BattleFlow.consumeUsageAp(entity);
+        BattleFlow.consumeUsageAp(entity, event.getItem().getItem());
         BattleFlow.consumeMovementAp(entity);
         CombatantSync.sync(entity);
     }
@@ -187,8 +195,8 @@ public class CombatHandler {
             return;
         }
 
-        if (BattleFlow.isEnoughAp(entity, com, Combat.getRules().usageActionPoints(entity))) {
-            BattleFlow.consumeUsageAp(entity);
+        if (BattleFlow.isEnoughAp(entity, com, Combat.getRules().usageActionPoints(Items.SPLASH_POTION))) {
+            BattleFlow.consumeUsageAp(entity, Items.SPLASH_POTION);
             BattleFlow.consumeMovementAp(entity);
             CombatantSync.sync(entity);
         } else {
@@ -205,9 +213,8 @@ public class CombatHandler {
     }
 
     private void alterDamage(LivingHurtEvent event, EntityLivingBase srcEntity) {
-        final float overrideDamage = Combat.getConfig().getWeaponInfo(srcEntity)
-                .map(wo -> wo.damage)
-                .orElse(0f);
+        final float overrideDamage = Combat.getConfig().getWeaponInfo(srcEntity, EnumHand.MAIN_HAND)
+                .map(wo -> wo.damage).orElse(0f);
         final float damageAmount = event.getAmount() + overrideDamage;
 
         final EntityLivingBase vicEntity = event.getEntityLiving();

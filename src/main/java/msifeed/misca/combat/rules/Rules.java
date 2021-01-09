@@ -6,7 +6,9 @@ import msifeed.misca.combat.Combat;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.attributes.IAttributeInstance;
+import net.minecraft.item.Item;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
@@ -35,7 +37,7 @@ public class Rules {
     public double hitRatePerLck = 0.005;
 
     public double hitRate(EntityLivingBase entity, CombatantInfo info) {
-        final double overrideRate = Combat.getConfig().getWeaponInfo(entity)
+        final double overrideRate = Combat.getConfig().getWeaponInfo(entity, EnumHand.MAIN_HAND)
                 .map(wo -> wo.hitRate).orElse(0d);
 
         final double perFactor = info.is(WeaponTrait.melee) ? hitRateMeleePerPer : hitRateRangePerPer;
@@ -129,7 +131,7 @@ public class Rules {
     public double attackApDefault = 4;
 
     public double attackActionPoints(EntityLivingBase entity) {
-        final double overrideAp = Combat.getConfig().getWeaponInfo(entity)
+        final double overrideAp = Combat.getConfig().getWeaponInfo(entity, EnumHand.MAIN_HAND)
                 .map(wo -> wo.apHit).orElse(0d);
 
         final IAttributeInstance attackSpeed = entity.getEntityAttribute(SharedMonsterAttributes.ATTACK_SPEED);
@@ -158,10 +160,9 @@ public class Rules {
 
     public double usageApBase = 5;
 
-    public double usageActionPoints(EntityLivingBase entity) {
-        final double overrideAp = Combat.getConfig().getWeaponInfo(entity)
+    public double usageActionPoints(Item item) {
+        final double overrideAp = Combat.getConfig().getWeaponInfo(item)
                 .map(wo -> wo.apUse).orElse(0d);
-
         return usageApBase + overrideAp;
     }
 

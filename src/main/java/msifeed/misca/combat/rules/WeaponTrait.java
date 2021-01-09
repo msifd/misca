@@ -6,6 +6,7 @@ import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EntityDamageSourceIndirect;
+import net.minecraft.util.EnumHand;
 
 import java.util.Collections;
 import java.util.Set;
@@ -17,7 +18,7 @@ public enum WeaponTrait {
     ;
 
     public static Set<WeaponTrait> get(EntityLivingBase entity) {
-        return Combat.getConfig().getWeaponInfo(entity)
+        return Combat.getConfig().getWeaponInfo(entity, EnumHand.MAIN_HAND)
                 .map(wo -> wo.traits)
                 .orElseGet(() -> {
                     final Item item = entity.getHeldItemMainhand().getItem();
@@ -28,7 +29,7 @@ public enum WeaponTrait {
 
     public static Set<WeaponTrait> get(DamageSource damageSource, EntityLivingBase entity) {
         final WeaponTrait typeFromDamage = damageSource instanceof EntityDamageSourceIndirect ? range : melee;
-        return Combat.getConfig().getWeaponInfo(entity)
+        return Combat.getConfig().getWeaponInfo(entity, EnumHand.MAIN_HAND)
                 .map(wo -> wo.traits)
                 .orElse(Collections.singleton(typeFromDamage));
     }
