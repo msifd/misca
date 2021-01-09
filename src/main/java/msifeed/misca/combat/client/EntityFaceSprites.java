@@ -1,6 +1,7 @@
 package msifeed.misca.combat.client;
 
 import msifeed.mellow.sprite.FlatSprite;
+import msifeed.misca.mixins.ModelRendererMixin;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.AbstractClientPlayer;
 import net.minecraft.client.model.ModelBase;
@@ -58,6 +59,7 @@ public enum EntityFaceSprites {
         if (model.boxList.isEmpty()) return null;
 
         final ModelRenderer box = model.boxList.get(0);
+        final ModelRendererMixin boxMixin = (ModelRendererMixin) box;
         if (box.cubeList.isEmpty()) return null;
         final ModelBox cube = box.cubeList.get(0);
 
@@ -68,7 +70,7 @@ public enum EntityFaceSprites {
         final double cubeWidth = cube.posX2 - cube.posX1;
         final double cubeHeight = cube.posY2 - cube.posY1;
         return new FlatSprite(tex, box.textureWidth, box.textureHeight,
-                box.textureOffsetX + cubeWidth, box.textureOffsetY + cubeHeight, cubeWidth, cubeHeight);
+                boxMixin.getTextureOffsetX() + cubeWidth, boxMixin.getTextureOffsetY() + cubeHeight, cubeWidth, cubeHeight);
     }
 
     @Nullable

@@ -1,6 +1,7 @@
 package msifeed.misca.combat.battle;
 
 import msifeed.misca.Misca;
+import msifeed.misca.mixins.NBTTagLongArrayMixin;
 import msifeed.sys.rpc.RpcMethodHandler;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
@@ -64,7 +65,9 @@ public class BattleStateSync {
     private static void decodeUuidsInto(NBTTagCompound nbt, Collection<UUID> uuids) {
         if (!nbt.hasKey("ids", 12)) return; // 12 - NBTTagLongArray
 
-        final long[] ids = ((NBTTagLongArray) nbt.getTag("ids")).data;
+
+        final NBTTagLongArray idsArray = (NBTTagLongArray) nbt.getTag("ids");
+        final long[] ids = ((NBTTagLongArrayMixin) idsArray).getData();
         if (ids.length < 2) return;
 
         for (int i = 0; i < ids.length; i += 2) {

@@ -6,6 +6,8 @@
   "refmap": "misca.refmap.json",
   "mixins": [
     "GuiIngameMixin",
-    "GuiChatMixin"
+    "GuiChatMixin",
+    "NBTTagLongArrayMixin",
+    "ModelRendererMixin"
   ]
 }
