@@ -23,6 +23,8 @@ public class CombatantStorage implements Capability.IStorage<ICombatant> {
         }
         if (instance.getTrainingHealth() != 0)
             nbt.setFloat("trainHP", instance.getTrainingHealth());
+        if (instance.getNeutralDamage() != 0)
+            nbt.setFloat("neutralDmg", instance.getNeutralDamage());
         return nbt;
     }
 
@@ -38,5 +40,6 @@ public class CombatantStorage implements Capability.IStorage<ICombatant> {
                 nbt.getDouble("posZ")
         ));
         instance.setTrainingHealth(nbt.getFloat("trainHP"));
+        instance.setNeutralDamage(nbt.getFloat("neutralDmg"));
     }
 }

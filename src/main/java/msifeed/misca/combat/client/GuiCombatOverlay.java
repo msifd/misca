@@ -92,6 +92,7 @@ public class GuiCombatOverlay {
                 "action points: " + String.format("%.2f", com.getActionPoints()),
                 "pos: " + posStr,
                 "training hp: " + com.getTrainingHealth(),
+                "neutral dmg: " + com.getNeutralDamage(),
                 "----",
                 "AP OVERHEAD: " + String.format("%.2f", overheadAp),
                 "MOVEMENT: " + formatActionPoints(moveAp, com.getActionPoints()),
@@ -150,7 +151,7 @@ public class GuiCombatOverlay {
         final String apStr = String.format("ap: %.1f, atk: %.1f, mov: %.1f", com.getActionPoints(), atkAp, movAp);
         renderTextAt(apStr, event.getX(), event.getY() + event.getEntity().getEyeHeight() + 0.8, event.getZ(), false);
 
-        final String hpStr = String.format("hp: %.1f/%.1f", entity.getHealth(), entity.getMaxHealth());
+        final String hpStr = String.format("hp: %.1f/%.1f, neu dmg: %.1f", entity.getHealth(), entity.getMaxHealth(), com.getNeutralDamage());
         renderTextAt(hpStr, event.getX(), event.getY() + event.getEntity().getEyeHeight() + 0.6, event.getZ(), false);
     }
 

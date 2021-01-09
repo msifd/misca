@@ -24,7 +24,8 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 public class CombatHandler {
     private static final String IGNORE_PREFIX = "ignore-";
-    private static final String CRITICAL_EVASION_DT = IGNORE_PREFIX + "criticalEvasion";
+    private static final String CRITICAL_EVASION_DT = IGNORE_PREFIX + "evasion";
+    public static final String NEUTRAL_PAYOUT_DT = IGNORE_PREFIX + "neutral";
 
     /**
      * Shitty hack to disable knock back after evasion
@@ -78,7 +79,12 @@ public class CombatHandler {
 
     @SubscribeEvent
     public void onHurt(LivingHurtEvent event) {
-        if (!(event.getSource() instanceof EntityDamageSource)) return;
+        if (event.getEntityLiving().world.isRemote) return;
+
+        if (!(event.getSource() instanceof EntityDamageSource)) {
+            handleNeutralDamage(event);
+            return;
+        }
 
         final EntityDamageSource src = (EntityDamageSource) event.getSource();
         if (!(src.getTrueSource() instanceof EntityLivingBase)) return;
@@ -105,6 +111,27 @@ public class CombatHandler {
         }
 
         handleDeadlyAttack(event, battle);
+    }
+
+    private void handleNeutralDamage(LivingHurtEvent event) {
+        final DamageSource src = event.getSource();
+        if (src.canHarmInCreative()) return;
+
+        final EntityLivingBase entity = event.getEntityLiving();
+        final ICombatant com = CombatantProvider.get(entity);
+        if (!com.isInBattle()) return;
+
+        final Battle battle = Combat.MANAGER.getBattle(com.getBattleId());
+        if (battle == null) return;
+
+        final boolean isLeader = battle.isLeader(entity.getUniqueID()); // Leader takes damage immediately
+        if (!isLeader && !src.getDamageType().startsWith(IGNORE_PREFIX)) {
+            com.setNeutralDamage(com.getNeutralDamage() + event.getAmount());
+            CombatantSync.sync(entity);
+            event.setCanceled(true);
+        } else {
+            handleDeadlyAttack(event, battle);
+        }
     }
 
     @SubscribeEvent
@@ -139,10 +166,6 @@ public class CombatHandler {
         BattleFlow.consumeUsageAp(entity);
         BattleFlow.consumeMovementAp(entity);
         CombatantSync.sync(entity);
-
-//        if (BattleFlow.isApDepleted(entity)) {
-//            Combat.MANAGER.nextTurn(battle);
-//        }
     }
 
     @SubscribeEvent

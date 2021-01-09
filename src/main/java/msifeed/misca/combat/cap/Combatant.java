@@ -10,6 +10,7 @@ public class Combatant implements ICombatant {
     private double actionPointsOverhead = 0;
     private Vec3d position = Vec3d.ZERO;
     private float trainingHealth = 0;
+    private float neutralDamage = 0;
 
     @Override
     public long getBattleId() {
@@ -59,5 +60,15 @@ public class Combatant implements ICombatant {
     @Override
     public void setTrainingHealth(float value) {
         this.trainingHealth = value;
+    }
+
+    @Override
+    public float getNeutralDamage() {
+        return neutralDamage;
+    }
+
+    @Override
+    public void setNeutralDamage(float value) {
+        this.neutralDamage = value;
     }
 }

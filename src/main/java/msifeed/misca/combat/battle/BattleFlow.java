@@ -3,6 +3,7 @@ package msifeed.misca.combat.battle;
 import msifeed.misca.charsheet.CharsheetProvider;
 import msifeed.misca.charsheet.ICharsheet;
 import msifeed.misca.combat.Combat;
+import msifeed.misca.combat.CombatHandler;
 import msifeed.misca.combat.cap.CombatantProvider;
 import msifeed.misca.combat.cap.CombatantSync;
 import msifeed.misca.combat.cap.ICombatant;
@@ -10,6 +11,7 @@ import msifeed.misca.combat.rules.Rules;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.DamageSource;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
@@ -92,13 +94,19 @@ public class BattleFlow {
     public static void prepareLeader(EntityLivingBase entity) {
         final ICharsheet cs = CharsheetProvider.get(entity);
         final ICombatant com = CombatantProvider.get(entity);
+
+        final float neutralDamage = com.getNeutralDamage();
         com.addActionPoints(Combat.getRules().actionPointsPerMove(cs));
         com.setPosition(entity.getPositionVector());
+        com.setNeutralDamage(0);
         CombatantSync.sync(entity);
 
 //        final Vec3d pos = com.getPosition();
 //        leader.setPositionAndUpdate(pos.x, pos.y, pos.z);
         setMobAI(entity, true);
+
+        if (neutralDamage > 0)
+            entity.attackEntityFrom(new DamageSource(CombatHandler.NEUTRAL_PAYOUT_DT), neutralDamage);
 
 //        if (leader instanceof EntityPlayer) {
 //            final ITextComponent tc = new TextComponentString("your turn");

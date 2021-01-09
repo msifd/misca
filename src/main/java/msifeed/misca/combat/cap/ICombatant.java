@@ -30,12 +30,16 @@ public interface ICombatant {
     float getTrainingHealth();
     void setTrainingHealth(float value);
 
+    float getNeutralDamage();
+    void setNeutralDamage(float value);
+
     default void replaceWith(@Nonnull ICombatant com) {
         setBattleId(com.getBattleId());
         setActionPoints(com.getActionPoints());
         setActionPointsOverhead(com.getActionPointsOverhead());
         setPosition(com.getPosition());
         setTrainingHealth(com.getTrainingHealth());
+        setNeutralDamage(com.getNeutralDamage());
     }
 
     default void reset() {
@@ -44,5 +48,6 @@ public interface ICombatant {
         setActionPointsOverhead(0);
         setPosition(Vec3d.ZERO);
         setTrainingHealth(0);
+        setNeutralDamage(0);
     }
 }
