@@ -130,7 +130,7 @@ public class BattleFlow {
 
     public static void consumeUsageAp(EntityLivingBase entity) {
         final ICombatant com = CombatantProvider.get(entity);
-        final double apWithOh = Combat.getRules().usageActionPoints() + com.getActionPointsOverhead();
+        final double apWithOh = Combat.getRules().usageActionPoints(entity) + com.getActionPointsOverhead();
         if (com.getActionPoints() >= apWithOh) {
             com.addActionPoints(-apWithOh);
             com.setActionPointsOverhead(com.getActionPointsOverhead() + apWithOh / 2);
@@ -148,7 +148,7 @@ public class BattleFlow {
         final ICombatant com = CombatantProvider.get(entity);
         final Rules rules = Combat.getRules();
         final double atk = rules.attackActionPoints(entity);
-        final double use = rules.usageActionPoints();
+        final double use = rules.usageActionPoints(entity);
         final double act = Math.min(atk, use) + com.getActionPointsOverhead();
         final double mov = rules.movementActionPoints(com.getPosition(), entity.getPositionVector());
         return (mov + act) > com.getActionPoints();

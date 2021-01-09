@@ -12,7 +12,8 @@ import java.util.Set;
 
 public enum WeaponTrait {
     melee, range,
-    evadeMelee, evadeRange
+    evadeMelee, evadeRange,
+    ignoreUsage,
     ;
 
     public static Set<WeaponTrait> get(EntityLivingBase entity) {

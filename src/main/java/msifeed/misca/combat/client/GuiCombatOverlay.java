@@ -82,7 +82,7 @@ public class GuiCombatOverlay {
         final double moveAp = rules.movementActionPoints(com.getPosition(), player.getPositionVector());
         final double overheadAp = com.getActionPointsOverhead();
         final double attackAp = rules.attackActionPoints(player) + overheadAp;
-        final double usageAp = rules.usageActionPoints() + overheadAp;
+        final double usageAp = rules.usageActionPoints(player) + overheadAp;
 
         final String[] lines = {
                 "members: " + joinedMembers,
@@ -93,11 +93,10 @@ public class GuiCombatOverlay {
                 "pos: " + posStr,
                 "training hp: " + com.getTrainingHealth(),
                 "----",
+                "AP OVERHEAD: " + String.format("%.2f", overheadAp),
                 "MOVEMENT: " + formatActionPoints(moveAp, com.getActionPoints()),
-                "ATTACK: " + formatActionPoints(attackAp, com.getActionPoints()) + String.format(" (overhead: %.2f)", overheadAp),
-                "USAGE: " + formatActionPoints(usageAp, com.getActionPoints()) + String.format(" (overhead: %.2f)", overheadAp),
-                "TOTAL: " + formatActionPoints(moveAp + attackAp, com.getActionPoints())
-                        + String.format(" / %.2f", com.getActionPoints()),
+                "ATTACK: " + String.format("%s/%.2f", formatActionPoints(attackAp, com.getActionPoints()), com.getActionPoints()),
+                "USAGE_: " + String.format("%s/%.2f", formatActionPoints(usageAp, com.getActionPoints()), com.getActionPoints()),
         };
 
         final FontRenderer fr = Minecraft.getMinecraft().fontRenderer;
@@ -134,9 +133,16 @@ public class GuiCombatOverlay {
         final ICombatant com = CombatantProvider.get(entity);
         if (!com.isInBattle()) return;
 
-        final double cover = Combat.getRules().coverBlocks(self.world, self.getPositionVector(), entity.getPositionVector());
-        final String coverStr = String.format("cov: %.1f", cover);
-        renderTextAt(coverStr, event.getX(), event.getY() + event.getEntity().getEyeHeight() + 1.0, event.getZ(), false);
+        {
+            final double cover = Combat.getRules().coverBlocks(self.world, self.getPositionVector(), entity.getPositionVector());
+            final String coverStr = String.format("your cov: %.1f", cover);
+            renderTextAt(coverStr, event.getX(), event.getY() + event.getEntity().getEyeHeight() + 1.2, event.getZ(), false);
+        }
+        {
+            final double cover = Combat.getRules().coverBlocks(self.world, entity.getPositionVector(), self.getPositionVector());
+            final String coverStr = String.format("its cov: %.1f", cover);
+            renderTextAt(coverStr, event.getX(), event.getY() + event.getEntity().getEyeHeight() + 1.0, event.getZ(), false);
+        }
 
         final Rules rules = Combat.getRules();
         final double atkAp = rules.attackActionPoints(entity) + com.getActionPointsOverhead();

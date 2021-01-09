@@ -46,7 +46,8 @@ public class Rules {
 
     public double evasionPerRef = 0.03;
     public double evasionPerLck = 0.005;
-    public double meleeEvasionPenalty = 0.2;
+    public double rangedEvasionPenalty = 0.2;
+    public double noShieldEvasionPenalty = 0.25;
 
     public double evasion(EntityLivingBase victim, CombatantInfo vicInfo, CombatantInfo srcInfo) {
         final int reflexes = vicInfo.cs.attrs().get(CharAttribute.ref);
@@ -59,7 +60,7 @@ public class Rules {
     public double evasionPenalty(CombatantInfo vicInfo, CombatantInfo srcInfo) {
         if (srcInfo.is(WeaponTrait.melee)
                 && !vicInfo.is(WeaponTrait.melee)
-                && !vicInfo.is(WeaponTrait.evadeMelee)) return meleeEvasionPenalty;
+                && !vicInfo.is(WeaponTrait.evadeMelee)) return rangedEvasionPenalty;
         return 0;
     }
 
@@ -67,26 +68,6 @@ public class Rules {
         if (!srcInfo.is(WeaponTrait.range)) return 1;
         if (vicInfo.is(WeaponTrait.evadeRange)) return 1;
         return coverBlocks(victim.world, vicInfo.pos, srcInfo.pos);
-    }
-
-    public double criticalHitBase = 0.01;
-    public double criticalHitPerPer = 0.0025;
-    public double criticalHitPerLck = 0.0075;
-
-    public double criticalHit(ICharsheet cs) {
-        final int perception = cs.attrs().get(CharAttribute.per);
-        final int luck = cs.attrs().get(CharAttribute.lck);
-        return criticalHitBase + perception * criticalHitPerPer + luck * criticalHitPerLck;
-    }
-
-    public double criticalEvasionBase = 0.01;
-    public double criticalEvasionPerEnd = 0.0025;
-    public double criticalEvasionPerLck = 0.0075;
-
-    public double criticalEvasion(ICharsheet cs) {
-        final int endurance = cs.attrs().get(CharAttribute.end);
-        final int luck = cs.attrs().get(CharAttribute.lck);
-        return criticalEvasionBase + endurance * criticalEvasionPerEnd + luck * criticalEvasionPerLck;
     }
 
     public double coverPerBlock = 0.5;
@@ -109,6 +90,39 @@ public class Rules {
         return world.getBlockState(pos).getBlock().isPassable(world, pos) ? 0 : 1;
     }
 
+    // Final hit chance and criticality
+
+    public double maxHitChance = 0.8;
+
+    public double criticalityConversionRate = 0.1;
+    public double rawChanceToHitCriticality(double chance) {
+        return Math.max(0, maxHitChance - chance) * criticalityConversionRate;
+    }
+
+    public double rawChanceToEvadeCriticality(double chance) {
+        return (chance < 0 ? -chance : 0) * criticalityConversionRate;
+    }
+
+    public double criticalHitBase = 0.01;
+    public double criticalHitPerPer = 0.0025;
+    public double criticalHitPerLck = 0.0075;
+
+    public double criticalHit(ICharsheet cs) {
+        final int perception = cs.attrs().get(CharAttribute.per);
+        final int luck = cs.attrs().get(CharAttribute.lck);
+        return criticalHitBase + perception * criticalHitPerPer + luck * criticalHitPerLck;
+    }
+
+    public double criticalEvasionBase = 0.01;
+    public double criticalEvasionPerEnd = 0.0025;
+    public double criticalEvasionPerLck = 0.0075;
+
+    public double criticalEvasion(ICharsheet cs) {
+        final int endurance = cs.attrs().get(CharAttribute.end);
+        final int luck = cs.attrs().get(CharAttribute.lck);
+        return criticalEvasionBase + endurance * criticalEvasionPerEnd + luck * criticalEvasionPerLck;
+    }
+
     // Action points
 
     public double attackApBase = 6;
@@ -116,10 +130,10 @@ public class Rules {
 
     public double attackActionPoints(EntityLivingBase entity) {
         final double overrideAp = Combat.getConfig().getWeaponInfo(entity)
-                .map(wo -> wo.ap).orElse(0d);
+                .map(wo -> wo.apHit).orElse(0d);
 
         final IAttributeInstance attackSpeed = entity.getEntityAttribute(SharedMonsterAttributes.ATTACK_SPEED);
-        if (attackSpeed != null) {
+        if (attackSpeed != null) { // Can be null for mobs
             return attackApBase - attackSpeed.getAttributeValue() + overrideAp;
         } else {
             return attackApDefault + overrideAp;
@@ -144,8 +158,11 @@ public class Rules {
 
     public double usageApBase = 5;
 
-    public double usageActionPoints() {
-        return usageApBase;
+    public double usageActionPoints(EntityLivingBase entity) {
+        final double overrideAp = Combat.getConfig().getWeaponInfo(entity)
+                .map(wo -> wo.apUse).orElse(0d);
+
+        return usageApBase + overrideAp;
     }
 
     public double apPerMoveBase = 5;

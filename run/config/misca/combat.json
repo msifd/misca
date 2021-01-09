@@ -9,14 +9,17 @@
     "hitRatePerLck": 0.005,
     "evasionPerRef": 0.03,
     "evasionPerLck": 0.005,
-    "meleeEvasionPenalty": 0.2,
+    "rangedEvasionPenalty": 0.2,
+    "noShieldEvasionPenalty": 0.25,
+    "coverPerBlock": 0.5,
+    "maxHitChance": 0.8,
+    "criticalityConversionRate": 0.1,
     "criticalHitBase": 0.01,
     "criticalHitPerPer": 0.0025,
     "criticalHitPerLck": 0.0075,
     "criticalEvasionBase": 0.01,
     "criticalEvasionPerEnd": 0.0025,
     "criticalEvasionPerLck": 0.0075,
-    "coverPerBlock": 0.5,
     "attackApBase": 6.0,
     "attackApDefault": 4.0,
     "movementApFactor": 1.0,
@@ -31,7 +34,8 @@
   "weapons": {
     "minecraft:diamond_sword": {
       "damage": 100.0,
-      "ap": 15.0,
+      "apHit": 0.0,
+      "apUse": 0.0,
       "hitRate": 1.0,
       "traits": [
         "melee"
