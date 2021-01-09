@@ -51,6 +51,6 @@ jobs:
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the 'Create Release' step above
           asset_path: build/libs/misca-latest.jar
-          asset_name: more-${{ steps.get_version.outputs.VERSION }}.jar
+          asset_name: misca-${{ steps.get_version.outputs.VERSION }}.jar
           asset_content_type: application/java-archive
         
