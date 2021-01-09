@@ -23,7 +23,7 @@ public class MiscaCommand extends CommandBase {
 
     @Override
     public String getUsage(ICommandSender sender) {
-        return "/misca <sync>";
+        return "/misca <reload>";
     }
 
     @Override
@@ -48,8 +48,8 @@ public class MiscaCommand extends CommandBase {
         }
 
         switch (args[0]) {
-            case "sync":
-                syncConfig(sender);
+            case "reload":
+                reloadConfig(sender);
                 break;
             default:
                 sender.sendMessage(new TextComponentString(getUsage(sender)));
@@ -57,12 +57,12 @@ public class MiscaCommand extends CommandBase {
         }
     }
 
-    private void syncConfig(ICommandSender sender) {
+    private void reloadConfig(ICommandSender sender) {
         try {
             ConfigManager.sync(Misca.MODID, Config.Type.INSTANCE);
             Misca.SHARED.sync();
-            Combat.CONFIG.sync();
-            sender.sendMessage(new TextComponentString("[Misca] Sync config ok"));
+            Combat.sync();
+            sender.sendMessage(new TextComponentString("[Misca] Reload config ok"));
         } catch (Exception e) {
             e.printStackTrace();
             sender.sendMessage(new TextComponentString(e.getMessage()));

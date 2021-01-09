@@ -137,7 +137,7 @@ public class CombatHandler {
 
     @SubscribeEvent
     public void onItemUseStart(LivingEntityUseItemEvent.Start event) {
-        final Optional<WeaponInfo> infoOpt = Combat.getConfig().getWeaponInfo(event.getItem().getItem());
+        final Optional<WeaponInfo> infoOpt = Combat.getWeaponInfo(event.getItem().getItem());
         final boolean ignoreUsage = infoOpt.map(i -> i.traits.contains(WeaponTrait.ignoreUsage)).orElse(false);
         if (ignoreUsage) return;
 
@@ -160,7 +160,7 @@ public class CombatHandler {
     public void onItemUseFinish(LivingEntityUseItemEvent.Finish event) {
         if (event.getEntityLiving().world.isRemote) return;
 
-        final Optional<WeaponInfo> infoOpt = Combat.getConfig().getWeaponInfo(event.getItem().getItem());
+        final Optional<WeaponInfo> infoOpt = Combat.getWeaponInfo(event.getItem().getItem());
         final boolean ignoreUsage = infoOpt.map(i -> i.traits.contains(WeaponTrait.ignoreUsage)).orElse(false);
         if (ignoreUsage) return;
 
@@ -213,7 +213,7 @@ public class CombatHandler {
     }
 
     private void alterDamage(LivingHurtEvent event, EntityLivingBase srcEntity) {
-        final float overrideDamage = Combat.getConfig().getWeaponInfo(srcEntity, EnumHand.MAIN_HAND)
+        final float overrideDamage = Combat.getWeaponInfo(srcEntity, EnumHand.MAIN_HAND)
                 .map(wo -> wo.damage).orElse(0f);
         final float damageAmount = event.getAmount() + overrideDamage;
 

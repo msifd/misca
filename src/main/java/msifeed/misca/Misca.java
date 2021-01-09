@@ -1,5 +1,6 @@
 package msifeed.misca;
 
+import com.google.gson.reflect.TypeToken;
 import msifeed.misca.charsheet.CharsheetProvider;
 import msifeed.misca.chatex.Chatex;
 import msifeed.misca.client.MiscaClient;
@@ -38,7 +39,7 @@ public class Misca {
 
     public static final RpcChannel RPC = new RpcChannel(MODID + ":rpc");
     public static final SyncChannel<MiscaSharedConfig> SHARED
-            = new SyncChannel<>(RPC, Paths.get(MODID, "shared.json"), MiscaSharedConfig.class);
+            = new SyncChannel<>(RPC, Paths.get(MODID, "shared.json"), TypeToken.get(MiscaSharedConfig.class));
 
     private final Chatex chatex = new Chatex();
     private final Combat combat = new Combat();
@@ -84,7 +85,7 @@ public class Misca {
     public void serverStarting(FMLServerStartingEvent event) {
         try {
             SHARED.sync();
-            Combat.CONFIG.sync();
+            Combat.sync();
         } catch (Exception e) {
             e.printStackTrace();
         }

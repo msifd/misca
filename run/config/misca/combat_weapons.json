@@ -1,0 +1,11 @@
+{
+  "minecraft:shield": {
+    "damage": 0.0,
+    "apHit": 0.0,
+    "apUse": 0.0,
+    "hitRate": 0.0,
+    "traits": [
+      "ignoreUsage"
+    ]
+  }
+}

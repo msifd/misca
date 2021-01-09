@@ -2,6 +2,7 @@ package msifeed.sys.sync;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
 import msifeed.sys.rpc.RpcChannel;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.ResourceLocation;
@@ -20,7 +21,7 @@ import java.nio.file.Path;
 import java.time.ZoneId;
 
 public class SyncChannel<T> {
-    private final Class<T> type;
+    private final TypeToken<T> type;
     private final RpcChannel rpc;
     private final String rpcSyncMethod;
     private final Path filePath;
@@ -33,10 +34,10 @@ public class SyncChannel<T> {
 
     private T value;
 
-    public SyncChannel(RpcChannel rpc, Path filePath, Class<T> type) {
+    public SyncChannel(RpcChannel rpc, Path filePath, TypeToken<T> type) {
         this.type = type;
         this.rpc = rpc;
-        this.rpcSyncMethod = "sync." + type.getSimpleName();
+        this.rpcSyncMethod = "sync." + type.getRawType().getSimpleName();
         this.filePath = Loader.instance().getConfigDir().toPath().resolve(filePath);
         this.value = getDefaultInstance();
 
@@ -56,7 +57,7 @@ public class SyncChannel<T> {
     }
 
     public void onSyncMessage(byte[] jsonBytes) {
-        updateValue(gson.fromJson(new String(jsonBytes, StandardCharsets.UTF_8), type));
+        updateValue(gson.fromJson(new String(jsonBytes, StandardCharsets.UTF_8), type.getType()));
     }
 
     public void sync() throws Exception {
@@ -67,7 +68,7 @@ public class SyncChannel<T> {
 
         final String oldState = gson.toJson(value);
         final BufferedReader reader = Files.newBufferedReader(filePath, StandardCharsets.UTF_8);
-        updateValue(gson.fromJson(reader, type));
+        updateValue(gson.fromJson(reader, type.getType()));
         broadcast();
 
         final String newState = gson.toJson(value);
@@ -95,7 +96,7 @@ public class SyncChannel<T> {
 
     private T getDefaultInstance() {
         try {
-            return type.newInstance();
+            return (T) type.getRawType().newInstance();
         } catch (Throwable e) {
             e.printStackTrace();
             throw new RuntimeException(e);
