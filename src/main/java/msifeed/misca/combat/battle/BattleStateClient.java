@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
-@SideOnly(Side.CLIENT)
 public class BattleStateClient {
     public static final Battle STATE = new Battle(false);
 
