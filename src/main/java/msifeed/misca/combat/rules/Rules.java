@@ -179,4 +179,8 @@ public class Rules {
     public double maxActionPoints(ICharsheet cs) {
         return maxApBase + cs.attrs().get(CharAttribute.agi) * maxApPerAgi;
     }
+
+    // Other
+
+    public int potionTicks = 200;
 }

@@ -37,6 +37,10 @@ public class BattleStateClient {
     public static void updateQueue(List<UUID> newQueue) {
         STATE.getQueue().clear();
         STATE.getQueue().addAll(newQueue);
+
+        final EntityLivingBase leader = STATE.getLeader();
+        if (leader != null)
+            STATE.resetPotionUpdateTick(leader);
     }
 
     public static void clear() {

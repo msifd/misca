@@ -1,5 +1,6 @@
 package msifeed.misca.combat.battle;
 
+import msifeed.misca.combat.Combat;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayerMP;
 
@@ -14,6 +15,7 @@ public class Battle {
     private final Map<UUID, WeakReference<EntityLivingBase>> members = new HashMap<>();
     private final Queue<UUID> queue = new ArrayDeque<>();
     private final boolean training;
+    private int potionTickStart = 0;
 
     public Battle(boolean training) {
         this.training = training;
@@ -94,6 +96,15 @@ public class Battle {
 
     public boolean isTraining() {
         return training;
+    }
+
+    public boolean shouldUpdatePotions(EntityLivingBase entity) {
+        return isLeader(entity.getUniqueID())
+                && entity.ticksExisted - potionTickStart < Combat.getRules().potionTicks;
+    }
+
+    public void resetPotionUpdateTick(EntityLivingBase entity) {
+        potionTickStart = entity.ticksExisted;
     }
 
     public void clear() {

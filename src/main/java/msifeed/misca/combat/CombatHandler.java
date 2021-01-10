@@ -2,17 +2,14 @@ package msifeed.misca.combat;
 
 import msifeed.misca.combat.battle.Battle;
 import msifeed.misca.combat.battle.BattleFlow;
-import msifeed.misca.combat.battle.BattleStateSync;
 import msifeed.misca.combat.cap.CombatantProvider;
 import msifeed.misca.combat.cap.CombatantSync;
 import msifeed.misca.combat.cap.ICombatant;
 import msifeed.misca.combat.rules.*;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.projectile.EntityPotion;
 import net.minecraft.init.Items;
-import net.minecraft.util.CombatRules;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EntityDamageSource;
 import net.minecraft.util.EnumHand;
@@ -111,7 +108,7 @@ public class CombatHandler {
             }
         }
 
-        handleDeadlyAttack(event, battle);
+        BattleFlow.handleDeadlyAttack(event, event.getAmount(), event.getEntityLiving(), battle);
     }
 
     private void handleNeutralDamage(LivingHurtEvent event) {
@@ -131,7 +128,7 @@ public class CombatHandler {
             CombatantSync.sync(entity);
             event.setCanceled(true);
         } else {
-            handleDeadlyAttack(event, battle);
+            BattleFlow.handleDeadlyAttack(event, event.getAmount(), event.getEntityLiving(), battle);
         }
     }
 
@@ -252,33 +249,6 @@ public class CombatHandler {
                 srcEntity.attackEntityFrom(ds, damageAmount * damageFactor);
                 notifyActionBar("crit evasion", event.getEntityLiving(), srcEntity);
             }
-        }
-    }
-
-    private static void handleDeadlyAttack(LivingHurtEvent event, Battle battle) {
-        final EntityLivingBase victim = event.getEntityLiving();
-        final double armorToughness = victim.getEntityAttribute(SharedMonsterAttributes.ARMOR_TOUGHNESS).getAttributeValue();
-        final float damage = CombatRules.getDamageAfterAbsorb(event.getAmount(), victim.getTotalArmorValue(), (float) armorToughness);
-
-        final boolean mortalWound = victim.getHealth() - damage <= 0;
-        if (!mortalWound) return;
-
-        event.setCanceled(true);
-
-        if (battle.isTraining()) {
-            victim.setHealth(CombatantProvider.get(victim).getTrainingHealth());
-
-            if (victim instanceof EntityPlayer) {
-                ((EntityPlayer) victim).sendStatusMessage(new TextComponentString("u dead"), false);
-                ((EntityPlayer) victim).inventory.damageArmor(damage);
-            }
-        } else {
-            victim.setHealth(0.5f);
-
-            if (battle.isLeader(victim.getUniqueID()))
-                Combat.MANAGER.nextTurn(battle);
-            battle.removeFromQueue(victim.getUniqueID());
-            BattleStateSync.syncQueue(battle);
         }
     }
 

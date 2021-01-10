@@ -10,12 +10,16 @@ import msifeed.misca.combat.cap.ICombatant;
 import msifeed.misca.combat.rules.Rules;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
+import net.minecraft.util.CombatRules;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.text.TextComponentString;
+import net.minecraftforge.fml.common.eventhandler.Event;
 
 import java.lang.ref.WeakReference;
 import java.util.*;
@@ -34,7 +38,7 @@ public class BattleFlow {
 
     /**
      * Rotate queue until valid entity is found
-     * @return <code>true</code> if valid leader was found, <code>false</code> otherwise
+     * @return is valid leader was found
      */
     public static boolean selectNextLeader(Battle battle) {
         final Map<UUID, WeakReference<EntityLivingBase>> members = battle.getMembers();
@@ -107,6 +111,10 @@ public class BattleFlow {
 //        leader.setPositionAndUpdate(pos.x, pos.y, pos.z);
         setMobAI(entity, true);
 
+        final Battle battle = Combat.MANAGER.getBattle(com.getBattleId());
+        if (battle != null)
+            battle.resetPotionUpdateTick(entity);
+
         if (neutralDamage > 0)
             entity.attackEntityFrom(new DamageSource(CombatHandler.NEUTRAL_PAYOUT_DT), neutralDamage);
 
@@ -176,5 +184,32 @@ public class BattleFlow {
     private static void setMobAI(EntityLivingBase entity, boolean enabled) {
         if (entity instanceof EntityLiving)
             ((EntityLiving) entity).setNoAI(!enabled);
+    }
+
+    public static void handleDeadlyAttack(Event event, float amount, EntityLivingBase victim, Battle battle) {
+        final double armorToughness = victim.getEntityAttribute(SharedMonsterAttributes.ARMOR_TOUGHNESS).getAttributeValue();
+        final float damage = CombatRules.getDamageAfterAbsorb(amount, victim.getTotalArmorValue(), (float) armorToughness);
+
+        final boolean mortalWound = victim.getHealth() - damage <= 0;
+        if (!mortalWound) return;
+
+        if (event.isCancelable())
+            event.setCanceled(true);
+
+        if (battle.isTraining()) {
+            victim.setHealth(CombatantProvider.get(victim).getTrainingHealth());
+
+            if (victim instanceof EntityPlayer) {
+                ((EntityPlayer) victim).sendStatusMessage(new TextComponentString("u dead"), false);
+                ((EntityPlayer) victim).inventory.damageArmor(damage);
+            }
+        } else {
+            victim.setHealth(0.5f);
+
+            if (battle.isLeader(victim.getUniqueID()))
+                Combat.MANAGER.nextTurn(battle);
+            battle.removeFromQueue(victim.getUniqueID());
+            BattleStateSync.syncQueue(battle);
+        }
     }
 }

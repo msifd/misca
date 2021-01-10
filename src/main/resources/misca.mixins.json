@@ -5,9 +5,10 @@
   "package": "msifeed.misca.mixins",
   "refmap": "misca.refmap.json",
   "mixins": [
-    "GuiIngameMixin",
+    "EntityLivingBaseMixin",
     "GuiChatMixin",
-    "NBTTagLongArrayMixin",
-    "ModelRendererMixin"
+    "GuiIngameMixin",
+    "ModelRendererMixin",
+    "NBTTagLongArrayMixin"
   ]
 }
