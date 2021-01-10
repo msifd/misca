@@ -2,31 +2,59 @@ package msifeed.misca.combat.rules;
 
 import msifeed.misca.charsheet.CharsheetProvider;
 import msifeed.misca.charsheet.ICharsheet;
+import msifeed.misca.combat.Combat;
 import msifeed.misca.combat.cap.CombatantProvider;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.init.Items;
+import net.minecraft.item.Item;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.EntityDamageSourceIndirect;
+import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.Vec3d;
 
+import java.util.Collections;
 import java.util.Set;
 
 public class CombatantInfo {
     public final ICharsheet cs;
     public final Vec3d pos;
-    private final Set<WeaponTrait> traits;
+    private final Set<WeaponTrait> traitsMain;
+    private final Set<WeaponTrait> traitsOff;
 
     public CombatantInfo(EntityLivingBase attacker, DamageSource source) {
         this.cs = CharsheetProvider.get(attacker);
         this.pos = attacker.getPositionVector();
-        this.traits = WeaponTrait.get(source, attacker);
+
+        final WeaponTrait typeFromDamage = source instanceof EntityDamageSourceIndirect ? WeaponTrait.range : WeaponTrait.melee;
+        this.traitsMain = Combat.getWeaponInfo(attacker, EnumHand.MAIN_HAND)
+                .map(wo -> wo.traits)
+                .orElse(Collections.singleton(typeFromDamage));
+        this.traitsOff = Combat.getWeaponInfo(attacker, EnumHand.OFF_HAND)
+                .map(wo -> wo.traits)
+                .orElse(Collections.emptySet());
     }
 
     public CombatantInfo(EntityLivingBase victim) {
         this.cs = CharsheetProvider.get(victim);
         this.pos = CombatantProvider.get(victim).getPosition();
-        this.traits = WeaponTrait.get(victim);
+
+        this.traitsMain = Combat.getWeaponInfo(victim, EnumHand.MAIN_HAND)
+                .map(wo -> wo.traits)
+                .orElseGet(() -> {
+                    final Item item = victim.getHeldItemMainhand().getItem();
+                    final WeaponTrait type = item == Items.BOW ? WeaponTrait.range : WeaponTrait.melee;
+                    return Collections.singleton(type);
+                });
+        this.traitsOff = Combat.getWeaponInfo(victim, EnumHand.OFF_HAND)
+                .map(wo -> wo.traits)
+                .orElse(Collections.emptySet());
     }
 
     public boolean is(WeaponTrait trait) {
-        return traits.contains(trait);
+        return traitsMain.contains(trait);
+    }
+
+    public boolean isAny(WeaponTrait trait) {
+        return traitsMain.contains(trait) || traitsOff.contains(trait);
     }
 }

@@ -60,15 +60,22 @@ public class Rules {
     }
 
     public double evasionPenalty(CombatantInfo vicInfo, CombatantInfo srcInfo) {
-        if (srcInfo.is(WeaponTrait.melee)
-                && !vicInfo.is(WeaponTrait.melee)
-                && !vicInfo.is(WeaponTrait.evadeMelee)) return rangedEvasionPenalty;
-        return 0;
+        double penalty = 0;
+
+        if (srcInfo.is(WeaponTrait.melee)) {
+            if (vicInfo.is(WeaponTrait.melee)) {
+                if (!vicInfo.isAny(WeaponTrait.evadeMelee)) penalty += noShieldEvasionPenalty;
+            } else {
+                if (!vicInfo.isAny(WeaponTrait.evadeMelee)) penalty += rangedEvasionPenalty;
+            }
+        }
+
+        return penalty;
     }
 
     public double evasionFactor(EntityLivingBase victim, CombatantInfo vicInfo, CombatantInfo srcInfo) {
         if (!srcInfo.is(WeaponTrait.range)) return 1;
-        if (vicInfo.is(WeaponTrait.evadeRange)) return 1;
+        if (vicInfo.isAny(WeaponTrait.evadeRange)) return 1;
         return coverBlocks(victim.world, vicInfo.pos, srcInfo.pos);
     }
 
