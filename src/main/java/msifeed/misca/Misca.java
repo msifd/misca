@@ -12,6 +12,7 @@ import msifeed.misca.environ.Environ;
 import msifeed.misca.environ.EnvironCommand;
 import msifeed.misca.locks.Locks;
 import msifeed.misca.locks.LocksCommand;
+import msifeed.misca.needs.PlayerNeeds;
 import msifeed.misca.rename.RenameItems;
 import msifeed.misca.supplies.BackgroundSupplies;
 import msifeed.misca.supplies.InvoiceCommand;
@@ -46,6 +47,7 @@ public class Misca {
     private final Environ environ = new Environ();
     private final Locks locks = new Locks();
     private final BackgroundSupplies supplies = new BackgroundSupplies();
+    private final PlayerNeeds needs = new PlayerNeeds();
 
     public static MiscaSharedConfig getSharedConfig() {
         return SHARED.get();
@@ -60,6 +62,7 @@ public class Misca {
         combat.preInit();
         locks.preInit();
         supplies.preInit();
+        needs.preInit();
 
         if (FMLCommonHandler.instance().getSide().isClient())
             MiscaClient.INSTANCE.preInit();

@@ -45,7 +45,7 @@ minecraft {
 
 dependencies {
     minecraft 'net.minecraftforge:forge:1.12.2-14.23.5.2854'
-    compile 'org.spongepowered:mixin:0.8.1'
+    compile 'org.spongepowered:mixin:0.8.2'
 }
 
 processResources {
