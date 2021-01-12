@@ -2,6 +2,7 @@ package msifeed.misca.charsheet;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.ai.attributes.AbstractAttributeMap;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
@@ -11,8 +12,13 @@ import net.minecraftforge.fml.common.gameevent.PlayerEvent;
 public class CharsheetEventHandler {
     @SubscribeEvent
     public void onAttachCapability(AttachCapabilitiesEvent<Entity> event) {
-        if (event.getObject() instanceof EntityLivingBase)
+        if (event.getObject() instanceof EntityLivingBase) {
             event.addCapability(ICharsheet.KEY, new CharsheetProvider(event.getObject() instanceof EntityPlayer));
+
+            final AbstractAttributeMap attributes = ((EntityLivingBase) event.getObject()).getAttributeMap();
+            attributes.registerAttribute(ICharsheet.ATTRIBUTE_MOD);
+            attributes.registerAttribute(ICharsheet.SKILL_MOD);
+        }
     }
 
     @SubscribeEvent

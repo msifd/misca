@@ -7,9 +7,6 @@ import net.minecraft.entity.ai.attributes.RangedAttribute;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
-import net.minecraftforge.event.entity.living.LivingHurtEvent;
-import net.minecraftforge.fml.common.eventhandler.EventPriority;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 public class IntegrityHandler {
     public static final IAttribute INTEGRITY = new RangedAttribute(null, Misca.MODID + ".integrity", 100, 0, 100).setShouldWatch(true);
@@ -18,7 +15,7 @@ public class IntegrityHandler {
     private final Potion miningFatigue = Potion.getPotionById(4);
     private final Potion weakness = Potion.getPotionById(18);
 
-    public void handle(EntityPlayer player, IAttributeInstance attr, long secs) {
+    public void handleTime(EntityPlayer player, IAttributeInstance attr, long secs) {
         final double intPerSec = 3d / (5 * 60 * 60);
 //        final double intPerSec = 3d / (5);
         final double restored = secs * intPerSec;
@@ -37,19 +34,8 @@ public class IntegrityHandler {
         player.addPotionEffect(effect);
     }
 
-    @SubscribeEvent(priority = EventPriority.LOWEST)
-    public void onPlayerHurt(LivingHurtEvent event) {
-        if (event.isCanceled() || event.getAmount() < 1) return;
-        if (!(event.getEntity() instanceof EntityPlayer)) return;
-        if (event.getEntity().world.isRemote) return;
-        if (event.getSource().canHarmInCreative()) return;
-
-        final EntityPlayer player = (EntityPlayer) event.getEntityLiving();
-        final IAttributeInstance attr = player.getAttributeMap().getAttributeInstance(INTEGRITY);
-
-        final double lost = event.getAmount();
-//        final double lost = event.getAmount() * 5;
+    public void handleDamage(EntityPlayer player, IAttributeInstance attr, float amount) {
+        final double lost = amount * 0.1;
         attr.setBaseValue(attr.getAttribute().clampValue(attr.getBaseValue() - lost));
-//        System.out.printf("int lost: %.5f\n", lost);
     }
 }

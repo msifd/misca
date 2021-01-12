@@ -64,7 +64,7 @@ public class BattleFlow {
 
         final ICharsheet cs = CharsheetProvider.get(leader);
         final ICombatant com = CombatantProvider.get(leader);
-        com.setActionPoints(MathHelper.clamp(com.getActionPoints(), 0, Combat.getRules().maxActionPoints(cs)));
+        com.setActionPoints(MathHelper.clamp(com.getActionPoints(), 0, Combat.getRules().maxActionPoints(leader, cs)));
         com.setActionPointsOverhead(0);
         com.setPosition(leader.getPositionVector());
         CombatantSync.sync(leader);
@@ -102,7 +102,7 @@ public class BattleFlow {
         final ICombatant com = CombatantProvider.get(entity);
 
         final float neutralDamage = com.getNeutralDamage();
-        com.addActionPoints(Combat.getRules().actionPointsPerMove(cs));
+        com.addActionPoints(Combat.getRules().actionPointsPerMove(entity, cs));
         com.setPosition(entity.getPositionVector());
         com.setNeutralDamage(0);
         CombatantSync.sync(entity);

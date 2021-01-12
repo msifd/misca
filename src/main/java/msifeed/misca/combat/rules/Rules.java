@@ -22,13 +22,13 @@ public class Rules {
 
     public float damageIncrease(CombatantInfo info) {
         final float strFactor = info.is(WeaponTrait.melee) ? damageIncreaseMeleePerStr : damageIncreaseRangePerStr;
-        return info.cs.attrs().get(CharAttribute.str) * strFactor;
+        return info.attr(CharAttribute.str) * strFactor;
     }
 
     public float damageAbsorptionPerEnd = 0.02f;
 
-    public float damageAbsorption(ICharsheet cs) {
-        return cs.attrs().get(CharAttribute.end) * damageAbsorptionPerEnd;
+    public float damageAbsorption(CombatantInfo info) {
+        return info.attr(CharAttribute.end) * damageAbsorptionPerEnd;
     }
 
     public double hitRateBase = 0.5;
@@ -41,8 +41,8 @@ public class Rules {
                 .map(wo -> wo.hitRate).orElse(0d);
 
         final double perFactor = info.is(WeaponTrait.melee) ? hitRateMeleePerPer : hitRateRangePerPer;
-        final int perception = info.cs.attrs().get(CharAttribute.per);
-        final int luck = info.cs.attrs().get(CharAttribute.lck);
+        final int perception = info.attr(CharAttribute.per);
+        final int luck = info.attr(CharAttribute.lck);
         return hitRateBase + perception * perFactor + luck * hitRatePerLck + overrideRate;
     }
 
@@ -52,8 +52,8 @@ public class Rules {
     public double noShieldEvasionPenalty = 0.25;
 
     public double evasion(EntityLivingBase victim, CombatantInfo vicInfo, CombatantInfo srcInfo) {
-        final int reflexes = vicInfo.cs.attrs().get(CharAttribute.ref);
-        final int luck = vicInfo.cs.attrs().get(CharAttribute.lck);
+        final int reflexes = vicInfo.attr(CharAttribute.ref);
+        final int luck = vicInfo.attr(CharAttribute.lck);
         final double penalty = evasionPenalty(vicInfo, srcInfo);
         final double factor = evasionFactor(victim, vicInfo, srcInfo);
         return (reflexes * evasionPerRef + luck * evasionPerLck - penalty) * factor;
@@ -116,9 +116,9 @@ public class Rules {
     public double criticalHitPerPer = 0.0025;
     public double criticalHitPerLck = 0.0075;
 
-    public double criticalHit(ICharsheet cs) {
-        final int perception = cs.attrs().get(CharAttribute.per);
-        final int luck = cs.attrs().get(CharAttribute.lck);
+    public double criticalHit(CombatantInfo info) {
+        final int perception = info.attr(CharAttribute.per);
+        final int luck = info.attr(CharAttribute.lck);
         return criticalHitBase + perception * criticalHitPerPer + luck * criticalHitPerLck;
     }
 
@@ -126,9 +126,9 @@ public class Rules {
     public double criticalEvasionPerEnd = 0.0025;
     public double criticalEvasionPerLck = 0.0075;
 
-    public double criticalEvasion(ICharsheet cs) {
-        final int endurance = cs.attrs().get(CharAttribute.end);
-        final int luck = cs.attrs().get(CharAttribute.lck);
+    public double criticalEvasion(CombatantInfo info) {
+        final int endurance = info.attr(CharAttribute.end);
+        final int luck = info.attr(CharAttribute.lck);
         return criticalEvasionBase + endurance * criticalEvasionPerEnd + luck * criticalEvasionPerLck;
     }
 
@@ -176,15 +176,17 @@ public class Rules {
     public double apPerMoveBase = 5;
     public double apPerMovePerAgi = 1;
 
-    public double actionPointsPerMove(ICharsheet cs) {
-        return apPerMoveBase + cs.attrs().get(CharAttribute.agi) * apPerMovePerAgi;
+    public double actionPointsPerMove(EntityLivingBase entity, ICharsheet cs) {
+        final int attrMod = (int) entity.getEntityAttribute(ICharsheet.ATTRIBUTE_MOD).getAttributeValue();
+        return apPerMoveBase + (cs.attrs().get(CharAttribute.agi) + attrMod) * apPerMovePerAgi;
     }
 
     public double maxApBase = 0;
     public double maxApPerAgi = 4;
 
-    public double maxActionPoints(ICharsheet cs) {
-        return maxApBase + cs.attrs().get(CharAttribute.agi) * maxApPerAgi;
+    public double maxActionPoints(EntityLivingBase entity, ICharsheet cs) {
+        final int attrMod = (int) entity.getEntityAttribute(ICharsheet.ATTRIBUTE_MOD).getAttributeValue();
+        return maxApBase + (cs.attrs().get(CharAttribute.agi) + attrMod) * maxApPerAgi;
     }
 
     // Other

@@ -222,13 +222,13 @@ public class CombatHandler {
         final double hitChanceRaw = rules.hitRate(srcEntity, srcInfo) - rules.evasion(vicEntity, vicInfo, srcInfo);
         final double hitChance = Math.min(hitChanceRaw, rules.maxHitChance);
         final int hitCheck = Dices.checkInt(hitChance);
-        final int criticality = Dices.checkInt(rules.criticalHit(srcInfo.cs) + rules.rawChanceToHitCriticality(hitChanceRaw))
-                - Dices.checkInt(rules.criticalEvasion(vicInfo.cs) + rules.rawChanceToEvadeCriticality(hitChanceRaw));
+        final int criticality = Dices.checkInt(rules.criticalHit(srcInfo) + rules.rawChanceToHitCriticality(hitChanceRaw))
+                - Dices.checkInt(rules.criticalEvasion(vicInfo) + rules.rawChanceToEvadeCriticality(hitChanceRaw));
         final int successfulness = hitCheck + criticality;
 
         final boolean successfulHit = successfulness >= 1;
         if (successfulHit) {
-            float damageFactor = 1 + rules.damageIncrease(srcInfo) - rules.damageAbsorption(vicInfo.cs);
+            float damageFactor = 1 + rules.damageIncrease(srcInfo) - rules.damageAbsorption(vicInfo);
 
             final boolean criticalHit = successfulness > 1;
             if (criticalHit) {
@@ -244,7 +244,7 @@ public class CombatHandler {
             final boolean criticalEvasion = successfulness < 0;
             if (criticalEvasion) {
                 // Note `src` in damageAbsorption
-                final float damageFactor = 1 + rules.damageIncrease(srcInfo) - rules.damageAbsorption(srcInfo.cs);
+                final float damageFactor = 1 + rules.damageIncrease(srcInfo) - rules.damageAbsorption(srcInfo);
                 final DamageSource ds = new EntityDamageSource(CRITICAL_EVASION_DT, vicEntity);
                 srcEntity.attackEntityFrom(ds, damageAmount * damageFactor);
                 notifyActionBar("crit evasion", event.getEntityLiving(), srcEntity);
