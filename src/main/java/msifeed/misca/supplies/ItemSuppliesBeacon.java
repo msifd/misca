@@ -2,6 +2,10 @@ package msifeed.misca.supplies;
 
 import msifeed.misca.Misca;
 import msifeed.misca.MiscaThings;
+import msifeed.misca.needs.StaminaHandler;
+import msifeed.misca.needs.cap.IPlayerNeeds;
+import msifeed.misca.needs.cap.PlayerNeeds;
+import msifeed.misca.needs.cap.PlayerNeedsProvider;
 import msifeed.misca.supplies.cap.ISuppliesInvoice;
 import msifeed.misca.supplies.cap.SuppliesInvoiceProvider;
 import net.minecraft.client.util.ITooltipFlag;
@@ -48,8 +52,10 @@ public class ItemSuppliesBeacon extends Item {
         if (supplies == null) return new ActionResult<>(EnumActionResult.FAIL, stack);
 
         final long deliveryIndex = supplies.getLastDeliveryIndex();
-        BackgroundSupplies.gatherDelivery(supplies)
-                .forEach(player::addItemStackToInventory);
+        final List<ItemStack> delivery = BackgroundSupplies.gatherDelivery(supplies);
+
+        StaminaHandler.consumeSuppliesDelivery(player, delivery);
+        delivery.forEach(player::addItemStackToInventory); // empties items in delivery list
 
         final EnumActionResult result = deliveryIndex != supplies.getLastDeliveryIndex()
                 ? EnumActionResult.SUCCESS

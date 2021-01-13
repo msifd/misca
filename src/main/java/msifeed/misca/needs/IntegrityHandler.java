@@ -1,28 +1,22 @@
 package msifeed.misca.needs;
 
 import msifeed.misca.Misca;
-import net.minecraft.entity.ai.attributes.IAttribute;
-import net.minecraft.entity.ai.attributes.IAttributeInstance;
-import net.minecraft.entity.ai.attributes.RangedAttribute;
+import msifeed.misca.needs.cap.IPlayerNeeds;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
 
 public class IntegrityHandler {
-    public static final IAttribute INTEGRITY = new RangedAttribute(null, Misca.MODID + ".integrity", 100, 0, 100).setShouldWatch(true);
-
     private final Potion slowness = Potion.getPotionById(2);
     private final Potion miningFatigue = Potion.getPotionById(4);
     private final Potion weakness = Potion.getPotionById(18);
 
-    public void handleTime(EntityPlayer player, IAttributeInstance attr, long secs) {
-        final double intPerSec = 3d / (5 * 60 * 60);
-//        final double intPerSec = 3d / (5);
-        final double restored = secs * intPerSec;
-        final double value = attr.getAttribute().clampValue(attr.getBaseValue() + restored);
+    public void handleTime(EntityPlayer player, IPlayerNeeds needs, long secs) {
+        final NeedsConfig config = Misca.getSharedConfig().needs;
+        final double restored = secs * config.integrityRestPerSec;
+        needs.add(IPlayerNeeds.NeedType.integrity, restored);
 
-        attr.setBaseValue(value);
-//        System.out.printf("int restored: %.5f, base: %.5f\n", restored, attr.getBaseValue());
+        final double value = needs.get(IPlayerNeeds.NeedType.integrity);
 
         if (value <= 75) addPotionEffect(player, miningFatigue, value <= 50 ? 1 : 0);
         if (value <= 50) addPotionEffect(player, weakness, value <= 25 ? 1 : 0);
@@ -34,8 +28,9 @@ public class IntegrityHandler {
         player.addPotionEffect(effect);
     }
 
-    public void handleDamage(EntityPlayer player, IAttributeInstance attr, float amount) {
-        final double lost = amount * 0.1;
-        attr.setBaseValue(attr.getAttribute().clampValue(attr.getBaseValue() - lost));
+    public void handleDamage(IPlayerNeeds needs, float amount) {
+        final NeedsConfig config = Misca.getSharedConfig().needs;
+        final double lost = amount * config.integrityCostPerDamage;
+        needs.add(IPlayerNeeds.NeedType.integrity, -lost);
     }
 }

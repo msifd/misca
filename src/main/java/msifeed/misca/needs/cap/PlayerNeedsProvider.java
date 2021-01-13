@@ -11,15 +11,15 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Objects;
 
-public class AbsoluteTimeProvider implements ICapabilitySerializable<NBTBase> {
-    @CapabilityInject(IAbsoluteTime.class)
-    public static Capability<IAbsoluteTime> CAP = null;
+public class PlayerNeedsProvider implements ICapabilitySerializable<NBTBase> {
+    @CapabilityInject(IPlayerNeeds.class)
+    public static Capability<IPlayerNeeds> CAP = null;
 
-    private final Capability.IStorage<IAbsoluteTime> storage = CAP.getStorage();
-    private final IAbsoluteTime instance = Objects.requireNonNull(CAP.getDefaultInstance());
+    private final Capability.IStorage<IPlayerNeeds> storage = CAP.getStorage();
+    private final IPlayerNeeds instance = Objects.requireNonNull(CAP.getDefaultInstance());
 
     @Nonnull
-    public static IAbsoluteTime get(@Nonnull EntityLivingBase entity) {
+    public static IPlayerNeeds get(@Nonnull EntityLivingBase entity) {
         return Objects.requireNonNull(entity.getCapability(CAP, null));
     }
 
