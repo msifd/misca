@@ -38,15 +38,16 @@
     }
   },
   "needs": {
-    "globalMiningSpeedModifier": 0.8,
+    "globalMiningSpeedModifier": 1.0,
     "integrityRestPerSec": 1.6E-5,
     "integrityCostPerDamage": 0.1,
     "sanityCostPerSec": 2.7E-5,
     "sanityCostPerSecInDarkness": 5.5E-5,
     "sanityCostPerDamage": 0.1,
     "staminaRestPerSec": 1.4E-5,
+    "staminaRestTimeoutSec": 2.0,
     "staminaCostPerMiningTick": 1.0E-4,
     "staminaCostPerSupplyItem": 0.005,
-    "corruptionRestPerSec": 1.15E-6
+    "corruptionLostPerSec": 1.15E-6
   }
 }

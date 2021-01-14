@@ -11,8 +11,9 @@ public class NeedsConfig {
     public double sanityCostPerDamage = 0.1;
 
     public double staminaRestPerSec = 0.000014;
+    public double staminaRestTimeoutSec = 2;
     public double staminaCostPerMiningTick = 0.0001;
     public double staminaCostPerSupplyItem = 0.005;
 
-    public double corruptionRestPerSec = 0.00000115;
+    public double corruptionLostPerSec = 0.00000115;
 }

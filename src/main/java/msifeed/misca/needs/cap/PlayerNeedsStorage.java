@@ -12,10 +12,6 @@ public class PlayerNeedsStorage implements Capability.IStorage<IPlayerNeeds> {
     @Override
     public NBTBase writeNBT(Capability<IPlayerNeeds> capability, IPlayerNeeds instance, EnumFacing side) {
         final NBTTagCompound nbt = new NBTTagCompound();
-        nbt.setDouble("Integrity", instance.get(IPlayerNeeds.NeedType.integrity));
-        nbt.setDouble("Sanity", instance.get(IPlayerNeeds.NeedType.sanity));
-        nbt.setDouble("Stamina", instance.get(IPlayerNeeds.NeedType.stamina));
-        nbt.setDouble("Corruption", instance.get(IPlayerNeeds.NeedType.corruption));
         nbt.setLong("UpdateTime", instance.getUpdateTime());
         nbt.setLong("MiningTime", instance.getMiningTime());
         return nbt;
@@ -24,10 +20,6 @@ public class PlayerNeedsStorage implements Capability.IStorage<IPlayerNeeds> {
     @Override
     public void readNBT(Capability<IPlayerNeeds> capability, IPlayerNeeds instance, EnumFacing side, NBTBase nbtBase) {
         final NBTTagCompound nbt = (NBTTagCompound) nbtBase;
-        instance.set(IPlayerNeeds.NeedType.integrity, nbt.getDouble("Integrity"));
-        instance.set(IPlayerNeeds.NeedType.sanity, nbt.getDouble("Sanity"));
-        instance.set(IPlayerNeeds.NeedType.stamina, nbt.getDouble("Stamina"));
-        instance.set(IPlayerNeeds.NeedType.corruption, nbt.getDouble("Corruption"));
         instance.setUpdateTime(nbt.getLong("UpdateTime"));
         instance.setMiningTime(nbt.getLong("MiningTime"));
     }

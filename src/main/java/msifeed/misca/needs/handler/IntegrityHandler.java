@@ -1,23 +1,29 @@
-package msifeed.misca.needs;
+package msifeed.misca.needs.handler;
 
 import msifeed.misca.Misca;
-import msifeed.misca.needs.cap.IPlayerNeeds;
+import msifeed.misca.needs.NeedsConfig;
+import net.minecraft.entity.ai.attributes.IAttribute;
+import net.minecraft.entity.ai.attributes.IAttributeInstance;
+import net.minecraft.entity.ai.attributes.RangedAttribute;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
 
 public class IntegrityHandler {
+    public static final IAttribute INTEGRITY = new RangedAttribute(null, Misca.MODID + ".integrity", 100, 0, 100);
+
     private final Potion slowness = Potion.getPotionById(2);
     private final Potion miningFatigue = Potion.getPotionById(4);
     private final Potion weakness = Potion.getPotionById(18);
 
-    public void handleTime(EntityPlayer player, IPlayerNeeds needs, long secs) {
+    public void handleTime(EntityPlayer player, long secs) {
         final NeedsConfig config = Misca.getSharedConfig().needs;
         final double restored = secs * config.integrityRestPerSec;
-        needs.add(IPlayerNeeds.NeedType.integrity, restored);
 
-        final double value = needs.get(IPlayerNeeds.NeedType.integrity);
+        final IAttributeInstance inst = player.getEntityAttribute(INTEGRITY);
+        inst.setBaseValue(INTEGRITY.clampValue(inst.getBaseValue() + restored));
 
+        final double value = inst.getAttributeValue();
         if (value <= 75) addPotionEffect(player, miningFatigue, value <= 50 ? 1 : 0);
         if (value <= 50) addPotionEffect(player, weakness, value <= 25 ? 1 : 0);
         if (value <= 25) addPotionEffect(player, slowness, 0);
@@ -28,9 +34,11 @@ public class IntegrityHandler {
         player.addPotionEffect(effect);
     }
 
-    public void handleDamage(IPlayerNeeds needs, float amount) {
+    public void handleDamage(EntityPlayer player, float amount) {
         final NeedsConfig config = Misca.getSharedConfig().needs;
         final double lost = amount * config.integrityCostPerDamage;
-        needs.add(IPlayerNeeds.NeedType.integrity, -lost);
+
+        final IAttributeInstance inst = player.getEntityAttribute(INTEGRITY);
+        inst.setBaseValue(INTEGRITY.clampValue(inst.getBaseValue() - lost));
     }
 }
