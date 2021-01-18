@@ -186,7 +186,10 @@ public class BattleFlow {
             ((EntityLiving) entity).setNoAI(!enabled);
     }
 
-    public static void handleDeadlyAttack(Event event, float amount, EntityLivingBase victim, Battle battle) {
+    public static void handleDeadlyAttack(Event event, float amount, EntityLivingBase entity, Battle battle) {
+        if (!(entity instanceof EntityPlayer)) return;
+
+        final EntityPlayer victim = (EntityPlayer) entity;
         final double armorToughness = victim.getEntityAttribute(SharedMonsterAttributes.ARMOR_TOUGHNESS).getAttributeValue();
         final float damage = CombatRules.getDamageAfterAbsorb(amount, victim.getTotalArmorValue(), (float) armorToughness);
 
@@ -199,10 +202,8 @@ public class BattleFlow {
         if (battle.isTraining()) {
             victim.setHealth(CombatantProvider.get(victim).getTrainingHealth());
 
-            if (victim instanceof EntityPlayer) {
-                ((EntityPlayer) victim).sendStatusMessage(new TextComponentString("u dead"), false);
-                ((EntityPlayer) victim).inventory.damageArmor(damage);
-            }
+            victim.sendStatusMessage(new TextComponentString("u dead"), false);
+            victim.inventory.damageArmor(damage);
         } else {
             victim.setHealth(0.5f);
 
