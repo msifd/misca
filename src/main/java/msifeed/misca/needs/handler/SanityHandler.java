@@ -8,6 +8,9 @@ import net.minecraft.entity.ai.attributes.IAttribute;
 import net.minecraft.entity.ai.attributes.IAttributeInstance;
 import net.minecraft.entity.ai.attributes.RangedAttribute;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.item.ItemFood;
+import net.minecraft.item.ItemStack;
 
 import java.util.UUID;
 
@@ -44,9 +47,12 @@ public class SanityHandler {
         setMod(skillMod, SKILL_PENALTY_2, value <= 25);
     }
 
-    private static void setMod(IAttributeInstance attr, AttributeModifier mod, boolean active) {
-        if (active) attr.applyModifier(mod);
-        else if (attr.hasModifier(mod)) attr.removeModifier(mod);
+    private static void setMod(IAttributeInstance attr, AttributeModifier mod, boolean activate) {
+        if (attr.hasModifier(mod)) {
+            if (!activate) attr.removeModifier(mod);
+        } else if (activate) {
+            attr.applyModifier(mod);
+        }
     }
 
     public void handleDamage(EntityPlayer player, float amount) {
@@ -55,5 +61,34 @@ public class SanityHandler {
 
         final IAttributeInstance inst = player.getEntityAttribute(SANITY);
         inst.setBaseValue(SANITY.clampValue(inst.getBaseValue() - lost));
+    }
+
+    public void handleItemUse(EntityPlayer player, ItemStack stack) {
+        if (!(stack.getItem() instanceof ItemFood)) return;
+
+        final ItemFood item = (ItemFood) stack.getItem();
+        final NeedsConfig config = Misca.getSharedConfig().needs;
+
+        final double restored = item.getHealAmount(stack) * config.sanityRestPerFood;
+
+        final IAttributeInstance inst = player.getEntityAttribute(SANITY);
+        inst.setBaseValue(SANITY.clampValue(inst.getBaseValue() + restored));
+    }
+
+    public void handleSpeech(EntityPlayerMP source, int range, String msg) {
+        final NeedsConfig config = Misca.getSharedConfig().needs;
+
+        for (EntityPlayer player : source.world.playerEntities) {
+            if (player == source) continue;
+
+            final float distance = player.getDistance(source);
+            if (distance > range) continue;
+
+            final double distanceMod = (range - distance) / range;
+            final double restored = msg.length() * config.sanityRestPerSpeechChar * distanceMod;
+
+            final IAttributeInstance inst = player.getEntityAttribute(SANITY);
+            inst.setBaseValue(SANITY.clampValue(inst.getBaseValue() + restored));
+        }
     }
 }

@@ -1,5 +1,6 @@
 package msifeed.misca.needs;
 
+import msifeed.misca.chatex.SpeechEvent;
 import msifeed.misca.needs.cap.*;
 import msifeed.misca.needs.handler.CorruptionHandler;
 import msifeed.misca.needs.handler.IntegrityHandler;
@@ -12,6 +13,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.event.entity.EntityEvent;
+import net.minecraftforge.event.entity.living.LivingEntityUseItemEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
@@ -72,6 +74,18 @@ public class Needs {
         final EntityPlayer player = (EntityPlayer) event.getEntityLiving();
         integrityHandler.handleDamage(player, event.getAmount());
         sanityHandler.handleDamage(player, event.getAmount());
+    }
+
+    @SubscribeEvent
+    public void onItemUse(LivingEntityUseItemEvent.Finish event) {
+        if (!(event.getEntityLiving() instanceof EntityPlayer)) return;
+
+        sanityHandler.handleItemUse((EntityPlayer) event.getEntityLiving(), event.getResultStack());
+    }
+
+    @SubscribeEvent
+    public void onSpeech(SpeechEvent event) {
+        sanityHandler.handleSpeech(event.getPlayer(), event.range, event.getMessage());
     }
 
     @SubscribeEvent

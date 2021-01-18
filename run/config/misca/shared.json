@@ -41,6 +41,8 @@
     "globalMiningSpeedModifier": 1.0,
     "integrityRestPerSec": 1.6E-5,
     "integrityCostPerDamage": 0.1,
+    "sanityRestPerFood": 1.0,
+    "sanityRestPerSpeechChar": 0.001,
     "sanityCostPerSec": 2.7E-5,
     "sanityCostPerSecInDarkness": 5.5E-5,
     "sanityCostPerDamage": 0.1,

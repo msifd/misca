@@ -17,6 +17,7 @@ import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -47,18 +48,12 @@ public class ChatexRpc {
         }
     }
 
-    @SideOnly(Side.CLIENT)
-    private void onSpeechClient(UUID speakerId, int range, String msg) {
-        final EntityPlayerSP self = Minecraft.getMinecraft().player;
-        final EntityPlayer speaker = self.world.getPlayerEntityByUUID(speakerId);
-        if (speaker == null) return;
-        self.sendMessage(SpeechFormat.format(self, speaker, range, msg));
-        playNotificationSound(speaker);
-    }
-
     // // // // Server senders
 
     public static void broadcastSpeech(EntityPlayerMP player, int range, String msg) {
+        final SpeechEvent event = new SpeechEvent(player, range, msg, new TextComponentString(msg));
+        if (MinecraftForge.EVENT_BUS.post(event)) return;
+
         Misca.RPC.sendToAllTracking(player, speech, player.getUniqueID(), range, msg);
         Misca.RPC.sendTo(player, speech, player.getUniqueID(), range, msg);
     }
@@ -93,6 +88,15 @@ public class ChatexRpc {
     }
 
     // // // // Client handlers
+
+    @SideOnly(Side.CLIENT)
+    private void onSpeechClient(UUID speakerId, int range, String msg) {
+        final EntityPlayerSP self = Minecraft.getMinecraft().player;
+        final EntityPlayer speaker = self.world.getPlayerEntityByUUID(speakerId);
+        if (speaker == null) return;
+        self.sendMessage(SpeechFormat.format(self, speaker, range, msg));
+        playNotificationSound(speaker);
+    }
 
     @SideOnly(Side.CLIENT)
     @RpcMethodHandler(global)

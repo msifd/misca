@@ -6,6 +6,8 @@ public class NeedsConfig {
     public double integrityRestPerSec = 0.000016;
     public double integrityCostPerDamage = 0.1;
 
+    public double sanityRestPerFood = 1;
+    public double sanityRestPerSpeechChar = 0.001;
     public double sanityCostPerSec = 0.000027;
     public double sanityCostPerSecInDarkness = 0.000055;
     public double sanityCostPerDamage = 0.1;

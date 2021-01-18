@@ -14,7 +14,6 @@ import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 public class Chatex {
     public void init() {
         Misca.RPC.register(new ChatexRpc());
-        MinecraftForge.EVENT_BUS.register(new ChatMsgHandler());
 
         if (FMLCommonHandler.instance().getSide().isClient()) {
             MinecraftForge.EVENT_BUS.register(new ChatGuiHandler());
