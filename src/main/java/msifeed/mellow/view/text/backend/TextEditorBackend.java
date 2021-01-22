@@ -48,7 +48,7 @@ public class TextEditorBackend {
     public int getAbsoluteCursor() {
         return lines.stream()
                 .limit(cursor.y)
-                .mapToInt(line -> line.columns)
+                .mapToInt(line -> line.columns + 1)
                 .sum() + cursor.x;
     }
 

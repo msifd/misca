@@ -1,5 +1,7 @@
 package msifeed.misca.mixins;
 
+import msifeed.misca.charsheet.CharsheetProvider;
+import msifeed.misca.charsheet.ICharsheet;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.management.PlayerList;
@@ -17,8 +19,11 @@ public class MinecraftServerMixin {
         final List<EntityPlayerMP> players = mixin.getPlayerEntityList();
 
         final String[] names = new String[players.size()];
-        for (int i = 0; i < players.size(); ++i)
-            names[i] = players.get(i).getDisplayNameString();
+        for (int i = 0; i < players.size(); ++i) {
+            final EntityPlayerMP p = players.get(i);
+            final ICharsheet cs = CharsheetProvider.get(p);
+            names[i] = cs.getName().isEmpty() ? p.getDisplayNameString() : cs.getName();
+        }
         return names;
     }
 }

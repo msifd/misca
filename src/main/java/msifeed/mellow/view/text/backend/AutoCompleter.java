@@ -32,7 +32,9 @@ public class AutoCompleter {
             completions.clear();
             completionIdx = 0;
 
-            final String req = backend.toJoinedString().substring(0, backend.getAbsoluteCursor());
+            final String req = backend.toJoinedString()
+                    .substring(0, backend.getAbsoluteCursor())
+                    .replaceAll("\\s", " ");
             requestCompletions(req);
             return;
         } else if (completions.isEmpty()) {
