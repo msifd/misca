@@ -9,6 +9,8 @@
     "GuiChatMixin",
     "GuiIngameMixin",
     "ModelRendererMixin",
-    "NBTTagLongArrayMixin"
+    "NBTTagLongArrayMixin",
+    "PlayerListMixin",
+    "MinecraftServerMixin"
   ]
 }
