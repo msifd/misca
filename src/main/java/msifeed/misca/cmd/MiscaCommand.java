@@ -34,8 +34,8 @@ public class MiscaCommand extends CommandBase {
 
     @Override
     public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender, String[] args, @Nullable BlockPos targetPos) {
-        if (args.length == 0)
-            return Collections.singletonList("sync");
+        if (args.length > 0)
+            return Collections.singletonList("reload");
         else
             return Collections.emptyList();
     }

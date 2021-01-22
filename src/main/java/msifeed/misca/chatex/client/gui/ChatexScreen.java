@@ -4,10 +4,12 @@ import msifeed.mellow.FocusState;
 import msifeed.mellow.MellowScreen;
 import msifeed.mellow.render.RenderUtils;
 import msifeed.mellow.view.text.TextInput;
+import msifeed.mellow.view.text.backend.AutoCompleter;
 import msifeed.misca.Misca;
 import msifeed.misca.chatex.ChatexRpc;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
+import net.minecraft.util.ITabCompleter;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.common.config.Config;
@@ -19,10 +21,11 @@ import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class ChatexScreen extends MellowScreen {
+public class ChatexScreen extends MellowScreen implements ITabCompleter {
     private final ChatexHud hud = (ChatexHud) Minecraft.getMinecraft().ingameGUI.getChatGUI();
     private final TextInput input = new TextInput();
     private final ResizeHandle resizer = new ResizeHandle();
+    private final AutoCompleter autoCompleter = new AutoCompleter(input.getBackend());
 
     private int historyCursor = 0;
     private String historyInputBuffer = "";
@@ -102,6 +105,13 @@ public class ChatexScreen extends MellowScreen {
                 if (shiftPressed) setHistoryMessage(-1);
                 else inputKey(c, key);
                 break;
+            case Keyboard.KEY_TAB:
+                try {
+                    autoCompleter.complete();
+                } catch (Throwable e) {
+                    e.printStackTrace();
+                }
+                break;
             default:
                 inputKey(c, key);
         }
@@ -112,8 +122,11 @@ public class ChatexScreen extends MellowScreen {
     }
 
     private void inputKey(char c, int key) {
-        if (input.onKeyboard(c, key))
+        if (input.onKeyboard(c, key)) {
             historyCursor = 0;
+
+            autoCompleter.reset();
+        }
     }
 
     private void commitMessage() {
@@ -156,5 +169,10 @@ public class ChatexScreen extends MellowScreen {
     @Override
     public boolean doesGuiPauseGame() {
         return false;
+    }
+
+    @Override
+    public void setCompletions(String... newCompletions) {
+        autoCompleter.setCompletions(newCompletions);
     }
 }

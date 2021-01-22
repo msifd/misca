@@ -50,13 +50,14 @@ public class TextInputHelper {
         }
 
         final int curLine = getCursorLineInView();
+        final boolean byWord = Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) || Keyboard.isKeyDown(Keyboard.KEY_RCONTROL);
 
         switch (key) {
             case Keyboard.KEY_LEFT:
-                backend.moveCursorColumn(false);
+                backend.moveCursorColumn(byWord ? Math.min(-backend.getPrevWordLength(), -1) : -1);
                 return false;
             case Keyboard.KEY_RIGHT:
-                backend.moveCursorColumn(true);
+                backend.moveCursorColumn(byWord ? Math.max(backend.getNextWordLength(), 1) : 1);
                 return false;
             case Keyboard.KEY_UP:
                 if (curLine == 0 && backend.getView().y > 0)
@@ -68,13 +69,13 @@ public class TextInputHelper {
                 if (curLine == backend.getLinesPerView() - 1 && curLine + 1 < backend.getLineCount())
                     moveOffsetLine(1);
                 return false;
-            case Keyboard.KEY_DELETE:
-                return backend.remove(true);
             case Keyboard.KEY_BACK:
-                final boolean modified = backend.remove(false);
+                final boolean modified = backend.remove(byWord ? Math.min(-backend.getPrevWordLength(), -1) : -1);
                 if (curLine == 0 && getCursorLineInView() > 0 || backend.getView().y >= backend.getLineCount())
                     moveOffsetLine(-1);
                 return modified;
+            case Keyboard.KEY_DELETE:
+                return backend.remove(byWord ? Math.max(backend.getNextWordLength(), 1) : 1);
             case Keyboard.KEY_RETURN:
                 final boolean newline = backend.breakLine();
 //                if (newline && curLine == backend.getLinesPerView() - 1 && curLine + 1 < backend.getLineCount())

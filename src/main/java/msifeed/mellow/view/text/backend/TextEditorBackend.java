@@ -4,10 +4,10 @@ import msifeed.mellow.utils.Geom;
 import msifeed.mellow.utils.Point;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
-import org.lwjgl.input.Keyboard;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -43,6 +43,27 @@ public class TextEditorBackend {
 
     public Geom getView() {
         return view;
+    }
+
+    public int getAbsoluteCursor() {
+        return lines.stream()
+                .limit(cursor.y)
+                .mapToInt(line -> line.columns)
+                .sum() + cursor.x;
+    }
+
+    public int getCursorCodepoint() {
+        final StringBuilder sb = getCurrentLine().sb;
+        final int cur = cursor.x;
+
+        return cur >= sb.length() ? 0 : sb.codePointAt(cur);
+    }
+
+    public boolean isCursorCharacter(int shift, Predicate<Integer> predicate) {
+        final StringBuilder sb = getCurrentLine().sb;
+        final int cur = cursor.x + shift;
+
+        return cur >= 0 && cur < sb.length() && predicate.test(sb.codePointAt(cur));
     }
 
     public int getCursorXOffset() {
@@ -171,18 +192,19 @@ public class TextEditorBackend {
         }
     }
 
-    public void moveCursorColumn(boolean right) {
+    public void moveCursorColumn(int chars) {
         final StringBuilder sb = lines.get(cursor.y).sb;
-        final int target = getColumnTarget(sb, right);
-        if (target >= 0 && target <= sb.length()) {
-            cursor.x = target;
-            refreshOffsetColumn();
-        } else if (target < 0) {
+        final int target = cursor.x + chars;
+
+        if (target < 0) {
             if (cursor.y > 0)
                 setCursor(cursor.y - 1, lines.get(cursor.y - 1).columns);
-        } else {
+        } else if (target > sb.length()) {
             if (cursor.y + 1 < lines.size())
                 setCursor(cursor.y + 1, 0);
+        } else {
+            cursor.x = target;
+            refreshOffsetColumn();
         }
     }
 
@@ -206,61 +228,97 @@ public class TextEditorBackend {
         }
     }
 
-    public boolean remove(boolean right) {
+    public boolean remove(int chars) {
         final Line line = getCurrentLine();
-        final int target = getColumnTarget(line.sb, right);
+        final int target = cursor.x + chars;
 
-        if (cursor.x == target)
-            return false;
-
-        final int start = Math.min(cursor.x, target);
-        final int end = Math.max(cursor.x, target);
-
-        if (start < 0) { // backspace line
-            if (cursor.y == 0)
-                return false;
-            if (line.sb.length() == 0) {
-                lines.remove(cursor.y);
-                setCursor(cursor.y - 1, getLine(cursor.y - 1).sb.length());
-            } else {
-                final Line prevLine = lines.get(cursor.y - 1);
-                final int targetColumn = prevLine.columns;
-                final String leftover = prevLine.insertAtPos(line.sb.toString(), cursor.x);
-                if (leftover.isEmpty())
-                    lines.remove(cursor.y);
-                else
-                    line.remove(0, line.columns - leftover.length());
-                setCursor(cursor.y - 1, targetColumn);
-            }
-        } else if (end > line.sb.length()) { // delete line
-            if (cursor.y == lines.size() - 1)
-                return false;
-            if (line.sb.length() == 0) {
-                lines.remove(cursor.y);
-            } else {
-                final Line nextLine = lines.get(cursor.y + 1);
-                final String leftover = line.insertAtPos(nextLine.sb.toString(), cursor.x);
-                if (leftover.isEmpty())
-                    lines.remove(cursor.y + 1);
-                else
-                    line.remove(0, nextLine.columns - leftover.length());
-            }
-        } else { //
-            if (line.remove(start, end) && !right)
+        if (target < 0) {
+            return collapseLine();
+        } else if (target > line.sb.length()) {
+            return collapseNextLine();
+        } else {
+            final int start = Math.min(cursor.x, target);
+            final int end = Math.max(cursor.x, target);
+            if (line.remove(start, end) && chars < 0)
                 setCursor(cursor.y, target);
+            cacheInvalid = true;
+            return true;
+        }
+    }
+
+    public boolean collapseLine() {
+        final Line line = getCurrentLine();
+
+        if (cursor.y == 0)
+            return false;
+        if (line.sb.length() == 0) {
+            lines.remove(cursor.y);
+            setCursor(cursor.y - 1, getLine(cursor.y - 1).sb.length());
+        } else {
+            final Line prevLine = lines.get(cursor.y - 1);
+            final int targetColumn = prevLine.columns;
+            final String leftover = prevLine.insertAtPos(line.sb.toString(), targetColumn);
+            if (leftover.isEmpty())
+                lines.remove(cursor.y);
+            else
+                line.remove(0, line.columns - leftover.length());
+            setCursor(cursor.y - 1, targetColumn);
         }
 
         cacheInvalid = true;
         return true;
     }
 
-    private int getColumnTarget(StringBuilder sb, boolean right) {
-        if (moveByWord()) {
-            final int t = right ? sb.indexOf(" ", cursor.x + 1) : sb.lastIndexOf(" ", cursor.x - 1);
-            return t != -1 ? t : (right ? sb.length() : 0);
+    public boolean collapseNextLine() {
+        final Line line = getCurrentLine();
+
+        if (cursor.y == lines.size() - 1)
+            return false;
+        if (line.sb.length() == 0) {
+            lines.remove(cursor.y);
         } else {
-            return cursor.x + (right ? 1 : -1);
+            final Line nextLine = lines.get(cursor.y + 1);
+            final String leftover = line.insertAtPos(nextLine.sb.toString(), cursor.x);
+            if (leftover.isEmpty())
+                lines.remove(cursor.y + 1);
+            else
+                nextLine.remove(0, nextLine.columns - leftover.length());
         }
+
+        cacheInvalid = true;
+        return true;
+    }
+
+    public int getPrevWordLength() {
+        final StringBuilder sb = getCurrentLine().sb;
+        final int cur = cursor.x;
+
+        if (cur == 0)
+            return 0;
+
+        int i = Math.min(cur, sb.length());
+        while (i > 0 && Character.isWhitespace(sb.codePointAt(i - 1)))
+            i--;
+        while (i > 0 && !Character.isWhitespace(sb.codePointAt(i - 1)))
+            i--;
+
+        return cur - i;
+    }
+
+    public int getNextWordLength() {
+        final StringBuilder sb = getCurrentLine().sb;
+        final int cur = cursor.x;
+
+        if (cur == sb.length())
+            return 0;
+
+        int i = Math.min(cur, sb.length() - 1);
+        while (i < sb.length() && Character.isWhitespace(sb.codePointAt(i)))
+            i++;
+        while (i < sb.length() && !Character.isWhitespace(sb.codePointAt(i)))
+            i++;
+
+        return i - cur;
     }
 
     public boolean insert(char c) {
@@ -331,10 +389,6 @@ public class TextEditorBackend {
         refreshCursorPos();
 
         return true;
-    }
-
-    private static boolean moveByWord() {
-        return Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) || Keyboard.isKeyDown(Keyboard.KEY_RCONTROL);
     }
 
     public class Line {
