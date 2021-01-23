@@ -27,12 +27,6 @@ public class MiscaCommand extends CommandBase {
     }
 
     @Override
-    public boolean checkPermission(MinecraftServer server, ICommandSender sender) {
-//        return MiscaPerms.isGameMaster(sender);
-        return super.checkPermission(server, sender);
-    }
-
-    @Override
     public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender, String[] args, @Nullable BlockPos targetPos) {
         if (args.length > 0)
             return Collections.singletonList("reload");

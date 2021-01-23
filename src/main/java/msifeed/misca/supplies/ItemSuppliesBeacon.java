@@ -24,7 +24,7 @@ public class ItemSuppliesBeacon extends Item {
 
     public ItemSuppliesBeacon() {
         setRegistryName(Misca.MODID, ID);
-        setUnlocalizedName(ID);
+        setTranslationKey(ID);
     }
 
     public static ItemStack createBeaconItem(ISuppliesInvoice invoice) {

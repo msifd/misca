@@ -12,7 +12,7 @@ public class ItemDebugTool extends Item {
 
     public ItemDebugTool() {
         setRegistryName(Misca.MODID, ID);
-        setUnlocalizedName(ID);
+        setTranslationKey(ID);
         setCreativeTab(CreativeTabs.TOOLS);
     }
 

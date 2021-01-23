@@ -111,7 +111,7 @@ public class Locks {
         } else {
             final BlockPos actualPos = getChunkLockPos(world, pos);
             if (actualPos == null) return null;
-            final Chunk chunk = world.getChunkFromBlockCoords(actualPos);
+            final Chunk chunk = world.getChunk(actualPos);
             return ChunkLockableProvider.get(chunk).getLock(actualPos);
         }
     }
@@ -127,7 +127,7 @@ public class Locks {
         } else {
             final BlockPos actualPos = getChunkLockPos(world, pos);
             if (actualPos == null) return false;
-            final Chunk chunk = world.getChunkFromBlockCoords(actualPos);
+            final Chunk chunk = world.getChunk(actualPos);
             final ILockable lock = ChunkLockableProvider.get(chunk).getLock(actualPos);
             if (lock == null || !lock.hasSecret() || !lock.canOpenWith(key)) return false;
 
@@ -159,7 +159,7 @@ public class Locks {
     private static boolean addChunkLock(World world, BlockPos pos, String secret) {
         final BlockPos actualPos = getChunkLockPos(world, pos);
         if (actualPos == null) return false;
-        final Chunk chunk = world.getChunkFromBlockCoords(actualPos);
+        final Chunk chunk = world.getChunk(actualPos);
         final IChunkLockable chunkLocks = ChunkLockableProvider.get(chunk);
         if (chunkLocks.getLock(pos) != null) return false;
 
@@ -190,7 +190,7 @@ public class Locks {
     private static boolean removeChunkLock(World world, BlockPos pos) {
         final BlockPos actualPos = getChunkLockPos(world, pos);
         if (actualPos == null) return false;
-        final Chunk chunk = world.getChunkFromBlockCoords(actualPos);
+        final Chunk chunk = world.getChunk(actualPos);
 
         final boolean removed = ChunkLockableProvider.get(chunk).removeLock(actualPos);
         if (removed) {

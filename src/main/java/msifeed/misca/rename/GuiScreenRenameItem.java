@@ -117,7 +117,7 @@ public class GuiScreenRenameItem extends GuiScreen {
         if (display.getTagId("Lore") != 9) return Collections.emptyList();
 
         final NBTTagList tagList = display.getTagList("Lore", 8);
-        if (tagList.hasNoTags()) return Collections.emptyList();
+        if (tagList.isEmpty()) return Collections.emptyList();
 
         final List<String> lines = new ArrayList<>();
         for (int i = 0; i < tagList.tagCount(); ++i)

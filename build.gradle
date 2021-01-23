@@ -22,7 +22,7 @@ sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = co
 compileJava.options.encoding = compileTestJava.options.encoding = 'UTF-8'
 
 minecraft {
-    mappings channel: 'snapshot', version: '20171003-1.12'
+    mappings channel: 'stable', version: '39-1.12'
     accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
 
     runs {
@@ -76,7 +76,6 @@ jar {
             'ForceLoadAsMod': 'true',
     )
 }
-
 
 mixin {
     add sourceSets.main, "misca.refmap.json"

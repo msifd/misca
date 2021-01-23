@@ -19,7 +19,7 @@ public class ItemCombatTool extends Item {
 
     public ItemCombatTool() {
         setRegistryName(Misca.MODID, ID);
-        setUnlocalizedName(ID);
+        setTranslationKey(ID);
         setCreativeTab(CreativeTabs.TOOLS);
     }
 
