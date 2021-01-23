@@ -1,5 +1,6 @@
 package msifeed.misca.combat;
 
+import msifeed.misca.MiscaPerms;
 import msifeed.misca.combat.battle.Battle;
 import msifeed.misca.combat.battle.BattleManager;
 import msifeed.misca.combat.cap.CombatantProvider;
@@ -9,16 +10,16 @@ import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
 
+import javax.annotation.Nullable;
 import java.lang.ref.WeakReference;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class CombatCommand extends CommandBase {
@@ -30,6 +31,26 @@ public class CombatCommand extends CommandBase {
     @Override
     public String getUsage(ICommandSender sender) {
         return "send help!";
+    }
+
+    @Override
+    public boolean checkPermission(MinecraftServer server, ICommandSender sender) {
+        return sender instanceof EntityPlayer && MiscaPerms.userLevel(sender, "misca.combat");
+    }
+
+    @Override
+    public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender, String[] args, @Nullable BlockPos targetPos) {
+        if (args.length != 1) return Collections.emptyList();
+
+        final Battle battle = Combat.MANAGER.getEntityBattle((EntityPlayer) sender);
+        if (battle != null) {
+            if (battle.isStarted())
+                return getListOfStringsMatchingLastWord(args, "next", "pos", "add", "leave", "destroy");
+            else
+                return getListOfStringsMatchingLastWord(args, "start", "add", "leave", "destroy");
+        } else {
+            return getListOfStringsMatchingLastWord(args, "init");
+        }
     }
 
     @Override

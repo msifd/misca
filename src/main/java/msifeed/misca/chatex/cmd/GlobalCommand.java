@@ -19,6 +19,7 @@ public class GlobalCommand extends CommandBase {
     public List<String> getAliases() {
         return Collections.singletonList("g");
     }
+
     @Override
     public String getUsage(ICommandSender sender) {
         return "/g <global text>";

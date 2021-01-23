@@ -1,5 +1,6 @@
 package msifeed.misca.supplies;
 
+import msifeed.misca.MiscaPerms;
 import msifeed.misca.MiscaThings;
 import msifeed.misca.supplies.cap.ISuppliesInvoice;
 import msifeed.misca.supplies.cap.SuppliesInvoiceProvider;
@@ -11,11 +12,14 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraftforge.common.ForgeHooks;
 
 import javax.annotation.Nullable;
+import java.util.Collections;
+import java.util.List;
 
 public class InvoiceCommand extends CommandBase {
     @Override
@@ -30,6 +34,19 @@ public class InvoiceCommand extends CommandBase {
                 "  add [ chance (0;1] ]\n" +
                 "  beacon\n" +
                 "  OR point at chest without arguments";
+    }
+
+    @Override
+    public boolean checkPermission(MinecraftServer server, ICommandSender sender) {
+        return MiscaPerms.isGameMaster(sender);
+    }
+
+    @Override
+    public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender, String[] args, @Nullable BlockPos targetPos) {
+        if (args.length == 1)
+            return getListOfStringsMatchingLastWord(args, "create", "add", "beacon");
+        else
+            return Collections.emptyList();
     }
 
     @Override

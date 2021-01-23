@@ -1,5 +1,6 @@
 package msifeed.misca.rename;
 
+import msifeed.misca.MiscaPerms;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -21,7 +22,7 @@ public class RenameCommand extends CommandBase {
 
     @Override
     public boolean checkPermission(MinecraftServer server, ICommandSender sender) {
-        return sender instanceof EntityPlayerMP;
+        return sender instanceof EntityPlayerMP && MiscaPerms.userLevel(sender, "misca.rename");
     }
 
     @Override

@@ -1,6 +1,7 @@
 package msifeed.misca.cmd;
 
 import msifeed.misca.Misca;
+import msifeed.misca.MiscaPerms;
 import msifeed.misca.combat.Combat;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
@@ -24,6 +25,11 @@ public class MiscaCommand extends CommandBase {
     @Override
     public String getUsage(ICommandSender sender) {
         return "/misca <reload>";
+    }
+
+    @Override
+    public boolean checkPermission(MinecraftServer server, ICommandSender sender) {
+        return MiscaPerms.isAdmin(sender);
     }
 
     @Override

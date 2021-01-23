@@ -1,5 +1,6 @@
 package msifeed.misca.needs;
 
+import msifeed.misca.MiscaPerms;
 import msifeed.misca.needs.handler.CorruptionHandler;
 import msifeed.misca.needs.handler.IntegrityHandler;
 import msifeed.misca.needs.handler.SanityHandler;
@@ -12,7 +13,12 @@ import net.minecraft.entity.ai.attributes.IAttribute;
 import net.minecraft.entity.ai.attributes.IAttributeInstance;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
+
+import javax.annotation.Nullable;
+import java.util.Collections;
+import java.util.List;
 
 public class NeedsCommand extends CommandBase {
     @Override
@@ -26,6 +32,25 @@ public class NeedsCommand extends CommandBase {
     }
 
     @Override
+    public boolean checkPermission(MinecraftServer server, ICommandSender sender) {
+        return MiscaPerms.userLevel(sender, "misca.needs");
+    }
+
+    @Override
+    public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender, String[] args, @Nullable BlockPos targetPos) {
+        switch (args.length) {
+            case 1:
+                return getListOfStringsMatchingLastWord(args, server.getOnlinePlayerNames());
+            case 2:
+                return getListOfStringsMatchingLastWord(args,"int", "san", "sta", "cor");
+            case 3:
+                return getListOfStringsMatchingLastWord(args,"add", "set");
+            default:
+                return Collections.emptyList();
+        }
+    }
+
+    @Override
     public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
         if (args.length < 2) throw new SyntaxErrorException("Expected at least 2 args");
 
@@ -33,7 +58,7 @@ public class NeedsCommand extends CommandBase {
         final IAttribute attr = getAttribute(args[1]);
         final IAttributeInstance inst = player.getEntityAttribute(attr);
 
-        if (args.length >= 4) {
+        if (args.length >= 4 && MiscaPerms.isGameMaster(sender)) {
             final boolean set = args[2].equalsIgnoreCase("set");
             final double value = (float) parseDouble(args[3], -200, 200);
             if (set) inst.setBaseValue(attr.clampValue(value));

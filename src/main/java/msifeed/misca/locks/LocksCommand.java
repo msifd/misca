@@ -1,5 +1,6 @@
 package msifeed.misca.locks;
 
+import msifeed.misca.MiscaPerms;
 import msifeed.misca.locks.tile.ILockable;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
@@ -14,6 +15,8 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.common.ForgeHooks;
 
 import javax.annotation.Nullable;
+import java.util.Collections;
+import java.util.List;
 
 public class LocksCommand extends CommandBase {
     @Override
@@ -24,6 +27,19 @@ public class LocksCommand extends CommandBase {
     @Override
     public String getUsage(ICommandSender sender) {
         return "/locks < toggle <key> | add <key> | remove [key] >";
+    }
+
+    @Override
+    public boolean checkPermission(MinecraftServer server, ICommandSender sender) {
+        return MiscaPerms.userLevel(sender, "misca.locks");
+    }
+
+    @Override
+    public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender, String[] args, @Nullable BlockPos targetPos) {
+        if (args.length == 1)
+            return getListOfStringsMatchingLastWord(args, "toggle", "add", "remove");
+        else
+            return Collections.emptyList();
     }
 
     @Override

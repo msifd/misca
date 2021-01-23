@@ -78,7 +78,6 @@ public class Misca {
         environ.init();
         locks.init();
 
-        MiscaPerms.register();
         RenameItems.register();
 
         if (FMLCommonHandler.instance().getSide().isClient())

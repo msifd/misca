@@ -8,16 +8,15 @@ import net.minecraftforge.server.permission.DefaultPermissionLevel;
 import net.minecraftforge.server.permission.PermissionAPI;
 
 public final class MiscaPerms {
-    private static final String gameMaster = "misca.gm";
-
-    public static void register() {
-        PermissionAPI.registerNode(gameMaster, DefaultPermissionLevel.NONE, "Gives access to GameMaster abilities");
+    public static boolean isAdmin(ICommandSender sender) {
+        return sender.canUseCommand(4, "misca.admin");
     }
 
     public static boolean isGameMaster(ICommandSender sender) {
-        if (sender instanceof EntityPlayer)
-            return PermissionAPI.hasPermission((EntityPlayer) sender, gameMaster);
-        else
-            return sender instanceof MinecraftServer || sender instanceof RConConsoleSource;
+        return sender.canUseCommand(3, "misca.gm");
+    }
+
+    public static boolean userLevel(ICommandSender sender, String perm) {
+        return sender.canUseCommand(0, perm);
     }
 }
