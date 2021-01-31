@@ -43,7 +43,7 @@ public class ValueContainer<K extends Enum<K>> implements Cloneable {
         values.putAll(other.values);
     }
 
-    public void writeNBT(NBTTagCompound nbt, String key) {
+    public void writeNBT(String key, NBTTagCompound nbt) {
         nbt.setIntArray(key, Stream.of(keys).mapToInt(this::get).toArray());
     }
 

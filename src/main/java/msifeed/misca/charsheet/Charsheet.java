@@ -5,6 +5,7 @@ public class Charsheet implements ICharsheet {
     private String name = "";
     private String wikiPage = "";
     private final ValueContainer<CharAttribute> attributes = new ValueContainer<>(CharAttribute.class, 0, 25);
+    private final ValueContainer<CharSkill> skills = new ValueContainer<>(CharSkill.class, 0, 25);
     private final ValueContainer<CharResource> resources = new ValueContainer<>(CharResource.class, 0, 1000);
 
     @Override
@@ -43,15 +44,23 @@ public class Charsheet implements ICharsheet {
     }
 
     @Override
+    public ValueContainer<CharSkill> skills() {
+        return skills;
+    }
+
+    @Override
     public ValueContainer<CharResource> resources() {
         return resources;
     }
 
     @Override
     public void replaceWith(ICharsheet charsheet) {
+        if (charsheet.isPlayer())
+            markPlayer();
         name = charsheet.getName();
         wikiPage = charsheet.getWikiPage();
         attributes.replaceWith(charsheet.attrs());
+        skills.replaceWith(charsheet.skills());
         resources.replaceWith(charsheet.resources());
     }
 

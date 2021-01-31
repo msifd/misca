@@ -1,11 +1,9 @@
 package msifeed.misca.charsheet.client;
 
-import msifeed.misca.charsheet.CharAttribute;
-import msifeed.misca.charsheet.CharsheetProvider;
-import msifeed.misca.charsheet.CharsheetSync;
-import msifeed.misca.charsheet.ICharsheet;
+import msifeed.misca.charsheet.*;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.gui.GuiLabel;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.entity.player.EntityPlayer;
@@ -20,6 +18,7 @@ public class GuiScreenCharsheet extends GuiScreen {
     private GuiTextField nameEdit;
     private GuiTextField wikiEdit;
     private final ArrayList<GuiTextField> attrFields = new ArrayList<>();
+    private final ArrayList<GuiTextField> skillFields = new ArrayList<>();
 
     public GuiScreenCharsheet(EntityPlayer player) {
         this.player = player;
@@ -54,6 +53,23 @@ public class GuiScreenCharsheet extends GuiScreen {
             });
             attrFields.add(f);
         }
+
+        skillFields.clear();
+        for (CharSkill skill : CharSkill.values()) {
+            final GuiTextField f = new GuiTextField(10 + skill.ordinal(), fontRenderer, 65, 10 + skill.ordinal() * 22, 50, 20);
+            f.setText(Integer.toString(charsheet.skills().get(skill)));
+            f.setValidator(input -> {
+                try {
+                    if (input == null) return false;
+                    if (input.isEmpty()) return true;
+                    final int i = Integer.parseUnsignedInt(input);
+                    return i >= 0 && i <= 25;
+                } catch (NumberFormatException e) {
+                    return false;
+                }
+            });
+            skillFields.add(f);
+        }
     }
 
     @Override
@@ -84,6 +100,7 @@ public class GuiScreenCharsheet extends GuiScreen {
         nameEdit.updateCursorCounter();
         wikiEdit.updateCursorCounter();
         attrFields.forEach(GuiTextField::updateCursorCounter);
+        skillFields.forEach(GuiTextField::updateCursorCounter);
     }
 
     @Override
@@ -93,6 +110,7 @@ public class GuiScreenCharsheet extends GuiScreen {
         nameEdit.drawTextBox();
         wikiEdit.drawTextBox();
         attrFields.forEach(GuiTextField::drawTextBox);
+        skillFields.forEach(GuiTextField::drawTextBox);
 
         super.drawScreen(mouseX, mouseY, partialTicks);
     }
@@ -102,6 +120,7 @@ public class GuiScreenCharsheet extends GuiScreen {
         nameEdit.textboxKeyTyped(typedChar, keyCode);
         wikiEdit.textboxKeyTyped(typedChar, keyCode);
         attrFields.forEach(f -> f.textboxKeyTyped(typedChar, keyCode));
+        skillFields.forEach(f -> f.textboxKeyTyped(typedChar, keyCode));
         super.keyTyped(typedChar, keyCode);
     }
 
@@ -110,6 +129,7 @@ public class GuiScreenCharsheet extends GuiScreen {
         nameEdit.mouseClicked(mouseX, mouseY, mouseButton);
         wikiEdit.mouseClicked(mouseX, mouseY, mouseButton);
         attrFields.forEach(f -> f.mouseClicked(mouseX, mouseY, mouseButton));
+        skillFields.forEach(f -> f.mouseClicked(mouseX, mouseY, mouseButton));
         super.mouseClicked(mouseX, mouseY, mouseButton);
     }
 }
