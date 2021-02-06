@@ -1,7 +1,7 @@
 package msifeed.misca.combat.battle;
 
-import msifeed.misca.charsheet.CharsheetProvider;
 import msifeed.misca.charsheet.ICharsheet;
+import msifeed.misca.charsheet.cap.CharsheetProvider;
 import msifeed.misca.combat.Combat;
 import msifeed.misca.combat.CombatHandler;
 import msifeed.misca.combat.cap.CombatantProvider;

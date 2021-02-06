@@ -1,7 +1,8 @@
-package msifeed.misca.charsheet;
+package msifeed.misca.charsheet.cap;
 
 import msifeed.misca.Misca;
 import msifeed.misca.MiscaPerms;
+import msifeed.misca.charsheet.ICharsheet;
 import msifeed.sys.rpc.RpcContext;
 import msifeed.sys.rpc.RpcException;
 import msifeed.sys.rpc.RpcMethodHandler;

@@ -1,6 +1,7 @@
 package msifeed.misca.charsheet;
 
 import msifeed.misca.Misca;
+import msifeed.misca.charsheet.cap.ValueContainer;
 import net.minecraft.entity.ai.attributes.IAttribute;
 import net.minecraft.entity.ai.attributes.RangedAttribute;
 import net.minecraft.util.ResourceLocation;

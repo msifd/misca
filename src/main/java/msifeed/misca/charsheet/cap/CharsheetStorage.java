@@ -1,5 +1,6 @@
-package msifeed.misca.charsheet;
+package msifeed.misca.charsheet.cap;
 
+import msifeed.misca.charsheet.ICharsheet;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;

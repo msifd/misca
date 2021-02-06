@@ -1,7 +1,7 @@
 package msifeed.misca.mixins;
 
-import msifeed.misca.charsheet.CharsheetProvider;
 import msifeed.misca.charsheet.ICharsheet;
+import msifeed.misca.charsheet.cap.CharsheetProvider;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.management.PlayerList;

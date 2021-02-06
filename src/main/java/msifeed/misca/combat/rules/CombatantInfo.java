@@ -1,8 +1,8 @@
 package msifeed.misca.combat.rules;
 
 import msifeed.misca.charsheet.CharAttribute;
-import msifeed.misca.charsheet.CharsheetProvider;
 import msifeed.misca.charsheet.ICharsheet;
+import msifeed.misca.charsheet.cap.CharsheetProvider;
 import msifeed.misca.combat.Combat;
 import msifeed.misca.combat.cap.CombatantProvider;
 import net.minecraft.entity.EntityLivingBase;

@@ -1,9 +1,12 @@
 package msifeed.misca.charsheet.client;
 
-import msifeed.misca.charsheet.*;
+import msifeed.misca.charsheet.CharAttribute;
+import msifeed.misca.charsheet.CharSkill;
+import msifeed.misca.charsheet.ICharsheet;
+import msifeed.misca.charsheet.cap.CharsheetProvider;
+import msifeed.misca.charsheet.cap.CharsheetSync;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.gui.GuiLabel;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.entity.player.EntityPlayer;

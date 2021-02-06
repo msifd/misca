@@ -1,8 +1,8 @@
 package msifeed.misca.client;
 
 import com.google.gson.GsonBuilder;
-import msifeed.misca.charsheet.CharsheetProvider;
 import msifeed.misca.charsheet.ICharsheet;
+import msifeed.misca.charsheet.cap.CharsheetProvider;
 import msifeed.misca.tools.ItemDebugTool;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;

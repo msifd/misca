@@ -1,7 +1,7 @@
 package msifeed.misca;
 
 import com.google.gson.reflect.TypeToken;
-import msifeed.misca.charsheet.CharsheetProvider;
+import msifeed.misca.charsheet.cap.CharsheetProvider;
 import msifeed.misca.chatex.Chatex;
 import msifeed.misca.client.MiscaClient;
 import msifeed.misca.cmd.MiscaCommand;

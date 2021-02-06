@@ -1,4 +1,9 @@
-package msifeed.misca.charsheet;
+package msifeed.misca.charsheet.cap;
+
+import msifeed.misca.charsheet.CharAttribute;
+import msifeed.misca.charsheet.CharResource;
+import msifeed.misca.charsheet.CharSkill;
+import msifeed.misca.charsheet.ICharsheet;
 
 public class Charsheet implements ICharsheet {
     private boolean isPlayer = false;

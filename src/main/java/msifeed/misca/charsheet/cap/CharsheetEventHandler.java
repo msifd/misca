@@ -1,5 +1,6 @@
-package msifeed.misca.charsheet;
+package msifeed.misca.charsheet.cap;
 
+import msifeed.misca.charsheet.ICharsheet;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.attributes.AbstractAttributeMap;

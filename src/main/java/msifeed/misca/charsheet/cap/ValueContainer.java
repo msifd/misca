@@ -1,4 +1,4 @@
-package msifeed.misca.charsheet;
+package msifeed.misca.charsheet.cap;
 
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.MathHelper;
