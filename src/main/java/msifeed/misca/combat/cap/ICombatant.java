@@ -15,6 +15,12 @@ public interface ICombatant {
     long getBattleId();
     void setBattleId(long value);
 
+    default boolean hasPuppet() {
+        return getPuppet() != 0;
+    }
+    int getPuppet();
+    void setPuppet(int value);
+
     double getActionPoints();
     void setActionPoints(double value);
     default void addActionPoints(double value) {
@@ -35,6 +41,7 @@ public interface ICombatant {
 
     default void replaceWith(@Nonnull ICombatant com) {
         setBattleId(com.getBattleId());
+        setPuppet(com.getPuppet());
         setActionPoints(com.getActionPoints());
         setActionPointsOverhead(com.getActionPointsOverhead());
         setPosition(com.getPosition());
@@ -44,6 +51,7 @@ public interface ICombatant {
 
     default void reset() {
         setBattleId(0);
+        setPuppet(0);
         setActionPoints(0);
         setActionPointsOverhead(0);
         setPosition(Vec3d.ZERO);

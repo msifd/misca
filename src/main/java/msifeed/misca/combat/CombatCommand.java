@@ -4,6 +4,7 @@ import msifeed.misca.MiscaPerms;
 import msifeed.misca.combat.battle.Battle;
 import msifeed.misca.combat.battle.BattleManager;
 import msifeed.misca.combat.cap.CombatantProvider;
+import msifeed.misca.combat.cap.CombatantSync;
 import msifeed.misca.combat.cap.ICombatant;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
@@ -40,16 +41,33 @@ public class CombatCommand extends CommandBase {
 
     @Override
     public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender, String[] args, @Nullable BlockPos targetPos) {
-        if (args.length != 1) return Collections.emptyList();
+        final EntityPlayer player = (EntityPlayer) sender;
+        final Battle battle = Combat.MANAGER.getEntityBattle(player);
 
-        final Battle battle = Combat.MANAGER.getEntityBattle((EntityPlayer) sender);
-        if (battle != null) {
-            if (battle.isStarted())
-                return getListOfStringsMatchingLastWord(args, "next", "pos", "add", "leave", "destroy");
-            else
+        if (args.length == 1) {
+            if (battle == null)
+                return getListOfStringsMatchingLastWord(args, "init");
+            if (!battle.isStarted())
                 return getListOfStringsMatchingLastWord(args, "start", "add", "leave", "destroy");
+            if (MiscaPerms.isGameMaster(sender))
+                return getListOfStringsMatchingLastWord(args, "next", "pup", "pos", "add", "leave", "destroy");
+            else
+                return getListOfStringsMatchingLastWord(args, "next", "pos", "add", "leave", "destroy");
+        } else if (args.length == 2) {
+            if (battle == null)
+                return Collections.emptyList();
+
+            if (args[0].equals("pup") && MiscaPerms.isGameMaster(sender)) {
+                final List<Integer> pups = battle.getCombatants()
+                        .map(Entity::getEntityId)
+                        .collect(Collectors.toList());
+                pups.add(0);
+                return getListOfStringsMatchingLastWord(args, "next", "pos", "add", "leave", "destroy");
+            } else {
+                return Collections.emptyList();
+            }
         } else {
-            return getListOfStringsMatchingLastWord(args, "init");
+            return Collections.emptyList();
         }
     }
 
@@ -123,6 +141,36 @@ public class CombatCommand extends CommandBase {
                 if (!com.isInBattle()) break;
                 manager.nextTurn(manager.getBattle(com.getBattleId()));
                 player.sendStatusMessage(new TextComponentString("next"), true);
+                break;
+            }
+            case "pup": {
+                if (!com.isInBattle()) break;
+                final Battle battle = manager.getBattle(com.getBattleId());
+                if (battle == null) break;
+
+                if (args.length >= 2) {
+                    final int id = parseInt(args[1]);
+                    if (player.getEntityId() == id) {
+                        player.sendStatusMessage(new TextComponentString("Puppet cannot be you"), true);
+                        break;
+                    }
+
+                    final EntityLivingBase pup = battle.getCombatants()
+                            .filter(e -> e.getEntityId() == id)
+                            .findAny().orElse(null);
+                    if (pup != null) {
+                        com.setPuppet(id);
+                        player.sendStatusMessage(new TextComponentString("Puppet = " + pup.getName()), true);
+                    } else {
+                        player.sendStatusMessage(new TextComponentString("Puppet not found"), true);
+                        break;
+                    }
+                } else {
+                    com.setPuppet(0);
+                    player.sendStatusMessage(new TextComponentString("Puppet disabled"), true);
+                }
+
+                CombatantSync.sync(player);
                 break;
             }
             case "pos":

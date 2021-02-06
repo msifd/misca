@@ -89,6 +89,14 @@ public class Battle {
                 .filter(Objects::nonNull);
     }
 
+    @Nullable
+    public EntityLivingBase getCombatantWithId(int id) {
+        return getCombatants()
+                .filter(e -> e.getEntityId() == id)
+                .findAny()
+                .orElse(null);
+    }
+
     public void joinQueue(UUID entityId) {
         if (isStarted() && members.containsKey(entityId) && !queue.contains(entityId))
             queue.add(entityId);

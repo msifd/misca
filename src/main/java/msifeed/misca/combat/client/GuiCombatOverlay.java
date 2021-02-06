@@ -13,6 +13,7 @@ import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.entity.RenderManager;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.Vec3d;
@@ -66,7 +67,18 @@ public class GuiCombatOverlay {
 
     private static void drawTextInfo() {
         final EntityPlayer player = Minecraft.getMinecraft().player;
-        final ICombatant com = CombatantProvider.get(player);
+        final ICombatant selfCom = CombatantProvider.get(player);
+
+        final EntityLivingBase entity;
+        if (selfCom.hasPuppet()) {
+            final Entity e = player.world.getEntityByID(selfCom.getPuppet());
+            if (!(e instanceof EntityLivingBase)) return;
+            entity = (EntityLivingBase) e;
+        } else {
+            entity = player;
+        }
+        final ICombatant com = CombatantProvider.get(entity);
+
         final Battle state = BattleStateClient.STATE;
         final Rules rules = Combat.getRules();
 
@@ -79,15 +91,16 @@ public class GuiCombatOverlay {
                 .collect(Collectors.joining(", "));
         final String leaderName = getNameOrUuid(state.getLeaderUuid(), state.getLeader());
         final String posStr = String.format("x: %.2f, y: %.2f, z: %.2f", pos.x, pos.y, pos.z);
-        final double moveAp = rules.movementActionPoints(com.getPosition(), player.getPositionVector());
+        final double moveAp = rules.movementActionPoints(com.getPosition(), entity.getPositionVector());
         final double overheadAp = com.getActionPointsOverhead();
-        final double attackAp = rules.attackActionPoints(player) + overheadAp;
-        final double usageAp = rules.usageActionPoints(player.getHeldItemMainhand().getItem()) + overheadAp;
+        final double attackAp = rules.attackActionPoints(entity) + overheadAp;
+        final double usageAp = rules.usageActionPoints(entity.getHeldItemMainhand().getItem()) + overheadAp;
 
         final String[] lines = {
                 "members: " + joinedMembers,
                 "queue: " + joinedQueue,
                 "leader: " + leaderName,
+                "your puppet: " + selfCom.getPuppet(),
                 "----",
                 "action points: " + String.format("%.2f", com.getActionPoints()),
                 "pos: " + posStr,

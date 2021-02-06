@@ -7,6 +7,7 @@ import msifeed.sys.rpc.RpcContext;
 import msifeed.sys.rpc.RpcException;
 import msifeed.sys.rpc.RpcMethodHandler;
 import net.minecraft.client.Minecraft;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -37,20 +38,16 @@ public class CharsheetSync {
     }
 
     @RpcMethodHandler(post)
-    public void onPost(RpcContext ctx, UUID uuid, NBTTagCompound nbt) {
+    public void onPost(RpcContext ctx, int entityId, NBTTagCompound nbt) {
         final EntityPlayerMP sender = ctx.getServerHandler().player;
-        final EntityPlayerMP target;
-
-        if (sender.getUniqueID().equals(uuid))
-            target = sender;
-        else if (MiscaPerms.isGameMaster(sender))
-            target = (EntityPlayerMP) sender.world.getPlayerEntityByUUID(uuid);
-        else
+        if (sender.getEntityId() != entityId && !MiscaPerms.isGameMaster(sender))
             throw new RpcException(sender, "Not a GameMaster!");
 
-        if (target == null)
-            throw new RpcException(sender, "Target is missing.");
+        final Entity targetEntity = sender.world.getEntityByID(entityId);
+        if (!(targetEntity instanceof EntityLivingBase))
+            throw new RpcException(sender, "Target is not found!");
 
+        final EntityLivingBase target = (EntityLivingBase) targetEntity;
         CharsheetProvider.get(target).replaceWith(CharsheetProvider.decode(nbt));
         sync(target);
     }
@@ -77,7 +74,7 @@ public class CharsheetSync {
     }
 
     @SideOnly(Side.CLIENT)
-    public static void post(EntityPlayer player, ICharsheet charsheet) {
-        Misca.RPC.sendToServer(post, player.getUniqueID(), CharsheetProvider.encode(charsheet));
+    public static void post(EntityLivingBase target, ICharsheet charsheet) {
+        Misca.RPC.sendToServer(post, target.getEntityId(), CharsheetProvider.encode(charsheet));
     }
 }

@@ -15,6 +15,7 @@ public class CombatantStorage implements Capability.IStorage<ICombatant> {
         final NBTTagCompound nbt = new NBTTagCompound();
         if (instance.isInBattle()) {
             nbt.setLong("bid", instance.getBattleId());
+            nbt.setInteger("pup", instance.getPuppet());
             nbt.setFloat("ap", (float) instance.getActionPoints());
             nbt.setFloat("apo", (float) instance.getActionPointsOverhead());
             nbt.setDouble("posX", instance.getPosition().x);
@@ -32,6 +33,7 @@ public class CombatantStorage implements Capability.IStorage<ICombatant> {
     public void readNBT(Capability<ICombatant> capability, ICombatant instance, EnumFacing side, NBTBase nbtBase) {
         final NBTTagCompound nbt = (NBTTagCompound) nbtBase;
         instance.setBattleId(nbt.getLong("bid"));
+        instance.setPuppet(nbt.getInteger("pup"));
         instance.setActionPoints(nbt.getFloat("ap"));
         instance.setActionPointsOverhead(nbt.getFloat("apo"));
         instance.setPosition(new Vec3d(

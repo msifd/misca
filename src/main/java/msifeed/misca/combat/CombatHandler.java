@@ -30,6 +30,9 @@ public class CombatHandler {
      */
     private boolean attackEvaded = false;
 
+    /**
+     * Track entity movement and end its turn when AP depletes.
+     */
     @SubscribeEvent
     public void onEntityUpdate(LivingEvent.LivingUpdateEvent event) {
         final EntityLivingBase entity = event.getEntityLiving();
@@ -57,19 +60,32 @@ public class CombatHandler {
         if (!(src.getTrueSource() instanceof EntityLivingBase)) return;
 
         final EntityLivingBase srcEntity = (EntityLivingBase) src.getTrueSource();
-        final ICombatant com = CombatantProvider.get(srcEntity);
-        if (!com.isInBattle()) return;
+        final ICombatant srcCom = CombatantProvider.get(srcEntity);
+        if (!srcCom.isInBattle()) return;
 
-        final Battle battle = Combat.MANAGER.getBattle(com.getBattleId());
+        final Battle battle = Combat.MANAGER.getBattle(srcCom.getBattleId());
         if (battle == null) return;
-        if (!battle.isLeader(srcEntity.getUniqueID())) {
+
+        final EntityLivingBase atkEntity;
+        if (srcCom.hasPuppet()) {
+            atkEntity = battle.getCombatantWithId(srcCom.getPuppet());
+            if (atkEntity == null) {
+                notifyActionBar("Invalid puppet!", srcEntity);
+                return;
+            }
+        } else {
+            atkEntity = srcEntity;
+        }
+        final ICombatant com = CombatantProvider.get(atkEntity);
+
+        if (!battle.isLeader(atkEntity.getUniqueID())) {
             event.setCanceled(true);
-            notifyActionBar("not your turn", srcEntity);
+            notifyActionBar("not your turn", atkEntity);
             return;
         }
 
-        final double attackAp = Combat.getRules().attackActionPoints(srcEntity);
-        if (!BattleFlow.isEnoughAp(srcEntity, com, attackAp)) {
+        final double attackAp = Combat.getRules().attackActionPoints(atkEntity);
+        if (!BattleFlow.isEnoughAp(atkEntity, com, attackAp)) {
             event.setCanceled(true);
             Combat.MANAGER.nextTurn(battle);
         }
@@ -94,16 +110,27 @@ public class CombatHandler {
         final Battle battle = Combat.MANAGER.getBattle(srcCom.getBattleId());
         if (battle == null) return;
 
+        final EntityLivingBase atkEntity;
+        if (srcCom.hasPuppet()) {
+            atkEntity = battle.getCombatantWithId(srcCom.getPuppet());
+            if (atkEntity == null) {
+                notifyActionBar("Invalid puppet!", srcEntity);
+                return;
+            }
+        } else {
+            atkEntity = srcEntity;
+        }
+
         if (!src.getDamageType().startsWith(IGNORE_PREFIX)) {
-            alterDamage(event, srcEntity);
+            alterDamage(event, atkEntity);
 
             final boolean skipAttackAp = src.getImmediateSource() instanceof EntityPotion;
             if (!skipAttackAp)
-                BattleFlow.consumeActionAp(srcEntity);
-            BattleFlow.consumeMovementAp(srcEntity);
-            CombatantSync.sync(srcEntity);
+                BattleFlow.consumeActionAp(atkEntity);
+            BattleFlow.consumeMovementAp(atkEntity);
+            CombatantSync.sync(atkEntity);
 
-            if (BattleFlow.isApDepleted(srcEntity)) {
+            if (BattleFlow.isApDepleted(atkEntity)) {
                 Combat.MANAGER.nextTurn(battle);
             }
         }
@@ -138,12 +165,24 @@ public class CombatHandler {
         final boolean ignoreUsage = infoOpt.map(i -> i.traits.contains(WeaponTrait.ignoreUsage)).orElse(false);
         if (ignoreUsage) return;
 
-        final EntityLivingBase entity = event.getEntityLiving();
-        final ICombatant com = CombatantProvider.get(entity);
-        if (!com.isInBattle()) return;
+        final EntityLivingBase srcEntity = event.getEntityLiving();
+        final ICombatant srcCom = CombatantProvider.get(srcEntity);
+        if (!srcCom.isInBattle()) return;
 
-        final Battle battle = Combat.MANAGER.getBattle(com.getBattleId());
+        final Battle battle = Combat.MANAGER.getBattle(srcCom.getBattleId());
         if (battle == null) return;
+
+        final EntityLivingBase entity;
+        if (srcCom.hasPuppet()) {
+            entity = battle.getCombatantWithId(srcCom.getPuppet());
+            if (entity == null) {
+                notifyActionBar("Invalid puppet!", srcEntity);
+                return;
+            }
+        } else {
+            entity = srcEntity;
+        }
+        final ICombatant com = CombatantProvider.get(entity);
 
         final boolean isLeader = battle.isLeader(entity.getUniqueID());
         final double usageAp = Combat.getRules().usageActionPoints(event.getItem().getItem());
@@ -161,12 +200,23 @@ public class CombatHandler {
         final boolean ignoreUsage = infoOpt.map(i -> i.traits.contains(WeaponTrait.ignoreUsage)).orElse(false);
         if (ignoreUsage) return;
 
-        final EntityLivingBase entity = event.getEntityLiving();
-        final ICombatant com = CombatantProvider.get(entity);
-        if (!com.isInBattle()) return;
+        final EntityLivingBase srcEntity = event.getEntityLiving();
+        final ICombatant srcCom = CombatantProvider.get(srcEntity);
+        if (!srcCom.isInBattle()) return;
 
-        final Battle battle = Combat.MANAGER.getBattle(com.getBattleId());
+        final Battle battle = Combat.MANAGER.getBattle(srcCom.getBattleId());
         if (battle == null) return;
+
+        final EntityLivingBase entity;
+        if (srcCom.hasPuppet()) {
+            entity = battle.getCombatantWithId(srcCom.getPuppet());
+            if (entity == null) {
+                notifyActionBar("Invalid puppet!", srcEntity);
+                return;
+            }
+        } else {
+            entity = srcEntity;
+        }
 
         BattleFlow.consumeUsageAp(entity, event.getItem().getItem());
         BattleFlow.consumeMovementAp(entity);
@@ -178,14 +228,26 @@ public class CombatHandler {
         if (event.getWorld().isRemote || !(event.getEntity() instanceof EntityPotion)) return;
 
         final EntityPotion potion = (EntityPotion) event.getEntity();
-        final EntityLivingBase entity = potion.getThrower();
-        if (entity == null) return;
+        final EntityLivingBase srcEntity = potion.getThrower();
+        if (srcEntity == null) return;
 
-        final ICombatant com = CombatantProvider.get(entity);
-        if (!com.isInBattle()) return;
+        final ICombatant srcCom = CombatantProvider.get(srcEntity);
+        if (!srcCom.isInBattle()) return;
 
-        final Battle battle = Combat.MANAGER.getBattle(com.getBattleId());
+        final Battle battle = Combat.MANAGER.getBattle(srcCom.getBattleId());
         if (battle == null) return;
+
+        final EntityLivingBase entity;
+        if (srcCom.hasPuppet()) {
+            entity = battle.getCombatantWithId(srcCom.getPuppet());
+            if (entity == null) {
+                notifyActionBar("Invalid puppet!", srcEntity);
+                return;
+            }
+        } else {
+            entity = srcEntity;
+        }
+        final ICombatant com = CombatantProvider.get(entity);
 
         if (!battle.isLeader(entity.getUniqueID())) {
             event.setCanceled(true);
@@ -209,17 +271,17 @@ public class CombatHandler {
         }
     }
 
-    private void alterDamage(LivingHurtEvent event, EntityLivingBase srcEntity) {
-        final float overrideDamage = Combat.getWeaponInfo(srcEntity, EnumHand.MAIN_HAND)
+    private void alterDamage(LivingHurtEvent event, EntityLivingBase atkEntity) {
+        final float overrideDamage = Combat.getWeaponInfo(atkEntity, EnumHand.MAIN_HAND)
                 .map(wo -> wo.damage).orElse(0f);
         final float damageAmount = event.getAmount() + overrideDamage;
 
         final EntityLivingBase vicEntity = event.getEntityLiving();
-        final CombatantInfo srcInfo = new CombatantInfo(srcEntity, event.getSource());
+        final CombatantInfo srcInfo = new CombatantInfo(atkEntity, event.getSource());
         final CombatantInfo vicInfo = new CombatantInfo(vicEntity);
         final Rules rules = Combat.getRules();
 
-        final double hitChanceRaw = rules.hitRate(srcEntity, srcInfo) - rules.evasion(vicEntity, vicInfo, srcInfo);
+        final double hitChanceRaw = rules.hitRate(atkEntity, srcInfo) - rules.evasion(vicEntity, vicInfo, srcInfo);
         final double hitChance = Math.min(hitChanceRaw, rules.maxHitChance);
         final int hitCheck = Dices.checkInt(hitChance);
         final int criticality = Dices.checkInt(rules.criticalHit(srcInfo) + rules.rawChanceToHitCriticality(hitChanceRaw))
@@ -233,7 +295,7 @@ public class CombatHandler {
             final boolean criticalHit = successfulness > 1;
             if (criticalHit) {
                 damageFactor += 1;
-                notifyActionBar("crit hit", event.getEntityLiving(), srcEntity);
+                notifyActionBar("crit hit", event.getEntityLiving(), atkEntity);
             }
 
             event.setAmount(damageAmount * damageFactor);
@@ -246,8 +308,8 @@ public class CombatHandler {
                 // Note `src` in damageAbsorption
                 final float damageFactor = 1 + rules.damageIncrease(srcInfo) - rules.damageAbsorption(srcInfo);
                 final DamageSource ds = new EntityDamageSource(CRITICAL_EVASION_DT, vicEntity);
-                srcEntity.attackEntityFrom(ds, damageAmount * damageFactor);
-                notifyActionBar("crit evasion", event.getEntityLiving(), srcEntity);
+                atkEntity.attackEntityFrom(ds, damageAmount * damageFactor);
+                notifyActionBar("crit evasion", event.getEntityLiving(), atkEntity);
             }
         }
     }
