@@ -106,11 +106,11 @@ public class ChatexScreen extends MellowScreen implements ITabCompleter {
                 else inputKey(c, key);
                 break;
             case Keyboard.KEY_TAB:
-                try {
-                    autoCompleter.complete();
-                } catch (Throwable e) {
-                    e.printStackTrace();
-                }
+                final boolean prev = Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT);
+                if (prev)
+                    autoCompleter.completePrev();
+                else
+                    autoCompleter.completeNext();
                 break;
             default:
                 inputKey(c, key);
@@ -174,5 +174,10 @@ public class ChatexScreen extends MellowScreen implements ITabCompleter {
     @Override
     public void setCompletions(String... newCompletions) {
         autoCompleter.setCompletions(newCompletions);
+        final boolean prev = Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT);
+        if (prev)
+            autoCompleter.completePrev();
+        else
+            autoCompleter.completeNext();
     }
 }

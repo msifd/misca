@@ -4,6 +4,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.network.play.client.CPacketTabComplete;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.client.ClientCommandHandler;
+import org.lwjgl.input.Keyboard;
 
 import java.util.ArrayList;
 
@@ -27,10 +28,18 @@ public class AutoCompleter {
         gotCompletions = false;
     }
 
-    public void complete() {
+    public void completeNext() {
+        complete(1);
+    }
+
+    public void completePrev() {
+        complete(-1);
+    }
+
+    public void complete(int delta) {
         if (!requestedCompletions) {
             completions.clear();
-            completionIdx = 0;
+            completionIdx = -1;
 
             final String req = backend.toJoinedString()
                     .substring(0, backend.getAbsoluteCursor())
@@ -45,12 +54,14 @@ public class AutoCompleter {
             backend.remove(-backend.getPrevWordLength());
         }
 
-        final String completion = TextFormatting.getTextWithoutFormattingCodes(completions.get(completionIdx));
-        backend.insert(completion);
-
-        completionIdx++;
+        completionIdx += delta;
         if (completionIdx >= completions.size())
             completionIdx = 0;
+        else if (completionIdx < 0)
+            completionIdx = completions.size() - 1;
+
+        final String completion = TextFormatting.getTextWithoutFormattingCodes(completions.get(completionIdx));
+        backend.insert(completion);
     }
 
     private void requestCompletions(String prefix) {
@@ -80,10 +91,5 @@ public class AutoCompleter {
         for (String s : newCompletions) {
             if (!s.isEmpty()) completions.add(s);
         }
-
-        if (!completions.isEmpty()) {
-            complete();
-        }
-
     }
 }
