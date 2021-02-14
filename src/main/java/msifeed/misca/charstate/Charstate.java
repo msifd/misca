@@ -1,12 +1,10 @@
-package msifeed.misca.needs;
+package msifeed.misca.charstate;
 
+import msifeed.misca.Misca;
+import msifeed.misca.charstate.cap.*;
+import msifeed.misca.charstate.handler.*;
+import msifeed.misca.charstate.potion.NeedsPotions;
 import msifeed.misca.chatex.SpeechEvent;
-import msifeed.misca.needs.cap.*;
-import msifeed.misca.needs.handler.CorruptionHandler;
-import msifeed.misca.needs.handler.IntegrityHandler;
-import msifeed.misca.needs.handler.SanityHandler;
-import msifeed.misca.needs.handler.StaminaHandler;
-import msifeed.misca.needs.potion.NeedsPotions;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.attributes.AbstractAttributeMap;
 import net.minecraft.entity.player.EntityPlayer;
@@ -20,19 +18,22 @@ import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
-public class Needs {
+public class Charstate {
     private static final int UPDATE_PER_TICKS = 40;
+    private static final int SYNC_PER_TICKS = 80;
 
     private final IntegrityHandler integrityHandler = new IntegrityHandler();
     private final SanityHandler sanityHandler = new SanityHandler();
     private final StaminaHandler staminaHandler = new StaminaHandler();
     private final CorruptionHandler corruptionHandler = new CorruptionHandler();
+    private final EffortsHandler effortsHandler = new EffortsHandler();
 
     public void preInit() {
-        CapabilityManager.INSTANCE.register(IPlayerNeeds.class, new PlayerNeedsStorage(), PlayerNeeds::new);
-        MinecraftForge.EVENT_BUS.register(new PlayerNeedsHandler());
+        CapabilityManager.INSTANCE.register(ICharstate.class, new CharstateStorage(), CharstateImpl::new);
+        MinecraftForge.EVENT_BUS.register(new CharstateHandler());
         MinecraftForge.EVENT_BUS.register(new NeedsPotions());
         MinecraftForge.EVENT_BUS.register(this);
+        Misca.RPC.register(new CharstateSync());
     }
 
     @SubscribeEvent
@@ -54,14 +55,18 @@ public class Needs {
 
         final EntityPlayer player = (EntityPlayer) event.getEntityLiving();
 
-        final IPlayerNeeds needs = PlayerNeedsProvider.get(player);
-        final long absSec = needs.consumeTime();
+        final ICharstate state = CharstateProvider.get(player);
+        final long absSec = state.consumeTime();
         final long relSec = UPDATE_PER_TICKS / 20;
 
         integrityHandler.handleTime(player, absSec);
         sanityHandler.handleTime(player, relSec);
         staminaHandler.handleTime(player, absSec);
         corruptionHandler.handleTime(player, absSec);
+        effortsHandler.handleTime(player, absSec);
+
+        if (event.getEntity().ticksExisted % SYNC_PER_TICKS == 1)
+            CharstateSync.sync(player);
     }
 
     @SubscribeEvent(priority = EventPriority.LOWEST)

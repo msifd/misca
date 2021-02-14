@@ -2,7 +2,7 @@ package msifeed.misca.supplies;
 
 import msifeed.misca.Misca;
 import msifeed.misca.MiscaThings;
-import msifeed.misca.needs.handler.StaminaHandler;
+import msifeed.misca.charstate.handler.StaminaHandler;
 import msifeed.misca.supplies.cap.ISuppliesInvoice;
 import msifeed.misca.supplies.cap.SuppliesInvoiceProvider;
 import net.minecraft.client.util.ITooltipFlag;

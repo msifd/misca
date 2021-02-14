@@ -1,10 +1,10 @@
-package msifeed.misca.needs;
+package msifeed.misca.charstate;
 
 import msifeed.misca.MiscaPerms;
-import msifeed.misca.needs.handler.CorruptionHandler;
-import msifeed.misca.needs.handler.IntegrityHandler;
-import msifeed.misca.needs.handler.SanityHandler;
-import msifeed.misca.needs.handler.StaminaHandler;
+import msifeed.misca.charstate.handler.CorruptionHandler;
+import msifeed.misca.charstate.handler.IntegrityHandler;
+import msifeed.misca.charstate.handler.SanityHandler;
+import msifeed.misca.charstate.handler.StaminaHandler;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;

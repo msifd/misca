@@ -52,9 +52,9 @@ public class TextInput extends View implements InputHandler.Keyboard, InputHandl
     }
 
     @Override
-    public void render() {
-        RenderShapes.rect(getRenderGeom(), 0xbb000000);
-        RenderParts.lines(backend.getViewLines(), getTextGeom(), pref);
+    public void render(Geom geom) {
+        RenderShapes.rect(geom, 0xbb000000);
+        RenderParts.lines(backend.getViewLines(), geom, pref);
         renderCursor();
     }
 

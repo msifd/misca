@@ -1,6 +1,6 @@
-package msifeed.misca.needs;
+package msifeed.misca.charstate;
 
-public class NeedsConfig {
+public class CharstateConfig {
     public double globalMiningSpeedModifier = 0.5;
 
     public double integrityRestPerSec = 0.000016;
@@ -18,4 +18,6 @@ public class NeedsConfig {
     public double staminaCostPerSupplyItem = 0.005;
 
     public double corruptionLostPerSec = 0.00000115;
+
+    public float effortRestPerSec = 0.00027f;
 }

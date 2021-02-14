@@ -1,7 +1,7 @@
-package msifeed.misca.needs.handler;
+package msifeed.misca.charstate.handler;
 
 import msifeed.misca.Misca;
-import msifeed.misca.needs.NeedsConfig;
+import msifeed.misca.charstate.CharstateConfig;
 import net.minecraft.entity.ai.attributes.IAttribute;
 import net.minecraft.entity.ai.attributes.IAttributeInstance;
 import net.minecraft.entity.ai.attributes.RangedAttribute;
@@ -17,7 +17,7 @@ public class IntegrityHandler {
     private final Potion weakness = Potion.getPotionById(18);
 
     public void handleTime(EntityPlayer player, long secs) {
-        final NeedsConfig config = Misca.getSharedConfig().needs;
+        final CharstateConfig config = Misca.getSharedConfig().charstate;
         final double restored = secs * config.integrityRestPerSec;
 
         final IAttributeInstance inst = player.getEntityAttribute(INTEGRITY);
@@ -35,7 +35,7 @@ public class IntegrityHandler {
     }
 
     public void handleDamage(EntityPlayer player, float amount) {
-        final NeedsConfig config = Misca.getSharedConfig().needs;
+        final CharstateConfig config = Misca.getSharedConfig().charstate;
         final double lost = amount * config.integrityCostPerDamage;
 
         final IAttributeInstance inst = player.getEntityAttribute(INTEGRITY);

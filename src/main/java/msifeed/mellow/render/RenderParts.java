@@ -68,9 +68,16 @@ public final class RenderParts {
         GL11.glTranslatef(0, 0, geom.z);
 
         int lineOff = 0;
-        for (String text : lines) {
-            fr.drawString(text, geom.x + pref.xOff, geom.y + pref.yOff + lineOff, pref.color);
-            lineOff += fr.FONT_HEIGHT + pref.gap;
+        if (pref.shadow) {
+            for (String text : lines) {
+                fr.drawStringWithShadow(text, geom.x + pref.xOff, geom.y + pref.yOff + lineOff, pref.color);
+                lineOff += fr.FONT_HEIGHT + pref.gap;
+            }
+        } else {
+            for (String text : lines) {
+                fr.drawString(text, geom.x + pref.xOff, geom.y + pref.yOff + lineOff, pref.color);
+                lineOff += fr.FONT_HEIGHT + pref.gap;
+            }
         }
 
         GL11.glColor4f(1, 1, 1, 1);

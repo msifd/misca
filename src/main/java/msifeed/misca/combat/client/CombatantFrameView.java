@@ -24,19 +24,13 @@ public class CombatantFrameView extends View {
     }
 
     @Override
-    public void setPos(int x, int y, int z) {
-        super.setPos(x, y, z);
-        faceGeom.setPos(x + 1, y + 3, z);
-    }
+    public void render(Geom geom) {
+        if (face != null) face.render(geom.add(faceGeom));
+        else RenderShapes.rect(geom.add(faceGeom), 0xffffffff);
 
-    @Override
-    public void render() {
-        if (face != null) face.render(faceGeom);
-        else RenderShapes.rect(faceGeom, 0xffffffff);
-
-        CombatTheme.combatantFrame.render(geometry);
+        CombatTheme.combatantFrame.render(geom);
 
         final FontRenderer fr = Minecraft.getMinecraft().fontRenderer;
-        fr.drawString(String.valueOf(entityId), geometry.x, geometry.y, 0xffffffff);
+        fr.drawString(String.valueOf(entityId), geom.x, geom.y, 0xffffffff);
     }
 }

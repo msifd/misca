@@ -27,6 +27,16 @@ public class Geom implements Cloneable {
         this.h = h;
     }
 
+    public Geom add(Geom other) {
+        final Geom geom = new Geom();
+        geom.x = this.x + other.x;
+        geom.y = this.y + other.y;
+        geom.z = this.z + other.z;
+        geom.w = this.w + other.w;
+        geom.h = this.h + other.h;
+        return geom;
+    }
+
     public void add(int x, int y, int w, int h) {
         this.x += x;
         this.y += y;

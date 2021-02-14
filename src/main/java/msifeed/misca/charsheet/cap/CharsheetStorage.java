@@ -21,6 +21,7 @@ public class CharsheetStorage implements Capability.IStorage<ICharsheet> {
             nbt.setString(Tag.name, instance.getName());
             nbt.setString(Tag.wikiPage, instance.getWikiPage());
             instance.skills().writeNBT(Tag.skills, nbt);
+            instance.effortPools().writeNBT(Tag.effortPools, nbt);
             instance.resources().writeNBT(Tag.resources, nbt);
         }
 
@@ -37,6 +38,7 @@ public class CharsheetStorage implements Capability.IStorage<ICharsheet> {
             instance.setName(nbt.getString(Tag.name));
             instance.setWikiPage(nbt.getString(Tag.wikiPage));
             instance.skills().readNBT(nbt, Tag.skills);
+            instance.effortPools().readNBT(nbt, Tag.effortPools);
             instance.resources().readNBT(nbt, Tag.resources);
         }
     }
@@ -46,6 +48,7 @@ public class CharsheetStorage implements Capability.IStorage<ICharsheet> {
         private static final String wikiPage = "wiki";
         private static final String attributes = "attributes";
         private static final String skills = "skills";
+        private static final String effortPools = "effortPools";
         private static final String resources = "resources";
     }
 }

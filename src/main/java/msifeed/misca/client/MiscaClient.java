@@ -1,5 +1,6 @@
 package msifeed.misca.client;
 
+import msifeed.misca.charsheet.client.EffortRollScreen;
 import msifeed.misca.charsheet.client.GuiScreenCharsheet;
 import msifeed.misca.combat.client.GuiCombatOverlay;
 import msifeed.misca.combat.client.GuiScreenCombat;
@@ -20,6 +21,7 @@ public enum MiscaClient {
 
     public static KeyBinding charsheetKey = new KeyBinding("key.misca.charsheet", Keyboard.KEY_I, "key.categories.misca");
     public static KeyBinding combatKey = new KeyBinding("key.misca.combat", Keyboard.KEY_O, "key.categories.misca");
+    public static KeyBinding rollKey = new KeyBinding("key.misca.roll", Keyboard.KEY_P, "key.categories.misca");
 
     public void preInit() {
         Display.setTitle(MiscaConfig.windowTitle);
@@ -39,7 +41,9 @@ public enum MiscaClient {
     void onKeyTyped(InputEvent.KeyInputEvent event) {
         if (charsheetKey.isPressed())
             Minecraft.getMinecraft().displayGuiScreen(new GuiScreenCharsheet(Minecraft.getMinecraft().player));
-        if (combatKey.isPressed())
+        else if (combatKey.isPressed())
             Minecraft.getMinecraft().displayGuiScreen(new GuiScreenCombat(Minecraft.getMinecraft().player));
+        else if (rollKey.isPressed())
+            Minecraft.getMinecraft().displayGuiScreen(new EffortRollScreen(Minecraft.getMinecraft().player));
     }
 }

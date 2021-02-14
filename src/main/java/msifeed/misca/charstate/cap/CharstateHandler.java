@@ -1,21 +1,21 @@
-package msifeed.misca.needs.cap;
+package msifeed.misca.charstate.cap;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
-public class PlayerNeedsHandler {
+public class CharstateHandler {
     @SubscribeEvent
     public void onAttachCapability(AttachCapabilitiesEvent<Entity> event) {
         if (event.getObject() instanceof EntityPlayer)
-            event.addCapability(IPlayerNeeds.KEY, new PlayerNeedsProvider());
+            event.addCapability(ICharstate.KEY, new CharstateProvider());
     }
 
     @SubscribeEvent
     public void onPlayerClone(net.minecraftforge.event.entity.player.PlayerEvent.Clone event) {
-        final IPlayerNeeds original = PlayerNeedsProvider.get(event.getOriginal());
-        final IPlayerNeeds cloned = PlayerNeedsProvider.get(event.getEntityPlayer());
+        final ICharstate original = CharstateProvider.get(event.getOriginal());
+        final ICharstate cloned = CharstateProvider.get(event.getEntityPlayer());
         cloned.replaceWith(original);
     }
 }

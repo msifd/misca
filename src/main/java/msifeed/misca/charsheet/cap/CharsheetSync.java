@@ -20,7 +20,7 @@ import java.util.UUID;
 public class CharsheetSync {
     private static final String post = "charsheet.post";
     private static final String sync = "charsheet.sync";
-    private static final String syncSelf = "charsheet.sync.self";
+    private static final String syncSelf = "charsheet.syncSelf";
 
     public static void sync(EntityPlayerMP receiver, EntityLivingBase target) {
         final NBTTagCompound nbt = CharsheetProvider.encode(CharsheetProvider.get(target));
@@ -54,14 +54,14 @@ public class CharsheetSync {
 
     @SideOnly(Side.CLIENT)
     @RpcMethodHandler(syncSelf)
-    public void onSyncSelf(RpcContext ctx, NBTTagCompound nbt) {
+    public void onSyncSelf(NBTTagCompound nbt) {
         final EntityPlayer self = Minecraft.getMinecraft().player;
         update(self, nbt);
     }
 
     @SideOnly(Side.CLIENT)
     @RpcMethodHandler(sync)
-    public void onSync(RpcContext ctx, UUID uuid, NBTTagCompound nbt) {
+    public void onSync(UUID uuid, NBTTagCompound nbt) {
         final EntityPlayer target = Minecraft.getMinecraft().world.getPlayerEntityByUUID(uuid);
         if (target != null)
             update(target, nbt);

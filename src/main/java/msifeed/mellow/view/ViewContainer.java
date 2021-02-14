@@ -1,5 +1,7 @@
 package msifeed.mellow.view;
 
+import msifeed.mellow.utils.Geom;
+
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -10,6 +12,10 @@ public class ViewContainer extends View {
 
     public void addView(View view) {
         viewList.add(view);
+    }
+
+    public void clearViews() {
+        viewList.clear();
     }
 
     public List<View> getViewList() {
@@ -23,8 +29,8 @@ public class ViewContainer extends View {
     }
 
     @Override
-    public void render() {
+    public void render(Geom geom) {
         for (View v : viewList)
-            v.render();
+            v.render(v.getRenderGeom());
     }
 }

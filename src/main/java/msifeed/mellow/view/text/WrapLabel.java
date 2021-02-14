@@ -1,6 +1,7 @@
 package msifeed.mellow.view.text;
 
 import msifeed.mellow.render.RenderParts;
+import msifeed.mellow.utils.Geom;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 
@@ -38,7 +39,7 @@ public class WrapLabel extends Label {
     }
 
     @Override
-    public void render() {
-        RenderParts.lines(lines, getRenderGeom(), this.pref);
+    public void render(Geom geom) {
+        RenderParts.lines(lines, geom, this.pref);
     }
 }

@@ -37,8 +37,8 @@
       "minecraft:wooden_door": "door"
     }
   },
-  "needs": {
-    "globalMiningSpeedModifier": 1.0,
+  "charstate": {
+    "globalMiningSpeedModifier": 0.5,
     "integrityRestPerSec": 1.6E-5,
     "integrityCostPerDamage": 0.1,
     "sanityRestPerFood": 1.0,
@@ -50,6 +50,7 @@
     "staminaRestTimeoutSec": 2.0,
     "staminaCostPerMiningTick": 1.0E-4,
     "staminaCostPerSupplyItem": 0.005,
-    "corruptionLostPerSec": 1.15E-6
+    "corruptionLostPerSec": 1.15E-6,
+    "effortRestPerSec": 2.7E-4
   }
 }

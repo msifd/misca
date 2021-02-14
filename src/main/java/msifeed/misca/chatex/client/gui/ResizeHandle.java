@@ -42,8 +42,8 @@ public class ResizeHandle extends View implements InputHandler.Mouse {
     }
 
     @Override
-    public void render() {
-        RenderShapes.rect(getRenderGeom(), 0xbbffbbbb);
+    public void render(Geom geom) {
+        RenderShapes.rect(geom, 0xbbffbbbb);
     }
 
     @Override

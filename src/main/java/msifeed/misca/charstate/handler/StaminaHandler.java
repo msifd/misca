@@ -1,9 +1,9 @@
-package msifeed.misca.needs.handler;
+package msifeed.misca.charstate.handler;
 
 import msifeed.misca.Misca;
-import msifeed.misca.needs.NeedsConfig;
-import msifeed.misca.needs.cap.IPlayerNeeds;
-import msifeed.misca.needs.cap.PlayerNeedsProvider;
+import msifeed.misca.charstate.CharstateConfig;
+import msifeed.misca.charstate.cap.CharstateProvider;
+import msifeed.misca.charstate.cap.ICharstate;
 import net.minecraft.entity.ai.attributes.IAttribute;
 import net.minecraft.entity.ai.attributes.IAttributeInstance;
 import net.minecraft.entity.ai.attributes.RangedAttribute;
@@ -17,9 +17,9 @@ public class StaminaHandler {
     public static final IAttribute STAMINA = new RangedAttribute(null, Misca.MODID + ".stamina", 1, 0, 1).setShouldWatch(true);
 
     public void handleTime(EntityPlayer player, long secs) {
-        final NeedsConfig config = Misca.getSharedConfig().needs;
-        final IPlayerNeeds needs = PlayerNeedsProvider.get(player);
-        if (needs.passedFromMining() < config.staminaRestTimeoutSec) return;
+        final CharstateConfig config = Misca.getSharedConfig().charstate;
+        final ICharstate state = CharstateProvider.get(player);
+        if (state.passedFromMining() < config.staminaRestTimeoutSec) return;
 
         final double restored = secs * config.staminaRestPerSec;
 
@@ -28,10 +28,10 @@ public class StaminaHandler {
     }
 
     public void handleMining(PlayerEvent.BreakSpeed event) {
-        final IPlayerNeeds needs = PlayerNeedsProvider.get(event.getEntityPlayer());
+        final ICharstate state = CharstateProvider.get(event.getEntityPlayer());
 
-        final NeedsConfig config = Misca.getSharedConfig().needs;
-        needs.resetMiningTime();
+        final CharstateConfig config = Misca.getSharedConfig().charstate;
+        state.resetMiningTime();
 
         final IAttributeInstance inst = event.getEntityPlayer().getEntityAttribute(STAMINA);
         inst.setBaseValue(STAMINA.clampValue(inst.getBaseValue() - config.staminaCostPerMiningTick));
@@ -43,7 +43,7 @@ public class StaminaHandler {
     }
 
     public void handleCrafting(net.minecraftforge.fml.common.gameevent.PlayerEvent.ItemCraftedEvent event) {
-        final NeedsConfig config = Misca.getSharedConfig().needs;
+        final CharstateConfig config = Misca.getSharedConfig().charstate;
         final double lost = event.crafting.getCount() * config.staminaCostPerSupplyItem;
         
         final IAttributeInstance inst = event.player.getEntityAttribute(STAMINA);
@@ -51,7 +51,7 @@ public class StaminaHandler {
     }
 
     public static void consumeSuppliesDelivery(EntityPlayer player, List<ItemStack> delivery) {
-        final NeedsConfig config = Misca.getSharedConfig().needs;
+        final CharstateConfig config = Misca.getSharedConfig().charstate;
         final int items = delivery.stream().mapToInt(ItemStack::getCount).sum();
         final double lost = items * config.staminaCostPerSupplyItem;
 

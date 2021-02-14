@@ -1,6 +1,7 @@
 package msifeed.mellow.view.text;
 
 import msifeed.mellow.render.RenderParts;
+import msifeed.mellow.utils.Geom;
 import msifeed.mellow.view.View;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -8,6 +9,10 @@ import net.minecraft.client.gui.FontRenderer;
 public class Label extends View {
     protected String text = "";
     protected RenderParts.TextPref pref = new RenderParts.TextPref();
+
+    public Label(String text) {
+        this(text, 0xffffffff);
+    }
 
     public Label(String text, int color) {
         this.geometry.z = 1;
@@ -35,7 +40,7 @@ public class Label extends View {
     }
 
     @Override
-    public void render() {
-        RenderParts.string(text, getRenderGeom(), pref);
+    public void render(Geom geom) {
+        RenderParts.string(text, geom, pref);
     }
 }

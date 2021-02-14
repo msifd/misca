@@ -1,8 +1,8 @@
-package msifeed.misca.needs.handler;
+package msifeed.misca.charstate.handler;
 
 import msifeed.misca.Misca;
 import msifeed.misca.charsheet.ICharsheet;
-import msifeed.misca.needs.NeedsConfig;
+import msifeed.misca.charstate.CharstateConfig;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.ai.attributes.IAttribute;
 import net.minecraft.entity.ai.attributes.IAttributeInstance;
@@ -28,7 +28,7 @@ public class SanityHandler {
         if (player.isCreative() || player.isSpectator()) return;
 
         // TODO: disable darkness
-        final NeedsConfig config = Misca.getSharedConfig().needs;
+        final CharstateConfig config = Misca.getSharedConfig().charstate;
         final int light = player.world.getLight(player.getPosition(), false);
         final double sanPerSec = light < 7 ? config.sanityCostPerSecInDarkness : config.sanityCostPerSec;
         final double lost = secs * sanPerSec;
@@ -56,7 +56,7 @@ public class SanityHandler {
     }
 
     public void handleDamage(EntityPlayer player, float amount) {
-        final NeedsConfig config = Misca.getSharedConfig().needs;
+        final CharstateConfig config = Misca.getSharedConfig().charstate;
         final double lost = amount * config.sanityCostPerDamage;
 
         final IAttributeInstance inst = player.getEntityAttribute(SANITY);
@@ -67,7 +67,7 @@ public class SanityHandler {
         if (!(stack.getItem() instanceof ItemFood)) return;
 
         final ItemFood item = (ItemFood) stack.getItem();
-        final NeedsConfig config = Misca.getSharedConfig().needs;
+        final CharstateConfig config = Misca.getSharedConfig().charstate;
 
         final double restored = item.getHealAmount(stack) * config.sanityRestPerFood;
 
@@ -76,7 +76,7 @@ public class SanityHandler {
     }
 
     public void handleSpeech(EntityPlayerMP source, int range, String msg) {
-        final NeedsConfig config = Misca.getSharedConfig().needs;
+        final CharstateConfig config = Misca.getSharedConfig().charstate;
 
         for (EntityPlayer player : source.world.playerEntities) {
             if (player == source) continue;

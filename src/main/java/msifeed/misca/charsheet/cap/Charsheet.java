@@ -1,17 +1,16 @@
 package msifeed.misca.charsheet.cap;
 
-import msifeed.misca.charsheet.CharAttribute;
-import msifeed.misca.charsheet.CharResource;
-import msifeed.misca.charsheet.CharSkill;
-import msifeed.misca.charsheet.ICharsheet;
+import msifeed.misca.charsheet.*;
+import msifeed.sys.cap.IntContainer;
 
 public class Charsheet implements ICharsheet {
     private boolean isPlayer = false;
     private String name = "";
     private String wikiPage = "";
-    private final ValueContainer<CharAttribute> attributes = new ValueContainer<>(CharAttribute.class, 0, 25);
-    private final ValueContainer<CharSkill> skills = new ValueContainer<>(CharSkill.class, 0, 25);
-    private final ValueContainer<CharResource> resources = new ValueContainer<>(CharResource.class, 0, 1000);
+    private final IntContainer<CharAttribute> attributes = new IntContainer<>(CharAttribute.class, 0, 25);
+    private final IntContainer<CharSkill> skills = new IntContainer<>(CharSkill.class, 0, 25);
+    private final IntContainer<CharEffort> effortPools = new IntContainer<>(CharEffort.class, 0, 50);
+    private final IntContainer<CharResource> resources = new IntContainer<>(CharResource.class, 0, 1000);
 
     @Override
     public boolean isPlayer() {
@@ -44,17 +43,22 @@ public class Charsheet implements ICharsheet {
     }
 
     @Override
-    public ValueContainer<CharAttribute> attrs() {
+    public IntContainer<CharAttribute> attrs() {
         return attributes;
     }
 
     @Override
-    public ValueContainer<CharSkill> skills() {
+    public IntContainer<CharSkill> skills() {
         return skills;
     }
 
     @Override
-    public ValueContainer<CharResource> resources() {
+    public IntContainer<CharEffort> effortPools() {
+        return effortPools;
+    }
+
+    @Override
+    public IntContainer<CharResource> resources() {
         return resources;
     }
 
@@ -66,6 +70,7 @@ public class Charsheet implements ICharsheet {
         wikiPage = charsheet.getWikiPage();
         attributes.replaceWith(charsheet.attrs());
         skills.replaceWith(charsheet.skills());
+        effortPools.replaceWith(charsheet.effortPools());
         resources.replaceWith(charsheet.resources());
     }
 

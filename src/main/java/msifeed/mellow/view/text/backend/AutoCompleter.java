@@ -4,7 +4,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.network.play.client.CPacketTabComplete;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.client.ClientCommandHandler;
-import org.lwjgl.input.Keyboard;
 
 import java.util.ArrayList;
 

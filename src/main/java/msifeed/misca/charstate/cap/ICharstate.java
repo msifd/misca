@@ -1,10 +1,12 @@
-package msifeed.misca.needs.cap;
+package msifeed.misca.charstate.cap;
 
 import msifeed.misca.Misca;
+import msifeed.misca.charsheet.CharEffort;
+import msifeed.sys.cap.FloatContainer;
 import net.minecraft.util.ResourceLocation;
 
-public interface IPlayerNeeds {
-    ResourceLocation KEY = new ResourceLocation(Misca.MODID, "needs");
+public interface ICharstate {
+    ResourceLocation KEY = new ResourceLocation(Misca.MODID, "state");
 
     long getUpdateTime();
     void setUpdateTime(long value);
@@ -28,8 +30,7 @@ public interface IPlayerNeeds {
         setMiningTime(System.currentTimeMillis() / 1000);
     }
 
-    default void replaceWith(IPlayerNeeds other) {
-        this.setUpdateTime(other.getUpdateTime());
-        this.setMiningTime(other.getMiningTime());
-    }
+    FloatContainer<CharEffort> efforts();
+
+    void replaceWith(ICharstate other);
 }

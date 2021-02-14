@@ -40,6 +40,8 @@ public class ChatexScreen extends MellowScreen implements ITabCompleter {
 
     @Override
     public void initGui() {
+        super.initGui();
+
         Keyboard.enableRepeatEvents(true);
 
         final int inputWidth = width - 10;

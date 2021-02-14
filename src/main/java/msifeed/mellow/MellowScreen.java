@@ -3,18 +3,26 @@ package msifeed.mellow;
 import msifeed.mellow.view.InputHandler;
 import msifeed.mellow.view.View;
 import msifeed.mellow.view.ViewContainer;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
+import org.lwjgl.input.Keyboard;
+import org.lwjgl.input.Mouse;
 
 import java.io.IOException;
 
 public abstract class MellowScreen extends GuiScreen {
     protected ViewContainer container = new ViewContainer();
 
-    public void closeGui() {}
+    @Override
+    public void initGui() {
+        super.initGui();
+
+        container.setSize(width, height);
+    }
 
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
-        container.render();
+        container.render(container.getRenderGeom());
     }
 
     @Override
@@ -23,22 +31,26 @@ public abstract class MellowScreen extends GuiScreen {
         FocusState.INSTANCE.clearFocus();
     }
 
+    public void closeGui() {
+
+    }
+
     @Override
     public void handleMouseInput() throws IOException {
         super.handleMouseInput();
 
-//        final int xMouse = Mouse.getEventX() * this.width / this.mc.displayWidth;
-//        final int yMouse = this.height - Mouse.getEventY() * this.height / this.mc.displayHeight - 1;
-//
-//        if (Mouse.hasWheel()) {
-//            final int dWheel = Mouse.getDWheel();
-//            if (dWheel != 0) {
-//                container.getViewsAtPoint(xMouse, yMouse)
-//                        .filter(w -> w instanceof InputHandler.MouseWheel)
-//                        .findFirst()
-//                        .ifPresent(w -> ((InputHandler.MouseWheel) w).onMouseWheel(xMouse, yMouse, dWheel));
-//            }
-//        }
+        final int xMouse = Mouse.getEventX() * this.width / this.mc.displayWidth;
+        final int yMouse = this.height - Mouse.getEventY() * this.height / this.mc.displayHeight - 1;
+
+        if (Mouse.hasWheel()) {
+            final int dWheel = Mouse.getDWheel();
+            if (dWheel != 0) {
+                container.getViewsAtPoint(xMouse, yMouse)
+                        .filter(w -> w instanceof InputHandler.MouseWheel)
+                        .findFirst()
+                        .ifPresent(w -> ((InputHandler.MouseWheel) w).onMouseWheel(xMouse, yMouse, dWheel));
+            }
+        }
     }
 
     @Override
@@ -82,6 +94,13 @@ public abstract class MellowScreen extends GuiScreen {
 
     @Override
     protected void keyTyped(char c, int key) {
+        if (key == Keyboard.KEY_ESCAPE) {
+            if (FocusState.INSTANCE.getFocus().isPresent())
+                FocusState.INSTANCE.clearFocus();
+            else
+                Minecraft.getMinecraft().displayGuiScreen(null);
+        }
+
         FocusState.INSTANCE.getFocus()
                 .filter(view -> view instanceof InputHandler.Keyboard)
                 .map(view -> (InputHandler.Keyboard) view)

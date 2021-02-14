@@ -1,4 +1,4 @@
-package msifeed.misca.needs.potion;
+package msifeed.misca.charstate.potion;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;

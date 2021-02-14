@@ -1,4 +1,4 @@
-package msifeed.misca.needs.potion;
+package msifeed.misca.charstate.potion;
 
 import net.minecraft.potion.Potion;
 

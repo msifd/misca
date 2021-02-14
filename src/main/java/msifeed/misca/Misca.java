@@ -2,6 +2,10 @@ package msifeed.misca;
 
 import com.google.gson.reflect.TypeToken;
 import msifeed.misca.charsheet.cap.CharsheetProvider;
+import msifeed.misca.charsheet.rolls.RollRpc;
+import msifeed.misca.charstate.Charstate;
+import msifeed.misca.charstate.EffortsCommand;
+import msifeed.misca.charstate.NeedsCommand;
 import msifeed.misca.chatex.Chatex;
 import msifeed.misca.client.MiscaClient;
 import msifeed.misca.cmd.MiscaCommand;
@@ -12,8 +16,7 @@ import msifeed.misca.environ.Environ;
 import msifeed.misca.environ.EnvironCommand;
 import msifeed.misca.locks.Locks;
 import msifeed.misca.locks.LocksCommand;
-import msifeed.misca.needs.Needs;
-import msifeed.misca.needs.NeedsCommand;
+import msifeed.misca.rename.RenameCommand;
 import msifeed.misca.rename.RenameItems;
 import msifeed.misca.supplies.BackgroundSupplies;
 import msifeed.misca.supplies.InvoiceCommand;
@@ -48,7 +51,7 @@ public class Misca {
     private final Environ environ = new Environ();
     private final Locks locks = new Locks();
     private final BackgroundSupplies supplies = new BackgroundSupplies();
-    private final Needs needs = new Needs();
+    private final Charstate charstate = new Charstate();
 
     public static MiscaSharedConfig getSharedConfig() {
         return SHARED.get();
@@ -63,7 +66,9 @@ public class Misca {
         combat.preInit();
         locks.preInit();
         supplies.preInit();
-        needs.preInit();
+        charstate.preInit();
+
+        Misca.RPC.register(new RollRpc());
 
         if (FMLCommonHandler.instance().getSide().isClient())
             MiscaClient.INSTANCE.preInit();
@@ -96,12 +101,13 @@ public class Misca {
         chatex.registerCommands(event);
         event.registerServerCommand(new MiscaCommand());
         event.registerServerCommand(new RollCommand());
-//        event.registerServerCommand(new RenameCommand());
+        event.registerServerCommand(new RenameCommand());
         event.registerServerCommand(new EnvironCommand());
         event.registerServerCommand(new CombatCommand());
         event.registerServerCommand(new LocksCommand());
         event.registerServerCommand(new InvoiceCommand());
         event.registerServerCommand(new NeedsCommand());
+        event.registerServerCommand(new EffortsCommand());
     }
 
     @EventHandler

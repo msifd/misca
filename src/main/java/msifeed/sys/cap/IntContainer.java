@@ -1,4 +1,4 @@
-package msifeed.misca.charsheet.cap;
+package msifeed.sys.cap;
 
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.MathHelper;
@@ -7,14 +7,14 @@ import sun.misc.SharedSecrets;
 import java.util.EnumMap;
 import java.util.stream.Stream;
 
-public class ValueContainer<K extends Enum<K>> implements Cloneable {
+public class IntContainer<K extends Enum<K>> implements Cloneable {
     private final EnumMap<K, Integer> values;
 
     private final transient K[] keys;
     private final transient int min;
     private final transient int max;
 
-    public ValueContainer(Class<K> enumType, int min, int max) {
+    public IntContainer(Class<K> enumType, int min, int max) {
         this.values = new EnumMap<>(enumType);
         this.keys = SharedSecrets.getJavaLangAccess().getEnumConstantsShared(enumType);
         this.min = min;
@@ -38,7 +38,7 @@ public class ValueContainer<K extends Enum<K>> implements Cloneable {
         set(key, get(key) + delta);
     }
 
-    public void replaceWith(ValueContainer<K> other) {
+    public void replaceWith(IntContainer<K> other) {
         values.clear();
         values.putAll(other.values);
     }
@@ -56,10 +56,10 @@ public class ValueContainer<K extends Enum<K>> implements Cloneable {
     }
 
     @Override
-    public ValueContainer<K> clone() {
-        final ValueContainer<K> clone;
+    public IntContainer<K> clone() {
+        final IntContainer<K> clone;
         try {
-            clone = (ValueContainer<K>) super.clone();
+            clone = (IntContainer<K>) super.clone();
         } catch (CloneNotSupportedException e) {
             throw new AssertionError();
         }

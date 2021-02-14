@@ -1,6 +1,7 @@
 package msifeed.misca.charsheet;
 
 import msifeed.misca.charsheet.cap.CharsheetProvider;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.MathHelper;
 
@@ -13,9 +14,10 @@ public enum CharSkill {
 //        return ordinal() >= strength.ordinal();
 //    }
 
-    public int value(EntityPlayer player) {
-        final int mod = (int) player.getEntityAttribute(ICharsheet.SKILL_MOD).getAttributeValue();
-        final int value = CharsheetProvider.get(player).skills().get(this);
-        return MathHelper.clamp(value + mod, 0, 5);
+    public int value(EntityLivingBase target) {
+        int value = CharsheetProvider.get(target).skills().get(this);
+        if (target instanceof EntityPlayer)
+            value += (int) target.getEntityAttribute(ICharsheet.SKILL_MOD).getAttributeValue();
+        return MathHelper.clamp(value, 0, 5);
     }
 }

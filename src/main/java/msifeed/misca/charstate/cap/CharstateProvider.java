@@ -1,7 +1,8 @@
-package msifeed.misca.needs.cap;
+package msifeed.misca.charstate.cap;
 
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.nbt.NBTBase;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
@@ -11,16 +12,26 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Objects;
 
-public class PlayerNeedsProvider implements ICapabilitySerializable<NBTBase> {
-    @CapabilityInject(IPlayerNeeds.class)
-    public static Capability<IPlayerNeeds> CAP = null;
+public class CharstateProvider implements ICapabilitySerializable<NBTBase> {
+    @CapabilityInject(ICharstate.class)
+    public static Capability<ICharstate> CAP = null;
 
-    private final Capability.IStorage<IPlayerNeeds> storage = CAP.getStorage();
-    private final IPlayerNeeds instance = Objects.requireNonNull(CAP.getDefaultInstance());
+    private final Capability.IStorage<ICharstate> storage = CAP.getStorage();
+    private final ICharstate instance = Objects.requireNonNull(CAP.getDefaultInstance());
 
     @Nonnull
-    public static IPlayerNeeds get(@Nonnull EntityLivingBase entity) {
+    public static ICharstate get(@Nonnull EntityLivingBase entity) {
         return Objects.requireNonNull(entity.getCapability(CAP, null));
+    }
+
+    public static NBTTagCompound encode(ICharstate state) {
+        return (NBTTagCompound) CAP.getStorage().writeNBT(CAP, state, null);
+    }
+
+    public static ICharstate decode(NBTTagCompound nbt) {
+        final ICharstate state = CAP.getDefaultInstance();
+        CAP.getStorage().readNBT(CAP, state, null, nbt);
+        return state;
     }
 
     @Override

@@ -56,13 +56,13 @@ public class GuiCombatOverlay {
 
         state.getCombatants().forEach(entity -> {
             frame.setFace(entity);
-            frame.render();
+            frame.render(frame.getRenderGeom());
             frame.translate(pxPerFrame, 0, 0);
         });
 
         bar.setPos(0, 0, 0);
         bar.translate(frameOffset - bar.getRenderGeom().w - 5, 5, 0);
-        bar.render();
+        bar.render(bar.getRenderGeom());
     }
 
     private static void drawTextInfo() {

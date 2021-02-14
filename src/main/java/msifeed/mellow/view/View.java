@@ -6,7 +6,7 @@ import msifeed.mellow.utils.Geom;
 public abstract class View {
     protected final Geom geometry = new Geom();
 
-    public abstract void render();
+    public abstract void render(Geom geom);
 
     public Geom getBaseGeom() {
         return geometry;
