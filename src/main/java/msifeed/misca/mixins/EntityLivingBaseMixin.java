@@ -17,8 +17,8 @@ public abstract class EntityLivingBaseMixin {
     public void updatePotionEffects(CallbackInfo ci) {
         final EntityLivingBase self = (EntityLivingBase) (Object) this; // Beautiful T_T
 
-        final ICombatant com = CombatantProvider.get(self);
-        if (!com.isInBattle()) return;
+        final ICombatant com = CombatantProvider.getOptional(self);
+        if (com == null || !com.isInBattle()) return;
 
         final Battle battle;
         if (self.world.isRemote) battle = BattleStateClient.STATE;
