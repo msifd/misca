@@ -13,6 +13,7 @@ public class TextInput extends View implements InputHandler.Keyboard, InputHandl
     protected TextEditorBackend backend = new TextEditorBackend();
     protected TextInputHelper inputHelper = new TextInputHelper(backend, TextInputHelper.NavMode.LINES);
     protected RenderParts.TextPref pref = new RenderParts.TextPref();
+    protected Geom textOffset = new Geom(2, 3, 0, 0);
 
     protected long lastTimePressed = 0;
 
@@ -54,27 +55,19 @@ public class TextInput extends View implements InputHandler.Keyboard, InputHandl
     @Override
     public void render(Geom geom) {
         RenderShapes.rect(geom, 0xbb000000);
-        RenderParts.lines(backend.getViewLines(), geom, pref);
-        renderCursor();
+
+        final Geom textGeom = geom.add(textOffset);
+        RenderParts.lines(backend.getViewLines(), textGeom, pref);
+        renderCursor(textGeom);
     }
 
-    protected void renderCursor() {
+    protected void renderCursor(Geom geom) {
         if (!isFocused() || (System.currentTimeMillis() - lastTimePressed) % 1000 > 500)
             return;
 
         final int lineHeight = RenderUtils.lineHeight() + pref.gap;
-
-//        final Geom cursorGeom = this.getGeomWithMargin();
-        final Geom geom = getTextGeom();
         geom.translate(backend.getCursorXOffset(), lineHeight * inputHelper.getCursorLineInView() - 2);
         geom.setSize(2, lineHeight);
-
         RenderShapes.rect(geom, pref.color);
-    }
-
-    protected Geom getTextGeom() {
-        final Geom geom = getRenderGeom();
-        geom.translate(2, 3, 0);
-        return geom;
     }
 }
