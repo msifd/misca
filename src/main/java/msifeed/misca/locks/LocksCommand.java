@@ -1,7 +1,7 @@
 package msifeed.misca.locks;
 
 import msifeed.misca.MiscaPerms;
-import msifeed.misca.locks.tile.ILockable;
+import msifeed.misca.locks.cap.LockAccessor;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
@@ -26,7 +26,7 @@ public class LocksCommand extends CommandBase {
 
     @Override
     public String getUsage(ICommandSender sender) {
-        return "/locks < toggle <key> | add <key> | remove [key] >";
+        return "/locks <toggle add remove> <key>";
     }
 
     @Override
@@ -53,36 +53,36 @@ public class LocksCommand extends CommandBase {
                     sendStatus(player, "Usage: /locks toggle <key>", TextFormatting.RED);
                     return;
                 }
-                toggle(player, args[1]);
+                toggle(player, parseInt(args[1]));
                 break;
             case "add":
                 if (args.length < 2) {
                     sendStatus(player, "Usage: /locks add <key>", TextFormatting.RED);
                     return;
                 }
-                addLock(player, args[1]);
+                addLock(player, parseInt(args[1]));
                 break;
             case "remove":
-                removeLock(player, args.length > 1 ? args[1] : null);
+                removeLock(player);
                 break;
             default:
                 break;
         }
     }
 
-    private static void toggle(EntityPlayerMP player, String key) {
+    private static void toggle(EntityPlayerMP player, int key) {
         final BlockPos pos = rayTracePos(player);
         if (pos == null) return;
 
         if (Locks.toggleLock(player.world, pos, key)) {
-            final ILockable lock = Locks.getLock(player.world, pos);
-            sendStatus(player, "Block " + (lock.isLocked() ? "locked" : "opened"), TextFormatting.GREEN);
+            final boolean locked = LockAccessor.isLocked(player.world, pos);
+            sendStatus(player, "Block " + (locked ? "locked" : "opened"), TextFormatting.GREEN);
         } else {
             sendStatus(player, "Failed to toggle lock", TextFormatting.RED);
         }
     }
 
-    private static void addLock(EntityPlayerMP player, String secret) {
+    private static void addLock(EntityPlayerMP player, int secret) {
         final BlockPos pos = rayTracePos(player);
         if (pos == null) return;
 
@@ -92,7 +92,7 @@ public class LocksCommand extends CommandBase {
             sendStatus(player, "Failed to add lock", TextFormatting.RED);
     }
 
-    private static void removeLock(EntityPlayerMP player, @Nullable String key) {
+    private static void removeLock(EntityPlayerMP player) {
         final BlockPos pos = rayTracePos(player);
         if (pos == null) return;
 

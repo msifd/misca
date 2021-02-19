@@ -2,10 +2,10 @@ package msifeed.misca;
 
 import com.google.gson.reflect.TypeToken;
 import msifeed.misca.charsheet.cap.CharsheetProvider;
-import msifeed.misca.charsheet.rolls.RollRpc;
 import msifeed.misca.charstate.Charstate;
 import msifeed.misca.charstate.EffortsCommand;
 import msifeed.misca.charstate.NeedsCommand;
+import msifeed.misca.charstate.rolls.RollRpc;
 import msifeed.misca.chatex.Chatex;
 import msifeed.misca.client.MiscaClient;
 import msifeed.misca.cmd.MiscaCommand;
@@ -81,7 +81,6 @@ public class Misca {
         chatex.init();
         combat.init();
         environ.init();
-        locks.init();
 
         RenameItems.register();
 

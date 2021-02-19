@@ -1,7 +1,7 @@
-package msifeed.misca.locks.tile;
+package msifeed.misca.locks.cap.key;
 
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTBase;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
@@ -11,16 +11,16 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Objects;
 
-public class LockableProvider implements ICapabilitySerializable<NBTBase> {
-    @CapabilityInject(ILockable.class)
-    public static Capability<ILockable> CAP = null;
+public class LockKeyProvider implements ICapabilitySerializable<NBTBase> {
+    @CapabilityInject(ILockKey.class)
+    public static Capability<ILockKey> CAP = null;
 
-    private final Capability.IStorage<ILockable> storage = CAP.getStorage();
-    private final ILockable instance = Objects.requireNonNull(CAP.getDefaultInstance());
+    private final Capability.IStorage<ILockKey> storage = CAP.getStorage();
+    private final ILockKey instance = Objects.requireNonNull(CAP.getDefaultInstance());
 
     @Nullable
-    public static ILockable get(TileEntity tile) {
-        return tile.getCapability(LockableProvider.CAP, null);
+    public static ILockKey get(ItemStack stack) {
+        return stack.getCapability(LockKeyProvider.CAP, null);
     }
 
     @Override

@@ -1,12 +1,12 @@
-package msifeed.misca.locks.chunk;
+package msifeed.misca.locks.cap.chunk;
 
-import msifeed.misca.locks.tile.ILockable;
+import msifeed.misca.locks.cap.tile.ILockable;
 import net.minecraft.util.math.BlockPos;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class ChunkLockable implements IChunkLockable {
+public class ChunkLockableImpl implements IChunkLockable {
     private final Map<BlockPos, ILockable> locks = new HashMap<>();
 
     @Override

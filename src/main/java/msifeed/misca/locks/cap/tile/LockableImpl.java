@@ -1,13 +1,13 @@
-package msifeed.misca.locks.tile;
+package msifeed.misca.locks.cap.tile;
 
-public class Lockable implements ILockable {
+public class LockableImpl implements ILockable {
     private boolean locked = false;
-    private String secret = NO_SECRET;
+    private int secret;
 
-    public Lockable() {
+    public LockableImpl() {
     }
 
-    public Lockable(boolean locked, String secret) {
+    public LockableImpl(boolean locked, int secret) {
         this.locked = locked;
         this.secret = secret;
     }
@@ -23,12 +23,12 @@ public class Lockable implements ILockable {
     }
 
     @Override
-    public String getSecret() {
+    public int getSecret() {
         return secret;
     }
 
     @Override
-    public void setSecret(String value) {
+    public void setSecret(int value) {
         this.secret = value;
     }
 }

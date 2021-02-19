@@ -1,4 +1,4 @@
-package msifeed.misca.locks.chunk;
+package msifeed.misca.locks.cap.chunk;
 
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;

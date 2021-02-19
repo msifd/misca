@@ -1,7 +1,7 @@
 package msifeed.misca.client;
 
-import msifeed.misca.charsheet.client.EffortRollScreen;
 import msifeed.misca.charsheet.client.GuiScreenCharsheet;
+import msifeed.misca.charstate.rolls.EffortRollScreen;
 import msifeed.misca.combat.client.GuiCombatOverlay;
 import msifeed.misca.combat.client.GuiScreenCombat;
 import net.minecraft.client.Minecraft;

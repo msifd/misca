@@ -1,11 +1,15 @@
-package msifeed.misca.locks.chunk;
+package msifeed.misca.locks.cap.chunk;
 
-import msifeed.misca.locks.tile.ILockable;
+import msifeed.misca.Misca;
+import msifeed.misca.locks.cap.tile.ILockable;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 
 import java.util.Map;
 
 public interface IChunkLockable {
+    ResourceLocation KEY = new ResourceLocation(Misca.MODID, "locky");
+
     Map<BlockPos, ILockable> getLocks();
 
     default ILockable getLock(BlockPos pos) {

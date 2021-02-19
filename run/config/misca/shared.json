@@ -34,8 +34,14 @@
   "locks": {
     "tileless": {
       "minecraft:trapdoor": "single",
-      "minecraft:wooden_door": "door"
-    }
+      "minecraft:chest": "adjacent",
+      "minecraft:wooden_door": "door",
+      "minecraft:trapped_chest": "adjacent"
+    },
+    "minPins": 3,
+    "maxPins": 9,
+    "pinPositions": 9,
+    "setupKeysCount": 2
   },
   "charstate": {
     "globalMiningSpeedModifier": 0.5,

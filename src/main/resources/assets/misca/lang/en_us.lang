@@ -1,8 +1,16 @@
 key.categories.misca=Misca
 key.misca.charsheet=Charsheet
 
+item.blank_key.name=Blank key
+item.mechanical_key.name=Key
+item.skeletal_key.name=Skeletal key
+item.lock_mechanical.name=Mechanical lock
+item.lock_digital.name=Digital lock
+item.lock_magical.name=Magical lock
+
 item.supplies_invoice.name=Supplies invoice
 item.supplies_beacon.name=Supplies beacon
 
 misca.chatex.speech=%s: %s
 misca.chatex.global=[GLOB] %s: %s
+

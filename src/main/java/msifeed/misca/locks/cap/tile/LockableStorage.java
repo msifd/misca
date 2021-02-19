@@ -1,4 +1,4 @@
-package msifeed.misca.locks.tile;
+package msifeed.misca.locks.cap.tile;
 
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
@@ -12,8 +12,8 @@ public class LockableStorage implements Capability.IStorage<ILockable> {
     @Override
     public NBTBase writeNBT(Capability<ILockable> capability, ILockable instance, EnumFacing side) {
         final NBTTagCompound nbt = new NBTTagCompound();
-        nbt.setBoolean(Tag.locked, instance.isLocked());
-        nbt.setString(Tag.secret, instance.getSecret());
+        nbt.setBoolean("locked", instance.isLocked());
+        nbt.setInteger("secret", instance.getSecret());
 
         return nbt;
     }
@@ -21,12 +21,7 @@ public class LockableStorage implements Capability.IStorage<ILockable> {
     @Override
     public void readNBT(Capability<ILockable> capability, ILockable instance, EnumFacing side, NBTBase nbtBase) {
         final NBTTagCompound nbt = (NBTTagCompound) nbtBase;
-        instance.setLocked(nbt.getBoolean(Tag.locked));
-        instance.setSecret(nbt.getString(Tag.secret));
-    }
-
-    private static class Tag {
-        private static final String locked = "locked";
-        private static final String secret = "secret";
+        instance.setLocked(nbt.getBoolean("locked"));
+        instance.setSecret(nbt.getInteger("secret"));
     }
 }

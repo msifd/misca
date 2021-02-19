@@ -1,4 +1,4 @@
-package msifeed.misca.charsheet.rolls;
+package msifeed.misca.charstate.rolls;
 
 import msifeed.misca.Misca;
 import msifeed.misca.charsheet.CharEffort;
