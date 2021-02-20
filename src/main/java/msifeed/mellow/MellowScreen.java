@@ -39,16 +39,20 @@ public abstract class MellowScreen extends GuiScreen {
     public void handleMouseInput() throws IOException {
         super.handleMouseInput();
 
-        final int xMouse = Mouse.getEventX() * this.width / this.mc.displayWidth;
-        final int yMouse = this.height - Mouse.getEventY() * this.height / this.mc.displayHeight - 1;
+        final int mouseX = Mouse.getEventX() * this.width / this.mc.displayWidth;
+        final int mouseY = this.height - Mouse.getEventY() * this.height / this.mc.displayHeight - 1;
 
+        handleWheel(mouseX, mouseY);
+    }
+
+    protected void handleWheel(int mouseX, int mouseY) {
         if (Mouse.hasWheel()) {
             final int dWheel = Mouse.getDWheel();
             if (dWheel != 0) {
-                container.getViewsAtPoint(xMouse, yMouse)
+                container.getViewsAtPoint(mouseX, mouseY)
                         .filter(w -> w instanceof InputHandler.MouseWheel)
                         .findFirst()
-                        .ifPresent(w -> ((InputHandler.MouseWheel) w).onMouseWheel(xMouse, yMouse, dWheel));
+                        .ifPresent(w -> ((InputHandler.MouseWheel) w).onMouseWheel(mouseX, mouseY, dWheel));
             }
         }
     }

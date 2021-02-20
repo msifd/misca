@@ -66,12 +66,15 @@ public class ChatexScreen extends MellowScreen implements ITabCompleter {
     public void handleMouseInput() throws IOException {
         super.handleMouseInput();
 
+        if (!FocusState.INSTANCE.getFocus().isPresent())
+            input.focus();
+    }
+
+    @Override
+    protected void handleWheel(int mouseX, int mouseY) {
         if (Mouse.hasWheel()) {
             hud.scroll(MathHelper.clamp(Mouse.getDWheel(), -5, 5));
         }
-
-        if (!FocusState.INSTANCE.getFocus().isPresent())
-            input.focus();
     }
 
     @Override
