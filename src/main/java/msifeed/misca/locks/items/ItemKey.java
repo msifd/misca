@@ -55,7 +55,7 @@ public class ItemKey extends Item {
         if (Locks.toggleLock(world, pos, key.getSecret())) {
             return EnumActionResult.SUCCESS;
         } else {
-            sendStatus(player, "Can't open the lock", TextFormatting.RED);
+            sendStatus(player, "Can't toggle the lock", TextFormatting.RED);
             return EnumActionResult.FAIL;
         }
     }

@@ -85,6 +85,9 @@ public class LockAccessor {
             lock.setSecret(secret);
             tile.markDirty();
 
+            if (!tile.getWorld().isRemote)
+                LocksRpc.syncTileLock(tile, lock);
+
             return true;
         }
 
@@ -95,6 +98,9 @@ public class LockAccessor {
             lock.setLocked(false);
             lock.setSecret(0);
             tile.markDirty();
+
+            if (!tile.getWorld().isRemote)
+                LocksRpc.syncTileLock(tile, lock);
 
             return true;
         }
