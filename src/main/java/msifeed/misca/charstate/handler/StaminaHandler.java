@@ -1,6 +1,9 @@
 package msifeed.misca.charstate.handler;
 
 import msifeed.misca.Misca;
+import msifeed.misca.charsheet.CharSkill;
+import msifeed.misca.charsheet.ICharsheet;
+import msifeed.misca.charsheet.cap.CharsheetProvider;
 import msifeed.misca.charstate.CharstateConfig;
 import msifeed.misca.charstate.cap.CharstateProvider;
 import msifeed.misca.charstate.cap.ICharstate;
@@ -36,24 +39,41 @@ public class StaminaHandler {
         final IAttributeInstance inst = event.getEntityPlayer().getEntityAttribute(STAMINA);
         inst.setBaseValue(STAMINA.clampValue(inst.getBaseValue() - config.staminaCostPerMiningTick));
 
-        final double stamina = inst.getBaseValue();
-        event.setNewSpeed((float) (event.getNewSpeed() * config.globalMiningSpeedModifier * stamina));
-        if (event.getEntityPlayer().world.isRemote)
-            System.out.println(event.getNewSpeed());
+        final int workSkill = CharsheetProvider.get(event.getEntityPlayer()).skills().get(CharSkill.work);
+        final double factor = 1 + workSkill * config.workSkillMiningSpeedFactor;
+        final double newSpeed = event.getNewSpeed() * config.globalMiningSpeedModifier * inst.getBaseValue() * factor;
+        event.setNewSpeed((float) newSpeed);
     }
 
     public void handleCrafting(net.minecraftforge.fml.common.gameevent.PlayerEvent.ItemCraftedEvent event) {
         final CharstateConfig config = Misca.getSharedConfig().charstate;
-        final double lost = event.crafting.getCount() * config.staminaCostPerSupplyItem;
+
+        int ingredients = 0;
+        for (int i = 0; i < event.craftMatrix.getSizeInventory(); i++) {
+            if (!event.craftMatrix.getStackInSlot(i).isEmpty())
+                ingredients++;
+        }
+
+        final ICharsheet charsheet = CharsheetProvider.get(event.player);
+        final int survivalSkill = charsheet.skills().get(CharSkill.survival);
+        final int workSkill = charsheet.skills().get(CharSkill.work);
+        final double factor = 1 + survivalSkill * config.survivalSkillNeedsLostFactor + workSkill * config.workSkillCraftCostFactor;
+
+        final double lost = ingredients * config.staminaCostPerIngredient * factor;
         
         final IAttributeInstance inst = event.player.getEntityAttribute(STAMINA);
         inst.setBaseValue(STAMINA.clampValue(inst.getBaseValue() - lost));
+
+        if (inst.getBaseValue() < 0.01) {
+            event.player.closeScreen();
+        }
     }
 
     public static void consumeSuppliesDelivery(EntityPlayer player, List<ItemStack> delivery) {
         final CharstateConfig config = Misca.getSharedConfig().charstate;
         final int items = delivery.stream().mapToInt(ItemStack::getCount).sum();
-        final double lost = items * config.staminaCostPerSupplyItem;
+        final double factor = 1 + CharsheetProvider.get(player).skills().get(CharSkill.survival) * config.survivalSkillNeedsLostFactor;
+        final double lost = items * config.staminaCostPerSupplyItem * factor;
 
         final IAttributeInstance inst = player.getEntityAttribute(STAMINA);
         inst.setBaseValue(STAMINA.clampValue(inst.getBaseValue() - lost));

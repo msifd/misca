@@ -1,7 +1,9 @@
 package msifeed.misca.charstate.handler;
 
 import msifeed.misca.Misca;
+import msifeed.misca.charsheet.CharSkill;
 import msifeed.misca.charsheet.ICharsheet;
+import msifeed.misca.charsheet.cap.CharsheetProvider;
 import msifeed.misca.charstate.CharstateConfig;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.ai.attributes.IAttribute;
@@ -31,7 +33,8 @@ public class SanityHandler {
         final CharstateConfig config = Misca.getSharedConfig().charstate;
         final int light = player.world.getLight(player.getPosition(), false);
         final double sanPerSec = light < 7 ? config.sanityCostPerSecInDarkness : config.sanityCostPerSec;
-        final double lost = secs * sanPerSec;
+        final double factor = 1 + CharsheetProvider.get(player).skills().get(CharSkill.survival) * config.survivalSkillNeedsLostFactor;
+        final double lost = secs * sanPerSec * factor;
 
         final IAttributeInstance inst = player.getEntityAttribute(SANITY);
         inst.setBaseValue(SANITY.clampValue(inst.getBaseValue() - lost));
@@ -57,7 +60,8 @@ public class SanityHandler {
 
     public void handleDamage(EntityPlayer player, float amount) {
         final CharstateConfig config = Misca.getSharedConfig().charstate;
-        final double lost = amount * config.sanityCostPerDamage;
+        final double factor = 1 + CharsheetProvider.get(player).skills().get(CharSkill.survival) * config.survivalSkillNeedsLostFactor;
+        final double lost = amount * config.sanityCostPerDamage * factor;
 
         final IAttributeInstance inst = player.getEntityAttribute(SANITY);
         inst.setBaseValue(SANITY.clampValue(inst.getBaseValue() - lost));
@@ -68,7 +72,6 @@ public class SanityHandler {
 
         final ItemFood item = (ItemFood) stack.getItem();
         final CharstateConfig config = Misca.getSharedConfig().charstate;
-
         final double restored = item.getHealAmount(stack) * config.sanityRestPerFood;
 
         final IAttributeInstance inst = player.getEntityAttribute(SANITY);

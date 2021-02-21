@@ -6,13 +6,8 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.MathHelper;
 
 public enum CharSkill {
-    psycho, manage, steal, survive, work, biology, tech, magic, invent, firearms, blades,
-//    strength, perception, agility, phis_res, psycho_res, planar_knwl, forbidden_knwl,
-    ;
-
-//    public boolean isNarrative() {
-//        return ordinal() >= strength.ordinal();
-//    }
+    psychology, management, biology, tech, magic, research,
+    thievery, survival, work, firearms, blacksmith;
 
     public int value(EntityLivingBase target) {
         int value = CharsheetProvider.get(target).skills().get(this);

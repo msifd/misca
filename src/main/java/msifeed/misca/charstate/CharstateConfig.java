@@ -15,9 +15,15 @@ public class CharstateConfig {
     public double staminaRestPerSec = 0.000014;
     public double staminaRestTimeoutSec = 2;
     public double staminaCostPerMiningTick = 0.0001;
+    public double staminaCostPerIngredient = 0.005;
     public double staminaCostPerSupplyItem = 0.005;
 
     public double corruptionLostPerSec = 0.00000115;
 
     public float effortRestPerSec = 0.00027f;
+
+    public float survivalSkillNeedsLostFactor = -0.15f;
+    public float survivalSkillEffortsRestFactor = 0.15f;
+    public float workSkillMiningSpeedFactor = 0.33f;
+    public float workSkillCraftCostFactor = -0.02f;
 }
