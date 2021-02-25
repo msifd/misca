@@ -7,9 +7,7 @@ import java.util.Map;
 
 public class LocksConfig {
     public Map<ResourceLocation, Lookup> tileless = new HashMap<>();
-    public int minPins = 3;
-    public int maxPins = 9;
-    public int pinPositions = 9;
+    public int defaultPinPositions = 3;
     public int setupKeysCount = 2;
 
     public LocksConfig() {

@@ -1,6 +1,7 @@
 package msifeed.misca.locks.cap.tile;
 
 import msifeed.misca.Misca;
+import msifeed.misca.locks.LockUtils;
 import net.minecraft.util.ResourceLocation;
 
 public interface ILockable {
@@ -20,5 +21,9 @@ public interface ILockable {
 
     default boolean canOpenWith(int key) {
         return getSecret() == key;
+    }
+
+    default int getNumberOfPins() {
+        return LockUtils.getNumberOfPins(getSecret());
     }
 }

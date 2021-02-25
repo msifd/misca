@@ -1,10 +1,10 @@
 package msifeed.misca.locks.items;
 
-import msifeed.misca.Misca;
 import msifeed.misca.locks.LockItems;
 import msifeed.misca.locks.Locks;
 import msifeed.misca.locks.cap.key.ILockKey;
 import msifeed.misca.locks.cap.key.LockKeyProvider;
+import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -26,14 +26,16 @@ public class ItemKey extends Item {
 
     public static ItemStack createKey(int secret) {
         final ItemStack stack = new ItemStack(LockItems.key);
+        stack.setItemDamage(1);
         final ILockKey key = LockKeyProvider.get(stack);
         if (key != null) key.setSecret(secret);
         return stack;
     }
 
     public ItemKey() {
-        setRegistryName(Misca.MODID, ID);
         setTranslationKey(ID);
+        setHasSubtypes(true);
+        setCreativeTab(CreativeTabs.TOOLS);
     }
 
     @Nullable
@@ -43,8 +45,17 @@ public class ItemKey extends Item {
     }
 
     @Override
+    public String getTranslationKey(ItemStack stack) {
+        if (stack.getMetadata() == 0)
+            return "item.blank_key";
+        else
+            return super.getTranslationKey(stack);
+    }
+
+    @Override
     public EnumActionResult onItemUse(EntityPlayer player, World world, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
         if (!player.isSneaking()) return EnumActionResult.PASS;
+        if (player.getHeldItem(hand).getMetadata() == 0) return EnumActionResult.FAIL;
 
         final ILockKey key = LockKeyProvider.get(player.getHeldItem(hand));
         if (key == null) {

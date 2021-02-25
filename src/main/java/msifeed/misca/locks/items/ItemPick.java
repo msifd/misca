@@ -11,10 +11,10 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-public class ItemLockpick extends Item {
+public class ItemPick extends Item {
     public static final String ID = "lockpick";
 
-    public ItemLockpick(LockType type) {
+    public ItemPick(LockType type) {
         setRegistryName(Misca.MODID, ID);
         setTranslationKey(ID);
         setCreativeTab(CreativeTabs.TOOLS);

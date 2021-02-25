@@ -2,6 +2,7 @@ package msifeed.misca.locks.items;
 
 import msifeed.misca.Misca;
 import msifeed.misca.locks.LockType;
+import msifeed.misca.locks.LockUtils;
 import msifeed.misca.locks.Locks;
 import msifeed.misca.locks.LocksConfig;
 import msifeed.misca.locks.cap.LockAccessor;
@@ -13,7 +14,9 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextFormatting;
@@ -21,7 +24,6 @@ import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
 import java.util.List;
-import java.util.Random;
 
 public class ItemLock extends Item {
     public static final String ID_BASE = "lock_";
@@ -45,8 +47,8 @@ public class ItemLock extends Item {
         final LocksConfig config = Misca.getSharedConfig().locks;
 
         final int pins = getNumberOfPins(player.getHeldItem(hand));
-        final int secretMax = (int) Math.pow(config.pinPositions, pins);
-        final int secret = new Random().nextInt(secretMax);
+        final int positions = getNumberOfPinPositions(player.getHeldItem(hand));
+        final int secret = LockUtils.generateSecret(pins, positions);
 
         if (!Locks.addLock(worldIn, pos, secret)) {
             sendStatus(player, "Failed to set lock", TextFormatting.RED);
@@ -60,20 +62,35 @@ public class ItemLock extends Item {
         keys.setCount(config.setupKeysCount);
         player.addItemStackToInventory(keys);
 
-        sendStatus(player, "Lock set", TextFormatting.GREEN);
+        sendStatus(player, "Lock set " + LockUtils.toHex(secret), TextFormatting.GREEN);
         return EnumActionResult.SUCCESS;
     }
 
     @Override
     public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn) {
-        final int pins = getNumberOfPins(stack);
-        tooltip.add("Pins: " + pins);
+        tooltip.add("Pins: " + getNumberOfPins(stack));
+        tooltip.add("Pin positions: " + getNumberOfPinPositions(stack));
+    }
+
+    @Override
+    public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> items) {
+        if (this.isInCreativeTab(tab))         {
+            items.add(new ItemStack(this, 1, 31));
+            items.add(new ItemStack(this, 1, 96));
+            items.add(new ItemStack(this, 1, 158));
+        }
     }
 
     private static int getNumberOfPins(ItemStack stack) {
-        final LocksConfig config = Misca.getSharedConfig().locks;
-        final int meta = stack.getItemDamage();
-        return Math.min(meta + config.minPins, config.maxPins);
+        final int meta = stack.getItemDamage() % 10;
+        return MathHelper.clamp(meta, 1, 8);
+    }
+
+    private static int getNumberOfPinPositions(ItemStack stack) {
+        final int meta = stack.getItemDamage() / 10;
+        if (meta <= 0)
+            return Misca.getSharedConfig().locks.defaultPinPositions;
+        return MathHelper.clamp(meta, 1, 15);
     }
 
     private static void sendStatus(EntityPlayer player, String message, TextFormatting color) {

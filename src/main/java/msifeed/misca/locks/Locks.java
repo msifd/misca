@@ -68,11 +68,11 @@ public class Locks {
             event.setUseBlock(Event.Result.DENY);
             event.setUseItem(Event.Result.ALLOW);
 
-            if (!event.getWorld().isRemote) {
-                final ITextComponent te = new TextComponentString("Locked!");
-                te.getStyle().setColor(TextFormatting.YELLOW);
-                event.getEntityPlayer().sendStatusMessage(te, true);
-            }
+//            if (!event.getWorld().isRemote) {
+//                final ITextComponent te = new TextComponentString("Locked!");
+//                te.getStyle().setColor(TextFormatting.YELLOW);
+//                event.getEntityPlayer().sendStatusMessage(te, true);
+//            }
         }
     }
 

@@ -14,7 +14,7 @@ import javax.annotation.Nonnull;
 import java.util.Objects;
 import java.util.stream.Stream;
 
-public enum  MiscaThings {
+public enum MiscaThings {
     INSTANCE;
 
     public static final ItemSuppliesInvoice suppliesInvoice = new ItemSuppliesInvoice();

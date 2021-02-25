@@ -38,9 +38,7 @@
       "minecraft:wooden_door": "door",
       "minecraft:trapped_chest": "adjacent"
     },
-    "minPins": 3,
-    "maxPins": 9,
-    "pinPositions": 9,
+    "defaultPinPositions": 3,
     "setupKeysCount": 2
   },
   "charstate": {
