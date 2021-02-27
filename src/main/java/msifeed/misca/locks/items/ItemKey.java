@@ -21,7 +21,7 @@ import net.minecraftforge.common.capabilities.ICapabilityProvider;
 
 import javax.annotation.Nullable;
 
-public class ItemKey extends Item {
+public class ItemKey extends Item implements IUnlockTool {
     public static final String ID = "mechanical_key";
 
     public static ItemStack createKey(int secret) {

@@ -14,7 +14,7 @@ import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 
-public class ItemSkeletalKey extends Item {
+public class ItemSkeletalKey extends Item implements IUnlockTool {
     public static final String ID = "skeletal_key";
 
     public ItemSkeletalKey() {

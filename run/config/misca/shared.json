@@ -38,8 +38,10 @@
       "minecraft:wooden_door": "door",
       "minecraft:trapped_chest": "adjacent"
     },
+    "setupKeysCount": 2,
     "defaultPinPositions": 3,
-    "setupKeysCount": 2
+    "pinPickChanceBase": 0.5,
+    "pinPickChancePosMod": 0.01
   },
   "charstate": {
     "globalMiningSpeedModifier": 0.5,

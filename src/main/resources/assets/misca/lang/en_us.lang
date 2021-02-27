@@ -7,6 +7,8 @@ item.skeletal_key.name=Skeletal key
 item.lock_mechanical.name=Mechanical lock
 item.lock_digital.name=Digital lock
 item.lock_magical.name=Magical lock
+item.pick_mechanical.name=Mechanical pick
+item.pick_magical.name=Magical pick
 
 item.supplies_invoice.name=Supplies invoice
 item.supplies_beacon.name=Supplies beacon

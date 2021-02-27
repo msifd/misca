@@ -5,6 +5,7 @@ import msifeed.misca.locks.LockType;
 import msifeed.misca.locks.LockUtils;
 import msifeed.misca.locks.Locks;
 import msifeed.misca.locks.LocksConfig;
+import msifeed.misca.locks.cap.ILockHolder;
 import msifeed.misca.locks.cap.LockAccessor;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.creativetab.CreativeTabs;
@@ -50,6 +51,8 @@ public class ItemLock extends Item {
         final int positions = getNumberOfPinPositions(player.getHeldItem(hand));
         final int secret = LockUtils.generateSecret(pins, positions);
 
+        final ILockHolder currentLock = LockAccessor.createWrap(worldIn, pos);
+
         if (!Locks.addLock(worldIn, pos, secret)) {
             sendStatus(player, "Failed to set lock", TextFormatting.RED);
             return EnumActionResult.FAIL;
@@ -75,7 +78,7 @@ public class ItemLock extends Item {
     @Override
     public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> items) {
         if (this.isInCreativeTab(tab))         {
-            items.add(new ItemStack(this, 1, 31));
+            items.add(new ItemStack(this, 1, 42));
             items.add(new ItemStack(this, 1, 96));
             items.add(new ItemStack(this, 1, 158));
         }

@@ -10,6 +10,9 @@ import msifeed.misca.locks.cap.chunk.IChunkLockable;
 import msifeed.misca.locks.cap.key.ILockKey;
 import msifeed.misca.locks.cap.key.LockKeyImpl;
 import msifeed.misca.locks.cap.key.LockKeyStorage;
+import msifeed.misca.locks.cap.pick.ILockPick;
+import msifeed.misca.locks.cap.pick.LockPickImpl;
+import msifeed.misca.locks.cap.pick.LockPickStorage;
 import msifeed.misca.locks.cap.tile.ILockable;
 import msifeed.misca.locks.cap.tile.LockableImpl;
 import msifeed.misca.locks.cap.tile.LockableProvider;
@@ -17,9 +20,6 @@ import msifeed.misca.locks.cap.tile.LockableStorage;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextComponentString;
-import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.common.MinecraftForge;
@@ -39,6 +39,7 @@ public class Locks {
         CapabilityManager.INSTANCE.register(ILockable.class, new LockableStorage(), LockableImpl::new);
         CapabilityManager.INSTANCE.register(IChunkLockable.class, new ChunkLockableStorage(), ChunkLockableImpl::new);
         CapabilityManager.INSTANCE.register(ILockKey.class, new LockKeyStorage(), LockKeyImpl::new);
+        CapabilityManager.INSTANCE.register(ILockPick.class, new LockPickStorage(), LockPickImpl::new);
 
         MinecraftForge.EVENT_BUS.register(this);
         MinecraftForge.EVENT_BUS.register(new LockItems());
@@ -68,7 +69,8 @@ public class Locks {
             event.setUseBlock(Event.Result.DENY);
             event.setUseItem(Event.Result.ALLOW);
 
-//            if (!event.getWorld().isRemote) {
+//            final Item heldItem = event.getItemStack().getItem();
+//            if (!event.getWorld().isRemote && !(heldItem instanceof IUnlockTool)) {
 //                final ITextComponent te = new TextComponentString("Locked!");
 //                te.getStyle().setColor(TextFormatting.YELLOW);
 //                event.getEntityPlayer().sendStatusMessage(te, true);

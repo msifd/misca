@@ -7,8 +7,11 @@ import java.util.Map;
 
 public class LocksConfig {
     public Map<ResourceLocation, Lookup> tileless = new HashMap<>();
-    public int defaultPinPositions = 3;
+
     public int setupKeysCount = 2;
+    public int defaultPinPositions = 3;
+    public double pinPickChanceBase = 0.5;
+    public double pinPickChancePosMod = 0.01;
 
     public LocksConfig() {
         tileless.put(new ResourceLocation("minecraft", "trapdoor"), Lookup.single);
