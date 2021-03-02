@@ -26,7 +26,7 @@ public class LocksCommand extends CommandBase {
 
     @Override
     public String getUsage(ICommandSender sender) {
-        return "/locks <toggle add remove> <key>";
+        return "/locks <toggle remove> <key>";
     }
 
     @Override
@@ -37,7 +37,7 @@ public class LocksCommand extends CommandBase {
     @Override
     public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender, String[] args, @Nullable BlockPos targetPos) {
         if (args.length == 1)
-            return getListOfStringsMatchingLastWord(args, "toggle", "add", "remove");
+            return getListOfStringsMatchingLastWord(args, "toggle", "remove");
         else
             return Collections.emptyList();
     }
@@ -55,13 +55,13 @@ public class LocksCommand extends CommandBase {
                 }
                 toggle(player, parseInt(args[1]));
                 break;
-            case "add":
-                if (args.length < 2) {
-                    sendStatus(player, "Usage: /locks add <key>", TextFormatting.RED);
-                    return;
-                }
-                addLock(player, parseInt(args[1]));
-                break;
+//            case "add":
+//                if (args.length < 2) {
+//                    sendStatus(player, "Usage: /locks add <key>", TextFormatting.RED);
+//                    return;
+//                }
+//                addLock(player, parseInt(args[1]));
+//                break;
             case "remove":
                 removeLock(player);
                 break;
@@ -82,15 +82,15 @@ public class LocksCommand extends CommandBase {
         }
     }
 
-    private static void addLock(EntityPlayerMP player, int secret) {
-        final BlockPos pos = rayTracePos(player);
-        if (pos == null) return;
-
-        if (Locks.addLock(player.world, pos, secret))
-            sendStatus(player, "Lock added", TextFormatting.GREEN);
-        else
-            sendStatus(player, "Failed to add lock", TextFormatting.RED);
-    }
+//    private static void addLock(EntityPlayerMP player, int secret) {
+//        final BlockPos pos = rayTracePos(player);
+//        if (pos == null) return;
+//
+//        if (Locks.addLock(player.world, pos, secret))
+//            sendStatus(player, "Lock added", TextFormatting.GREEN);
+//        else
+//            sendStatus(player, "Failed to add lock", TextFormatting.RED);
+//    }
 
     private static void removeLock(EntityPlayerMP player) {
         final BlockPos pos = rayTracePos(player);

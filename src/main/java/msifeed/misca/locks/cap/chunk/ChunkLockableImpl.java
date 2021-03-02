@@ -1,6 +1,6 @@
 package msifeed.misca.locks.cap.chunk;
 
-import msifeed.misca.locks.cap.tile.ILockable;
+import msifeed.misca.locks.cap.lock.ILockable;
 import net.minecraft.util.math.BlockPos;
 
 import java.util.HashMap;

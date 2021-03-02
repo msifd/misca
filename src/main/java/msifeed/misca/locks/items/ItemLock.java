@@ -7,6 +7,8 @@ import msifeed.misca.locks.Locks;
 import msifeed.misca.locks.LocksConfig;
 import msifeed.misca.locks.cap.ILockHolder;
 import msifeed.misca.locks.cap.LockAccessor;
+import msifeed.misca.locks.cap.key.ILockKey;
+import msifeed.misca.locks.cap.key.LockKeyProvider;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
@@ -29,7 +31,11 @@ import java.util.List;
 public class ItemLock extends Item {
     public static final String ID_BASE = "lock_";
 
+    private final LockType type;
+
     public ItemLock(LockType type) {
+        this.type = type;
+
         setRegistryName(Misca.MODID, ID_BASE + type.name());
         setTranslationKey(ID_BASE + type.name());
         setHasSubtypes(true);
@@ -52,8 +58,12 @@ public class ItemLock extends Item {
         final int secret = LockUtils.generateSecret(pins, positions);
 
         final ILockHolder currentLock = LockAccessor.createWrap(worldIn, pos);
+        if (currentLock != null && !currentLock.isLocked()) {
+            currentLock.removeLock();
+            // TODO: return old lock with static secret
+        }
 
-        if (!Locks.addLock(worldIn, pos, secret)) {
+        if (!Locks.addLock(worldIn, pos, type, secret)) {
             sendStatus(player, "Failed to set lock", TextFormatting.RED);
             return EnumActionResult.FAIL;
         }
@@ -63,7 +73,12 @@ public class ItemLock extends Item {
 
         final ItemStack keys = ItemKey.createKey(secret);
         keys.setCount(config.setupKeysCount);
-        player.addItemStackToInventory(keys);
+
+        final ILockKey key = LockKeyProvider.get(keys);
+
+        if (!player.addItemStackToInventory(keys)) {
+            player.dropItem(keys, true);
+        }
 
         sendStatus(player, "Lock set " + LockUtils.toHex(secret), TextFormatting.GREEN);
         return EnumActionResult.SUCCESS;

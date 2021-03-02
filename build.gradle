@@ -14,7 +14,7 @@ apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'org.spongepowered.mixin'
 apply plugin: 'idea'
 
-version = '2.0.0-alpha.8'
+version = '2.0.0-alpha.9'
 group = 'msifeed.misca'
 archivesBaseName = 'misca'
 

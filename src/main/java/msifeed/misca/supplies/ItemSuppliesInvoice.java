@@ -29,12 +29,6 @@ public class ItemSuppliesInvoice extends Item {
         setTranslationKey(ID);
     }
 
-    @Nullable
-    @Override
-    public ICapabilityProvider initCapabilities(ItemStack stack, @Nullable NBTTagCompound nbt) {
-        return new SuppliesInvoiceProvider();
-    }
-
     @Override
     public EnumActionResult onItemUse(EntityPlayer player, World worldIn, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
         if (worldIn.isRemote) return EnumActionResult.PASS;
@@ -61,5 +55,33 @@ public class ItemSuppliesInvoice extends Item {
         }
 
         tooltip.addAll(BackgroundSupplies.getAbsoluteInfoLines(invoice));
+    }
+
+    @Nullable
+    @Override
+    public ICapabilityProvider initCapabilities(ItemStack stack, @Nullable NBTTagCompound nbt) {
+        final SuppliesInvoiceProvider provider = new SuppliesInvoiceProvider();
+        if (nbt != null) {
+            provider.deserializeNBT(nbt.getTag("Invoice"));
+        }
+        return provider;
+    }
+
+    @Nullable
+    @Override
+    public NBTTagCompound getNBTShareTag(ItemStack stack) {
+        final ISuppliesInvoice invoice = SuppliesInvoiceProvider.get(stack);
+        final NBTTagCompound nbt = stack.hasTagCompound() ? stack.getTagCompound() : new NBTTagCompound();
+        nbt.setTag("Invoice", SuppliesInvoiceProvider.encode(invoice));
+        return nbt;
+    }
+
+    @Override
+    public void readNBTShareTag(ItemStack stack, @Nullable NBTTagCompound nbt) {
+        stack.setTagCompound(nbt);
+        if (nbt != null) {
+            final ISuppliesInvoice invoice = SuppliesInvoiceProvider.get(stack);
+            SuppliesInvoiceProvider.CAP.readNBT(invoice, null, nbt.getTag("Invoice"));
+        }
     }
 }

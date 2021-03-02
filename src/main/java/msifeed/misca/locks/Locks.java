@@ -10,13 +10,13 @@ import msifeed.misca.locks.cap.chunk.IChunkLockable;
 import msifeed.misca.locks.cap.key.ILockKey;
 import msifeed.misca.locks.cap.key.LockKeyImpl;
 import msifeed.misca.locks.cap.key.LockKeyStorage;
+import msifeed.misca.locks.cap.lock.ILockable;
+import msifeed.misca.locks.cap.lock.LockableImpl;
+import msifeed.misca.locks.cap.lock.LockableProvider;
+import msifeed.misca.locks.cap.lock.LockableStorage;
 import msifeed.misca.locks.cap.pick.ILockPick;
 import msifeed.misca.locks.cap.pick.LockPickImpl;
 import msifeed.misca.locks.cap.pick.LockPickStorage;
-import msifeed.misca.locks.cap.tile.ILockable;
-import msifeed.misca.locks.cap.tile.LockableImpl;
-import msifeed.misca.locks.cap.tile.LockableProvider;
-import msifeed.misca.locks.cap.tile.LockableStorage;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
@@ -116,9 +116,9 @@ public class Locks {
         }
     }
 
-    public static boolean addLock(World world, BlockPos pos, int secret) {
+    public static boolean addLock(World world, BlockPos pos, LockType type, int secret) {
         final ILockHolder lock = LockAccessor.createWrap(world, pos);
-        return lock != null && lock.addLock(secret);
+        return lock != null && lock.addLock(type, secret);
     }
 
     public static boolean removeLock(World world, BlockPos pos) {

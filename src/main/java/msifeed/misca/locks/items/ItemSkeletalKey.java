@@ -1,7 +1,9 @@
 package msifeed.misca.locks.items;
 
 import msifeed.misca.Misca;
+import msifeed.misca.locks.LockUtils;
 import msifeed.misca.locks.Locks;
+import msifeed.misca.locks.cap.LockAccessor;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
@@ -28,6 +30,8 @@ public class ItemSkeletalKey extends Item implements IUnlockTool {
         if (!player.isSneaking()) return EnumActionResult.PASS;
 
         if (Locks.forceToggleLock(world, pos)) {
+            final int secret = LockAccessor.createWrap(world, pos).getSecret();
+            sendStatus(player, "It's secret: " + LockUtils.toHex(secret), TextFormatting.GREEN);
             return EnumActionResult.SUCCESS;
         } else {
             sendStatus(player, "Can't find the keyhole.", TextFormatting.RED);

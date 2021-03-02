@@ -1,6 +1,7 @@
 package msifeed.misca;
 
 import com.google.gson.reflect.TypeToken;
+import msifeed.misca.charsheet.SkillsCommand;
 import msifeed.misca.charsheet.cap.CharsheetProvider;
 import msifeed.misca.charstate.Charstate;
 import msifeed.misca.charstate.EffortsCommand;
@@ -107,6 +108,7 @@ public class Misca {
         event.registerServerCommand(new InvoiceCommand());
         event.registerServerCommand(new NeedsCommand());
         event.registerServerCommand(new EffortsCommand());
+        event.registerServerCommand(new SkillsCommand());
     }
 
     @EventHandler

@@ -1,11 +1,15 @@
-package msifeed.misca.locks.cap.tile;
+package msifeed.misca.locks.cap.lock;
 
 import msifeed.misca.Misca;
-import msifeed.misca.locks.LockUtils;
+import msifeed.misca.locks.LockType;
 import net.minecraft.util.ResourceLocation;
 
 public interface ILockable {
     ResourceLocation KEY = new ResourceLocation(Misca.MODID, "lock");
+
+    LockType getType();
+
+    void setType(LockType type);
 
     boolean isLocked();
 
@@ -21,9 +25,5 @@ public interface ILockable {
 
     default boolean canOpenWith(int key) {
         return getSecret() == key;
-    }
-
-    default int getNumberOfPins() {
-        return LockUtils.getNumberOfPins(getSecret());
     }
 }

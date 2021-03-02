@@ -1,8 +1,9 @@
 package msifeed.misca.locks.cap;
 
-import msifeed.misca.locks.cap.tile.ILockable;
+import msifeed.misca.locks.LockType;
+import msifeed.misca.locks.cap.lock.ILockable;
 
 public interface ILockHolder extends ILockable {
-    boolean addLock(int secret);
+    boolean addLock(LockType type, int secret);
     boolean removeLock();
 }

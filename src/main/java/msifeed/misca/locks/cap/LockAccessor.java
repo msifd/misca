@@ -1,13 +1,14 @@
 package msifeed.misca.locks.cap;
 
 import msifeed.misca.Misca;
+import msifeed.misca.locks.LockType;
 import msifeed.misca.locks.LocksConfig;
 import msifeed.misca.locks.LocksRpc;
 import msifeed.misca.locks.cap.chunk.ChunkLockableProvider;
 import msifeed.misca.locks.cap.chunk.IChunkLockable;
-import msifeed.misca.locks.cap.tile.ILockable;
-import msifeed.misca.locks.cap.tile.LockableImpl;
-import msifeed.misca.locks.cap.tile.LockableProvider;
+import msifeed.misca.locks.cap.lock.ILockable;
+import msifeed.misca.locks.cap.lock.LockableImpl;
+import msifeed.misca.locks.cap.lock.LockableProvider;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockDoor;
 import net.minecraft.block.state.IBlockState;
@@ -78,9 +79,10 @@ public class LockAccessor {
         }
 
         @Override
-        public boolean addLock(int secret) {
+        public boolean addLock(LockType type, int secret) {
             if (lock.hasSecret()) return false;
 
+            lock.setType(type);
             lock.setLocked(false);
             lock.setSecret(secret);
             tile.markDirty();
@@ -103,6 +105,16 @@ public class LockAccessor {
                 LocksRpc.syncTileLock(tile, lock);
 
             return true;
+        }
+
+        @Override
+        public LockType getType() {
+            return lock.getType();
+        }
+
+        @Override
+        public void setType(LockType type) {
+            lock.setType(type);
         }
 
         @Override
@@ -140,11 +152,11 @@ public class LockAccessor {
         }
 
         @Override
-        public boolean addLock(int secret) {
+        public boolean addLock(LockType type, int secret) {
             if (lock != null) return false;
 
             final IChunkLockable chunkLocks = ChunkLockableProvider.get(chunk);
-            chunkLocks.addLock(pos, new LockableImpl(false, secret));
+            chunkLocks.addLock(pos, new LockableImpl(type, false, secret));
             chunk.markDirty();
 
             if (!chunk.getWorld().isRemote)
@@ -166,6 +178,17 @@ public class LockAccessor {
             }
 
             return true;
+        }
+
+        @Override
+        public LockType getType() {
+            return lock == null ? null : lock.getType();
+        }
+
+        @Override
+        public void setType(LockType type) {
+            if (lock != null)
+                lock.setType(type);
         }
 
         @Override

@@ -1,9 +1,11 @@
 package msifeed.misca.locks.items;
 
 import msifeed.misca.locks.LockItems;
+import msifeed.misca.locks.LockUtils;
 import msifeed.misca.locks.Locks;
 import msifeed.misca.locks.cap.key.ILockKey;
 import msifeed.misca.locks.cap.key.LockKeyProvider;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
@@ -20,15 +22,15 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 
 import javax.annotation.Nullable;
+import java.util.List;
 
 public class ItemKey extends Item implements IUnlockTool {
     public static final String ID = "mechanical_key";
 
     public static ItemStack createKey(int secret) {
-        final ItemStack stack = new ItemStack(LockItems.key);
-        stack.setItemDamage(1);
+        final ItemStack stack = new ItemStack(LockItems.key, 1, 1);
         final ILockKey key = LockKeyProvider.get(stack);
-        if (key != null) key.setSecret(secret);
+        key.setSecret(secret);
         return stack;
     }
 
@@ -36,12 +38,6 @@ public class ItemKey extends Item implements IUnlockTool {
         setTranslationKey(ID);
         setHasSubtypes(true);
         setCreativeTab(CreativeTabs.TOOLS);
-    }
-
-    @Nullable
-    @Override
-    public ICapabilityProvider initCapabilities(ItemStack stack, @Nullable NBTTagCompound nbt) {
-        return new LockKeyProvider();
     }
 
     @Override
@@ -66,8 +62,40 @@ public class ItemKey extends Item implements IUnlockTool {
         if (Locks.toggleLock(world, pos, key.getSecret())) {
             return EnumActionResult.SUCCESS;
         } else {
-            sendStatus(player, "Can't toggle the lock", TextFormatting.RED);
+            sendStatus(player, "Can't toggle the lock " + key.getSecret(), TextFormatting.RED);
             return EnumActionResult.FAIL;
+        }
+    }
+
+    @Override
+    public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn) {
+        final ILockKey key = LockKeyProvider.get(stack);
+        tooltip.add("Secret: " + LockUtils.toHex(key.getSecret()));
+    }
+
+    @Nullable
+    @Override
+    public ICapabilityProvider initCapabilities(ItemStack stack, @Nullable NBTTagCompound nbt) {
+        final LockKeyProvider provider = new LockKeyProvider();
+        if (nbt != null) provider.deserializeNBT(nbt.getTag("Key"));
+        return provider;
+    }
+
+    @Nullable
+    @Override
+    public NBTTagCompound getNBTShareTag(ItemStack stack) {
+        final ILockKey key = LockKeyProvider.get(stack);
+        final NBTTagCompound nbt = stack.hasTagCompound() ? stack.getTagCompound() : new NBTTagCompound();
+        nbt.setTag("Key", LockKeyProvider.CAP.writeNBT(key, null));
+        return nbt;
+    }
+
+    @Override
+    public void readNBTShareTag(ItemStack stack, @Nullable NBTTagCompound nbt) {
+        stack.setTagCompound(nbt);
+        if (nbt != null) {
+            final ILockKey key = LockKeyProvider.get(stack);
+            LockKeyProvider.CAP.readNBT(key, null, nbt.getTag("Key"));
         }
     }
 

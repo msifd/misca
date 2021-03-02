@@ -12,6 +12,7 @@ public class LocksConfig {
     public int defaultPinPositions = 3;
     public double pinPickChanceBase = 0.5;
     public double pinPickChancePosMod = 0.01;
+    public double pickBreakChance = 0.05;
 
     public LocksConfig() {
         tileless.put(new ResourceLocation("minecraft", "trapdoor"), Lookup.single);

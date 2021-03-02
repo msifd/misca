@@ -3,8 +3,8 @@ package msifeed.misca.locks;
 import msifeed.misca.Misca;
 import msifeed.misca.locks.cap.chunk.ChunkLockableProvider;
 import msifeed.misca.locks.cap.chunk.IChunkLockable;
-import msifeed.misca.locks.cap.tile.ILockable;
-import msifeed.misca.locks.cap.tile.LockableProvider;
+import msifeed.misca.locks.cap.lock.ILockable;
+import msifeed.misca.locks.cap.lock.LockableProvider;
 import msifeed.sys.rpc.RpcContext;
 import msifeed.sys.rpc.RpcMethodHandler;
 import net.minecraft.client.Minecraft;
@@ -27,12 +27,12 @@ public class LocksRpc {
         final BlockPos pos = tile.getPos();
         final NetworkRegistry.TargetPoint point = new NetworkRegistry.TargetPoint(
                 tile.getWorld().provider.getDimension(), pos.getX(), pos.getY(), pos.getZ(), 0);
-        Misca.RPC.sendToAllTracking(point, LocksRpc.tileLock, pos, lock.getSecret());
+        Misca.RPC.sendToAllTracking(point, LocksRpc.tileLock, pos, lock.getType().ordinal(), lock.getSecret());
     }
 
     @SideOnly(Side.CLIENT)
     @RpcMethodHandler(tileLock)
-    public void onTileLock(BlockPos pos, int secret) {
+    public void onTileLock(BlockPos pos, int typeOrd, int secret) {
         final World world = Minecraft.getMinecraft().world;
         final TileEntity tile = world.getTileEntity(pos);
         if (tile == null) return;
@@ -40,6 +40,7 @@ public class LocksRpc {
         final ILockable lock = LockableProvider.get(tile);
         if (lock == null) return;
 
+        lock.setType(LockType.values()[typeOrd]);
         lock.setSecret(secret);
     }
 

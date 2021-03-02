@@ -41,7 +41,8 @@
     "setupKeysCount": 2,
     "defaultPinPositions": 3,
     "pinPickChanceBase": 0.5,
-    "pinPickChancePosMod": 0.01
+    "pinPickChancePosMod": 0.01,
+    "pickBreakChance": 0.05
   },
   "charstate": {
     "globalMiningSpeedModifier": 0.5,

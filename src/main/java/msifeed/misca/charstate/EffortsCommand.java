@@ -19,8 +19,15 @@ import net.minecraft.util.text.TextComponentString;
 import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class EffortsCommand extends CommandBase {
+    private static final Set<String> effortNames = Stream.of(CharEffort.values())
+            .map(Enum::name)
+            .collect(Collectors.toSet());
+
     @Override
     public String getName() {
         return "efforts";
@@ -28,7 +35,7 @@ public class EffortsCommand extends CommandBase {
 
     @Override
     public String getUsage(ICommandSender sender) {
-        return "/efforts <who> <mgt kno int con rep> [<add set> <value>]";
+        return "/efforts <who> <effort> [<add set> <value>]";
     }
 
     @Override
@@ -42,7 +49,7 @@ public class EffortsCommand extends CommandBase {
             case 1:
                 return getListOfStringsMatchingLastWord(args, server.getOnlinePlayerNames());
             case 2:
-                return getListOfStringsMatchingLastWord(args,"mgt", "kno", "int", "con", "rep");
+                return getListOfStringsMatchingLastWord(args, effortNames);
             case 3:
                 return getListOfStringsMatchingLastWord(args,"add", "set");
             default:

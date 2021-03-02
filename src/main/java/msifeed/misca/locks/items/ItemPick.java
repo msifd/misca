@@ -10,6 +10,7 @@ import msifeed.misca.locks.cap.ILockHolder;
 import msifeed.misca.locks.cap.LockAccessor;
 import msifeed.misca.locks.cap.pick.ILockPick;
 import msifeed.misca.locks.cap.pick.LockPickProvider;
+import msifeed.misca.rolls.Dices;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
@@ -31,14 +32,17 @@ import javax.annotation.Nullable;
 import java.util.Random;
 
 public class ItemPick extends Item implements IUnlockTool {
-    public static final String ID_BASE = "pick_";
+    private static final String ID_BASE = "pick_";
     private static final int MAX_DURATION = 72000;
     private static final int LOCKING_DURATION = 32;
 
+    private final LockType type;
+
     public ItemPick(LockType type) {
+        this.type = type;
+
         setRegistryName(Misca.MODID, ID_BASE + type.name());
         setTranslationKey(ID_BASE + type.name());
-        setMaxDamage(100);
         setCreativeTab(CreativeTabs.TOOLS);
     }
 
@@ -58,11 +62,11 @@ public class ItemPick extends Item implements IUnlockTool {
         if (!player.isSneaking()) return EnumActionResult.FAIL;
         if (hand != EnumHand.MAIN_HAND) return EnumActionResult.FAIL;
 
-        final ILockHolder lock = LockAccessor.createWrap(world, pos);
-        if (lock == null || !lock.hasSecret()) return EnumActionResult.FAIL;
+        final int thievery = CharsheetProvider.get(player).skills().get(CharSkill.thievery);
+        if (thievery < 1) return EnumActionResult.FAIL;
 
-        final int skill = CharsheetProvider.get(player).skills().get(CharSkill.thievery);
-        if (skill <= 0) return EnumActionResult.FAIL;
+        final ILockHolder lock = LockAccessor.createWrap(world, pos);
+        if (lock == null || !lock.hasSecret() || lock.getType() != type) return EnumActionResult.FAIL;
 
         final ILockPick pick = LockPickProvider.get(player.getHeldItemMainhand());
         if (pick == null) return EnumActionResult.FAIL;
@@ -104,6 +108,8 @@ public class ItemPick extends Item implements IUnlockTool {
             if (pin > maxPin) return;
 
             if (pin >= 0) {
+                stack.setItemDamage(0);
+
                 final double chance = config.pinPickChanceBase - pos * config.pinPickChancePosMod;
                 if (world.rand.nextFloat() < chance) {
                     pick.setPin(pin);
@@ -112,6 +118,13 @@ public class ItemPick extends Item implements IUnlockTool {
                 } else {
                     if (!player.world.isRemote)
                         player.sendStatusMessage(new TextComponentString(getFailSetMessage(world.rand, pin + 1)), false);
+
+                    if (Dices.check(config.pickBreakChance)) {
+                        player.renderBrokenItemStack(stack);
+                        stack.shrink(1);
+                        player.stopActiveHand();
+                        return;
+                    }
                 }
             }
 

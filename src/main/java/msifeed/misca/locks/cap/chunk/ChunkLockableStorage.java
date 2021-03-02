@@ -1,7 +1,7 @@
 package msifeed.misca.locks.cap.chunk;
 
-import msifeed.misca.locks.cap.tile.ILockable;
-import msifeed.misca.locks.cap.tile.LockableProvider;
+import msifeed.misca.locks.cap.lock.ILockable;
+import msifeed.misca.locks.cap.lock.LockableProvider;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;

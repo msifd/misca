@@ -1,4 +1,4 @@
-package msifeed.misca.locks.cap.tile;
+package msifeed.misca.locks.cap.lock;
 
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;

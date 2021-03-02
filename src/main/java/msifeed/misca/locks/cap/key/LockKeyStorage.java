@@ -20,6 +20,8 @@ public class LockKeyStorage implements Capability.IStorage<ILockKey> {
     @Override
     public void readNBT(Capability<ILockKey> capability, ILockKey instance, EnumFacing side, NBTBase nbtBase) {
         final NBTTagCompound nbt = (NBTTagCompound) nbtBase;
+        if (nbt == null) return;
+
         instance.setSecret(nbt.getInteger("secret"));
     }
 }

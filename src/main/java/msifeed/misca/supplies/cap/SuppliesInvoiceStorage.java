@@ -36,6 +36,7 @@ public class SuppliesInvoiceStorage implements Capability.IStorage<ISuppliesInvo
     @Override
     public void readNBT(Capability<ISuppliesInvoice> capability, ISuppliesInvoice instance, EnumFacing side, NBTBase nbtBase) {
         final NBTTagCompound nbt = (NBTTagCompound) nbtBase;
+        if (nbt == null) return;
 
         instance.setLastDeliveryIndex(nbt.getLong("Last"));
         instance.setDeliveryInterval(nbt.getLong("Int"));

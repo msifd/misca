@@ -30,9 +30,7 @@ public class ItemSuppliesBeacon extends Item {
     public static ItemStack createBeaconItem(ISuppliesInvoice invoice) {
         final ItemStack beacon = new ItemStack(MiscaThings.suppliesBeacon);
         final ISuppliesInvoice supplies = SuppliesInvoiceProvider.get(beacon);
-        if (supplies == null) return null;
         supplies.replaceWith(invoice);
-
         return beacon;
     }
 

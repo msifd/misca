@@ -34,6 +34,7 @@ public class Environ {
 
         final EnvironWorldData data = EnvironWorldData.get(event.world);
         handleRain(event.world, rule, data);
+        handleTime(event.world, rule);
     }
 
     @SideOnly(Side.CLIENT)
