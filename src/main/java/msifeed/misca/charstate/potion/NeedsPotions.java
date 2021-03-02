@@ -16,10 +16,10 @@ public class NeedsPotions {
             .setPotionName("effect.damageIntegrity").setRegistryName(Misca.MODID, "damageIntegrity");
     public static final Potion BUFF_INT = new TemporaryNeedsPotion(false, 3111504)
             .setPotionName("effect.buffIntegrity").setRegistryName(Misca.MODID, "buffIntegrity")
-            .registerPotionAttributeModifier(IntegrityHandler.INTEGRITY, "7ed0b78e-7367-4276-b45c-665e388c9053", 0.10, 2);
+            .registerPotionAttributeModifier(IntegrityHandler.INTEGRITY, "7ed0b78e-7367-4276-b45c-665e388c9053", 0.01, 2);
     public static final Potion DEBUFF_INT = new TemporaryNeedsPotion(true, 1111504)
             .setPotionName("effect.debuffIntegrity").setRegistryName(Misca.MODID, "debuffIntegrity")
-            .registerPotionAttributeModifier(IntegrityHandler.INTEGRITY, "0158c929-b3c0-485e-9174-55aeb35a0333", -0.10, 2);
+            .registerPotionAttributeModifier(IntegrityHandler.INTEGRITY, "0158c929-b3c0-485e-9174-55aeb35a0333", -0.01, 2);
 
     public static final Potion RESTORE_SAN = new InstantNeedsPotion(SanityHandler.SANITY, 5, 3151804)
             .setPotionName("effect.restoreSanity").setRegistryName(Misca.MODID, "restoreSanity");
@@ -27,21 +27,15 @@ public class NeedsPotions {
             .setPotionName("effect.damageSanity").setRegistryName(Misca.MODID, "damageSanity");
     public static final Potion BUFF_SAN = new TemporaryNeedsPotion(false, 3111504)
             .setPotionName("effect.buffSanity").setRegistryName(Misca.MODID, "buffSanity")
-            .registerPotionAttributeModifier(SanityHandler.SANITY, "5f87931f-d54e-4d32-8c7d-099c7fce0be3", 0.10, 2);
+            .registerPotionAttributeModifier(SanityHandler.SANITY, "5f87931f-d54e-4d32-8c7d-099c7fce0be3", 0.01, 2);
     public static final Potion DEBUFF_SAN = new TemporaryNeedsPotion(true, 1111504)
             .setPotionName("effect.debuffSanity").setRegistryName(Misca.MODID, "debuffSanity")
-            .registerPotionAttributeModifier(SanityHandler.SANITY, "83ee56ba-e229-49b1-989f-af59f8ad85b5", -0.10, 2);
+            .registerPotionAttributeModifier(SanityHandler.SANITY, "83ee56ba-e229-49b1-989f-af59f8ad85b5", -0.01, 2);
 
     public static final Potion RESTORE_STA = new InstantNeedsPotion(StaminaHandler.STAMINA, 5, 3151804)
             .setPotionName("effect.restoreStamina").setRegistryName(Misca.MODID, "restoreStamina");
     public static final Potion DAMAGE_STA = new InstantNeedsPotion(StaminaHandler.STAMINA, -5, 1151804)
             .setPotionName("effect.damageStamina").setRegistryName(Misca.MODID, "damageStamina");
-//    public static final Potion BUFF_STA = new TemporaryNeedsPotion(false, 3111504)
-//            .setPotionName("effect.buffStamina").setRegistryName(Misca.MODID, "buffStamina")
-//            .registerPotionAttributeModifier(StaminaHandler.STAMINA, "4aef3593-dc99-4e9d-98de-d653f5390201", 0.10, 2);
-//    public static final Potion DEBUFF_STA = new TemporaryNeedsPotion(true, 1111504)
-//            .setPotionName("effect.debuffStamina").setRegistryName(Misca.MODID, "debuffStamina")
-//            .registerPotionAttributeModifier(StaminaHandler.STAMINA, "4a80ce29-c7e0-48f4-b89d-1647c3b202dd", -0.10, 2);
 
     public static final Potion RESTORE_COR = new InstantNeedsPotion(CorruptionHandler.CORRUPTION, 5, 3151804)
             .setPotionName("effect.restoreCorruption").setRegistryName(Misca.MODID, "restoreCorruption");
@@ -49,10 +43,10 @@ public class NeedsPotions {
             .setPotionName("effect.damageCorruption").setRegistryName(Misca.MODID, "damageCorruption");
     public static final Potion BUFF_COR = new TemporaryNeedsPotion(false, 3111504)
             .setPotionName("effect.buffCorruption").setRegistryName(Misca.MODID, "buffCorruption")
-            .registerPotionAttributeModifier(CorruptionHandler.CORRUPTION, "621133ab-8d2d-436d-9846-4c77e2d47c51", 0.10, 2);
+            .registerPotionAttributeModifier(CorruptionHandler.CORRUPTION, "621133ab-8d2d-436d-9846-4c77e2d47c51", 0.01, 2);
     public static final Potion DEBUFF_COR = new TemporaryNeedsPotion(true, 1111504)
             .setPotionName("effect.debuffCorruption").setRegistryName(Misca.MODID, "debuffCorruption")
-            .registerPotionAttributeModifier(CorruptionHandler.CORRUPTION, "b52d5b3b-6995-4b95-91df-4fbd6720e2be", -0.10, 2);
+            .registerPotionAttributeModifier(CorruptionHandler.CORRUPTION, "b52d5b3b-6995-4b95-91df-4fbd6720e2be", -0.01, 2);
 
     @SubscribeEvent
     public void registerPotions(RegistryEvent.Register<Potion> event) {
@@ -66,8 +60,6 @@ public class NeedsPotions {
         event.getRegistry().register(DEBUFF_SAN);
         event.getRegistry().register(RESTORE_STA);
         event.getRegistry().register(DAMAGE_STA);
-//        event.getRegistry().register(BUFF_STA);
-//        event.getRegistry().register(DEBUFF_STA);
         event.getRegistry().register(RESTORE_COR);
         event.getRegistry().register(DAMAGE_COR);
         event.getRegistry().register(BUFF_COR);
