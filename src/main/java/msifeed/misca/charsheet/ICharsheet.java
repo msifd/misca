@@ -8,11 +8,8 @@ import net.minecraft.util.ResourceLocation;
 
 public interface ICharsheet extends Cloneable {
     ResourceLocation KEY = new ResourceLocation(Misca.MODID, "sheet");
-    IAttribute ATTRIBUTE_MOD = new RangedAttribute(null, Misca.MODID + ".attrMod", 0, -100, 100).setShouldWatch(true);
-    IAttribute SKILL_MOD = new RangedAttribute(null, Misca.MODID + ".skillMod", 0, -5, 5).setShouldWatch(true);
-
-    boolean isPlayer();
-    void markPlayer();
+    IAttribute ATTRIBUTE_MOD = new RangedAttribute(null, Misca.MODID + ".attrMod", 0, -100, 100);
+    IAttribute SKILL_MOD = new RangedAttribute(null, Misca.MODID + ".skillMod", 0, -5, 5);
 
     String getName();
     void setName(String name);
@@ -20,7 +17,6 @@ public interface ICharsheet extends Cloneable {
     String getWikiPage();
     void setWikiPage(String page);
 
-    IntContainer<CharAttribute> attrs();
     IntContainer<CharSkill> skills();
     IntContainer<CharEffort> effortPools();
     IntContainer<CharResource> resources();

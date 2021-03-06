@@ -9,10 +9,8 @@ public enum CharSkill {
     psychology, management, biology, tech, magic, research,
     thievery, survival, work, firearms, blacksmith;
 
-    public int value(EntityLivingBase target) {
-        int value = CharsheetProvider.get(target).skills().get(this);
-        if (target instanceof EntityPlayer)
-            value += (int) target.getEntityAttribute(ICharsheet.SKILL_MOD).getAttributeValue();
+    public int get(EntityPlayer target) {
+        final int value = CharsheetProvider.get(target).skills().get(this) + (int) target.getEntityAttribute(ICharsheet.SKILL_MOD).getAttributeValue();
         return MathHelper.clamp(value, 0, 5);
     }
 }

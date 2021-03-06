@@ -1,7 +1,6 @@
 package msifeed.misca.combat.rules;
 
 import msifeed.misca.charsheet.CharAttribute;
-import msifeed.misca.charsheet.ICharsheet;
 import msifeed.misca.combat.Combat;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
@@ -17,18 +16,18 @@ import net.minecraft.world.World;
  * You know the rules and so do I
  */
 public class Rules {
-    public float damageIncreaseMeleePerStr = 0.04f;
-    public float damageIncreaseRangePerStr = 0.02f;
+    public double damageIncreaseMeleePerStr = 0.04;
+    public double damageIncreaseRangePerStr = 0.02;
 
     public float damageIncrease(CombatantInfo info) {
-        final float strFactor = info.is(WeaponTrait.melee) ? damageIncreaseMeleePerStr : damageIncreaseRangePerStr;
-        return info.attr(CharAttribute.str) * strFactor;
+        final double strFactor = info.is(WeaponTrait.melee) ? damageIncreaseMeleePerStr : damageIncreaseRangePerStr;
+        return (float) (CharAttribute.str.get(info) * strFactor);
     }
 
-    public float damageAbsorptionPerEnd = 0.02f;
+    public double damageAbsorptionPerEnd = 0.02;
 
     public float damageAbsorption(CombatantInfo info) {
-        return info.attr(CharAttribute.end) * damageAbsorptionPerEnd;
+        return (float) (CharAttribute.end.get(info) * damageAbsorptionPerEnd);
     }
 
     public double hitRateBase = 0.5;
@@ -41,8 +40,8 @@ public class Rules {
                 .map(wo -> wo.hitRate).orElse(0d);
 
         final double perFactor = info.is(WeaponTrait.melee) ? hitRateMeleePerPer : hitRateRangePerPer;
-        final int perception = info.attr(CharAttribute.per);
-        final int luck = info.attr(CharAttribute.lck);
+        final double perception = CharAttribute.per.get(info);
+        final double luck = CharAttribute.lck.get(info);
         return hitRateBase + perception * perFactor + luck * hitRatePerLck + overrideRate;
     }
 
@@ -52,8 +51,8 @@ public class Rules {
     public double noShieldEvasionPenalty = 0.25;
 
     public double evasion(EntityLivingBase victim, CombatantInfo vicInfo, CombatantInfo srcInfo) {
-        final int reflexes = vicInfo.attr(CharAttribute.ref);
-        final int luck = vicInfo.attr(CharAttribute.lck);
+        final double reflexes = CharAttribute.ref.get(vicInfo);
+        final double luck = CharAttribute.lck.get(vicInfo);
         final double penalty = evasionPenalty(vicInfo, srcInfo);
         final double factor = evasionFactor(victim, vicInfo, srcInfo);
         return (reflexes * evasionPerRef + luck * evasionPerLck - penalty) * factor;
@@ -102,8 +101,8 @@ public class Rules {
     // Final hit chance and criticality
 
     public double maxHitChance = 0.8;
-
     public double criticalityConversionRate = 0.1;
+
     public double rawChanceToHitCriticality(double chance) {
         return Math.max(0, maxHitChance - chance) * criticalityConversionRate;
     }
@@ -117,8 +116,8 @@ public class Rules {
     public double criticalHitPerLck = 0.0075;
 
     public double criticalHit(CombatantInfo info) {
-        final int perception = info.attr(CharAttribute.per);
-        final int luck = info.attr(CharAttribute.lck);
+        final double perception = CharAttribute.per.get(info);
+        final double luck = CharAttribute.lck.get(info);
         return criticalHitBase + perception * criticalHitPerPer + luck * criticalHitPerLck;
     }
 
@@ -127,8 +126,8 @@ public class Rules {
     public double criticalEvasionPerLck = 0.0075;
 
     public double criticalEvasion(CombatantInfo info) {
-        final int endurance = info.attr(CharAttribute.end);
-        final int luck = info.attr(CharAttribute.lck);
+        final double endurance = CharAttribute.end.get(info);
+        final double luck = CharAttribute.lck.get(info);
         return criticalEvasionBase + endurance * criticalEvasionPerEnd + luck * criticalEvasionPerLck;
     }
 
@@ -176,17 +175,15 @@ public class Rules {
     public double apPerMoveBase = 5;
     public double apPerMovePerAgi = 1;
 
-    public double actionPointsPerMove(EntityLivingBase entity, ICharsheet cs) {
-        final int attrMod = (int) entity.getEntityAttribute(ICharsheet.ATTRIBUTE_MOD).getAttributeValue();
-        return apPerMoveBase + (cs.attrs().get(CharAttribute.agi) + attrMod) * apPerMovePerAgi;
+    public double actionPointsPerMove(EntityLivingBase entity) {
+        return apPerMoveBase + CharAttribute.agi.get(entity) * apPerMovePerAgi;
     }
 
     public double maxApBase = 0;
     public double maxApPerAgi = 4;
 
-    public double maxActionPoints(EntityLivingBase entity, ICharsheet cs) {
-        final int attrMod = (int) entity.getEntityAttribute(ICharsheet.ATTRIBUTE_MOD).getAttributeValue();
-        return maxApBase + (cs.attrs().get(CharAttribute.agi) + attrMod) * maxApPerAgi;
+    public double maxActionPoints(EntityLivingBase entity) {
+        return maxApBase + CharAttribute.agi.get(entity) * maxApPerAgi;
     }
 
     // Other

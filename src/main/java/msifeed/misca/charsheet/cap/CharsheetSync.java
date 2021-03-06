@@ -22,7 +22,7 @@ public class CharsheetSync {
     private static final String sync = "charsheet.sync";
     private static final String syncSelf = "charsheet.syncSelf";
 
-    public static void sync(EntityPlayerMP receiver, EntityLivingBase target) {
+    public static void sync(EntityPlayerMP receiver, EntityPlayer target) {
         final NBTTagCompound nbt = CharsheetProvider.encode(CharsheetProvider.get(target));
         if (receiver == target)
             Misca.RPC.sendTo(receiver, syncSelf, nbt);
@@ -30,7 +30,7 @@ public class CharsheetSync {
             Misca.RPC.sendTo(receiver, sync, target.getUniqueID(), nbt);
     }
 
-    public static void sync(EntityLivingBase target) {
+    public static void sync(EntityPlayer target) {
         final NBTTagCompound nbt = CharsheetProvider.encode(CharsheetProvider.get(target));
         if (target instanceof EntityPlayerMP)
             Misca.RPC.sendTo((EntityPlayerMP) target, syncSelf, nbt);
@@ -44,10 +44,10 @@ public class CharsheetSync {
             throw new RpcException(sender, "Not a GameMaster!");
 
         final Entity targetEntity = sender.world.getEntityByID(entityId);
-        if (!(targetEntity instanceof EntityLivingBase))
+        if (!(targetEntity instanceof EntityPlayer))
             throw new RpcException(sender, "Target is not found!");
 
-        final EntityLivingBase target = (EntityLivingBase) targetEntity;
+        final EntityPlayer target = (EntityPlayer) targetEntity;
         CharsheetProvider.get(target).replaceWith(CharsheetProvider.decode(nbt));
         sync(target);
     }
@@ -74,7 +74,7 @@ public class CharsheetSync {
     }
 
     @SideOnly(Side.CLIENT)
-    public static void post(EntityLivingBase target, ICharsheet charsheet) {
+    public static void post(EntityPlayer target, ICharsheet charsheet) {
         Misca.RPC.sendToServer(post, target.getEntityId(), CharsheetProvider.encode(charsheet));
     }
 }

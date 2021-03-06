@@ -1,8 +1,5 @@
 package msifeed.misca.combat.battle;
 
-import msifeed.misca.charsheet.ICharsheet;
-import msifeed.misca.charsheet.cap.CharsheetProvider;
-import msifeed.misca.charsheet.cap.CharsheetSync;
 import msifeed.misca.combat.cap.CombatantProvider;
 import msifeed.misca.combat.cap.CombatantSync;
 import msifeed.misca.combat.cap.ICombatant;
@@ -99,12 +96,6 @@ public class BattleManager {
         final ICombatant com = CombatantProvider.get(entity);
         com.setBattleId(bid);
         CombatantSync.sync(entity);
-
-        if (!(entity instanceof EntityPlayer)) {
-            final ICharsheet cs = CharsheetProvider.get(entity);
-            cs.attrs().setAll(5);
-            CharsheetSync.sync(entity);
-        }
     }
 
     public void leaveFromBattle(EntityLivingBase entity) {

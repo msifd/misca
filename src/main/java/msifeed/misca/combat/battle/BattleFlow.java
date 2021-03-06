@@ -1,7 +1,5 @@
 package msifeed.misca.combat.battle;
 
-import msifeed.misca.charsheet.ICharsheet;
-import msifeed.misca.charsheet.cap.CharsheetProvider;
 import msifeed.misca.combat.Combat;
 import msifeed.misca.combat.CombatHandler;
 import msifeed.misca.combat.cap.CombatantProvider;
@@ -62,9 +60,8 @@ public class BattleFlow {
         final EntityLivingBase leader = battle.getLeader();
         if (leader == null) return;
 
-        final ICharsheet cs = CharsheetProvider.get(leader);
         final ICombatant com = CombatantProvider.get(leader);
-        com.setActionPoints(MathHelper.clamp(com.getActionPoints(), 0, Combat.getRules().maxActionPoints(leader, cs)));
+        com.setActionPoints(MathHelper.clamp(com.getActionPoints(), 0, Combat.getRules().maxActionPoints(leader)));
         com.setActionPointsOverhead(0);
         com.setPosition(leader.getPositionVector());
         CombatantSync.sync(leader);
@@ -98,11 +95,10 @@ public class BattleFlow {
     }
 
     public static void prepareLeader(EntityLivingBase entity) {
-        final ICharsheet cs = CharsheetProvider.get(entity);
         final ICombatant com = CombatantProvider.get(entity);
 
         final float neutralDamage = com.getNeutralDamage();
-        com.addActionPoints(Combat.getRules().actionPointsPerMove(entity, cs));
+        com.addActionPoints(Combat.getRules().actionPointsPerMove(entity));
         com.setPosition(entity.getPositionVector());
         com.setNeutralDamage(0);
         CombatantSync.sync(entity);

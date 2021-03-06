@@ -1,5 +1,6 @@
 package msifeed.misca.charsheet.cap;
 
+import msifeed.misca.charsheet.CharAttribute;
 import msifeed.misca.charsheet.ICharsheet;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -14,11 +15,16 @@ public class CharsheetEventHandler {
     @SubscribeEvent
     public void onAttachCapability(AttachCapabilitiesEvent<Entity> event) {
         if (event.getObject() instanceof EntityLivingBase) {
-            event.addCapability(ICharsheet.KEY, new CharsheetProvider(event.getObject() instanceof EntityPlayer));
-
             final AbstractAttributeMap attributes = ((EntityLivingBase) event.getObject()).getAttributeMap();
-            attributes.registerAttribute(ICharsheet.ATTRIBUTE_MOD);
             attributes.registerAttribute(ICharsheet.SKILL_MOD);
+            attributes.registerAttribute(ICharsheet.ATTRIBUTE_MOD);
+            for (CharAttribute attr : CharAttribute.values()) {
+                attributes.registerAttribute(attr.attribute);
+            }
+
+            if (event.getObject() instanceof EntityPlayer) {
+                event.addCapability(ICharsheet.KEY, new CharsheetProvider());
+            }
         }
     }
 
@@ -42,8 +48,8 @@ public class CharsheetEventHandler {
 
     @SubscribeEvent
     public void onPlayerTracking(net.minecraftforge.event.entity.player.PlayerEvent.StartTracking event) {
-        if (event.getTarget() instanceof EntityLivingBase) {
-            CharsheetSync.sync((EntityPlayerMP) event.getEntityPlayer(), (EntityLivingBase) event.getTarget());
+        if (event.getTarget() instanceof EntityPlayer) {
+            CharsheetSync.sync((EntityPlayerMP) event.getEntityPlayer(), (EntityPlayer) event.getTarget());
         }
     }
 

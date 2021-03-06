@@ -3,6 +3,7 @@ package msifeed.misca.charstate;
 import msifeed.misca.Misca;
 import msifeed.misca.charstate.cap.*;
 import msifeed.misca.charstate.handler.*;
+import msifeed.misca.charstate.potion.AttributePotions;
 import msifeed.misca.charstate.potion.NeedsPotions;
 import msifeed.misca.chatex.SpeechEvent;
 import net.minecraft.entity.EntityLivingBase;
@@ -32,6 +33,7 @@ public class Charstate {
         CapabilityManager.INSTANCE.register(ICharstate.class, new CharstateStorage(), CharstateImpl::new);
         MinecraftForge.EVENT_BUS.register(new CharstateHandler());
         MinecraftForge.EVENT_BUS.register(new NeedsPotions());
+        MinecraftForge.EVENT_BUS.register(new AttributePotions());
         MinecraftForge.EVENT_BUS.register(this);
         Misca.RPC.register(new CharstateSync());
     }

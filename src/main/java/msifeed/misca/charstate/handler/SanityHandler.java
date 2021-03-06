@@ -40,12 +40,12 @@ public class SanityHandler {
         inst.setBaseValue(SANITY.clampValue(inst.getBaseValue() - lost));
 
         final double value = inst.getAttributeValue();
-        final IAttributeInstance attributeMod = player.getEntityAttribute(ICharsheet.ATTRIBUTE_MOD);
+        final IAttributeInstance attrMod = player.getEntityAttribute(ICharsheet.ATTRIBUTE_MOD);
         final IAttributeInstance skillMod = player.getEntityAttribute(ICharsheet.SKILL_MOD);
 
-        setMod(attributeMod, ATTRIBUTE_PENALTY_1, value <= 75 && value > 50);
-        setMod(attributeMod, ATTRIBUTE_PENALTY_2, value <= 50 && value > 25);
-        setMod(attributeMod, ATTRIBUTE_PENALTY_3, value <= 25);
+        setMod(attrMod, ATTRIBUTE_PENALTY_1, value <= 75 && value > 50);
+        setMod(attrMod, ATTRIBUTE_PENALTY_2, value <= 50 && value > 25);
+        setMod(attrMod, ATTRIBUTE_PENALTY_3, value <= 25);
         setMod(skillMod, SKILL_PENALTY_1, value <= 50 && value > 25);
         setMod(skillMod, SKILL_PENALTY_2, value <= 25);
     }

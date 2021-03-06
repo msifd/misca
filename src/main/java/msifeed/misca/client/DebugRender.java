@@ -27,14 +27,14 @@ public class DebugRender {
         else
             target = self;
 
-        final ICharsheet charsheet = CharsheetProvider.get(target);
-        final String json = new GsonBuilder().setPrettyPrinting().create().toJson(charsheet);
-
-        final FontRenderer fr = Minecraft.getMinecraft().fontRenderer;
-        int yOffset = fr.FONT_HEIGHT;
-        for (String line : json.split("\n")) {
-            fr.drawString(line, 10, yOffset, 0xffffff);
-            yOffset += fr.FONT_HEIGHT;
-        }
+//        final ICharsheet charsheet = CharsheetProvider.get(target);
+//        final String json = new GsonBuilder().setPrettyPrinting().create().toJson(charsheet);
+//
+//        final FontRenderer fr = Minecraft.getMinecraft().fontRenderer;
+//        int yOffset = fr.FONT_HEIGHT;
+//        for (String line : json.split("\n")) {
+//            fr.drawString(line, 10, yOffset, 0xffffff);
+//            yOffset += fr.FONT_HEIGHT;
+//        }
     }
 }

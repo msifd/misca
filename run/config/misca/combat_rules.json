@@ -28,5 +28,6 @@
   "apPerMoveBase": 5.0,
   "apPerMovePerAgi": 1.0,
   "maxApBase": 0.0,
-  "maxApPerAgi": 4.0
+  "maxApPerAgi": 4.0,
+  "potionTicks": 200
 }

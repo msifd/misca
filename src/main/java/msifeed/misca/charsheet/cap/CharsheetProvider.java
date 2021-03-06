@@ -3,6 +3,7 @@ package msifeed.misca.charsheet.cap;
 import msifeed.misca.Misca;
 import msifeed.misca.charsheet.ICharsheet;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
@@ -24,14 +25,14 @@ public class CharsheetProvider implements ICapabilitySerializable<NBTBase> {
     private final ICharsheet instance = Objects.requireNonNull(CAP.getDefaultInstance());
 
     public static void preInit() {
-        CapabilityManager.INSTANCE.register(ICharsheet.class, new CharsheetStorage(), Charsheet::new);
+        CapabilityManager.INSTANCE.register(ICharsheet.class, new CharsheetStorage(), CharsheetImpl::new);
         MinecraftForge.EVENT_BUS.register(new CharsheetEventHandler());
         Misca.RPC.register(new CharsheetSync());
     }
 
     @Nonnull
-    public static ICharsheet get(EntityLivingBase entity) {
-        return Objects.requireNonNull(entity.getCapability(CharsheetProvider.CAP, null));
+    public static ICharsheet get(EntityPlayer player) {
+        return Objects.requireNonNull(player.getCapability(CharsheetProvider.CAP, null));
     }
 
     public static NBTTagCompound encode(ICharsheet charsheet) {
@@ -42,11 +43,6 @@ public class CharsheetProvider implements ICapabilitySerializable<NBTBase> {
         final ICharsheet cs = CAP.getDefaultInstance();
         CAP.getStorage().readNBT(CAP, cs, null, nbt);
         return cs;
-    }
-
-    public CharsheetProvider(boolean isPlayer) {
-        if (isPlayer)
-            instance.markPlayer();
     }
 
     @Override

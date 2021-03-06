@@ -13,17 +13,12 @@ public class CharsheetStorage implements Capability.IStorage<ICharsheet> {
     @Override
     public NBTBase writeNBT(Capability<ICharsheet> capability, ICharsheet instance, EnumFacing side) {
         final NBTTagCompound nbt = new NBTTagCompound();
-
-        instance.attrs().writeNBT(Tag.attributes, nbt);
-
-        if (instance.isPlayer()) {
-            nbt.setBoolean("IsPlayer", true);
-            nbt.setString(Tag.name, instance.getName());
-            nbt.setString(Tag.wikiPage, instance.getWikiPage());
-            instance.skills().writeNBT(Tag.skills, nbt);
-            instance.effortPools().writeNBT(Tag.effortPools, nbt);
-            instance.resources().writeNBT(Tag.resources, nbt);
-        }
+        nbt.setBoolean("IsPlayer", true);
+        nbt.setString(Tag.name, instance.getName());
+        nbt.setString(Tag.wikiPage, instance.getWikiPage());
+        instance.skills().writeNBT(Tag.skills, nbt);
+        instance.effortPools().writeNBT(Tag.effortPools, nbt);
+        instance.resources().writeNBT(Tag.resources, nbt);
 
         return nbt;
     }
@@ -31,22 +26,16 @@ public class CharsheetStorage implements Capability.IStorage<ICharsheet> {
     @Override
     public void readNBT(Capability<ICharsheet> capability, ICharsheet instance, EnumFacing side, NBTBase nbtBase) {
         final NBTTagCompound nbt = (NBTTagCompound) nbtBase;
-
-        instance.attrs().readNBT(nbt, Tag.attributes);
-
-        if (nbt.hasKey("IsPlayer")) {
-            instance.setName(nbt.getString(Tag.name));
-            instance.setWikiPage(nbt.getString(Tag.wikiPage));
-            instance.skills().readNBT(nbt, Tag.skills);
-            instance.effortPools().readNBT(nbt, Tag.effortPools);
-            instance.resources().readNBT(nbt, Tag.resources);
-        }
+        instance.setName(nbt.getString(Tag.name));
+        instance.setWikiPage(nbt.getString(Tag.wikiPage));
+        instance.skills().readNBT(nbt, Tag.skills);
+        instance.effortPools().readNBT(nbt, Tag.effortPools);
+        instance.resources().readNBT(nbt, Tag.resources);
     }
 
     private static class Tag {
         private static final String name = "name";
         private static final String wikiPage = "wiki";
-        private static final String attributes = "attributes";
         private static final String skills = "skills";
         private static final String effortPools = "effortPools";
         private static final String resources = "resources";

@@ -40,22 +40,22 @@ public class GuiScreenCharsheet extends GuiScreen {
         wikiEdit = new GuiTextField(3, this.fontRenderer, this.width / 2 - 100, 70, 200, 20);
         wikiEdit.setText(charsheet.getWikiPage());
 
-        attrFields.clear();
-        for (CharAttribute attr : CharAttribute.values()) {
-            final GuiTextField f = new GuiTextField(10 + attr.ordinal(), fontRenderer, 10, 10 + attr.ordinal() * 22, 40, 20);
-            f.setText(Integer.toString(charsheet.attrs().get(attr)));
-            f.setValidator(input -> {
-                try {
-                    if (input == null) return false;
-                    if (input.isEmpty()) return true;
-                    final int i = Integer.parseUnsignedInt(input);
-                    return i >= 0 && i <= 25;
-                } catch (NumberFormatException e) {
-                    return false;
-                }
-            });
-            attrFields.add(f);
-        }
+//        attrFields.clear();
+//        for (CharAttribute attr : CharAttribute.values()) {
+//            final GuiTextField f = new GuiTextField(10 + attr.ordinal(), fontRenderer, 10, 10 + attr.ordinal() * 22, 40, 20);
+//            f.setText(Integer.toString(charsheet.attrs().get(attr)));
+//            f.setValidator(input -> {
+//                try {
+//                    if (input == null) return false;
+//                    if (input.isEmpty()) return true;
+//                    final int i = Integer.parseUnsignedInt(input);
+//                    return i >= 0 && i <= 25;
+//                } catch (NumberFormatException e) {
+//                    return false;
+//                }
+//            });
+//            attrFields.add(f);
+//        }
 
         effortsFields.clear();
         for (CharEffort effort : CharEffort.values()) {
@@ -83,11 +83,11 @@ public class GuiScreenCharsheet extends GuiScreen {
             case 0:
                 charsheet.setName(nameEdit.getText().trim());
                 charsheet.setWikiPage(wikiEdit.getText().trim());
-                for (int i = 0; i < attrFields.size(); i++) {
-                    final CharAttribute attr = CharAttribute.values()[i];
-                    final String input = attrFields.get(i).getText().trim();
-                    charsheet.attrs().set(attr, input.isEmpty() ? 0 : Integer.parseInt(input));
-                }
+//                for (int i = 0; i < attrFields.size(); i++) {
+//                    final CharAttribute attr = CharAttribute.values()[i];
+//                    final String input = attrFields.get(i).getText().trim();
+//                    charsheet.attrs().set(attr, input.isEmpty() ? 0 : Integer.parseInt(input));
+//                }
                 for (int i = 0; i < effortsFields.size(); i++) {
                     final CharEffort eff = CharEffort.values()[i];
                     final String input = effortsFields.get(i).getText().trim();
