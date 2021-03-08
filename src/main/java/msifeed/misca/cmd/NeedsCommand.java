@@ -1,4 +1,4 @@
-package msifeed.misca.charstate;
+package msifeed.misca.cmd;
 
 import msifeed.misca.MiscaPerms;
 import msifeed.misca.charstate.handler.CorruptionHandler;

@@ -1,6 +1,7 @@
-package msifeed.misca.combat;
+package msifeed.misca.cmd;
 
 import msifeed.misca.MiscaPerms;
+import msifeed.misca.combat.Combat;
 import msifeed.misca.combat.battle.Battle;
 import msifeed.misca.combat.battle.BattleManager;
 import msifeed.misca.combat.cap.CombatantProvider;

@@ -1,9 +1,9 @@
-package msifeed.misca.charstate.potion;
+package msifeed.misca.potions;
 
 import net.minecraft.potion.Potion;
 
-public class TemporaryNeedsPotion extends Potion {
-    public TemporaryNeedsPotion(boolean isBadEffectIn, int liquidColorIn) {
+public class TemporaryPotion extends Potion {
+    public TemporaryPotion(boolean isBadEffectIn, int liquidColorIn) {
         super(isBadEffectIn, liquidColorIn);
     }
 

@@ -1,6 +1,5 @@
-package msifeed.misca.charsheet.client;
+package msifeed.misca.client;
 
-import msifeed.misca.charsheet.CharAttribute;
 import msifeed.misca.charsheet.CharEffort;
 import msifeed.misca.charsheet.ICharsheet;
 import msifeed.misca.charsheet.cap.CharsheetProvider;

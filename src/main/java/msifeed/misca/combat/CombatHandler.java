@@ -10,7 +10,9 @@ import msifeed.misca.combat.rules.Rules;
 import msifeed.misca.combat.rules.WeaponInfo;
 import msifeed.misca.combat.rules.WeaponTrait;
 import msifeed.misca.rolls.Dices;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.ai.attributes.AbstractAttributeMap;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.projectile.EntityPotion;
 import net.minecraft.init.Items;
@@ -18,6 +20,7 @@ import net.minecraft.util.DamageSource;
 import net.minecraft.util.EntityDamageSource;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.text.TextComponentString;
+import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.*;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -33,6 +36,17 @@ public class CombatHandler {
      * Shitty hack to disable knock back after evasion
      */
     private boolean attackEvaded = false;
+
+    @SubscribeEvent
+    public void onAttachCapability(AttachCapabilitiesEvent<Entity> event) {
+        if (event.getObject() instanceof EntityLivingBase) {
+            final AbstractAttributeMap attributes = ((EntityLivingBase) event.getObject()).getAttributeMap();
+
+            attributes.registerAttribute(CharAttribute.MOD);
+            for (CharAttribute attr : CharAttribute.values())
+                attributes.registerAttribute(attr.attribute);
+        }
+    }
 
     /**
      * Track entity movement and end its turn when AP depletes.

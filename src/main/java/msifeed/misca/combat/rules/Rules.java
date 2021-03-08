@@ -1,6 +1,6 @@
 package msifeed.misca.combat.rules;
 
-import msifeed.misca.charsheet.CharAttribute;
+import msifeed.misca.combat.CharAttribute;
 import msifeed.misca.combat.Combat;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;

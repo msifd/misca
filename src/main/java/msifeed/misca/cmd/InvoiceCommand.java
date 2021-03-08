@@ -1,7 +1,9 @@
-package msifeed.misca.supplies;
+package msifeed.misca.cmd;
 
 import msifeed.misca.MiscaPerms;
 import msifeed.misca.MiscaThings;
+import msifeed.misca.supplies.BackgroundSupplies;
+import msifeed.misca.supplies.ItemSuppliesBeacon;
 import msifeed.misca.supplies.cap.ISuppliesInvoice;
 import msifeed.misca.supplies.cap.SuppliesInvoiceProvider;
 import net.minecraft.command.CommandBase;

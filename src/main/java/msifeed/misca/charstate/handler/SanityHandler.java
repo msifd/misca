@@ -2,9 +2,9 @@ package msifeed.misca.charstate.handler;
 
 import msifeed.misca.Misca;
 import msifeed.misca.charsheet.CharSkill;
-import msifeed.misca.charsheet.ICharsheet;
 import msifeed.misca.charsheet.cap.CharsheetProvider;
 import msifeed.misca.charstate.CharstateConfig;
+import msifeed.misca.combat.CharAttribute;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.ai.attributes.IAttribute;
 import net.minecraft.entity.ai.attributes.IAttributeInstance;
@@ -40,8 +40,8 @@ public class SanityHandler {
         inst.setBaseValue(SANITY.clampValue(inst.getBaseValue() - lost));
 
         final double value = inst.getAttributeValue();
-        final IAttributeInstance attrMod = player.getEntityAttribute(ICharsheet.ATTRIBUTE_MOD);
-        final IAttributeInstance skillMod = player.getEntityAttribute(ICharsheet.SKILL_MOD);
+        final IAttributeInstance attrMod = player.getEntityAttribute(CharAttribute.MOD);
+        final IAttributeInstance skillMod = player.getEntityAttribute(CharSkill.MOD);
 
         setMod(attrMod, ATTRIBUTE_PENALTY_1, value <= 75 && value > 50);
         setMod(attrMod, ATTRIBUTE_PENALTY_2, value <= 50 && value > 25);

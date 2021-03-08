@@ -1,6 +1,8 @@
-package msifeed.misca.charsheet;
+package msifeed.misca.cmd;
 
 import msifeed.misca.MiscaPerms;
+import msifeed.misca.charsheet.CharSkill;
+import msifeed.misca.charsheet.ICharsheet;
 import msifeed.misca.charsheet.cap.CharsheetProvider;
 import msifeed.sys.cap.IntContainer;
 import net.minecraft.command.CommandBase;

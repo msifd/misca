@@ -1,4 +1,4 @@
-package msifeed.misca.charstate.potion;
+package msifeed.misca.potions;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -9,11 +9,11 @@ import net.minecraft.potion.Potion;
 
 import javax.annotation.Nullable;
 
-public class InstantNeedsPotion extends Potion {
+public class InstantPotion extends Potion {
     private final IAttribute attribute;
     private final double modifier;
 
-    public InstantNeedsPotion(IAttribute attribute, double modifier, int liquidColorIn) {
+    public InstantPotion(IAttribute attribute, double modifier, int liquidColorIn) {
         super(modifier < 0, liquidColorIn);
         this.attribute = attribute;
         this.modifier = modifier;

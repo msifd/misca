@@ -1,6 +1,7 @@
 package msifeed.misca.charsheet.cap;
 
-import msifeed.misca.charsheet.CharAttribute;
+import msifeed.misca.charsheet.CharSkill;
+import msifeed.misca.combat.CharAttribute;
 import msifeed.misca.charsheet.ICharsheet;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -16,11 +17,7 @@ public class CharsheetEventHandler {
     public void onAttachCapability(AttachCapabilitiesEvent<Entity> event) {
         if (event.getObject() instanceof EntityLivingBase) {
             final AbstractAttributeMap attributes = ((EntityLivingBase) event.getObject()).getAttributeMap();
-            attributes.registerAttribute(ICharsheet.SKILL_MOD);
-            attributes.registerAttribute(ICharsheet.ATTRIBUTE_MOD);
-            for (CharAttribute attr : CharAttribute.values()) {
-                attributes.registerAttribute(attr.attribute);
-            }
+            attributes.registerAttribute(CharSkill.MOD);
 
             if (event.getObject() instanceof EntityPlayer) {
                 event.addCapability(ICharsheet.KEY, new CharsheetProvider());

@@ -1,4 +1,4 @@
-package msifeed.misca.charstate.rolls;
+package msifeed.misca.client;
 
 import msifeed.mellow.MellowScreen;
 import msifeed.mellow.utils.Direction;
@@ -8,6 +8,7 @@ import msifeed.mellow.view.text.Label;
 import msifeed.misca.charsheet.CharEffort;
 import msifeed.misca.charsheet.ICharsheet;
 import msifeed.misca.charsheet.cap.CharsheetProvider;
+import msifeed.misca.rolls.RollRpc;
 import net.minecraft.entity.player.EntityPlayer;
 
 import java.util.stream.Stream;

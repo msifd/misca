@@ -1,6 +1,7 @@
-package msifeed.misca.rename;
+package msifeed.misca.cmd;
 
 import msifeed.misca.MiscaPerms;
+import msifeed.misca.rename.IRenameRpc;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayerMP;
