@@ -32,7 +32,7 @@ public class ChatexScreen extends MellowScreen implements ITabCompleter {
 
     public ChatexScreen(String text) {
         input.insert(text);
-        input.focus();
+        FocusState.INSTANCE.setFocus(input);
 
         container.addView(input);
         container.addView(resizer);
@@ -67,7 +67,7 @@ public class ChatexScreen extends MellowScreen implements ITabCompleter {
         super.handleMouseInput();
 
         if (!FocusState.INSTANCE.getFocus().isPresent())
-            input.focus();
+            FocusState.INSTANCE.setFocus(input);
     }
 
     @Override

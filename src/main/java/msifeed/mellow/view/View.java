@@ -28,11 +28,15 @@ public abstract class View {
         geometry.setSize(w, h);
     }
 
+    public boolean isFocusable() {
+        return false;
+    }
+
     public boolean isFocused() {
         return FocusState.INSTANCE.isFocused(this);
     }
 
-    public void focus() {
-        FocusState.INSTANCE.setFocus(this);
+    public boolean isHovered() {
+        return FocusState.INSTANCE.isHovered(this);
     }
 }

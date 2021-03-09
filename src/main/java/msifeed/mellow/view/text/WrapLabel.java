@@ -40,6 +40,6 @@ public class WrapLabel extends Label {
 
     @Override
     public void render(Geom geom) {
-        RenderParts.lines(lines, geom, this.pref);
+        RenderParts.lines(lines, geom, color, pref);
     }
 }

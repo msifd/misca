@@ -10,6 +10,13 @@ public enum FocusState {
 
     private WeakReference<View> focus;
     private WeakReference<View> press;
+    private WeakReference<View> hover;
+
+    public void reset() {
+        focus = null;
+        press = null;
+        hover = null;
+    }
 
     public boolean isFocused(View view) {
         return focus != null && focus.get() == view;
@@ -20,7 +27,10 @@ public enum FocusState {
     }
 
     public void setFocus(View view) {
-        focus = new WeakReference<>(view);
+        if (view.isFocusable())
+            focus = new WeakReference<>(view);
+        else
+            focus = null;
     }
 
     public void clearFocus() {
@@ -37,5 +47,17 @@ public enum FocusState {
 
     public void clearPress() {
         press = null;
+    }
+
+    public boolean isHovered(View view) {
+        return hover != null && hover.get() == view;
+    }
+
+    public void setHover(View view) {
+        hover = new WeakReference<>(view);
+    }
+
+    public void clearHover() {
+        hover = null;
     }
 }

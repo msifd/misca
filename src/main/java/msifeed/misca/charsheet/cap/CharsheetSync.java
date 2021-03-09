@@ -12,6 +12,7 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.text.TextComponentString;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -50,6 +51,8 @@ public class CharsheetSync {
         final EntityPlayer target = (EntityPlayer) targetEntity;
         CharsheetProvider.get(target).replaceWith(CharsheetProvider.decode(nbt));
         sync(target);
+
+        sender.sendStatusMessage(new TextComponentString("Charsheet changed"), true);
     }
 
     @SideOnly(Side.CLIENT)

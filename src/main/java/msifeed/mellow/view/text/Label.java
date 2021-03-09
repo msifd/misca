@@ -8,6 +8,7 @@ import net.minecraft.client.gui.FontRenderer;
 
 public class Label extends View {
     protected String text = "";
+    protected int color = 0xffffffff;
     protected RenderParts.TextPref pref = new RenderParts.TextPref();
 
     public Label(String text) {
@@ -32,15 +33,15 @@ public class Label extends View {
     }
 
     protected int getColor() {
-        return pref.color;
+        return color;
     }
 
     public void setColor(int color) {
-        pref.color = color;
+        this.color = color;
     }
 
     @Override
     public void render(Geom geom) {
-        RenderParts.string(text, geom, pref);
+        RenderParts.string(text, geom, color, pref);
     }
 }

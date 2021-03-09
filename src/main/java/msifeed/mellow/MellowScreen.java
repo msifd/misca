@@ -15,7 +15,7 @@ public abstract class MellowScreen extends GuiScreen {
 
     @Override
     public void initGui() {
-        super.initGui();
+        FocusState.INSTANCE.reset();
 
         container.setSize(width, height);
     }
@@ -42,7 +42,14 @@ public abstract class MellowScreen extends GuiScreen {
         final int mouseX = Mouse.getEventX() * this.width / this.mc.displayWidth;
         final int mouseY = this.height - Mouse.getEventY() * this.height / this.mc.displayHeight - 1;
 
+        handleMouseHover(mouseX, mouseY);
         handleWheel(mouseX, mouseY);
+    }
+
+    protected void handleMouseHover(int mouseX, int mouseY) {
+        final View view = container.getViewsAtPoint(mouseX, mouseY).findFirst().orElse(null);
+        if (view != null) FocusState.INSTANCE.setHover(view);
+        else FocusState.INSTANCE.clearHover();
     }
 
     protected void handleWheel(int mouseX, int mouseY) {

@@ -141,9 +141,9 @@ public class TextEditorBackend {
 
     public String toJoinedString() {
         final StringBuilder sb = new StringBuilder();
-        for (Line l : lines) {
-            sb.append(l.sb);
-            sb.append('\n');
+        for (int i = 0; i < lines.size(); i++) {
+            if (i != 0) sb.append('\n');
+            sb.append(lines.get(i).sb);
         }
         return sb.toString();
     }

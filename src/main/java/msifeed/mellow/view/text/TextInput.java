@@ -13,7 +13,11 @@ public class TextInput extends View implements InputHandler.Keyboard, InputHandl
     protected TextEditorBackend backend = new TextEditorBackend();
     protected TextInputHelper inputHelper = new TextInputHelper(backend, TextInputHelper.NavMode.LINES);
     protected RenderParts.TextPref pref = new RenderParts.TextPref();
-    protected Geom textOffset = new Geom(2, 3, 0, 0);
+    protected Geom textOffset = new Geom(2, 2, 0, 0);
+
+    protected int colorNormal = 0xffffffff;
+    protected int colorHover = 0xff707070;
+    protected int colorCursor = 0xffffffff;
 
     protected long lastTimePressed = 0;
 
@@ -42,6 +46,11 @@ public class TextInput extends View implements InputHandler.Keyboard, InputHandl
     }
 
     @Override
+    public boolean isFocusable() {
+        return true;
+    }
+
+    @Override
     public boolean onKeyboard(char c, int key) {
         lastTimePressed = System.currentTimeMillis();
         return inputHelper.onKeyboard(c, key);
@@ -57,7 +66,8 @@ public class TextInput extends View implements InputHandler.Keyboard, InputHandl
         RenderShapes.rect(geom, 0xbb000000);
 
         final Geom textGeom = geom.add(textOffset);
-        RenderParts.lines(backend.getViewLines(), textGeom, pref);
+        final int color = isHovered() && !isFocused() ? colorHover : colorNormal;
+        RenderParts.lines(backend.getViewLines(), textGeom, color, pref);
         renderCursor(textGeom);
     }
 
@@ -66,8 +76,8 @@ public class TextInput extends View implements InputHandler.Keyboard, InputHandl
             return;
 
         final int lineHeight = RenderUtils.lineHeight() + pref.gap;
-        geom.translate(backend.getCursorXOffset(), lineHeight * inputHelper.getCursorLineInView() - 2);
-        geom.setSize(2, lineHeight);
-        RenderShapes.rect(geom, pref.color);
+        geom.translate(backend.getCursorXOffset(), lineHeight * inputHelper.getCursorLineInView() - textOffset.y);
+        geom.setSize(1, lineHeight);
+        RenderShapes.rect(geom, colorCursor);
     }
 }

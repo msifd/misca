@@ -1,7 +1,6 @@
 package msifeed.misca.client;
 
 import msifeed.misca.combat.client.GuiCombatOverlay;
-import msifeed.misca.combat.client.GuiScreenCombat;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraftforge.common.MinecraftForge;
@@ -38,10 +37,10 @@ public enum MiscaClient {
     @SubscribeEvent
     void onKeyTyped(InputEvent.KeyInputEvent event) {
         if (charsheetKey.isPressed())
-            Minecraft.getMinecraft().displayGuiScreen(new GuiScreenCharsheet(Minecraft.getMinecraft().player));
+            Minecraft.getMinecraft().displayGuiScreen(new ScreenCharsheet(Minecraft.getMinecraft().player));
         else if (combatKey.isPressed())
-            Minecraft.getMinecraft().displayGuiScreen(new GuiScreenCombat(Minecraft.getMinecraft().player));
+            Minecraft.getMinecraft().displayGuiScreen(new ScreenCombat(Minecraft.getMinecraft().player));
         else if (rollKey.isPressed())
-            Minecraft.getMinecraft().displayGuiScreen(new EffortRollScreen(Minecraft.getMinecraft().player));
+            Minecraft.getMinecraft().displayGuiScreen(new ScreenEffortRoll(Minecraft.getMinecraft().player));
     }
 }
