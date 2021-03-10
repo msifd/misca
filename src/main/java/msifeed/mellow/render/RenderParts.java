@@ -55,7 +55,8 @@ public final class RenderParts {
         GL11.glPushMatrix();
         GL11.glTranslatef(0, 0, geom.z);
 
-        fr.drawString(text, geom.x + pref.xOff, geom.y + pref.yOff, color);
+        if (pref.shadow) fr.drawStringWithShadow(text, geom.x + pref.xOff, geom.y + pref.yOff, color);
+        else fr.drawString(text, geom.x + pref.xOff, geom.y + pref.yOff, color);
 
         GL11.glColor4f(1, 1, 1, 1);
         GL11.glPopMatrix();

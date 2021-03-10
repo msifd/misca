@@ -11,8 +11,6 @@ import msifeed.misca.charsheet.cap.CharsheetProvider;
 import msifeed.misca.rolls.RollRpc;
 import net.minecraft.entity.player.EntityPlayer;
 
-import java.util.stream.Stream;
-
 public class ScreenEffortRoll extends MellowScreen {
     private final EntityPlayer target;
     private final ICharsheet charsheet;
@@ -30,13 +28,16 @@ public class ScreenEffortRoll extends MellowScreen {
 
         UiBuilder.of(container)
                 .add(new Label("Efforts of " + target.getName())).at(0, 10).center(Direction.HORIZONTAL)
-                .forEach(Stream.of(CharEffort.values()), (ui, effort) -> {
-                    final String label = String.format("%s (%d)", effort.toString(), charsheet.effortPools().get(effort));
+
+                .forEach(CharEffort.values(), (ui, effort) -> {
+                    final String label = String.format("[%s (%d)]", effort.toString(), charsheet.effortPools().get(effort));
                     final ButtonLabel btn = new ButtonLabel(label);
                     btn.setCallback(() -> RollRpc.doEffortRoll(target, effort, 0));
 
-                    ui.add(btn).below();
+                    ui.add(btn).below().move(0, 2, 0);
                 })
+
+                .centerGroup(Direction.HORIZONTAL)
                 .build();
     }
 }

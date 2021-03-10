@@ -26,7 +26,7 @@ public class TextEditorBackend {
     private final Geom view = new Geom(0, 0, 100, 100);
     private int viewWidthReserve = 4;
 
-    private int maxLines = Integer.MAX_VALUE;
+    private int maxLines = 1;
     private int maxWidth = Integer.MAX_VALUE;
 
     public TextEditorBackend() {

@@ -1,7 +1,6 @@
 package msifeed.misca.charsheet.cap;
 
 import msifeed.misca.charsheet.CharSkill;
-import msifeed.misca.combat.CharAttribute;
 import msifeed.misca.charsheet.ICharsheet;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;

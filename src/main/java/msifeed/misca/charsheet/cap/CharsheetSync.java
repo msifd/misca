@@ -8,7 +8,6 @@ import msifeed.sys.rpc.RpcException;
 import msifeed.sys.rpc.RpcMethodHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;

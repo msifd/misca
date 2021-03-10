@@ -3,8 +3,6 @@ package msifeed.misca.charstate;
 import msifeed.misca.Misca;
 import msifeed.misca.charstate.cap.*;
 import msifeed.misca.charstate.handler.*;
-import msifeed.misca.potions.CombatPotions;
-import msifeed.misca.potions.NeedsPotions;
 import msifeed.misca.chatex.SpeechEvent;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.attributes.AbstractAttributeMap;

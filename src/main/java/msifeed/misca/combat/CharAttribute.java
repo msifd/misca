@@ -13,7 +13,15 @@ public enum CharAttribute {
 
     public IAttribute attribute = new RangedAttribute(
             null, Misca.MODID + ".attr." + name(),
-            0, 0, 25);
+            0, 0, 25).setShouldWatch(true);
+
+    public int getBase(EntityLivingBase entity) {
+        return (int) entity.getEntityAttribute(attribute).getBaseValue();
+    }
+
+//    public void setBase(EntityLivingBase entity) {
+//        return (int) entity.getEntityAttribute(attribute).getBaseValue();
+//    }
 
     public double get(EntityLivingBase entity) {
         return entity.getEntityAttribute(MOD).getAttributeValue() + entity.getEntityAttribute(attribute).getAttributeValue();

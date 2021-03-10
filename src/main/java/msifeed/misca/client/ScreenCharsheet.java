@@ -22,36 +22,30 @@ public class ScreenCharsheet extends MellowScreen {
         this.target = target;
         this.charsheet = CharsheetProvider.get(target);
 
+        nameInput.grow(100, 0);
         nameInput.insert(charsheet.getName());
-        nameInput.setSize(100, 10);
-        nameInput.getBackend().getView().setSize(100, 10);
-        nameInput.getBackend().setMaxLines(1);
 
+        wikiInput.grow(100, 0);
         wikiInput.insert(charsheet.getWikiPage());
-        wikiInput.setSize(100, 10);
-        wikiInput.getBackend().getView().setSize(100, 10);
-        wikiInput.getBackend().setMaxLines(1);
     }
 
     @Override
     public void initGui() {
         super.initGui();
 
-        container.clearViews();
-
-        try {
+        final int lineHeight = nameInput.getBaseGeom().h;
 
         UiBuilder.of(container)
                 .add(new Label("Charsheet: " + target.getDisplayNameString())).center(Direction.HORIZONTAL)
 
                 .beginGroup()
-                    .add(new Label("Name")).groupBase().size(30, 11).below().move(0, 10, 0)
-                    .add(nameInput).right()
+                    .add(new Label("Name")).size(30, lineHeight).below().move(0, 10, 0)
+                    .add(nameInput).right().move(0, -2, 0)
                     .centerGroup(Direction.HORIZONTAL)
                     .endGroup()
                 .beginGroup()
-                    .add(new Label("Wiki")).groupBase().size(30, 11).below()
-                    .add(wikiInput).right()
+                    .add(new Label("Wiki")).size(30, lineHeight).below().move(0, 4, 0)
+                    .add(wikiInput).right().move(0, -2, 0)
                     .centerGroup(Direction.HORIZONTAL)
                     .endGroup()
 
@@ -64,10 +58,6 @@ public class ScreenCharsheet extends MellowScreen {
                 .centerGroup(Direction.HORIZONTAL)
                 .moveGroup(0, 30, 0)
                 .build();
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
     private void submit() {

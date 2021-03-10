@@ -21,6 +21,10 @@ public class TextInput extends View implements InputHandler.Keyboard, InputHandl
 
     protected long lastTimePressed = 0;
 
+    public TextInput() {
+        setSize(0, RenderUtils.lineHeight() + textOffset.y);
+    }
+
     public boolean isEmpty() {
         return backend.isEmpty();
     }
@@ -43,6 +47,12 @@ public class TextInput extends View implements InputHandler.Keyboard, InputHandl
 
     public RenderParts.TextPref getRenderPref() {
         return pref;
+    }
+
+    @Override
+    public void setSize(int w, int h) {
+        super.setSize(w, h);
+        getBackend().getView().setSize(w, h);
     }
 
     @Override
@@ -75,8 +85,8 @@ public class TextInput extends View implements InputHandler.Keyboard, InputHandl
         if (!isFocused() || (System.currentTimeMillis() - lastTimePressed) % 1000 > 500)
             return;
 
-        final int lineHeight = RenderUtils.lineHeight() + pref.gap;
-        geom.translate(backend.getCursorXOffset(), lineHeight * inputHelper.getCursorLineInView() - textOffset.y);
+        final int lineHeight = RenderUtils.lineHeight();
+        geom.translate(backend.getCursorXOffset(), lineHeight * inputHelper.getCursorLineInView() - textOffset.y / 2);
         geom.setSize(1, lineHeight);
         RenderShapes.rect(geom, colorCursor);
     }

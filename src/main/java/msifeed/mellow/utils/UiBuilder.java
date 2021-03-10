@@ -25,6 +25,7 @@ public class UiBuilder {
     }
 
     public void build() {
+        rootContainer.clearViews();
         getGroup().end();
     }
 
@@ -65,6 +66,12 @@ public class UiBuilder {
 
     public <T> UiBuilder forEach(Iterable<T> iterable, BiConsumer<UiBuilder, T> consumer) {
         for (T val : iterable)
+            consumer.accept(this, val);
+        return this;
+    }
+
+    public <T> UiBuilder forEach(T[] array, BiConsumer<UiBuilder, T> consumer) {
+        for (T val : array)
             consumer.accept(this, val);
         return this;
     }

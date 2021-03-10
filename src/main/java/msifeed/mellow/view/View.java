@@ -20,6 +20,10 @@ public abstract class View {
         setPos(geometry.x + x, geometry.y + y, geometry.z + z);
     }
 
+    public final void grow(int w, int h) {
+        setSize(geometry.w + w, geometry.h + h);
+    }
+
     public void setPos(int x, int y, int z) {
         geometry.setPos(x, y, z);
     }

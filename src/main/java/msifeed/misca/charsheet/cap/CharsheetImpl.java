@@ -1,6 +1,9 @@
 package msifeed.misca.charsheet.cap;
 
-import msifeed.misca.charsheet.*;
+import msifeed.misca.charsheet.CharEffort;
+import msifeed.misca.charsheet.CharResource;
+import msifeed.misca.charsheet.CharSkill;
+import msifeed.misca.charsheet.ICharsheet;
 import msifeed.sys.cap.IntContainer;
 
 public class CharsheetImpl implements ICharsheet {

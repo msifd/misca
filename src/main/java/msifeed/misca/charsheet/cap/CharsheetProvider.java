@@ -2,7 +2,6 @@ package msifeed.misca.charsheet.cap;
 
 import msifeed.misca.Misca;
 import msifeed.misca.charsheet.ICharsheet;
-import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;

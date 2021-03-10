@@ -2,8 +2,6 @@ package msifeed.misca.charsheet;
 
 import msifeed.misca.Misca;
 import msifeed.sys.cap.IntContainer;
-import net.minecraft.entity.ai.attributes.IAttribute;
-import net.minecraft.entity.ai.attributes.RangedAttribute;
 import net.minecraft.util.ResourceLocation;
 
 public interface ICharsheet extends Cloneable {
