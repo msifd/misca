@@ -14,6 +14,7 @@ import java.util.stream.Stream;
 public class UiBuilder {
     private final ViewContainer rootContainer;
     private final Stack<Group> groups = new Stack<>();
+    private BiConsumer<UiBuilder, View> applyToNext = null;
 
     public static UiBuilder of(ViewContainer container) {
         return new UiBuilder(container);
@@ -57,12 +58,18 @@ public class UiBuilder {
 
     public UiBuilder add(@Nonnull View view) {
         getGroup().add(view);
+        if (applyToNext != null) {
+            applyToNext.accept(this, view);
+            applyToNext = null;
+        }
         return this;
     }
 
     public UiBuilder add(Supplier<View> supplier) {
         return add(supplier.get());
     }
+
+    // Generators
 
     public <T> UiBuilder forEach(Iterable<T> iterable, BiConsumer<UiBuilder, T> consumer) {
         for (T val : iterable)
@@ -81,8 +88,8 @@ public class UiBuilder {
         return this;
     }
 
-    public UiBuilder run(Consumer<UiBuilder> runnable) {
-        runnable.accept(this);
+    public UiBuilder apply(Consumer<UiBuilder> consumer) {
+        consumer.accept(this);
         return this;
     }
 
@@ -131,26 +138,16 @@ public class UiBuilder {
 
     public UiBuilder centerGroup(Direction direction) {
         final Group group = getGroup();
-        final Geom cont = group.container.getBaseGeom();
-
-        final Geom cg = new Geom(Integer.MAX_VALUE, Integer.MAX_VALUE, 0, 0);
-        for (View view : group.views) {
-            final Geom g = view.getBaseGeom();
-            cg.x = Math.min(cg.x, g.x);
-            cg.y = Math.min(cg.y, g.y);
-            cg.w = Math.max(cg.w, g.x + g.w);
-            cg.h = Math.max(cg.h, g.y + g.h);
-        }
-        cg.w -= cg.x;
-        cg.h -= cg.y;
+        final Geom container = group.container.getBaseGeom();
+        final Geom content = group.content();
 
         if (direction.isHorizontal()) {
-            final int diff = cg.x - (cont.w - cg.w) / 2;
+            final int diff = content.x - (container.w - content.w) / 2;
             for (View view : group.views)
                 view.getBaseGeom().translate(-diff, 0);
         }
         if (direction.isVertical()) {
-            final int diff = cg.y - (cont.h - cg.h) / 2;
+            final int diff = content.y - (container.h - content.h) / 2;
             for (View view : group.views)
                 view.getBaseGeom().translate(0, -diff);
         }
@@ -164,6 +161,10 @@ public class UiBuilder {
         return this;
     }
 
+    public Geom getGroupContent() {
+        return getGroup().content();
+    }
+
     // Sizing
 
     public UiBuilder size(int w, int h) {
@@ -172,12 +173,6 @@ public class UiBuilder {
     }
 
     // Other
-
-//    public UiBuilder root() {
-//        this.container = rootContainer;
-//        this.currView = rootContainer;
-//        return this;
-//    }
 
     private Group getGroup() {
         return groups.peek();
@@ -206,6 +201,21 @@ public class UiBuilder {
         public void end() {
             for (View v : views)
                 container.addView(v);
+        }
+
+        public Geom content() {
+            final Geom geom = new Geom(Integer.MAX_VALUE, Integer.MAX_VALUE, 0, 0);
+            for (View view : views) {
+                final Geom g = view.getBaseGeom();
+                geom.x = Math.min(geom.x, g.x);
+                geom.y = Math.min(geom.y, g.y);
+                geom.w = Math.max(geom.w, g.x + g.w);
+                geom.h = Math.max(geom.h, g.y + g.h);
+            }
+            geom.w -= geom.x;
+            geom.h -= geom.y;
+
+            return geom;
         }
     }
 }

@@ -1,6 +1,7 @@
 package msifeed.misca.chatex;
 
 import msifeed.misca.Misca;
+import msifeed.misca.charsheet.CharEffort;
 import msifeed.misca.chatex.client.TypingState;
 import msifeed.misca.chatex.client.format.GlobalFormat;
 import msifeed.misca.chatex.client.format.SpeechFormat;
@@ -26,9 +27,11 @@ import java.util.Objects;
 import java.util.UUID;
 
 public class ChatexRpc {
+    private static final String system = "chatex.system";
     private static final String speech = "chatex.speech";
     private static final String global = "chatex.global";
-    private static final String roll = "chatex.roll";
+    private static final String diceRoll = "chatex.diceRoll";
+    private static final String effortRoll = "chatex.effortRoll";
     private static final String notifyTyping = "chatex.typing.notify";
     private static final String broadcastTyping = "chatex.typing.broadcast";
 
@@ -63,9 +66,14 @@ public class ChatexRpc {
         Misca.RPC.sendToAll(global, player.getDisplayNameString(), msg);
     }
 
-    public static void broadcastRoll(EntityPlayerMP sender, String spec, long result) {
-        Misca.RPC.sendToAllTracking(sender, roll, sender.getUniqueID(), spec, result);
-        Misca.RPC.sendTo(sender, roll, sender.getUniqueID(), spec, result);
+    public static void broadcastDiceRoll(EntityPlayerMP sender, String spec, long result) {
+        Misca.RPC.sendToAllTracking(sender, diceRoll, sender.getUniqueID(), spec, result);
+        Misca.RPC.sendTo(sender, diceRoll, sender.getUniqueID(), spec, result);
+    }
+
+    public static void broadcastEffortRoll(EntityPlayerMP sender, CharEffort effort, int amount, int difficulty, boolean result) {
+        Misca.RPC.sendToAllTracking(sender, effortRoll, sender.getUniqueID(), effort.ordinal(), amount, difficulty, result);
+        Misca.RPC.sendTo(sender, effortRoll, sender.getUniqueID(), effort.ordinal(), amount, difficulty, result);
     }
 
     public static void notifyTyping() {
@@ -106,13 +114,26 @@ public class ChatexRpc {
     }
 
     @SideOnly(Side.CLIENT)
-    @RpcMethodHandler(roll)
-    public void onRoll(RpcContext ctx, UUID uuid, String spec, long result) {
+    @RpcMethodHandler(diceRoll)
+    public void onDiceRoll(RpcContext ctx, UUID uuid, String spec, long result) {
         final NetworkPlayerInfo info = Objects.requireNonNull(ctx.getClientHandler().getPlayerInfo(uuid));
         final String name = info.getDisplayName() != null
                 ? info.getDisplayName().getFormattedText()
                 : info.getGameProfile().getName();
         final String msg = String.format("[ROLL] %s: %s = %d", name, spec, result);
+
+        displaySelfMessage(Minecraft.getMinecraft().player, new TextComponentString(msg));
+    }
+
+    @SideOnly(Side.CLIENT)
+    @RpcMethodHandler(effortRoll)
+    public void onEffortRoll(RpcContext ctx, UUID uuid, int effortOrd, int amount, int difficulty, boolean result) {
+        final EntityPlayer target = Minecraft.getMinecraft().world.getPlayerEntityByUUID(uuid);
+        if (target == null) return;
+
+        final String name = target.getDisplayNameString();
+        final CharEffort effort = CharEffort.values()[effortOrd];
+        final String msg = String.format("[EFFORT] %s: %s %d/%d = %s", name, effort.toString(), amount, difficulty, result ? "SUCCESS" : "FAIL");
 
         displaySelfMessage(Minecraft.getMinecraft().player, new TextComponentString(msg));
     }

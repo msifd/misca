@@ -39,21 +39,25 @@ public class ScreenCombat extends MellowScreen {
         UiBuilder.of(container)
                 .add(new Label("Combat: " + target.getName())).center(Direction.HORIZONTAL)
 
-                .forEach(CharAttribute.values(), (ui, attr) ->
-                    ui.beginGroup()
-                    .add(new Label(attr.name())).size(20, lineHeight).below().move(0, 4, 0)
-                    .add(attrInputs.get(attr)).right().move(0, -1, 0)
-                    .centerGroup(Direction.HORIZONTAL)
-                    .endGroup())
+                .beginGroup()
+                    .forEach(CharAttribute.values(), (ui, attr) ->
+                        ui.beginGroup()
+                        .add(new Label(attr.name())).size(20, lineHeight).below().move(0, 3, 0)
+                        .add(attrInputs.get(attr)).right().move(0, -1, 0)
+                        .centerGroup(Direction.HORIZONTAL)
+                        .endGroup())
+                    .moveGroup(0, 10, 0)
+                    .endGroup()
 
                 .add(() -> {
                     final ButtonLabel btn = new ButtonLabel("[Submit]");
+                    btn.setSize(50, 15);
                     btn.setCallback(this::submit);
                     return btn;
                 }).below().move(0, 10, 0).center(Direction.HORIZONTAL)
 
-                .centerGroup(Direction.HORIZONTAL)
-                .moveGroup(0, 30, 0)
+                .centerGroup(Direction.BOTH)
+                .apply(ui -> ui.moveGroup(0, -ui.getGroupContent().h * 2 / 3, 0))
                 .build();
     }
 

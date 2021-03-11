@@ -14,6 +14,11 @@ public abstract class MellowScreen extends GuiScreen {
     protected ViewContainer container = new ViewContainer();
 
     @Override
+    public boolean doesGuiPauseGame() {
+        return false;
+    }
+
+    @Override
     public void initGui() {
         FocusState.INSTANCE.reset();
 

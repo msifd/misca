@@ -2,6 +2,7 @@ package msifeed.misca.supplies.cap;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
+import net.minecraftforge.common.config.Config;
 
 import java.util.List;
 import java.util.Random;

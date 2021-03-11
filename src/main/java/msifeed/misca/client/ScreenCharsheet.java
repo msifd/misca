@@ -51,12 +51,13 @@ public class ScreenCharsheet extends MellowScreen {
 
                 .add(() -> {
                     final ButtonLabel btn = new ButtonLabel("[Submit]");
+                    btn.setSize(50, 15);
                     btn.setCallback(this::submit);
                     return btn;
                 }).below().move(0, 10, 0).center(Direction.HORIZONTAL)
 
-                .centerGroup(Direction.HORIZONTAL)
-                .moveGroup(0, 30, 0)
+                .centerGroup(Direction.BOTH)
+                .apply(ui -> ui.moveGroup(0, -ui.getGroupContent().h * 2 / 3, 0))
                 .build();
     }
 

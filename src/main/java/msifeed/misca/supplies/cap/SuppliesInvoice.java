@@ -21,7 +21,7 @@ public class SuppliesInvoice implements ISuppliesInvoice {
 
     @Override
     public long getDeliveryInterval() {
-        return interval;
+        return Math.max(interval, 1);
     }
 
     @Override

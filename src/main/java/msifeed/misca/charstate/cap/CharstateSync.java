@@ -16,11 +16,10 @@ public class CharstateSync {
     private static final String sync = "charstate.sync";
     private static final String syncSelf = "charstate.syncSelf";
 
-    public static void sync(EntityLivingBase target) {
+    public static void sync(EntityPlayerMP target) {
         final NBTTagCompound nbt = CharstateProvider.encode(CharstateProvider.get(target));
-        if (target instanceof EntityPlayerMP)
-            Misca.RPC.sendTo((EntityPlayerMP) target, syncSelf, nbt);
         Misca.RPC.sendToAllTracking(target, sync, target.getUniqueID(), nbt);
+        Misca.RPC.sendTo(target, syncSelf, nbt);
     }
 
     @SideOnly(Side.CLIENT)

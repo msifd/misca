@@ -45,6 +45,9 @@ public class RpcHandlerRegistry {
             if (!codec.hasCodecForType(types[i]))
                 throw new RuntimeException(String.format("RPC method '%s': param %d (%s) is not supported", rpcMethod, i + 1, types[i].getSimpleName()));
 
+        if (handlers.containsKey(rpcMethod))
+            throw new RuntimeException(String.format("RPC method '%s': handler already exists", rpcMethod));
+
         handlers.put(rpcMethod, new Handler(obj, m, hasContext));
     }
 

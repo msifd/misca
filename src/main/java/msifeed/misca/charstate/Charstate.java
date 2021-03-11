@@ -7,6 +7,7 @@ import msifeed.misca.chatex.SpeechEvent;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.attributes.AbstractAttributeMap;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.event.entity.EntityEvent;
@@ -47,11 +48,11 @@ public class Charstate {
 
     @SubscribeEvent
     public void onPlayerTick(LivingEvent.LivingUpdateEvent event) {
-        if (!(event.getEntity() instanceof EntityPlayer)) return;
+        if (!(event.getEntity() instanceof EntityPlayerMP)) return;
         if (event.getEntity().ticksExisted % UPDATE_PER_TICKS != 1) return;
         if (event.getEntity().world.isRemote) return;
 
-        final EntityPlayer player = (EntityPlayer) event.getEntityLiving();
+        final EntityPlayerMP player = (EntityPlayerMP) event.getEntityLiving();
 
         final ICharstate state = CharstateProvider.get(player);
         final long absSec = state.consumeTime();

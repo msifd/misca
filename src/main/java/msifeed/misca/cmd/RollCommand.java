@@ -62,7 +62,7 @@ public class RollCommand extends CommandBase {
         result += modifier;
 
         if (sender instanceof EntityPlayerMP) {
-            ChatexRpc.broadcastRoll((EntityPlayerMP) sender, joined, result);
+            ChatexRpc.broadcastDiceRoll((EntityPlayerMP) sender, joined, result);
         } else {
             final String name = sender.getDisplayName().getFormattedText();
             final String msg = String.format("[ROLL] %s: %s = %d", name, joined, result);

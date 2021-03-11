@@ -1,6 +1,6 @@
 package msifeed.misca.charstate.cap;
 
-import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
@@ -20,8 +20,8 @@ public class CharstateProvider implements ICapabilitySerializable<NBTBase> {
     private final ICharstate instance = Objects.requireNonNull(CAP.getDefaultInstance());
 
     @Nonnull
-    public static ICharstate get(@Nonnull EntityLivingBase entity) {
-        return Objects.requireNonNull(entity.getCapability(CAP, null));
+    public static ICharstate get(@Nonnull EntityPlayer player) {
+        return Objects.requireNonNull(player.getCapability(CAP, null));
     }
 
     public static NBTTagCompound encode(ICharstate state) {
