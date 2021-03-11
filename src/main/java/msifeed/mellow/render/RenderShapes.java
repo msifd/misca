@@ -72,6 +72,7 @@ public final class RenderShapes {
         bufferbuilder.pos(geom.x, geom.y, z).endVertex();
         tessellator.draw();
 
+        GlStateManager.color(1, 1, 1, 1);
         GlStateManager.enableTexture2D();
         GlStateManager.disableBlend();
     }

@@ -31,6 +31,7 @@ public class ChatexScreen extends MellowScreen implements ITabCompleter {
     private String historyInputBuffer = "";
 
     public ChatexScreen(String text) {
+        input.setSize(width, RenderUtils.lineHeight());
         input.insert(text);
         FocusState.INSTANCE.setFocus(input);
 
@@ -49,7 +50,7 @@ public class ChatexScreen extends MellowScreen implements ITabCompleter {
         final int inputHeight = inputLineHeight * input.getBackend().getLineCount() + 3;
         input.setPos(5, height - inputHeight - 5, 1);
         input.setSize(inputWidth, inputHeight);
-        input.getBackend().getView().setSize(inputWidth, inputHeight);
+//        input.getBackend().getView().setSize(inputWidth, inputHeight);
         // FIXME: fix input field view size
 
         resizer.getScreenSize().set(width, height);

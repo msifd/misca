@@ -1,6 +1,7 @@
 package msifeed.misca.combat.client;
 
 import msifeed.mellow.render.RenderUtils;
+import msifeed.mellow.utils.Geom;
 import msifeed.misca.client.MiscaConfig;
 import msifeed.misca.combat.Combat;
 import msifeed.misca.combat.battle.Battle;
@@ -29,7 +30,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 public class GuiCombatOverlay {
-    private final CombatantFrameView frame = new CombatantFrameView();
+    private final CombatantsBarRender frame = new CombatantsBarRender();
     private final ActionPointsBarView bar = new ActionPointsBarView();
 
     @SubscribeEvent
@@ -40,28 +41,35 @@ public class GuiCombatOverlay {
         final EntityPlayer player = Minecraft.getMinecraft().player;
         if (!CombatantProvider.get(player).isInBattle()) return;
 
-        drawTextInfo();
-        drawHud();
+//        drawTextInfo();
+        drawHud(event.getPartialTicks());
     }
 
-    private void drawHud() {
+    private void drawHud(float partialTicks) {
         final Battle state = BattleStateClient.STATE;
 
         final ScaledResolution resolution = RenderUtils.getScaledResolution();
-        final int pxPerFrame = frame.getRenderGeom().w + 1;
-        final int frameOffset = (resolution.getScaledWidth() - state.getQueue().size() * pxPerFrame) / 2;
+        final int frame = 32;
+        final int gap = 2;
+        final int barFullWidth = (int) state.getCombatants()
+                .mapToDouble(CombatantsBarRender::getEntityWidth)
+                .map(val -> val * frame + gap)
+                .sum();
 
-        frame.setPos(0, 0, 0);
-        frame.translate(frameOffset, 0, 0);
+
+        final int[] posX = {(resolution.getScaledWidth() - barFullWidth) / 2};
 
         state.getCombatants().forEach(entity -> {
-            frame.setFace(entity);
-            frame.render(frame.getRenderGeom());
-            frame.translate(pxPerFrame, 0, 0);
+            final int frameWidth = (int) (CombatantsBarRender.getEntityWidth(entity) * frame);
+            CombatantsBarRender.renderModel(entity, posX[0], 0, frame, frameWidth);
+            CombatantsBarRender.renderBars(entity, posX[0], frame, frameWidth);
+
+            posX[0] += frameWidth + gap;
         });
 
-        bar.setPos(0, 0, 0);
-        bar.translate(frameOffset - bar.getRenderGeom().w - 5, 5, 0);
+        bar.setSize(80, bar.getBaseGeom().h);
+        bar.setPos(5, resolution.getScaledHeight() - 5 - bar.getBaseGeom().h, 0);
+//        bar.translate(frameOffset - bar.getRenderGeom().w - 5, 5, 0);
         bar.render(bar.getRenderGeom());
     }
 
@@ -136,6 +144,7 @@ public class GuiCombatOverlay {
 
     @SubscribeEvent
     public void onRenderEntity(RenderLivingEvent.Post<EntityLivingBase> event) {
+        if (true) return;
         if (!MiscaConfig.combatDebug) return;
 
         final EntityPlayer self = Minecraft.getMinecraft().player;
