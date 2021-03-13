@@ -1,12 +1,15 @@
 package msifeed.misca.charsheet.cap;
 
 import msifeed.misca.charsheet.ICharsheet;
+import net.minecraft.enchantment.Enchantment;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.potion.Potion;
 import net.minecraft.util.EnumFacing;
 import net.minecraftforge.common.capabilities.Capability;
 
 import javax.annotation.Nullable;
+import java.util.Map;
 
 public class CharsheetStorage implements Capability.IStorage<ICharsheet> {
     @Nullable
@@ -20,6 +23,16 @@ public class CharsheetStorage implements Capability.IStorage<ICharsheet> {
         instance.effortPools().writeNBT(Tag.effortPools, nbt);
         instance.resources().writeNBT(Tag.resources, nbt);
 
+        final NBTTagCompound potionsNbt = new NBTTagCompound();
+        for (Map.Entry<Potion, Integer> entry : instance.potions().entrySet())
+            potionsNbt.setByte(entry.getKey().getRegistryName().toString(), entry.getValue().byteValue());
+        nbt.setTag(Tag.potions, potionsNbt);
+
+        final NBTTagCompound enchantsNbt = new NBTTagCompound();
+        for (Map.Entry<Enchantment, Integer> entry : instance.enchants().entrySet())
+            enchantsNbt.setByte(entry.getKey().getRegistryName().toString(), entry.getValue().byteValue());
+        nbt.setTag(Tag.enchants, enchantsNbt);
+
         return nbt;
     }
 
@@ -31,6 +44,24 @@ public class CharsheetStorage implements Capability.IStorage<ICharsheet> {
         instance.skills().readNBT(nbt, Tag.skills);
         instance.effortPools().readNBT(nbt, Tag.effortPools);
         instance.resources().readNBT(nbt, Tag.resources);
+
+        instance.potions().clear();
+        final NBTTagCompound potionsNbt = nbt.getCompoundTag(Tag.potions);
+        for (String key : potionsNbt.getKeySet()) {
+            final Potion p = Potion.getPotionFromResourceLocation(key);
+            if (p != null) {
+                instance.potions().put(p, (int) potionsNbt.getByte(key));
+            }
+        }
+
+        instance.enchants().clear();
+        final NBTTagCompound enchantsNbt = nbt.getCompoundTag(Tag.enchants);
+        for (String key : enchantsNbt.getKeySet()) {
+            final Enchantment e = Enchantment.getEnchantmentByLocation(key);
+            if (e != null) {
+                instance.enchants().put(e, (int) enchantsNbt.getByte(key));
+            }
+        }
     }
 
     private static class Tag {
@@ -39,5 +70,7 @@ public class CharsheetStorage implements Capability.IStorage<ICharsheet> {
         private static final String skills = "skills";
         private static final String effortPools = "effortPools";
         private static final String resources = "resources";
+        private static final String potions = "potions";
+        private static final String enchants = "enchants";
     }
 }

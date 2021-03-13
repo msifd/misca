@@ -5,12 +5,13 @@
   "package": "msifeed.misca.mixins",
   "refmap": "misca.refmap.json",
   "mixins": [
+    "EnchantmentHelperMixin",
     "EntityLivingBaseMixin",
     "GuiChatMixin",
     "GuiIngameMixin",
+    "MinecraftServerMixin",
     "ModelRendererMixin",
     "NBTTagLongArrayMixin",
-    "PlayerListMixin",
-    "MinecraftServerMixin"
+    "PlayerListMixin"
   ]
 }

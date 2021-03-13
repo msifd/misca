@@ -106,6 +106,7 @@ public class Misca {
         event.registerServerCommand(new NeedsCommand());
         event.registerServerCommand(new EffortsCommand());
         event.registerServerCommand(new SkillsCommand());
+        event.registerServerCommand(new BlessCommand());
     }
 
     @EventHandler

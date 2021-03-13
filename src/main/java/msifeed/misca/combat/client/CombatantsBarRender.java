@@ -2,7 +2,6 @@ package msifeed.misca.combat.client;
 
 import msifeed.mellow.render.RenderShapes;
 import msifeed.mellow.utils.Geom;
-import msifeed.misca.combat.Combat;
 import msifeed.misca.combat.cap.CombatantProvider;
 import msifeed.misca.combat.cap.ICombatant;
 import net.minecraft.client.Minecraft;

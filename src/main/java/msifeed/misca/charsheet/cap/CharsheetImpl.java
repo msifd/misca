@@ -5,6 +5,11 @@ import msifeed.misca.charsheet.CharResource;
 import msifeed.misca.charsheet.CharSkill;
 import msifeed.misca.charsheet.ICharsheet;
 import msifeed.sys.cap.IntContainer;
+import net.minecraft.enchantment.Enchantment;
+import net.minecraft.potion.Potion;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class CharsheetImpl implements ICharsheet {
     private String name = "";
@@ -12,6 +17,8 @@ public class CharsheetImpl implements ICharsheet {
     private final IntContainer<CharSkill> skills = new IntContainer<>(CharSkill.class, 0, 25);
     private final IntContainer<CharEffort> effortPools = new IntContainer<>(CharEffort.class, 0, 50);
     private final IntContainer<CharResource> resources = new IntContainer<>(CharResource.class, 0, 1000);
+    private final HashMap<Potion, Integer> potions = new HashMap<>();
+    private final HashMap<Enchantment, Integer> enchants = new HashMap<>();
 
     @Override
     public String getName() {
@@ -49,12 +56,26 @@ public class CharsheetImpl implements ICharsheet {
     }
 
     @Override
+    public Map<Potion, Integer> potions() {
+        return potions;
+    }
+
+    @Override
+    public Map<Enchantment, Integer> enchants() {
+        return enchants;
+    }
+
+    @Override
     public void replaceWith(ICharsheet charsheet) {
         name = charsheet.getName();
         wikiPage = charsheet.getWikiPage();
         skills.replaceWith(charsheet.skills());
         effortPools.replaceWith(charsheet.effortPools());
         resources.replaceWith(charsheet.resources());
+        potions.clear();
+        potions.putAll(charsheet.potions());
+        enchants.clear();
+        enchants.putAll(charsheet.enchants());
     }
 
     @Override

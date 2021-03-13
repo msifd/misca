@@ -2,14 +2,11 @@ package msifeed.misca.combat.client;
 
 import msifeed.mellow.render.RenderShapes;
 import msifeed.mellow.utils.Geom;
-import msifeed.mellow.view.View;
 import msifeed.misca.combat.Combat;
 import msifeed.misca.combat.cap.CombatantProvider;
 import msifeed.misca.combat.cap.ICombatant;
 import msifeed.misca.combat.rules.Rules;
-import net.minecraft.client.Minecraft;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.player.EntityPlayer;
 
 public class ActionPointsBarView {
     public static void render(Geom geom, EntityLivingBase entity) {
