@@ -21,13 +21,13 @@ public class ButtonLabel extends View implements InputHandler.MouseClick {
 
     public ButtonLabel(String text) {
         setText(text);
-        setSize(textWidth + 3, RenderUtils.lineHeight() + 2);
+        setSize(textWidth, RenderUtils.lineHeight() + 2);
     }
 
     @Override
     public void setSize(int w, int h) {
         super.setSize(w, h);
-        textOffset.setPos((w - textWidth) / 2 + 1, (h - RenderUtils.lineHeight()) / 2 + 1);
+        textOffset.setPos((w - textWidth) / 2, (h - RenderUtils.lineHeight()) / 2 + 1);
     }
 
     public String getText() {

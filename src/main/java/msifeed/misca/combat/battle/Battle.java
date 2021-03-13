@@ -1,7 +1,9 @@
 package msifeed.misca.combat.battle;
 
+import msifeed.misca.combat.CharAttribute;
 import msifeed.misca.combat.Combat;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 
 import javax.annotation.Nullable;
@@ -37,6 +39,10 @@ public class Battle {
 
     public void addMember(EntityLivingBase entity) {
         members.put(entity.getUniqueID(), new WeakReference<>(entity));
+
+        if (!entity.world.isRemote && !(entity instanceof EntityPlayer)) {
+            setCombatantAttributes(entity, 5);
+        }
     }
 
     public void removeMember(UUID entityId) {
@@ -118,5 +124,11 @@ public class Battle {
     public void clear() {
         members.clear();
         queue.clear();
+    }
+
+    private static void setCombatantAttributes(EntityLivingBase entity, int amount) {
+        for (CharAttribute attr : CharAttribute.values()) {
+            entity.getEntityAttribute(attr.attribute).setBaseValue(amount);
+        }
     }
 }

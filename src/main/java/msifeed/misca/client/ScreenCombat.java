@@ -57,7 +57,7 @@ public class ScreenCombat extends MellowScreen {
                 }).below().move(0, 10, 0).center(Direction.HORIZONTAL)
 
                 .centerGroup(Direction.BOTH)
-                .apply(ui -> ui.moveGroup(0, -ui.getGroupContent().h * 2 / 3, 0))
+                .apply(ui -> ui.moveGroup(0, -ui.getGroupContent().h / 3, 0))
                 .build();
     }
 

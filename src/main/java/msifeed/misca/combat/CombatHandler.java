@@ -62,7 +62,7 @@ public class CombatHandler {
         if (battle == null || !battle.isLeader(entity.getUniqueID())) return;
 
         final double movementAp = Combat.getRules().movementActionPoints(com.getPosition(), entity.getPositionVector());
-        if (com.getActionPoints() < movementAp) {
+        if (com.getActionPoints() <= 0 || com.getActionPoints() < movementAp) {
             BattleFlow.consumeMovementAp(entity);
             CombatantSync.sync(entity);
             Combat.MANAGER.nextTurn(battle);

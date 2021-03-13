@@ -1,7 +1,6 @@
 package msifeed.misca.combat.client;
 
 import msifeed.mellow.render.RenderUtils;
-import msifeed.mellow.utils.Geom;
 import msifeed.misca.client.MiscaConfig;
 import msifeed.misca.combat.Combat;
 import msifeed.misca.combat.battle.Battle;
@@ -30,9 +29,6 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 public class GuiCombatOverlay {
-    private final CombatantsBarRender frame = new CombatantsBarRender();
-    private final ActionPointsBarView bar = new ActionPointsBarView();
-
     @SubscribeEvent
     public void onRenderOverlay(RenderGameOverlayEvent.Post event) {
         if (!MiscaConfig.combatDebug) return;
@@ -42,10 +38,10 @@ public class GuiCombatOverlay {
         if (!CombatantProvider.get(player).isInBattle()) return;
 
 //        drawTextInfo();
-        drawHud(event.getPartialTicks());
+        drawHud();
     }
 
-    private void drawHud(float partialTicks) {
+    private void drawHud() {
         final Battle state = BattleStateClient.STATE;
 
         final ScaledResolution resolution = RenderUtils.getScaledResolution();
@@ -66,11 +62,6 @@ public class GuiCombatOverlay {
 
             posX[0] += frameWidth + gap;
         });
-
-        bar.setSize(80, bar.getBaseGeom().h);
-        bar.setPos(5, resolution.getScaledHeight() - 5 - bar.getBaseGeom().h, 0);
-//        bar.translate(frameOffset - bar.getRenderGeom().w - 5, 5, 0);
-        bar.render(bar.getRenderGeom());
     }
 
     private static void drawTextInfo() {

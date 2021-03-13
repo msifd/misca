@@ -70,7 +70,7 @@ public class ScreenEffortRoll extends MellowScreen {
                     .endGroup()
 
                 .centerGroup(Direction.BOTH)
-                .apply(ui -> ui.moveGroup(0, -ui.getGroupContent().h * 2 / 3, 0))
+                .moveGroup(0, -30, 0)
                 .build();
     }
 
