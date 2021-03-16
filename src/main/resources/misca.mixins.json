@@ -5,6 +5,7 @@
   "package": "msifeed.misca.mixins",
   "refmap": "misca.refmap.json",
   "mixins": [
+    "AdvancementManagerMixin",
     "EnchantmentHelperMixin",
     "EntityLivingBaseMixin",
     "GuiChatMixin",
@@ -12,6 +13,7 @@
     "MinecraftServerMixin",
     "ModelRendererMixin",
     "NBTTagLongArrayMixin",
-    "PlayerListMixin"
+    "PlayerListMixin",
+    "UnpackedBakedQuadMixin"
   ]
 }
