@@ -53,6 +53,7 @@ public class TextInput extends View implements InputHandler.Keyboard, InputHandl
     public void setSize(int w, int h) {
         super.setSize(w, h);
         getBackend().getView().setSize(w, h);
+        getBackend().getView().setPos(0, 0);
     }
 
     @Override
