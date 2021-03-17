@@ -1,7 +1,9 @@
 package msifeed.misca.chatex.cmd;
 
+import msifeed.misca.MiscaPerms;
 import msifeed.misca.chatex.ChatexRpc;
 import net.minecraft.command.CommandBase;
+import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
@@ -9,33 +11,37 @@ import net.minecraft.server.MinecraftServer;
 import java.util.Collections;
 import java.util.List;
 
-public class GlobalCommand extends CommandBase {
+public class GmGlobalCommand extends CommandBase {
+    private static final List<String> ALIASES = Collections.singletonList("s");
+
     @Override
     public String getName() {
-        return "global";
+        return "gmgl";
     }
 
     @Override
     public List<String> getAliases() {
-        return Collections.singletonList("g");
+        return ALIASES;
     }
 
     @Override
     public String getUsage(ICommandSender sender) {
-        return "/global <text>";
+        return "/gmgl <text>";
     }
 
     @Override
-    public int getRequiredPermissionLevel() {
-        return 0;
+    public boolean checkPermission(MinecraftServer server, ICommandSender sender) {
+        return MiscaPerms.isGameMaster(sender);
     }
 
     @Override
-    public void execute(MinecraftServer server, ICommandSender sender, String[] args) {
+    public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
         if (!(sender instanceof EntityPlayerMP)) return;
 
+        final EntityPlayerMP player = (EntityPlayerMP) sender;
         final String text = String.join(" ", args).trim();
+
         if (!text.isEmpty())
-            ChatexRpc.broadcastGlobal((EntityPlayerMP) sender, text);
+            ChatexRpc.broadcastGameMasterGlobal(player, text);
     }
 }

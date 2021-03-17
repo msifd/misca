@@ -4,9 +4,7 @@ import msifeed.misca.Misca;
 import msifeed.misca.chatex.client.ChatGuiHandler;
 import msifeed.misca.chatex.client.NametagHandler;
 import msifeed.misca.chatex.client.TypingGuiHandler;
-import msifeed.misca.chatex.cmd.GlobalCommand;
-import msifeed.misca.chatex.cmd.WhisperCommand;
-import msifeed.misca.chatex.cmd.YellCommand;
+import msifeed.misca.chatex.cmd.*;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
@@ -26,5 +24,9 @@ public class Chatex {
         event.registerServerCommand(new GlobalCommand());
         event.registerServerCommand(new WhisperCommand());
         event.registerServerCommand(new YellCommand());
+
+        event.registerServerCommand(new GmGlobalCommand());
+        event.registerServerCommand(new GmPmCommand());
+        event.registerServerCommand(new GmSayCommand());
     }
 }

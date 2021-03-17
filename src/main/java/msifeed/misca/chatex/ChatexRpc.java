@@ -20,6 +20,7 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.client.FMLClientHandler;
+import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -27,7 +28,8 @@ import java.util.Objects;
 import java.util.UUID;
 
 public class ChatexRpc {
-    private static final String system = "chatex.system";
+    private static final String raw = "chatex.raw";
+    private static final String gmGlobal = "chatex.gmGlobal";
     private static final String speech = "chatex.speech";
     private static final String global = "chatex.global";
     private static final String diceRoll = "chatex.diceRoll";
@@ -43,9 +45,14 @@ public class ChatexRpc {
     public void onSpeech(RpcContext ctx, UUID speakerId, int range, String msg) {
         if (ctx.side.isServer()) {
             final EntityPlayerMP sender = ctx.getServerHandler().player;
-            final EntityPlayer speaker = sender.world.getPlayerEntityByUUID(speakerId);
-            if (speaker instanceof EntityPlayerMP)
-                broadcastSpeech((EntityPlayerMP) speaker, range, msg);
+            final EntityPlayerMP speaker = (EntityPlayerMP) sender.world.getPlayerEntityByUUID(speakerId);
+
+            if (sender == speaker && GameMasterParams.INSTANCE.shouldUseGmSay(speaker)) {
+                final GameMasterParams.Entry params = GameMasterParams.INSTANCE.getOrCreate(speaker.getUniqueID());
+                broadcastRaw(speaker, params.range, params.format(msg));
+            } else {
+                broadcastSpeech(speaker, range, msg);
+            }
         } else {
             onSpeechClient(speakerId, range, msg);
         }
@@ -53,12 +60,26 @@ public class ChatexRpc {
 
     // // // // Server senders
 
+    public static void directRaw(EntityPlayerMP sender, ITextComponent component) {
+        Misca.RPC.sendTo(sender, raw, component);
+    }
+
+    public static void broadcastRaw(EntityPlayerMP sender, int range, ITextComponent component) {
+        final NetworkRegistry.TargetPoint point = new NetworkRegistry.TargetPoint(sender.dimension, sender.posX, sender.posY, sender.posZ, range);
+        Misca.RPC.sendToAllAround(point, raw, component);
+    }
+
     public static void broadcastSpeech(EntityPlayerMP player, int range, String msg) {
         final SpeechEvent event = new SpeechEvent(player, range, msg, new TextComponentString(msg));
         if (MinecraftForge.EVENT_BUS.post(event)) return;
 
         Misca.RPC.sendToAllTracking(player, speech, player.getUniqueID(), range, msg);
         Misca.RPC.sendTo(player, speech, player.getUniqueID(), range, msg);
+    }
+
+    public static void broadcastGameMasterGlobal(EntityPlayerMP player, String msg) {
+        // TODO: get name from charsheet
+        Misca.RPC.sendToAll(gmGlobal, player.getName(), msg);
     }
 
     public static void broadcastGlobal(EntityPlayerMP player, String msg) {
@@ -107,10 +128,24 @@ public class ChatexRpc {
     }
 
     @SideOnly(Side.CLIENT)
+    @RpcMethodHandler(raw)
+    public void onRaw(ITextComponent component) {
+        final EntityPlayerSP self = Minecraft.getMinecraft().player;
+        displaySelfMessage(self, component);
+    }
+
+    @SideOnly(Side.CLIENT)
+    @RpcMethodHandler(gmGlobal)
+    public void onGmGlobal(String speaker, String msg) {
+        final EntityPlayerSP self = Minecraft.getMinecraft().player;
+        displaySelfMessage(self, GlobalFormat.gameMaster(self, speaker, msg));
+    }
+
+    @SideOnly(Side.CLIENT)
     @RpcMethodHandler(global)
     public void onGlobal(String speaker, String msg) {
         final EntityPlayerSP self = Minecraft.getMinecraft().player;
-        displaySelfMessage(self, GlobalFormat.format(self, speaker, msg));
+        displaySelfMessage(self, GlobalFormat.regular(self, speaker, msg));
     }
 
     @SideOnly(Side.CLIENT)
