@@ -17,24 +17,47 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import java.util.Map;
+import java.util.Set;
+
 @Mixin(EntityLivingBase.class)
 public abstract class EntityLivingBaseMixin {
-    @Inject(at = @At("HEAD"), method = "updatePotionEffects", cancellable = true)
+    @Inject(method = "updatePotionEffects", at = @At("HEAD"), cancellable = true)
     public void updatePotionEffects(CallbackInfo ci) {
         final EntityLivingBase self = (EntityLivingBase) (Object) this; // Beautiful T_T
 
-        final ICombatant com = CombatantProvider.getOptional(self);
-        if (com == null || !com.isInBattle()) return;
-
-        final Battle battle;
-        if (self.world.isRemote) battle = BattleStateClient.STATE;
-        else battle = Combat.MANAGER.getBattle(com.getBattleId());
-
-        if (battle == null || !battle.shouldUpdatePotions(self))
+        if (!shouldUpdatePotions(self)) {
             ci.cancel();
+        } else if (self instanceof EntityPlayer) {
+            updateBlessPotions((EntityPlayer) self);
+        }
     }
 
-    @Inject(at = @At("RETURN"), method = "isPotionActive", cancellable = true)
+    private static boolean shouldUpdatePotions(EntityLivingBase self) {
+        final ICombatant com = CombatantProvider.getOptional(self);
+        if (com == null || !com.isInBattle())
+            return true;
+
+        final Battle battle = self.world.isRemote
+                ? BattleStateClient.STATE
+                : Combat.MANAGER.getBattle(com.getBattleId());
+
+        return battle == null || battle.shouldUpdatePotions(self);
+    }
+
+    private static void updateBlessPotions(EntityPlayer self) {
+        final ICharsheet sheet = CharsheetProvider.get(self);
+        final Set<Potion> realPotions = self.getActivePotionMap().keySet();
+
+        for (Map.Entry<Potion, Integer> e : sheet.potions().entrySet()) {
+            if (realPotions.contains(e.getKey()))
+                continue; // Real potions will be updated anyway
+            if (e.getKey().isReady(self.ticksExisted, e.getValue())) // Use entity ticks instead of duration
+                e.getKey().performEffect(self, e.getValue());
+        }
+    }
+
+    @Inject(method = "isPotionActive", at = @At("RETURN"), cancellable = true)
     public void isPotionActive(Potion potion, CallbackInfoReturnable<Boolean> cir) {
         final EntityLivingBase self = (EntityLivingBase) (Object) this;
         if (!(self instanceof EntityPlayer)) return;
@@ -45,7 +68,7 @@ public abstract class EntityLivingBaseMixin {
             cir.setReturnValue(true);
     }
 
-    @Inject(at = @At("RETURN"), method = "getActivePotionEffect", cancellable = true)
+    @Inject(method = "getActivePotionEffect", at = @At("RETURN"), cancellable = true)
     public void getActivePotionEffect(Potion potion, CallbackInfoReturnable<PotionEffect> cir) {
         final EntityLivingBase self = (EntityLivingBase) (Object) this;
         if (!(self instanceof EntityPlayer)) return;
