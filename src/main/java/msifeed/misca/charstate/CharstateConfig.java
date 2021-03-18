@@ -8,6 +8,7 @@ public class CharstateConfig {
 
     public double sanityRestPerFood = 1;
     public double sanityRestPerSpeechChar = 0.001;
+    public double sanityRestModPerPsySkill = 0.15;
     public double sanityCostPerSec = 0.000027;
     public double sanityCostPerSecInDarkness = 0.000055;
     public double sanityCostPerDamage = 0.1;

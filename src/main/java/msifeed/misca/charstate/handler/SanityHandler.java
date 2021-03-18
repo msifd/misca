@@ -80,6 +80,8 @@ public class SanityHandler {
 
     public void handleSpeech(EntityPlayerMP source, int range, String msg) {
         final CharstateConfig config = Misca.getSharedConfig().charstate;
+        final int psychology = CharsheetProvider.get(source).skills().get(CharSkill.psychology);
+        final double psychologyMod = 1 + config.sanityRestModPerPsySkill * psychology;
 
         for (EntityPlayer player : source.world.playerEntities) {
             if (player == source) continue;
@@ -88,7 +90,7 @@ public class SanityHandler {
             if (distance > range) continue;
 
             final double distanceMod = (range - distance) / range;
-            final double restored = msg.length() * config.sanityRestPerSpeechChar * distanceMod;
+            final double restored = msg.length() * config.sanityRestPerSpeechChar * psychologyMod * distanceMod;
 
             final IAttributeInstance inst = player.getEntityAttribute(SANITY);
             inst.setBaseValue(SANITY.clampValue(inst.getBaseValue() + restored));
