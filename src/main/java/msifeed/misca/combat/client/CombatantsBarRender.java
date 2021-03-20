@@ -4,6 +4,7 @@ import msifeed.mellow.render.RenderShapes;
 import msifeed.mellow.utils.Geom;
 import msifeed.misca.combat.Combat;
 import msifeed.misca.combat.battle.Battle;
+import msifeed.misca.combat.battle.BattleStateClient;
 import msifeed.misca.combat.cap.CombatantProvider;
 import msifeed.misca.combat.cap.ICombatant;
 import msifeed.misca.combat.rules.Rules;
@@ -42,7 +43,7 @@ public class CombatantsBarRender {
 
         entity.rotationPitch = 0;
 
-        if (entity == player) {
+        if (entity.getUniqueID().equals(player.getUniqueID())) {
             final Vec3d pos = CombatantProvider.get(entity).getPosition();
             final double yaw = Math.atan2(pos.x - player.posX, pos.z - player.posZ) / Math.PI / 2 * 360;
             entity.prevRenderYawOffset += (float) yaw;
@@ -74,8 +75,7 @@ public class CombatantsBarRender {
 
     public static void renderBars(EntityLivingBase entity, int posX, int posY, int width) {
         final ICombatant com = CombatantProvider.get(entity);
-        final Battle battle = Combat.MANAGER.getBattle(com.getBattleId());
-        if (battle == null) return;
+        final Battle battle = BattleStateClient.STATE;
 
         final float health = Math.max(0, entity.getHealth() - com.getNeutralDamage());
         final float healthPercent = health / entity.getMaxHealth();

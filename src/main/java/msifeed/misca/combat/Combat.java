@@ -53,9 +53,10 @@ public class Combat {
         MinecraftForge.EVENT_BUS.register(MANAGER);
         MinecraftForge.EVENT_BUS.register(new CombatHandler());
 
+        Misca.RPC.register(new CombatantSync());
+
         if (FMLCommonHandler.instance().getSide().isClient()) {
             CombatTheme.load();
-            Misca.RPC.register(new CombatantSync());
             Misca.RPC.register(new BattleStateSync());
         }
     }
