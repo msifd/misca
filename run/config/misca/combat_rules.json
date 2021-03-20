@@ -29,5 +29,6 @@
   "apPerMovePerAgi": 1.0,
   "maxApBase": 0.0,
   "maxApPerAgi": 4.0,
-  "potionTicks": 200
+  "potionTicks": 200,
+  "finishTurnDelayMillis": 1000
 }

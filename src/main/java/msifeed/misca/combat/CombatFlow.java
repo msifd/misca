@@ -57,4 +57,55 @@ public class CombatFlow {
     }
 
     // Attack
+
+    public static boolean trySourceAttack(EntityLivingBase source, Item weapon) {
+        final EntityLivingBase actor = getCombatActor(source);
+        if (actor == null) return true;
+
+        if (canAttack(actor, weapon)) {
+            onAttack(actor, weapon);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public static void onSourceAttack(EntityLivingBase source) {
+        final EntityLivingBase actor = getCombatActor(source);
+        if (actor == null) return;
+
+        final Item weapon = source.getHeldItemMainhand().getItem();
+        onAttack(actor, weapon);
+    }
+
+    public static boolean canAttack(EntityLivingBase actor, Item item) {
+        final ICombatant com = CombatantProvider.get(actor);
+        if (!com.isInBattle()) return true;
+
+        final Battle battle = Combat.MANAGER.getBattle(com.getBattleId());
+        if (battle == null) return true;
+
+        if (!battle.isLeader(actor.getUniqueID())) return false;
+        if (battle.isTurnFinishing()) return false;
+
+        return isEnoughAttackAp(actor, item);
+    }
+
+    public static boolean isEnoughAttackAp(EntityLivingBase actor, Item item) {
+        final double attackAp = Combat.getRules().attackActionPoints(actor, item);
+        return BattleFlow.isEnoughAp(actor, CombatantProvider.get(actor), attackAp);
+    }
+
+    public static void onAttack(EntityLivingBase actor, Item item) {
+        BattleFlow.consumeActionAp(actor, item);
+        BattleFlow.consumeMovementAp(actor);
+        CombatantSync.sync(actor);
+
+        if (BattleFlow.isApDepleted(actor, item)) {
+            final ICombatant com = CombatantProvider.get(actor);
+            final Battle battle = Combat.MANAGER.getBattle(com.getBattleId());
+            if (battle != null)
+                Combat.MANAGER.finishTurn(battle);
+        }
+    }
 }

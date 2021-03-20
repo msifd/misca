@@ -43,7 +43,7 @@ public class Battle {
         members.put(entity.getUniqueID(), new WeakReference<>(entity));
 
         if (!entity.world.isRemote && !(entity instanceof EntityPlayer)) {
-            setCombatantAttributes(entity, 5);
+            setCombatantAttributes(entity, 10);
         }
     }
 

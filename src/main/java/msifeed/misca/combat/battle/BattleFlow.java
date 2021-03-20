@@ -8,15 +8,11 @@ import msifeed.misca.combat.cap.ICombatant;
 import msifeed.misca.combat.rules.Rules;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
-import net.minecraft.util.CombatRules;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.text.TextComponentString;
-import net.minecraftforge.fml.common.eventhandler.Event;
 
 import java.lang.ref.WeakReference;
 import java.util.*;
@@ -116,12 +112,6 @@ public class BattleFlow {
 
         if (neutralDamage > 0)
             entity.attackEntityFrom(new DamageSource(CombatHandler.NEUTRAL_PAYOUT_DT), neutralDamage);
-
-//        if (leader instanceof EntityPlayer) {
-//            final ITextComponent tc = new TextComponentString("your turn");
-//            tc.getStyle().setColor(TextFormatting.GREEN);
-//            ((EntityPlayer) leader).sendStatusMessage(tc, true);
-//        }
     }
 
     public static void repositionCombatant(EntityLivingBase entity) {
@@ -136,9 +126,9 @@ public class BattleFlow {
 
     //// Action points management
 
-    public static void consumeActionAp(EntityLivingBase entity) {
+    public static void consumeActionAp(EntityLivingBase entity, Item item) {
         final ICombatant com = CombatantProvider.get(entity);
-        final double apWithOh = Combat.getRules().attackActionPoints(entity) + com.getActionPointsOverhead();
+        final double apWithOh = Combat.getRules().attackActionPoints(entity, item) + com.getActionPointsOverhead();
         if (com.getActionPoints() >= apWithOh) {
             com.addActionPoints(-apWithOh);
             com.setActionPointsOverhead(com.getActionPointsOverhead() + apWithOh / 2);
@@ -161,10 +151,10 @@ public class BattleFlow {
         com.setActionPoints(Math.max(com.getActionPoints() - ap, 0));
     }
 
-    public static boolean isApDepleted(EntityLivingBase entity) {
+    public static boolean isApDepleted(EntityLivingBase entity, Item weapon) {
         final ICombatant com = CombatantProvider.get(entity);
         final Rules rules = Combat.getRules();
-        final double atk = rules.attackActionPoints(entity);
+        final double atk = rules.attackActionPoints(entity, weapon);
         final double use = rules.usageActionPoints(Items.AIR);
         final double act = Math.min(atk, use) + com.getActionPointsOverhead();
         final double mov = rules.movementActionPoints(com.getPosition(), entity.getPositionVector());
@@ -183,33 +173,5 @@ public class BattleFlow {
     private static void setMobAI(EntityLivingBase entity, boolean enabled) {
         if (entity instanceof EntityLiving)
             ((EntityLiving) entity).setNoAI(!enabled);
-    }
-
-    public static void handleDeadlyAttack(Event event, float amount, EntityLivingBase entity, Battle battle) {
-        if (!(entity instanceof EntityPlayer)) return;
-
-        final EntityPlayer victim = (EntityPlayer) entity;
-        final double armorToughness = victim.getEntityAttribute(SharedMonsterAttributes.ARMOR_TOUGHNESS).getAttributeValue();
-        final float damage = CombatRules.getDamageAfterAbsorb(amount, victim.getTotalArmorValue(), (float) armorToughness);
-
-        final boolean mortalWound = victim.getHealth() - damage <= 0;
-        if (!mortalWound) return;
-
-        if (event.isCancelable())
-            event.setCanceled(true);
-
-        if (battle.isTraining()) {
-            victim.setHealth(CombatantProvider.get(victim).getTrainingHealth());
-
-            victim.sendStatusMessage(new TextComponentString("u dead"), false);
-            victim.inventory.damageArmor(damage);
-        } else {
-            victim.setHealth(0.5f);
-
-            if (battle.isLeader(victim.getUniqueID()))
-                Combat.MANAGER.finishTurn(battle);
-            battle.removeFromQueue(victim.getUniqueID());
-            BattleStateSync.syncQueue(battle);
-        }
     }
 }

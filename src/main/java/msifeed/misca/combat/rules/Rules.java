@@ -136,8 +136,8 @@ public class Rules {
     public double attackApBase = 6;
     public double attackApDefault = 4;
 
-    public double attackActionPoints(EntityLivingBase entity) {
-        final double overrideAp = Combat.getWeaponInfo(entity, EnumHand.MAIN_HAND)
+    public double attackActionPoints(EntityLivingBase entity, Item item) {
+        final double overrideAp = Combat.getWeaponInfo(item)
                 .map(wo -> wo.apHit).orElse(0d);
 
         final IAttributeInstance attackSpeed = entity.getEntityAttribute(SharedMonsterAttributes.ATTACK_SPEED);
@@ -189,5 +189,5 @@ public class Rules {
     // Other
 
     public int potionTicks = 200;
-    public long finishTurnDelayMillis = 3000;
+    public long finishTurnDelayMillis = 1000;
 }

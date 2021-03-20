@@ -56,7 +56,9 @@ public class BattleManager {
     }
 
     public void finishTurn(Battle battle) {
-        BattleFlow.finishTurn(battle);
+        if (!battle.isTurnFinishing()) {
+            BattleFlow.finishTurn(battle);
+        }
     }
 
     public void nextTurn(Battle battle) {

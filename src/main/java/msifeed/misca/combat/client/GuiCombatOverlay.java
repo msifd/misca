@@ -3,6 +3,7 @@ package msifeed.misca.combat.client;
 import msifeed.mellow.render.RenderUtils;
 import msifeed.misca.client.MiscaConfig;
 import msifeed.misca.combat.Combat;
+import msifeed.misca.combat.CombatFlow;
 import msifeed.misca.combat.battle.Battle;
 import msifeed.misca.combat.battle.BattleStateClient;
 import msifeed.misca.combat.cap.CombatantProvider;
@@ -13,12 +14,11 @@ import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.entity.RenderManager;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.Item;
 import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
-import net.minecraftforge.client.event.RenderLivingEvent;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
@@ -68,15 +68,10 @@ public class GuiCombatOverlay {
         final EntityPlayer player = Minecraft.getMinecraft().player;
         final ICombatant selfCom = CombatantProvider.get(player);
 
-        final EntityLivingBase entity;
-        if (selfCom.hasPuppet()) {
-            final Entity e = player.world.getEntityByID(selfCom.getPuppet());
-            if (!(e instanceof EntityLivingBase)) return;
-            entity = (EntityLivingBase) e;
-        } else {
-            entity = player;
-        }
-        final ICombatant com = CombatantProvider.get(entity);
+        final EntityLivingBase actor = CombatFlow.getCombatActor(player);
+        if (actor == null) return;
+        final ICombatant com = CombatantProvider.get(actor);
+        final Item item = player.getHeldItemMainhand().getItem();
 
         final Battle state = BattleStateClient.STATE;
         final Rules rules = Combat.getRules();
@@ -90,10 +85,10 @@ public class GuiCombatOverlay {
                 .collect(Collectors.joining(", "));
         final String leaderName = getNameOrUuid(state.getLeaderUuid(), state.getLeader());
         final String posStr = String.format("x: %.2f, y: %.2f, z: %.2f", pos.x, pos.y, pos.z);
-        final double moveAp = rules.movementActionPoints(com.getPosition(), entity.getPositionVector());
+        final double moveAp = rules.movementActionPoints(com.getPosition(), actor.getPositionVector());
         final double overheadAp = com.getActionPointsOverhead();
-        final double attackAp = rules.attackActionPoints(entity) + overheadAp;
-        final double usageAp = rules.usageActionPoints(entity.getHeldItemMainhand().getItem()) + overheadAp;
+        final double attackAp = rules.attackActionPoints(actor, item) + overheadAp;
+        final double usageAp = rules.usageActionPoints(actor.getHeldItemMainhand().getItem()) + overheadAp;
 
         final String[] lines = {
                 "members: " + joinedMembers,
@@ -133,40 +128,39 @@ public class GuiCombatOverlay {
         renderTextAt("pos", com.getPosition().x, com.getPosition().y + 1.2, com.getPosition().z, true);
     }
 
-    @SubscribeEvent
-    public void onRenderEntity(RenderLivingEvent.Post<EntityLivingBase> event) {
-        if (true) return;
-        if (!MiscaConfig.combatDebug) return;
-
-        final EntityPlayer self = Minecraft.getMinecraft().player;
-        final EntityLivingBase entity = event.getEntity();
-        if (self == entity) return;
-
-        if (!CombatantProvider.get(self).isInBattle()) return;
-
-        final ICombatant com = CombatantProvider.get(entity);
-        if (!com.isInBattle()) return;
-
-        {
-            final double cover = Combat.getRules().coverBlocks(self.world, self.getPositionVector(), entity.getPositionVector());
-            final String coverStr = String.format("your cov: %.1f", cover);
-            renderTextAt(coverStr, event.getX(), event.getY() + event.getEntity().getEyeHeight() + 1.2, event.getZ(), false);
-        }
-        {
-            final double cover = Combat.getRules().coverBlocks(self.world, entity.getPositionVector(), self.getPositionVector());
-            final String coverStr = String.format("its cov: %.1f", cover);
-            renderTextAt(coverStr, event.getX(), event.getY() + event.getEntity().getEyeHeight() + 1.0, event.getZ(), false);
-        }
-
-        final Rules rules = Combat.getRules();
-        final double atkAp = rules.attackActionPoints(entity) + com.getActionPointsOverhead();
-        final double movAp = rules.movementActionPoints(com.getPosition(), entity.getPositionVector());
-        final String apStr = String.format("ap: %.1f, atk: %.1f, mov: %.1f", com.getActionPoints(), atkAp, movAp);
-        renderTextAt(apStr, event.getX(), event.getY() + event.getEntity().getEyeHeight() + 0.8, event.getZ(), false);
-
-        final String hpStr = String.format("hp: %.1f/%.1f, neu dmg: %.1f", entity.getHealth(), entity.getMaxHealth(), com.getNeutralDamage());
-        renderTextAt(hpStr, event.getX(), event.getY() + event.getEntity().getEyeHeight() + 0.6, event.getZ(), false);
-    }
+//    @SubscribeEvent
+//    public void onRenderEntity(RenderLivingEvent.Post<EntityLivingBase> event) {
+//        if (!MiscaConfig.combatDebug) return;
+//
+//        final EntityPlayer self = Minecraft.getMinecraft().player;
+//        final EntityLivingBase entity = event.getEntity();
+//        if (self == entity) return;
+//
+//        if (!CombatantProvider.get(self).isInBattle()) return;
+//
+//        final ICombatant com = CombatantProvider.get(entity);
+//        if (!com.isInBattle()) return;
+//
+//        {
+//            final double cover = Combat.getRules().coverBlocks(self.world, self.getPositionVector(), entity.getPositionVector());
+//            final String coverStr = String.format("your cov: %.1f", cover);
+//            renderTextAt(coverStr, event.getX(), event.getY() + event.getEntity().getEyeHeight() + 1.2, event.getZ(), false);
+//        }
+//        {
+//            final double cover = Combat.getRules().coverBlocks(self.world, entity.getPositionVector(), self.getPositionVector());
+//            final String coverStr = String.format("its cov: %.1f", cover);
+//            renderTextAt(coverStr, event.getX(), event.getY() + event.getEntity().getEyeHeight() + 1.0, event.getZ(), false);
+//        }
+//
+//        final Rules rules = Combat.getRules();
+//        final double atkAp = rules.attackActionPoints(entity) + com.getActionPointsOverhead();
+//        final double movAp = rules.movementActionPoints(com.getPosition(), entity.getPositionVector());
+//        final String apStr = String.format("ap: %.1f, atk: %.1f, mov: %.1f", com.getActionPoints(), atkAp, movAp);
+//        renderTextAt(apStr, event.getX(), event.getY() + event.getEntity().getEyeHeight() + 0.8, event.getZ(), false);
+//
+//        final String hpStr = String.format("hp: %.1f/%.1f, neu dmg: %.1f", entity.getHealth(), entity.getMaxHealth(), com.getNeutralDamage());
+//        renderTextAt(hpStr, event.getX(), event.getY() + event.getEntity().getEyeHeight() + 0.6, event.getZ(), false);
+//    }
 
     private static void renderTextAt(String str, double posX, double posY, double posZ, boolean absPos) {
         final FontRenderer fr = Minecraft.getMinecraft().fontRenderer;

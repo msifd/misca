@@ -25,7 +25,6 @@ public class CombatantsBarRender {
 
     public static void renderModel(EntityLivingBase entity, int posX, int posY, int frame, int width) {
         final EntityPlayer player = Minecraft.getMinecraft().player;
-        final ICombatant combatant = CombatantProvider.get(entity);
 
         final float height = (float) (entity.getRenderBoundingBox().maxY - entity.getRenderBoundingBox().minY);
         final float scale = frame / (Math.max(2, height));
@@ -44,7 +43,7 @@ public class CombatantsBarRender {
         entity.rotationPitch = 0;
 
         if (entity == player) {
-            final Vec3d pos = combatant.getPosition();
+            final Vec3d pos = CombatantProvider.get(entity).getPosition();
             final double yaw = Math.atan2(pos.x - player.posX, pos.z - player.posZ) / Math.PI / 2 * 360;
             entity.prevRenderYawOffset += (float) yaw;
             entity.prevRotationYawHead += (float) yaw;
@@ -97,7 +96,7 @@ public class CombatantsBarRender {
         final Rules rules = Combat.getRules();
         final double fullAp = com.getActionPoints();
         final double moveAp = rules.movementActionPoints(com.getPosition(), entity.getPositionVector());
-        final double actionAp = rules.attackActionPoints(entity);
+        final double actionAp = rules.attackActionPoints(entity, entity.getHeldItemMainhand().getItem());
         final double ap = Math.max(com.getActionPoints() - moveAp, 0);
 
         final int bgColor = ap > 0 ? 0xffffff00 : 0xffff0000;
