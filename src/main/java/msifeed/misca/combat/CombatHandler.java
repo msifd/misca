@@ -89,9 +89,9 @@ public class CombatHandler {
         CombatFlow.onSourceAttack(event.getEntityLiving());
     }
 
-    @SubscribeEvent
+    @SubscribeEvent(priority = EventPriority.LOWEST)
     public void onPlayerAttackEntity(AttackEntityEvent event) {
-        if (event.getEntityLiving().world.isRemote) return;
+        if (event.getEntityLiving().world.isRemote || event.isCanceled()) return;
 
         final Item weapon = event.getEntityPlayer().getHeldItemMainhand().getItem();
         CombatFlow.trySourceAttack(event.getEntityLiving(), weapon);

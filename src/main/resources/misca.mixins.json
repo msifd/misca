@@ -15,6 +15,7 @@
     "NBTTagLongArrayMixin",
     "PlayerListMixin",
     "UnpackedBakedQuadMixin",
+    "flan.ItemGunMixin",
     "techguns.GenericGunMixin",
     "techguns.ReloadStartedMessageMixin"
   ]
