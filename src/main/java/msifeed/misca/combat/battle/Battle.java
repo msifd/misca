@@ -143,9 +143,21 @@ public class Battle {
         this.finishTurnDelayStart = time;
     }
 
+    public void destroy() {
+        if (isTraining())
+            getMemberEntities().forEach(BattleFlow::restoreCombatantHealth);
+        getMemberEntities().forEach(BattleFlow::disengageEntity);
+
+        clear();
+    }
+
     public void clear() {
         members.clear();
         queue.clear();
+    }
+
+    public boolean shouldBeRemoved() {
+        return members.isEmpty() || members.values().stream().allMatch(ref -> ref.get() == null);
     }
 
     private static void setCombatantAttributes(EntityLivingBase entity, int amount) {

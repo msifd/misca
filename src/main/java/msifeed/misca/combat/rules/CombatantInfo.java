@@ -17,19 +17,17 @@ import java.util.EnumSet;
 public class CombatantInfo {
     public final Vec3d pos;
     public final EnumMap<CharAttribute, Double> attributes = new EnumMap<>(CharAttribute.class);
+    private final WeaponTrait mainType;
     private final EnumSet<WeaponTrait> traitsMain;
     private final EnumSet<WeaponTrait> traitsOff;
 
-    public CombatantInfo(EntityLivingBase attacker, DamageSource source) {
+    public CombatantInfo(EntityLivingBase attacker, DamageSource source, Item weapon) {
         this.pos = attacker.getPositionVector();
 
-        final WeaponTrait typeFromDamage = source instanceof EntityDamageSourceIndirect ? WeaponTrait.range : WeaponTrait.melee;
-        this.traitsMain = Combat.getWeaponInfo(attacker, EnumHand.MAIN_HAND)
-                .map(wo -> wo.traits)
-                .orElse(EnumSet.of(typeFromDamage));
-        this.traitsOff = Combat.getWeaponInfo(attacker, EnumHand.OFF_HAND)
-                .map(wo -> wo.traits)
-                .orElse(EnumSet.noneOf(WeaponTrait.class));
+        final WeaponTrait defaultType = source instanceof EntityDamageSourceIndirect ? WeaponTrait.range : WeaponTrait.melee;
+        this.mainType = getMainType(weapon, defaultType);
+        this.traitsMain = Combat.getWeaponInfo(weapon).traits;
+        this.traitsOff = Combat.getWeaponInfo(attacker.getHeldItemOffhand().getItem()).traits;
 
         for (CharAttribute attr : CharAttribute.values())
             attributes.put(attr, attr.get(attacker));
@@ -38,18 +36,28 @@ public class CombatantInfo {
     public CombatantInfo(EntityLivingBase victim) {
         this.pos = CombatantProvider.get(victim).getPosition();
 
-        this.traitsMain = Combat.getWeaponInfo(victim, EnumHand.MAIN_HAND)
-                .map(wo -> wo.traits)
-                .orElseGet(() -> {
-                    final Item item = victim.getHeldItemMainhand().getItem();
-                    return EnumSet.of(item == Items.BOW ? WeaponTrait.range : WeaponTrait.melee);
-                });
-        this.traitsOff = Combat.getWeaponInfo(victim, EnumHand.OFF_HAND)
-                .map(wo -> wo.traits)
-                .orElse(EnumSet.noneOf(WeaponTrait.class));
+        this.mainType = getMainType(victim.getHeldItemMainhand().getItem(), WeaponTrait.melee);
+        this.traitsMain = Combat.getWeaponInfo(victim.getHeldItemMainhand().getItem()).traits;
+        this.traitsOff = Combat.getWeaponInfo(victim.getHeldItemOffhand().getItem()).traits;
 
         for (CharAttribute attr : CharAttribute.values())
             attributes.put(attr, attr.get(victim));
+    }
+
+    private WeaponTrait getMainType(Item weapon, WeaponTrait defaultType) {
+        final WeaponInfo info = Combat.getWeaponInfo(weapon);
+
+        if (info == WeaponInfo.NONE) return defaultType;
+        if (info.traits.contains(WeaponTrait.range)) return WeaponTrait.range;
+        return defaultType;
+    }
+
+    public boolean isRanged() {
+        return mainType == WeaponTrait.range;
+    }
+
+    public boolean isMelee() {
+        return !isRanged();
     }
 
     public boolean is(WeaponTrait trait) {

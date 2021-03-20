@@ -12,6 +12,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent;
 
 import javax.annotation.Nullable;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 public class BattleManager {
@@ -61,12 +62,13 @@ public class BattleManager {
         }
     }
 
-    public void nextTurn(Battle battle) {
+    public boolean tryNextTurn(Battle battle) {
         if (BattleFlow.selectNextLeader(battle)) {
             BattleFlow.prepareLeader(battle.getLeader());
             BattleStateSync.syncQueue(battle);
+            return true;
         } else {
-            destroyBattle(battle);
+            return false;
         }
     }
 
@@ -80,11 +82,7 @@ public class BattleManager {
     public void destroyBattle(Battle battle) {
         if (battle == null) return;
 
-        if (battle.isTraining())
-            battle.getMemberEntities().forEach(BattleFlow::restoreCombatantHealth);
-        battle.getMemberEntities().forEach(BattleFlow::disengageEntity);
-
-        battle.clear();
+        battle.destroy();
         battles.remove(battle.getId());
     }
 
@@ -149,14 +147,20 @@ public class BattleManager {
 
     @SubscribeEvent
     public void onTick(TickEvent.ServerTickEvent event) {
-//        battles.values().removeIf(Battle::validate);
-        battles.values().forEach(this::startNextTurnAfterDelay);
-    }
+        final Iterator<Battle> it = battles.values().iterator();
+        while (it.hasNext()) {
+            final Battle battle = it.next();
 
-    private void startNextTurnAfterDelay(Battle battle) {
-        if (battle.isTurnFinishing() && battle.isTurnDelayEnded()) {
-            battle.setFinishTurnDelay(0);
-            nextTurn(battle);
+            if (battle.isTurnFinishing() && battle.isTurnDelayEnded()) {
+                battle.setFinishTurnDelay(0);
+                if (!tryNextTurn(battle)) {
+                    battle.destroy();
+                    it.remove();
+                }
+            } else if (battle.shouldBeRemoved()) {
+                battle.destroy();
+                it.remove();
+            }
         }
     }
 

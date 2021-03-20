@@ -20,7 +20,7 @@ public class Rules {
     public double damageIncreaseRangePerStr = 0.02;
 
     public float damageIncrease(CombatantInfo info) {
-        final double strFactor = info.is(WeaponTrait.melee) ? damageIncreaseMeleePerStr : damageIncreaseRangePerStr;
+        final double strFactor = info.isMelee() ? damageIncreaseMeleePerStr : damageIncreaseRangePerStr;
         return (float) (CharAttribute.str.get(info) * strFactor);
     }
 
@@ -35,11 +35,9 @@ public class Rules {
     public double hitRateRangePerPer = 0.03;
     public double hitRatePerLck = 0.005;
 
-    public double hitRate(EntityLivingBase entity, CombatantInfo info) {
-        final double overrideRate = Combat.getWeaponInfo(entity, EnumHand.MAIN_HAND)
-                .map(wo -> wo.hitRate).orElse(0d);
-
-        final double perFactor = info.is(WeaponTrait.melee) ? hitRateMeleePerPer : hitRateRangePerPer;
+    public double hitRate(CombatantInfo info, Item weapon) {
+        final double overrideRate = Combat.getWeaponInfo(weapon).hitRate;
+        final double perFactor = info.isMelee() ? hitRateMeleePerPer : hitRateRangePerPer;
         final double perception = CharAttribute.per.get(info);
         final double luck = CharAttribute.lck.get(info);
         return hitRateBase + perception * perFactor + luck * hitRatePerLck + overrideRate;
@@ -61,8 +59,8 @@ public class Rules {
     public double evasionPenalty(CombatantInfo vicInfo, CombatantInfo srcInfo) {
         double penalty = 0;
 
-        if (srcInfo.is(WeaponTrait.melee)) {
-            if (vicInfo.is(WeaponTrait.melee)) {
+        if (srcInfo.isMelee()) {
+            if (vicInfo.isMelee()) {
                 if (!vicInfo.isAny(WeaponTrait.evadeMelee)) penalty += noShieldEvasionPenalty;
             } else {
                 if (!vicInfo.isAny(WeaponTrait.evadeMelee)) penalty += rangedEvasionPenalty;
@@ -73,8 +71,8 @@ public class Rules {
     }
 
     public double evasionFactor(EntityLivingBase victim, CombatantInfo vicInfo, CombatantInfo srcInfo) {
-        if (!srcInfo.is(WeaponTrait.range)) return 1;
-        if (vicInfo.isAny(WeaponTrait.evadeRange)) return 1;
+//        if (srcInfo.isMelee()) return 1;
+//        if (vicInfo.isAny(WeaponTrait.evadeRange)) return 1;
         return coverBlocks(victim.world, vicInfo.pos, srcInfo.pos);
     }
 
@@ -137,9 +135,7 @@ public class Rules {
     public double attackApDefault = 4;
 
     public double attackActionPoints(EntityLivingBase entity, Item item) {
-        final double overrideAp = Combat.getWeaponInfo(item)
-                .map(wo -> wo.apHit).orElse(0d);
-
+        final double overrideAp = Combat.getWeaponInfo(item).apHit;;
         final IAttributeInstance attackSpeed = entity.getEntityAttribute(SharedMonsterAttributes.ATTACK_SPEED);
         if (attackSpeed != null) { // Can be null for mobs
             return attackApBase - attackSpeed.getAttributeValue() + overrideAp;
@@ -167,9 +163,7 @@ public class Rules {
     public double usageApBase = 5;
 
     public double usageActionPoints(Item item) {
-        final double overrideAp = Combat.getWeaponInfo(item)
-                .map(wo -> wo.apUse).orElse(0d);
-        return usageApBase + overrideAp;
+        return usageApBase + Combat.getWeaponInfo(item).apUse;
     }
 
     public double apPerMoveBase = 5;

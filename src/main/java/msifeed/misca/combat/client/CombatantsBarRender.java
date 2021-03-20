@@ -77,7 +77,8 @@ public class CombatantsBarRender {
         final Battle battle = Combat.MANAGER.getBattle(com.getBattleId());
         if (battle == null) return;
 
-        final float healthPercent = entity.getHealth() / entity.getMaxHealth();
+        final float health = Math.max(0, entity.getHealth() - com.getNeutralDamage());
+        final float healthPercent = health / entity.getMaxHealth();
         RenderShapes.rect(new Geom(posX, posY + 2, (int) (width * healthPercent), 2), 0xffff1010);
 
         final boolean leader = battle.isLeader(entity.getUniqueID());

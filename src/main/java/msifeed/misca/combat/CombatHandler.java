@@ -18,11 +18,11 @@ import net.minecraft.entity.ai.attributes.AbstractAttributeMap;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.projectile.EntityPotion;
 import net.minecraft.init.Items;
+import net.minecraft.item.EnumAction;
 import net.minecraft.item.Item;
 import net.minecraft.util.CombatRules;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EntityDamageSource;
-import net.minecraft.util.EnumHand;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
@@ -32,8 +32,6 @@ import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.fml.common.eventhandler.Event;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-
-import java.util.Optional;
 
 public class CombatHandler {
     private static final String IGNORE_PREFIX = "ignore-";
@@ -133,12 +131,13 @@ public class CombatHandler {
 
     @SubscribeEvent
     public void onHurt(LivingHurtEvent event) {
-        if (event.getEntityLiving().world.isRemote) return;
-
+        // Neutral damage has no rolls
         if (!(event.getSource() instanceof EntityDamageSource)) {
             handleNeutralDamage(event);
             return;
         }
+
+        if (event.getEntityLiving().world.isRemote) return;
 
         final EntityDamageSource src = (EntityDamageSource) event.getSource();
         if (!(src.getTrueSource() instanceof EntityLivingBase)) return;
@@ -148,9 +147,8 @@ public class CombatHandler {
         if (actor == null) return;
 
         if (!src.getDamageType().startsWith(IGNORE_PREFIX)) {
-            final float overrideDamage = Combat.getWeaponInfo(actor, EnumHand.MAIN_HAND)
-                    .map(wo -> wo.damage).orElse(0f);
-            alterDamage(event, actor, overrideDamage);
+            final Item weapon = srcEntity.getHeldItemMainhand().getItem();
+            alterDamage(event, actor, weapon);
         }
 
         final ICombatant srcCom = CombatantProvider.get(srcEntity);
@@ -180,31 +178,65 @@ public class CombatHandler {
     }
 
     @SubscribeEvent
-    public void onItemUseStart(LivingEntityUseItemEvent.Start event) {
-        final Optional<WeaponInfo> infoOpt = Combat.getWeaponInfo(event.getItem().getItem());
-        final boolean ignoreUsage = infoOpt.map(i -> i.traits.contains(WeaponTrait.ignoreUsage)).orElse(false);
-        if (ignoreUsage) return;
+    public void onItemUse(PlayerInteractEvent.RightClickItem event) {
+        final Item weapon = event.getItemStack().getItem();
+        final WeaponInfo info = Combat.getWeaponInfo(weapon);
+
+        final boolean ignore = info.has(WeaponTrait.ignoreUse);
+        if (ignore) return;
+        if (event.getItemStack().getItemUseAction() == EnumAction.NONE && info.traits.isEmpty()) return;
 
         final EntityLivingBase actor = CombatFlow.getCombatActor(event.getEntityLiving());
         if (actor == null) return;
 
-        if (!CombatFlow.canUse(actor, event.getItem().getItem())) {
+        if (CombatFlow.canUse(actor, weapon)) {
+            if (!actor.world.isRemote)
+                CombatFlow.onUse(actor, weapon);
+        } else {
             event.setCanceled(true);
         }
+    }
+
+    @SubscribeEvent
+    public void onItemUseStart(LivingEntityUseItemEvent.Start event) {
+        final Item weapon = event.getItem().getItem();
+        final boolean ignore = Combat.getWeaponInfo(weapon).has(WeaponTrait.ignoreHoldUse);
+        if (ignore) return;
+
+        final EntityLivingBase actor = CombatFlow.getCombatActor(event.getEntityLiving());
+        if (actor == null) return;
+
+        if (!CombatFlow.canUse(actor, weapon)) {
+            event.setCanceled(true);
+        }
+    }
+
+    @SubscribeEvent
+    public void onItemUseStop(LivingEntityUseItemEvent.Stop event) {
+        if (event.getEntityLiving().world.isRemote) return;
+
+        final Item weapon = event.getItem().getItem();
+        final boolean ignore = Combat.getWeaponInfo(weapon).has(WeaponTrait.ignoreHoldUse);
+        if (ignore) return;
+
+        final EntityLivingBase actor = CombatFlow.getCombatActor(event.getEntityLiving());
+        if (actor == null) return;
+
+        CombatFlow.onUse(actor, weapon);
     }
 
     @SubscribeEvent
     public void onItemUseFinish(LivingEntityUseItemEvent.Finish event) {
         if (event.getEntityLiving().world.isRemote) return;
 
-        final Optional<WeaponInfo> infoOpt = Combat.getWeaponInfo(event.getItem().getItem());
-        final boolean ignoreUsage = infoOpt.map(i -> i.traits.contains(WeaponTrait.ignoreUsage)).orElse(false);
-        if (ignoreUsage) return;
+        final Item weapon = event.getItem().getItem();
+        final boolean ignore = Combat.getWeaponInfo(weapon).has(WeaponTrait.ignoreHoldUse);
+        if (ignore) return;
 
         final EntityLivingBase actor = CombatFlow.getCombatActor(event.getEntityLiving());
         if (actor == null) return;
 
-        CombatFlow.onUse(actor, event.getItem().getItem());
+        CombatFlow.onUse(actor, weapon);
     }
 
     @SubscribeEvent
@@ -233,24 +265,24 @@ public class CombatHandler {
         }
     }
 
-    private void alterDamage(LivingHurtEvent event, EntityLivingBase actor, float overrideDamage) {
-        final float damageAmount = event.getAmount() + overrideDamage;
+    private void alterDamage(LivingHurtEvent event, EntityLivingBase actor, Item weapon) {
+        final float damageAmount = event.getAmount() + Combat.getWeaponInfo(weapon).damage;
 
         final EntityLivingBase vicEntity = event.getEntityLiving();
-        final CombatantInfo srcInfo = new CombatantInfo(actor, event.getSource());
+        final CombatantInfo actInfo = new CombatantInfo(actor, event.getSource(), weapon);
         final CombatantInfo vicInfo = new CombatantInfo(vicEntity);
         final Rules rules = Combat.getRules();
 
-        final double hitChanceRaw = rules.hitRate(actor, srcInfo) - rules.evasion(vicEntity, vicInfo, srcInfo);
+        final double hitChanceRaw = rules.hitRate(actInfo, weapon) - rules.evasion(vicEntity, vicInfo, actInfo);
         final double hitChance = Math.min(hitChanceRaw, rules.maxHitChance);
         final int hitCheck = Dices.checkInt(hitChance);
-        final int criticality = Dices.checkInt(rules.criticalHit(srcInfo) + rules.rawChanceToHitCriticality(hitChanceRaw))
+        final int criticality = Dices.checkInt(rules.criticalHit(actInfo) + rules.rawChanceToHitCriticality(hitChanceRaw))
                 - Dices.checkInt(rules.criticalEvasion(vicInfo) + rules.rawChanceToEvadeCriticality(hitChanceRaw));
         final int successfulness = hitCheck + criticality;
 
         final boolean successfulHit = successfulness >= 1;
         if (successfulHit) {
-            float damageFactor = 1 + rules.damageIncrease(srcInfo) - rules.damageAbsorption(vicInfo);
+            float damageFactor = 1 + rules.damageIncrease(actInfo) - rules.damageAbsorption(vicInfo);
 
             final boolean criticalHit = successfulness > 1;
             if (criticalHit) {
@@ -266,7 +298,7 @@ public class CombatHandler {
             final boolean criticalEvasion = successfulness < 0;
             if (criticalEvasion) {
                 // Note `src` in damageAbsorption
-                final float damageFactor = 1 + rules.damageIncrease(srcInfo) - rules.damageAbsorption(srcInfo);
+                final float damageFactor = 1 + rules.damageIncrease(actInfo) - rules.damageAbsorption(actInfo);
                 final DamageSource ds = new EntityDamageSource(CRITICAL_EVASION_DT, vicEntity);
                 actor.attackEntityFrom(ds, damageAmount * damageFactor);
                 notifyActionBar("crit evasion", event.getEntityLiving(), actor);

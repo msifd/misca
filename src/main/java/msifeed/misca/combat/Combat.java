@@ -60,9 +60,9 @@ public class Combat {
         }
     }
 
-    public static Optional<WeaponInfo> getWeaponInfo(Item item) {
+    public static WeaponInfo getWeaponInfo(Item item) {
         final ResourceLocation handLoc = item.getRegistryName();
-        return Optional.ofNullable(Combat.getWeapons().get(handLoc));
+        return Combat.getWeapons().getOrDefault(handLoc, WeaponInfo.NONE);
     }
 
     public static Optional<WeaponInfo> getWeaponInfo(EntityLivingBase entity, EnumHand hand) {
