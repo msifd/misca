@@ -10,6 +10,10 @@ buildscript {
     }
 }
 
+repositories {
+    maven { url = 'https://www.cursemaven.com' }
+}
+
 apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'org.spongepowered.mixin'
 apply plugin: 'idea'
@@ -46,6 +50,8 @@ minecraft {
 dependencies {
     minecraft 'net.minecraftforge:forge:1.12.2-14.23.5.2854'
     compile 'org.spongepowered:mixin:0.8.2'
+
+    implementation fg.deobf("curse.maven:techguns-244201:2958103")
 }
 
 processResources {

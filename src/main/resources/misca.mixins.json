@@ -14,6 +14,8 @@
     "ModelRendererMixin",
     "NBTTagLongArrayMixin",
     "PlayerListMixin",
-    "UnpackedBakedQuadMixin"
+    "UnpackedBakedQuadMixin",
+    "techguns.GenericGunMixin",
+    "techguns.ReloadStartedMessageMixin"
   ]
 }

@@ -8,6 +8,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent;
 
 import javax.annotation.Nullable;
 import java.util.HashMap;
@@ -54,8 +55,11 @@ public class BattleManager {
         }
     }
 
-    public void nextTurn(Battle battle) {
+    public void finishTurn(Battle battle) {
         BattleFlow.finishTurn(battle);
+    }
+
+    public void nextTurn(Battle battle) {
         if (BattleFlow.selectNextLeader(battle)) {
             BattleFlow.prepareLeader(battle.getLeader());
             BattleStateSync.syncQueue(battle);
@@ -139,6 +143,19 @@ public class BattleManager {
         }
 
         CombatantSync.sync(player);
+    }
+
+    @SubscribeEvent
+    public void onTick(TickEvent.ServerTickEvent event) {
+//        battles.values().removeIf(Battle::validate);
+        battles.values().forEach(this::startNextTurnAfterDelay);
+    }
+
+    private void startNextTurnAfterDelay(Battle battle) {
+        if (battle.isTurnFinishing() && battle.isTurnDelayEnded()) {
+            battle.setFinishTurnDelay(0);
+            nextTurn(battle);
+        }
     }
 
     @SubscribeEvent

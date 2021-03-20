@@ -189,4 +189,5 @@ public class Rules {
     // Other
 
     public int potionTicks = 200;
+    public long finishTurnDelayMillis = 3000;
 }

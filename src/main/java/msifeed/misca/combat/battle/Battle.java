@@ -17,7 +17,9 @@ public class Battle {
     private final Map<UUID, WeakReference<EntityLivingBase>> members = new HashMap<>();
     private final Queue<UUID> queue = new ArrayDeque<>();
     private final boolean training;
+
     private int potionTickStart = 0;
+    private long finishTurnDelayStart = 0;
 
     public Battle(boolean training) {
         this.training = training;
@@ -119,6 +121,26 @@ public class Battle {
 
     public void resetPotionUpdateTick(EntityLivingBase entity) {
         potionTickStart = entity.ticksExisted;
+    }
+
+    public boolean isTurnFinishing() {
+        return finishTurnDelayStart > 0;
+    }
+
+    public boolean isTurnDelayEnded() {
+        return finishMoveDelayLeft() <= 0;
+    }
+
+    public long getFinishTurnDelay() {
+        return finishTurnDelayStart;
+    }
+
+    public long finishMoveDelayLeft() {
+        return Math.max(0, finishTurnDelayStart + Combat.getRules().finishTurnDelayMillis - System.currentTimeMillis());
+    }
+
+    public void setFinishTurnDelay(long time) {
+        this.finishTurnDelayStart = time;
     }
 
     public void clear() {

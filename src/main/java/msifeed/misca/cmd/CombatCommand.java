@@ -140,7 +140,7 @@ public class CombatCommand extends CommandBase {
                 break;
             case "next": {
                 if (!com.isInBattle()) break;
-                manager.nextTurn(manager.getBattle(com.getBattleId()));
+                manager.finishTurn(manager.getBattle(com.getBattleId()));
                 player.sendStatusMessage(new TextComponentString("next"), true);
                 break;
             }

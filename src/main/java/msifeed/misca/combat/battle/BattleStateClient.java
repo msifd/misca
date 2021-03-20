@@ -34,10 +34,16 @@ public class BattleStateClient {
     public static void updateQueue(List<UUID> newQueue) {
         STATE.getQueue().clear();
         STATE.getQueue().addAll(newQueue);
+        STATE.setFinishTurnDelay(0);
 
         final EntityLivingBase leader = STATE.getLeader();
-        if (leader != null)
+        if (leader != null) {
             STATE.resetPotionUpdateTick(leader);
+        }
+    }
+
+    public static void updateFinishDelay(long finishDelay) {
+        STATE.setFinishTurnDelay(finishDelay);
     }
 
     public static void clear() {

@@ -15,10 +15,11 @@ import java.util.stream.LongStream;
 public class BattleStateSync {
     private static final String members = "combat.members";
     private static final String queue = "combat.queue";
+    private static final String delay = "combat.delay";
 
     public static void sync(Battle battle) {
-        final NBTTagCompound nbtMembers = BattleStateSync.encodeUuids(battle.getMembers().keySet());
-        final NBTTagCompound nbtQueue = BattleStateSync.encodeUuids(battle.getQueue());
+        final NBTTagCompound nbtMembers = encodeUuids(battle.getMembers().keySet());
+        final NBTTagCompound nbtQueue = encodeUuids(battle.getQueue());
         battle.getPlayers().forEach(p -> {
             Misca.RPC.sendTo(p, members, nbtMembers);
             Misca.RPC.sendTo(p, queue, nbtQueue);
@@ -26,13 +27,17 @@ public class BattleStateSync {
     }
 
     static void sync(EntityPlayerMP player, Battle battle) {
-        Misca.RPC.sendTo(player, members, BattleStateSync.encodeUuids(battle.getMembers().keySet()));
-        Misca.RPC.sendTo(player, queue, BattleStateSync.encodeUuids(battle.getQueue()));
+        Misca.RPC.sendTo(player, members, encodeUuids(battle.getMembers().keySet()));
+        Misca.RPC.sendTo(player, queue, encodeUuids(battle.getQueue()));
     }
 
     public static void syncQueue(Battle battle) {
-        final NBTTagCompound nbt = BattleStateSync.encodeUuids(battle.getQueue());
+        final NBTTagCompound nbt = encodeUuids(battle.getQueue());
         battle.getPlayers().forEach(p -> Misca.RPC.sendTo(p, queue, nbt));
+    }
+
+    public static void syncDelay(Battle battle) {
+        battle.getPlayers().forEach(p -> Misca.RPC.sendTo(p, delay, battle.getFinishTurnDelay()));
     }
 
     @SideOnly(Side.CLIENT)
@@ -51,6 +56,12 @@ public class BattleStateSync {
         BattleStateClient.updateQueue(uuids);
     }
 
+    @SideOnly(Side.CLIENT)
+    @RpcMethodHandler(delay)
+    public void onDelayUpdate(long finishDelay) {
+        BattleStateClient.updateFinishDelay(finishDelay);
+    }
+
     static NBTTagCompound encodeUuids(Collection<UUID> delta) {
         final long[] ids = delta.stream()
                 .flatMapToLong(uuid -> LongStream.of(uuid.getMostSignificantBits(), uuid.getLeastSignificantBits()))
@@ -64,7 +75,6 @@ public class BattleStateSync {
 
     private static void decodeUuidsInto(NBTTagCompound nbt, Collection<UUID> uuids) {
         if (!nbt.hasKey("ids", 12)) return; // 12 - NBTTagLongArray
-
 
         final NBTTagLongArray idsArray = (NBTTagLongArray) nbt.getTag("ids");
         final long[] ids = ((NBTTagLongArrayMixin) idsArray).getData();

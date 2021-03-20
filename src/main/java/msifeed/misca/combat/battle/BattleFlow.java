@@ -14,7 +14,6 @@ import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.util.CombatRules;
 import net.minecraft.util.DamageSource;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraftforge.fml.common.eventhandler.Event;
@@ -61,12 +60,15 @@ public class BattleFlow {
         if (leader == null) return;
 
         final ICombatant com = CombatantProvider.get(leader);
-        com.setActionPoints(MathHelper.clamp(com.getActionPoints(), 0, Combat.getRules().maxActionPoints(leader)));
+        com.setActionPoints(Math.min(com.getActionPoints(), Combat.getRules().maxActionPoints(leader)));
         com.setActionPointsOverhead(0);
         com.setPosition(leader.getPositionVector());
         CombatantSync.sync(leader);
 
         setMobAI(leader, false);
+
+        battle.setFinishTurnDelay(System.currentTimeMillis());
+        BattleStateSync.syncDelay(battle);
     }
 
     //// Combatants management
@@ -108,8 +110,9 @@ public class BattleFlow {
         setMobAI(entity, true);
 
         final Battle battle = Combat.MANAGER.getBattle(com.getBattleId());
-        if (battle != null)
+        if (battle != null) {
             battle.resetPotionUpdateTick(entity);
+        }
 
         if (neutralDamage > 0)
             entity.attackEntityFrom(new DamageSource(CombatHandler.NEUTRAL_PAYOUT_DT), neutralDamage);
@@ -204,7 +207,7 @@ public class BattleFlow {
             victim.setHealth(0.5f);
 
             if (battle.isLeader(victim.getUniqueID()))
-                Combat.MANAGER.nextTurn(battle);
+                Combat.MANAGER.finishTurn(battle);
             battle.removeFromQueue(victim.getUniqueID());
             BattleStateSync.syncQueue(battle);
         }

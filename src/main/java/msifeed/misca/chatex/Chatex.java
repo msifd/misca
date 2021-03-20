@@ -7,7 +7,6 @@ import msifeed.misca.chatex.client.NametagHandler;
 import msifeed.misca.chatex.client.TypingGuiHandler;
 import msifeed.misca.chatex.cmd.*;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 

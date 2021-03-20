@@ -23,6 +23,7 @@ import net.minecraft.util.text.TextComponentString;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.*;
+import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import java.util.Optional;
@@ -65,7 +66,7 @@ public class CombatHandler {
         if (com.getActionPoints() <= 0 || com.getActionPoints() < movementAp) {
             BattleFlow.consumeMovementAp(entity);
             CombatantSync.sync(entity);
-            Combat.MANAGER.nextTurn(battle);
+            Combat.MANAGER.finishTurn(battle);
         }
     }
 
@@ -105,7 +106,7 @@ public class CombatHandler {
         final double attackAp = Combat.getRules().attackActionPoints(atkEntity);
         if (!BattleFlow.isEnoughAp(atkEntity, com, attackAp)) {
             event.setCanceled(true);
-            Combat.MANAGER.nextTurn(battle);
+            Combat.MANAGER.finishTurn(battle);
         }
     }
 
@@ -149,7 +150,7 @@ public class CombatHandler {
             CombatantSync.sync(atkEntity);
 
             if (BattleFlow.isApDepleted(atkEntity)) {
-                Combat.MANAGER.nextTurn(battle);
+                Combat.MANAGER.finishTurn(battle);
             }
         }
 
@@ -183,29 +184,10 @@ public class CombatHandler {
         final boolean ignoreUsage = infoOpt.map(i -> i.traits.contains(WeaponTrait.ignoreUsage)).orElse(false);
         if (ignoreUsage) return;
 
-        final EntityLivingBase srcEntity = event.getEntityLiving();
-        final ICombatant srcCom = CombatantProvider.get(srcEntity);
-        if (!srcCom.isInBattle()) return;
+        final EntityLivingBase actor = CombatFlow.getCombatActor(event.getEntityLiving());
+        if (actor == null) return;
 
-        final Battle battle = Combat.MANAGER.getBattle(srcCom.getBattleId());
-        if (battle == null) return;
-
-        final EntityLivingBase entity;
-        if (srcCom.hasPuppet()) {
-            entity = battle.getCombatantWithId(srcCom.getPuppet());
-            if (entity == null) {
-                notifyActionBar("Invalid puppet!", srcEntity);
-                return;
-            }
-        } else {
-            entity = srcEntity;
-        }
-        final ICombatant com = CombatantProvider.get(entity);
-
-        final boolean isLeader = battle.isLeader(entity.getUniqueID());
-        final double usageAp = Combat.getRules().usageActionPoints(event.getItem().getItem());
-        final boolean isEnoughAp = BattleFlow.isEnoughAp(entity, com, usageAp);
-        if (!isLeader || !isEnoughAp) {
+        if (!CombatFlow.canUse(actor, event.getItem().getItem())) {
             event.setCanceled(true);
         }
     }
@@ -218,27 +200,10 @@ public class CombatHandler {
         final boolean ignoreUsage = infoOpt.map(i -> i.traits.contains(WeaponTrait.ignoreUsage)).orElse(false);
         if (ignoreUsage) return;
 
-        final EntityLivingBase srcEntity = event.getEntityLiving();
-        final ICombatant srcCom = CombatantProvider.get(srcEntity);
-        if (!srcCom.isInBattle()) return;
+        final EntityLivingBase actor = CombatFlow.getCombatActor(event.getEntityLiving());
+        if (actor == null) return;
 
-        final Battle battle = Combat.MANAGER.getBattle(srcCom.getBattleId());
-        if (battle == null) return;
-
-        final EntityLivingBase entity;
-        if (srcCom.hasPuppet()) {
-            entity = battle.getCombatantWithId(srcCom.getPuppet());
-            if (entity == null) {
-                notifyActionBar("Invalid puppet!", srcEntity);
-                return;
-            }
-        } else {
-            entity = srcEntity;
-        }
-
-        BattleFlow.consumeUsageAp(entity, event.getItem().getItem());
-        BattleFlow.consumeMovementAp(entity);
-        CombatantSync.sync(entity);
+        CombatFlow.onUse(actor, event.getItem().getItem());
     }
 
     @SubscribeEvent
@@ -249,39 +214,17 @@ public class CombatHandler {
         final EntityLivingBase srcEntity = potion.getThrower();
         if (srcEntity == null) return;
 
-        final ICombatant srcCom = CombatantProvider.get(srcEntity);
-        if (!srcCom.isInBattle()) return;
+        final EntityLivingBase actor = CombatFlow.getCombatActor(srcEntity);
+        if (actor == null) return;
 
-        final Battle battle = Combat.MANAGER.getBattle(srcCom.getBattleId());
-        if (battle == null) return;
-
-        final EntityLivingBase entity;
-        if (srcCom.hasPuppet()) {
-            entity = battle.getCombatantWithId(srcCom.getPuppet());
-            if (entity == null) {
-                notifyActionBar("Invalid puppet!", srcEntity);
-                return;
-            }
-        } else {
-            entity = srcEntity;
-        }
-        final ICombatant com = CombatantProvider.get(entity);
-
-        if (!battle.isLeader(entity.getUniqueID())) {
-            event.setCanceled(true);
-            return;
-        }
-
-        if (BattleFlow.isEnoughAp(entity, com, Combat.getRules().usageActionPoints(Items.SPLASH_POTION))) {
-            BattleFlow.consumeUsageAp(entity, Items.SPLASH_POTION);
-            BattleFlow.consumeMovementAp(entity);
-            CombatantSync.sync(entity);
+        if (CombatFlow.canUse(actor, Items.SPLASH_POTION)) {
+            CombatFlow.onUse(actor, Items.SPLASH_POTION);
         } else {
             event.setCanceled(true);
         }
     }
 
-    @SubscribeEvent
+    @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onKnockBack(LivingKnockBackEvent event) {
         if (attackEvaded) {
             attackEvaded = false;

@@ -2,8 +2,11 @@ package msifeed.misca.combat.client;
 
 import msifeed.mellow.render.RenderShapes;
 import msifeed.mellow.utils.Geom;
+import msifeed.misca.combat.Combat;
+import msifeed.misca.combat.battle.Battle;
 import msifeed.misca.combat.cap.CombatantProvider;
 import msifeed.misca.combat.cap.ICombatant;
+import msifeed.misca.combat.rules.Rules;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
@@ -71,15 +74,50 @@ public class CombatantsBarRender {
     }
 
     public static void renderBars(EntityLivingBase entity, int posX, int posY, int width) {
-        final ICombatant combatant = CombatantProvider.get(entity);
-
-//        RenderShapes.rect(new Geom(posX, posY + 2, width, 4), 0xff000000);
+        final ICombatant com = CombatantProvider.get(entity);
+        final Battle battle = Combat.MANAGER.getBattle(com.getBattleId());
+        if (battle == null) return;
 
         final float healthPercent = entity.getHealth() / entity.getMaxHealth();
         RenderShapes.rect(new Geom(posX, posY + 2, (int) (width * healthPercent), 2), 0xffff1010);
 
-        ActionPointsBarView.render(new Geom(posX, posY + 4, width, 2), entity);
-//        final double apPercent = combatant.getActionPoints() / Combat.getRules().maxActionPoints(entity);
-//        RenderShapes.rect(new Geom(posX, posY + 4, (int) (width * apPercent), 2), 0xffffff00);
+        final boolean leader = battle.isLeader(entity.getUniqueID());
+        final float delayPercent = (float) battle.finishMoveDelayLeft() / Combat.getRules().finishTurnDelayMillis;
+
+        if (leader && delayPercent > 0) {
+            RenderShapes.rect(new Geom(posX, posY + 4, (int) (width * delayPercent), 2), 0xff10ff10);
+        } else {
+            renderActionPointsBar(new Geom(posX, posY + 4, width, 2), entity);
+        }
+    }
+
+    private static void renderActionPointsBar(Geom geom, EntityLivingBase entity) {
+        final ICombatant com = CombatantProvider.get(entity);
+
+        final Rules rules = Combat.getRules();
+        final double fullAp = com.getActionPoints();
+        final double moveAp = rules.movementActionPoints(com.getPosition(), entity.getPositionVector());
+        final double actionAp = rules.attackActionPoints(entity);
+        final double ap = Math.max(com.getActionPoints() - moveAp, 0);
+
+        final int bgColor = ap > 0 ? 0xffffff00 : 0xffff0000;
+        final int barWidth = geom.w - 2;
+        final double pxPerAp = barWidth / fullAp;
+
+        final Geom barGeom = geom.clone();
+
+        barGeom.w = (int) (ap * pxPerAp);
+        RenderShapes.rect(barGeom, bgColor);
+
+        barGeom.w = 1;
+        double consumedAp = 0;
+        double nextAp = actionAp + com.getActionPointsOverhead();
+        while (ap >= consumedAp + nextAp) {
+            barGeom.x = (int) (geom.x + (consumedAp + nextAp) * pxPerAp);
+            RenderShapes.rect(barGeom, 0xff000000);
+
+            consumedAp += nextAp;
+            nextAp += nextAp / 2;
+        }
     }
 }
