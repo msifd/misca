@@ -2,6 +2,7 @@ package msifeed.misca.chatex;
 
 import msifeed.misca.Misca;
 import msifeed.misca.charsheet.CharEffort;
+import msifeed.misca.chatex.client.ChatexClientLogs;
 import msifeed.misca.chatex.client.TypingState;
 import msifeed.misca.chatex.client.format.GlobalFormat;
 import msifeed.misca.chatex.client.format.SpeechFormat;
@@ -123,29 +124,29 @@ public class ChatexRpc {
         final EntityPlayerSP self = Minecraft.getMinecraft().player;
         final EntityPlayer speaker = self.world.getPlayerEntityByUUID(speakerId);
         if (speaker == null) return;
-        self.sendMessage(SpeechFormat.format(self, speaker, range, msg));
-        playNotificationSound(speaker);
+
+        displayMessage(self, speaker, SpeechFormat.format(self, speaker, range, msg));
     }
 
     @SideOnly(Side.CLIENT)
     @RpcMethodHandler(raw)
     public void onRaw(ITextComponent component) {
         final EntityPlayerSP self = Minecraft.getMinecraft().player;
-        displaySelfMessage(self, component);
+        displayMessage(self, self, component);
     }
 
     @SideOnly(Side.CLIENT)
     @RpcMethodHandler(gmGlobal)
     public void onGmGlobal(String speaker, String msg) {
         final EntityPlayerSP self = Minecraft.getMinecraft().player;
-        displaySelfMessage(self, GlobalFormat.gameMaster(self, speaker, msg));
+        displayMessage(self, self, GlobalFormat.gameMaster(self, speaker, msg));
     }
 
     @SideOnly(Side.CLIENT)
     @RpcMethodHandler(global)
     public void onGlobal(String speaker, String msg) {
         final EntityPlayerSP self = Minecraft.getMinecraft().player;
-        displaySelfMessage(self, GlobalFormat.regular(self, speaker, msg));
+        displayMessage(self, self, GlobalFormat.regular(self, speaker, msg));
     }
 
     @SideOnly(Side.CLIENT)
@@ -157,7 +158,8 @@ public class ChatexRpc {
                 : info.getGameProfile().getName();
         final String msg = String.format("[ROLL] %s: %s = %d", name, spec, result);
 
-        displaySelfMessage(Minecraft.getMinecraft().player, new TextComponentString(msg));
+        final EntityPlayer self = Minecraft.getMinecraft().player;
+        displayMessage(self, self, new TextComponentString(msg));
     }
 
     @SideOnly(Side.CLIENT)
@@ -170,13 +172,14 @@ public class ChatexRpc {
         final CharEffort effort = CharEffort.values()[effortOrd];
         final String msg = String.format("[EFFORT] %s: %s %d/%d = %s", name, effort.toString(), amount, difficulty, result ? "SUCCESS" : "FAIL");
 
-        displaySelfMessage(Minecraft.getMinecraft().player, new TextComponentString(msg));
+        displayMessage(Minecraft.getMinecraft().player, target, new TextComponentString(msg));
     }
 
     @SideOnly(Side.CLIENT)
-    private static void displaySelfMessage(EntityPlayer self, ITextComponent tx) {
+    private static void displayMessage(EntityPlayer self, EntityPlayer source, ITextComponent tx) {
         self.sendMessage(tx);
-        playNotificationSound(self);
+        playNotificationSound(source);
+        ChatexClientLogs.logSpeech(tx);
     }
 
     @SideOnly(Side.CLIENT)
