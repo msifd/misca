@@ -10,8 +10,8 @@ import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
-import net.minecraft.item.Item;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.Vec3d;
 
 import java.lang.ref.WeakReference;
@@ -126,18 +126,18 @@ public class BattleFlow {
 
     //// Action points management
 
-    public static void consumeActionAp(EntityLivingBase entity, Item item) {
+    public static void consumeActionAp(EntityLivingBase entity, ResourceLocation weapon) {
         final ICombatant com = CombatantProvider.get(entity);
-        final double apWithOh = Combat.getRules().attackActionPoints(entity, item) + com.getActionPointsOverhead();
+        final double apWithOh = Combat.getRules().attackActionPoints(entity, weapon) + com.getActionPointsOverhead();
         if (com.getActionPoints() >= apWithOh) {
             com.addActionPoints(-apWithOh);
             com.setActionPointsOverhead(com.getActionPointsOverhead() + apWithOh / 2);
         }
     }
 
-    public static void consumeUsageAp(EntityLivingBase entity, Item item) {
+    public static void consumeUsageAp(EntityLivingBase entity, ResourceLocation weapon) {
         final ICombatant com = CombatantProvider.get(entity);
-        final double apWithOh = Combat.getRules().usageActionPoints(item) + com.getActionPointsOverhead();
+        final double apWithOh = Combat.getRules().usageActionPoints(weapon) + com.getActionPointsOverhead();
         if (com.getActionPoints() >= apWithOh) {
             com.addActionPoints(-apWithOh);
             com.setActionPointsOverhead(com.getActionPointsOverhead() + apWithOh / 2);
@@ -146,25 +146,25 @@ public class BattleFlow {
 
     public static void consumeMovementAp(EntityLivingBase entity) {
         final ICombatant com = CombatantProvider.get(entity);
-        final double ap = Combat.getRules().movementActionPoints(com.getPosition(), entity.getPositionVector());
+        final double ap = Combat.getRules().movementActionPoints(entity, com.getPosition(), entity.getPositionVector());
         com.setPosition(entity.getPositionVector());
         com.setActionPoints(Math.max(com.getActionPoints() - ap, 0));
     }
 
-    public static boolean isApDepleted(EntityLivingBase entity, Item weapon) {
+    public static boolean isApDepleted(EntityLivingBase entity, ResourceLocation weapon) {
         final ICombatant com = CombatantProvider.get(entity);
         final Rules rules = Combat.getRules();
         final double atk = rules.attackActionPoints(entity, weapon);
-        final double use = rules.usageActionPoints(Items.AIR);
+        final double use = rules.usageActionPoints(Items.AIR.getRegistryName());
         final double act = Math.min(atk, use) + com.getActionPointsOverhead();
-        final double mov = rules.movementActionPoints(com.getPosition(), entity.getPositionVector());
+        final double mov = rules.movementActionPoints(entity, com.getPosition(), entity.getPositionVector());
         return (mov + act) > com.getActionPoints();
     }
 
     public static boolean isEnoughAp(EntityLivingBase entity, ICombatant com, double ap) {
         final Rules rules = Combat.getRules();
         final double act = ap + com.getActionPointsOverhead();
-        final double mov = rules.movementActionPoints(com.getPosition(), entity.getPositionVector());
+        final double mov = rules.movementActionPoints(entity, com.getPosition(), entity.getPositionVector());
         return (mov + act) < com.getActionPoints();
     }
 

@@ -24,14 +24,18 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public class ItemGunMixin {
     @Inject(method = "gunCantBeHandeled", at = @At(value = "HEAD"), cancellable = true)
     public void cantHandle(GunType type, EntityPlayer player, CallbackInfoReturnable<Boolean> cir) {
-        if (!CombatFlow.canAttack(player, player.getHeldItemMainhand().getItem())) {
+        final EntityLivingBase actor = CombatFlow.getCombatActor(player);
+        if (actor != null && !CombatFlow.canAttack(actor, player.getHeldItemMainhand().getItem().getRegistryName())) {
             cir.setReturnValue(true);
         }
     }
 
-    @Inject(method = "shoot", at = @At(value = "HEAD"), cancellable = true)
+    @Inject(method = "shoot", at = @At(value = "HEAD"))
     public void shoot(EnumHand hand, EntityPlayer player, ItemStack stack, PlayerData data, World world, GunAnimations animations, CallbackInfo ci) {
-        CombatFlow.onAttack(player, stack.getItem());
+        final EntityLivingBase actor = CombatFlow.getCombatActor(player);
+        if (actor != null) {
+            CombatFlow.onAttack(actor, stack.getItem().getRegistryName());
+        }
     }
 
     @SideOnly(Side.CLIENT)
@@ -39,7 +43,7 @@ public class ItemGunMixin {
     public void canReload(ItemStack stack, IInventory inventory, CallbackInfoReturnable<Boolean> cir) {
         final EntityPlayer player = Minecraft.getMinecraft().player;
         final EntityLivingBase actor = CombatFlow.getCombatActor(player);
-        if (actor != null && !CombatFlow.canUse(actor, stack.getItem())) {
+        if (actor != null && !CombatFlow.canUse(actor, stack.getItem().getRegistryName())) {
             cir.setReturnValue(false);
         }
     }
@@ -49,7 +53,7 @@ public class ItemGunMixin {
         if (!(entity instanceof EntityLivingBase)) return;
 
         final EntityLivingBase actor = CombatFlow.getCombatActor((EntityLivingBase) entity);
-        if (actor != null && !CombatFlow.canUse(actor, stack.getItem())) {
+        if (actor != null && !CombatFlow.canUse(actor, stack.getItem().getRegistryName())) {
             cir.setReturnValue(false);
         }
     }

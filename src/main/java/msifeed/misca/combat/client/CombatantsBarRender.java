@@ -96,8 +96,8 @@ public class CombatantsBarRender {
 
         final Rules rules = Combat.getRules();
         final double fullAp = com.getActionPoints();
-        final double moveAp = rules.movementActionPoints(com.getPosition(), entity.getPositionVector());
-        final double actionAp = rules.attackActionPoints(entity, entity.getHeldItemMainhand().getItem());
+        final double moveAp = rules.movementActionPoints(entity, com.getPosition(), entity.getPositionVector());
+        final double actionAp = rules.attackActionPoints(entity, entity.getHeldItemMainhand().getItem().getRegistryName());
         final double ap = Math.max(com.getActionPoints() - moveAp, 0);
 
         final int bgColor = ap > 0 ? 0xffffff00 : 0xffff0000;

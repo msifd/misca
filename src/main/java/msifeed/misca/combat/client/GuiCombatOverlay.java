@@ -16,7 +16,7 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.Item;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
@@ -71,7 +71,7 @@ public class GuiCombatOverlay {
         final EntityLivingBase actor = CombatFlow.getCombatActor(player);
         if (actor == null) return;
         final ICombatant com = CombatantProvider.get(actor);
-        final Item item = player.getHeldItemMainhand().getItem();
+        final ResourceLocation weapon = player.getHeldItemMainhand().getItem().getRegistryName();
 
         final Battle state = BattleStateClient.STATE;
         final Rules rules = Combat.getRules();
@@ -85,10 +85,10 @@ public class GuiCombatOverlay {
                 .collect(Collectors.joining(", "));
         final String leaderName = getNameOrUuid(state.getLeaderUuid(), state.getLeader());
         final String posStr = String.format("x: %.2f, y: %.2f, z: %.2f", pos.x, pos.y, pos.z);
-        final double moveAp = rules.movementActionPoints(com.getPosition(), actor.getPositionVector());
+        final double moveAp = rules.movementActionPoints(actor, com.getPosition(), actor.getPositionVector());
         final double overheadAp = com.getActionPointsOverhead();
-        final double attackAp = rules.attackActionPoints(actor, item) + overheadAp;
-        final double usageAp = rules.usageActionPoints(actor.getHeldItemMainhand().getItem()) + overheadAp;
+        final double attackAp = rules.attackActionPoints(actor, weapon) + overheadAp;
+        final double usageAp = rules.usageActionPoints(weapon) + overheadAp;
 
         final String[] lines = {
                 "members: " + joinedMembers,

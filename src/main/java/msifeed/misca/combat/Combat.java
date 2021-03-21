@@ -8,6 +8,7 @@ import msifeed.misca.combat.cap.*;
 import msifeed.misca.combat.client.CombatTheme;
 import msifeed.misca.combat.rules.Rules;
 import msifeed.misca.combat.rules.WeaponInfo;
+import msifeed.misca.combat.rules.WeaponRegistry;
 import msifeed.sys.sync.SyncChannel;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.item.Item;
@@ -27,21 +28,14 @@ public class Combat {
 
     public static final SyncChannel<Rules> RULES
             = new SyncChannel<>(Misca.RPC, Paths.get(Misca.MODID, "combat_rules.json"), TypeToken.get(Rules.class));
-    public static final TypeToken<HashMap<ResourceLocation, WeaponInfo>> WPN_TT = new TypeToken<HashMap<ResourceLocation, WeaponInfo>>() {};
-    public static final SyncChannel<HashMap<ResourceLocation, WeaponInfo>> WEAPONS
-            = new SyncChannel<>(Misca.RPC, Paths.get(Misca.MODID, "combat_weapons.json"), WPN_TT);
 
     public static Rules getRules() {
         return RULES.get();
     }
 
-    public static Map<ResourceLocation, WeaponInfo> getWeapons() {
-        return WEAPONS.get();
-    }
-
     public static void sync() throws Exception {
         RULES.sync();
-        WEAPONS.sync();
+        WeaponRegistry.sync();
     }
 
     public void preInit() {
@@ -59,15 +53,5 @@ public class Combat {
             CombatTheme.load();
             Misca.RPC.register(new BattleStateSync());
         }
-    }
-
-    public static WeaponInfo getWeaponInfo(Item item) {
-        final ResourceLocation handLoc = item.getRegistryName();
-        return Combat.getWeapons().getOrDefault(handLoc, WeaponInfo.NONE);
-    }
-
-    public static Optional<WeaponInfo> getWeaponInfo(EntityLivingBase entity, EnumHand hand) {
-        final ResourceLocation handLoc = entity.getHeldItem(hand).getItem().getRegistryName();
-        return Optional.ofNullable(Combat.getWeapons().get(handLoc));
     }
 }

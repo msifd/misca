@@ -1,22 +1,12 @@
 {
-  "minecraft:shield": {
-    "damage": 0.0,
-    "apHit": 0.0,
-    "apUse": 0.0,
-    "hitRate": 0.0,
-    "traits": [
-      "ignoreUse",
-      "ignoreHoldUse"
-    ]
-  },
   "minecraft:bow": {
-    "damage": 0.0,
-    "apHit": 0.0,
-    "apUse": 0.0,
-    "hitRate": 0.0,
+    "dmg": 0.0,
+    "atk": 0.0,
+    "use": 0.0,
+    "chance": 0.0,
     "traits": [
       "range",
-      "ignoreUse"
+      "canHoldUse"
     ]
   }
 }

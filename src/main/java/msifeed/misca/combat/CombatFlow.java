@@ -7,6 +7,8 @@ import msifeed.misca.combat.cap.CombatantSync;
 import msifeed.misca.combat.cap.ICombatant;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.item.Item;
+import net.minecraft.util.ResourceLocation;
+import org.codehaus.plexus.util.ExceptionUtils;
 
 import javax.annotation.Nullable;
 
@@ -36,7 +38,7 @@ public class CombatFlow {
 
     // Usage
 
-    public static boolean canUse(EntityLivingBase actor, Item item) {
+    public static boolean canUse(EntityLivingBase actor, ResourceLocation weapon) {
         final ICombatant com = CombatantProvider.get(actor);
         if (!com.isInBattle()) return true;
 
@@ -46,19 +48,19 @@ public class CombatFlow {
         if (!battle.isLeader(actor.getUniqueID())) return false;
         if (battle.isTurnFinishing()) return false;
 
-        final double usageAp = Combat.getRules().usageActionPoints(item);
+        final double usageAp = Combat.getRules().usageActionPoints(weapon);
         return BattleFlow.isEnoughAp(actor, com, usageAp);
     }
 
-    public static void onUse(EntityLivingBase actor, Item item) {
-        BattleFlow.consumeUsageAp(actor, item);
+    public static void onUse(EntityLivingBase actor, ResourceLocation weapon) {
+        BattleFlow.consumeUsageAp(actor, weapon);
         BattleFlow.consumeMovementAp(actor);
         CombatantSync.sync(actor);
     }
 
     // Attack
 
-    public static boolean trySourceAttack(EntityLivingBase source, Item weapon) {
+    public static boolean trySourceAttack(EntityLivingBase source, ResourceLocation weapon) {
         final EntityLivingBase actor = getCombatActor(source);
         if (actor == null) return true;
 
@@ -74,11 +76,11 @@ public class CombatFlow {
         final EntityLivingBase actor = getCombatActor(source);
         if (actor == null) return;
 
-        final Item weapon = source.getHeldItemMainhand().getItem();
+        final ResourceLocation weapon = source.getHeldItemMainhand().getItem().getRegistryName();
         onAttack(actor, weapon);
     }
 
-    public static boolean canAttack(EntityLivingBase actor, Item item) {
+    public static boolean canAttack(EntityLivingBase actor, ResourceLocation weapon) {
         final ICombatant com = CombatantProvider.get(actor);
         if (!com.isInBattle()) return true;
 
@@ -88,20 +90,25 @@ public class CombatFlow {
         if (!battle.isLeader(actor.getUniqueID())) return false;
         if (battle.isTurnFinishing()) return false;
 
-        return isEnoughAttackAp(actor, item);
+        return isEnoughAttackAp(actor, weapon);
     }
 
-    public static boolean isEnoughAttackAp(EntityLivingBase actor, Item item) {
-        final double attackAp = Combat.getRules().attackActionPoints(actor, item);
+    public static boolean isEnoughAttackAp(EntityLivingBase actor, ResourceLocation weapon) {
+        final double attackAp = Combat.getRules().attackActionPoints(actor, weapon);
         return BattleFlow.isEnoughAp(actor, CombatantProvider.get(actor), attackAp);
     }
 
-    public static void onAttack(EntityLivingBase actor, Item item) {
-        BattleFlow.consumeActionAp(actor, item);
+    public static void onAttack(EntityLivingBase actor, ResourceLocation weapon) {
+        if (actor.world.isRemote) return;
+
+        System.out.println("onAttack " + actor.getName() + " " + CombatantProvider.get(actor).getActionPoints());
+//        System.out.println(ExceptionUtils.getFullStackTrace(new RuntimeException()));
+
+        BattleFlow.consumeActionAp(actor, weapon);
         BattleFlow.consumeMovementAp(actor);
         CombatantSync.sync(actor);
 
-        if (BattleFlow.isApDepleted(actor, item)) {
+        if (BattleFlow.isApDepleted(actor, weapon)) {
             final ICombatant com = CombatantProvider.get(actor);
             final Battle battle = Combat.MANAGER.getBattle(com.getBattleId());
             if (battle != null)

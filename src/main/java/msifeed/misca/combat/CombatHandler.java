@@ -6,10 +6,7 @@ import msifeed.misca.combat.battle.BattleStateSync;
 import msifeed.misca.combat.cap.CombatantProvider;
 import msifeed.misca.combat.cap.CombatantSync;
 import msifeed.misca.combat.cap.ICombatant;
-import msifeed.misca.combat.rules.CombatantInfo;
-import msifeed.misca.combat.rules.Rules;
-import msifeed.misca.combat.rules.WeaponInfo;
-import msifeed.misca.combat.rules.WeaponTrait;
+import msifeed.misca.combat.rules.*;
 import msifeed.misca.rolls.Dices;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -19,10 +16,10 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.projectile.EntityPotion;
 import net.minecraft.init.Items;
 import net.minecraft.item.EnumAction;
-import net.minecraft.item.Item;
 import net.minecraft.util.CombatRules;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EntityDamageSource;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
@@ -67,7 +64,7 @@ public class CombatHandler {
         final Battle battle = Combat.MANAGER.getBattle(com.getBattleId());
         if (battle == null || !battle.isLeader(entity.getUniqueID())) return;
 
-        final double movementAp = Combat.getRules().movementActionPoints(com.getPosition(), entity.getPositionVector());
+        final double movementAp = Combat.getRules().movementActionPoints(entity, com.getPosition(), entity.getPositionVector());
         if (com.getActionPoints() <= 0 || com.getActionPoints() < movementAp) {
             BattleFlow.consumeMovementAp(entity);
             CombatantSync.sync(entity);
@@ -93,7 +90,7 @@ public class CombatHandler {
     public void onPlayerAttackEntity(AttackEntityEvent event) {
         if (event.getEntityLiving().world.isRemote || event.isCanceled()) return;
 
-        final Item weapon = event.getEntityPlayer().getHeldItemMainhand().getItem();
+        final ResourceLocation weapon = event.getEntityPlayer().getHeldItemMainhand().getItem().getRegistryName();
         CombatFlow.trySourceAttack(event.getEntityLiving(), weapon);
     }
 
@@ -106,7 +103,7 @@ public class CombatHandler {
         if (!(src.getTrueSource() instanceof EntityLivingBase)) return;
 
         final EntityLivingBase source = (EntityLivingBase) src.getTrueSource();
-        final Item weapon = source.getHeldItemMainhand().getItem();
+        final ResourceLocation weapon = source.getHeldItemMainhand().getItem().getRegistryName();
         final EntityLivingBase actor = CombatFlow.getCombatActor(source);
         if (actor == null) return;
 
@@ -147,7 +144,7 @@ public class CombatHandler {
         if (actor == null) return;
 
         if (!src.getDamageType().startsWith(IGNORE_PREFIX)) {
-            final Item weapon = srcEntity.getHeldItemMainhand().getItem();
+            final ResourceLocation weapon = srcEntity.getHeldItemMainhand().getItem().getRegistryName();
             alterDamage(event, actor, weapon);
         }
 
@@ -179,11 +176,11 @@ public class CombatHandler {
 
     @SubscribeEvent
     public void onItemUse(PlayerInteractEvent.RightClickItem event) {
-        final Item weapon = event.getItemStack().getItem();
-        final WeaponInfo info = Combat.getWeaponInfo(weapon);
+        final ResourceLocation weapon = event.getItemStack().getItem().getRegistryName();
+        final WeaponInfo info = WeaponRegistry.getWeaponInfo(weapon);
 
-        final boolean ignore = info.has(WeaponTrait.ignoreUse);
-        if (ignore) return;
+        final boolean canUse = info.has(WeaponTrait.canUse);
+        if (!canUse) return;
         if (event.getItemStack().getItemUseAction() == EnumAction.NONE && info.traits.isEmpty()) return;
 
         final EntityLivingBase actor = CombatFlow.getCombatActor(event.getEntityLiving());
@@ -199,9 +196,9 @@ public class CombatHandler {
 
     @SubscribeEvent
     public void onItemUseStart(LivingEntityUseItemEvent.Start event) {
-        final Item weapon = event.getItem().getItem();
-        final boolean ignore = Combat.getWeaponInfo(weapon).has(WeaponTrait.ignoreHoldUse);
-        if (ignore) return;
+        final ResourceLocation weapon = event.getItem().getItem().getRegistryName();
+        final boolean canUse = WeaponRegistry.getWeaponInfo(weapon).has(WeaponTrait.canHoldUse);
+        if (!canUse) return;
 
         final EntityLivingBase actor = CombatFlow.getCombatActor(event.getEntityLiving());
         if (actor == null) return;
@@ -215,9 +212,9 @@ public class CombatHandler {
     public void onItemUseStop(LivingEntityUseItemEvent.Stop event) {
         if (event.getEntityLiving().world.isRemote) return;
 
-        final Item weapon = event.getItem().getItem();
-        final boolean ignore = Combat.getWeaponInfo(weapon).has(WeaponTrait.ignoreHoldUse);
-        if (ignore) return;
+        final ResourceLocation weapon = event.getItem().getItem().getRegistryName();
+        final boolean canUse = WeaponRegistry.getWeaponInfo(weapon).has(WeaponTrait.canHoldUse);
+        if (!canUse) return;
 
         final EntityLivingBase actor = CombatFlow.getCombatActor(event.getEntityLiving());
         if (actor == null) return;
@@ -229,9 +226,9 @@ public class CombatHandler {
     public void onItemUseFinish(LivingEntityUseItemEvent.Finish event) {
         if (event.getEntityLiving().world.isRemote) return;
 
-        final Item weapon = event.getItem().getItem();
-        final boolean ignore = Combat.getWeaponInfo(weapon).has(WeaponTrait.ignoreHoldUse);
-        if (ignore) return;
+        final ResourceLocation weapon = event.getItem().getItem().getRegistryName();
+        final boolean canUse = WeaponRegistry.getWeaponInfo(weapon).has(WeaponTrait.canHoldUse);
+        if (!canUse) return;
 
         final EntityLivingBase actor = CombatFlow.getCombatActor(event.getEntityLiving());
         if (actor == null) return;
@@ -250,8 +247,8 @@ public class CombatHandler {
         final EntityLivingBase actor = CombatFlow.getCombatActor(srcEntity);
         if (actor == null) return;
 
-        if (CombatFlow.canUse(actor, Items.SPLASH_POTION)) {
-            CombatFlow.onUse(actor, Items.SPLASH_POTION);
+        if (CombatFlow.canUse(actor, Items.SPLASH_POTION.getRegistryName())) {
+            CombatFlow.onUse(actor, Items.SPLASH_POTION.getRegistryName());
         } else {
             event.setCanceled(true);
         }
@@ -265,15 +262,16 @@ public class CombatHandler {
         }
     }
 
-    private void alterDamage(LivingHurtEvent event, EntityLivingBase actor, Item weapon) {
-        final float damageAmount = event.getAmount() + Combat.getWeaponInfo(weapon).damage;
+    private void alterDamage(LivingHurtEvent event, EntityLivingBase actor, ResourceLocation weapon) {
+        final float damageOverride = WeaponRegistry.getWeaponInfo(weapon).dmg;
+        final float damageAmount = damageOverride > 0 ? damageOverride : event.getAmount();
 
         final EntityLivingBase vicEntity = event.getEntityLiving();
         final CombatantInfo actInfo = new CombatantInfo(actor, event.getSource(), weapon);
         final CombatantInfo vicInfo = new CombatantInfo(vicEntity);
         final Rules rules = Combat.getRules();
 
-        final double hitChanceRaw = rules.hitRate(actInfo, weapon) - rules.evasion(vicEntity, vicInfo, actInfo);
+        final double hitChanceRaw = rules.hitChance(actInfo, weapon) - rules.evasionChance(vicEntity, vicInfo, actInfo);
         final double hitChance = Math.min(hitChanceRaw, rules.maxHitChance);
         final int hitCheck = Dices.checkInt(hitChance);
         final int criticality = Dices.checkInt(rules.criticalHit(actInfo) + rules.rawChanceToHitCriticality(hitChanceRaw))

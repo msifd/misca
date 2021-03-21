@@ -1,13 +1,12 @@
 package msifeed.misca.combat.rules;
 
 import msifeed.misca.combat.CharAttribute;
-import msifeed.misca.combat.Combat;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
+import net.minecraft.entity.ai.attributes.IAttribute;
 import net.minecraft.entity.ai.attributes.IAttributeInstance;
-import net.minecraft.item.Item;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
@@ -30,30 +29,30 @@ public class Rules {
         return (float) (CharAttribute.end.get(info) * damageAbsorptionPerEnd);
     }
 
-    public double hitRateBase = 0.5;
-    public double hitRateMeleePerPer = 0.015;
-    public double hitRateRangePerPer = 0.03;
-    public double hitRatePerLck = 0.005;
+    public double hitChanceBase = 0.5;
+    public double hitChanceMeleePerPer = 0.015;
+    public double hitChanceRangePerPer = 0.03;
+    public double hitChancePerLck = 0.005;
 
-    public double hitRate(CombatantInfo info, Item weapon) {
-        final double overrideRate = Combat.getWeaponInfo(weapon).hitRate;
-        final double perFactor = info.isMelee() ? hitRateMeleePerPer : hitRateRangePerPer;
+    public double hitChance(CombatantInfo info, ResourceLocation weapon) {
+        final double overrideRate = WeaponRegistry.getWeaponInfo(weapon).chance;
+        final double perFactor = info.isMelee() ? hitChanceMeleePerPer : hitChanceRangePerPer;
         final double perception = CharAttribute.per.get(info);
         final double luck = CharAttribute.lck.get(info);
-        return hitRateBase + perception * perFactor + luck * hitRatePerLck + overrideRate;
+        return hitChanceBase + perception * perFactor + luck * hitChancePerLck + overrideRate;
     }
 
-    public double evasionPerRef = 0.03;
-    public double evasionPerLck = 0.005;
+    public double evasionChancePerRef = 0.03;
+    public double evasionChancePerLck = 0.005;
     public double rangedEvasionPenalty = 0.2;
     public double noShieldEvasionPenalty = 0.25;
 
-    public double evasion(EntityLivingBase victim, CombatantInfo vicInfo, CombatantInfo srcInfo) {
+    public double evasionChance(EntityLivingBase victim, CombatantInfo vicInfo, CombatantInfo srcInfo) {
         final double reflexes = CharAttribute.ref.get(vicInfo);
         final double luck = CharAttribute.lck.get(vicInfo);
         final double penalty = evasionPenalty(vicInfo, srcInfo);
         final double factor = evasionFactor(victim, vicInfo, srcInfo);
-        return (reflexes * evasionPerRef + luck * evasionPerLck - penalty) * factor;
+        return (reflexes * evasionChancePerRef + luck * evasionChancePerLck - penalty) * factor;
     }
 
     public double evasionPenalty(CombatantInfo vicInfo, CombatantInfo srcInfo) {
@@ -71,9 +70,13 @@ public class Rules {
     }
 
     public double evasionFactor(EntityLivingBase victim, CombatantInfo vicInfo, CombatantInfo srcInfo) {
-//        if (srcInfo.isMelee()) return 1;
-//        if (vicInfo.isAny(WeaponTrait.evadeRange)) return 1;
-        return coverBlocks(victim.world, vicInfo.pos, srcInfo.pos);
+        if (srcInfo.isRanged()) {
+            if (vicInfo.isAny(WeaponTrait.evadeRange))
+                return 1;
+            return coverBlocks(victim.world, vicInfo.pos, srcInfo.pos);
+        } else {
+            return 1;
+        }
     }
 
     public double coverPerBlock = 0.5;
@@ -134,8 +137,10 @@ public class Rules {
     public double attackApBase = 6;
     public double attackApDefault = 4;
 
-    public double attackActionPoints(EntityLivingBase entity, Item item) {
-        final double overrideAp = Combat.getWeaponInfo(item).apHit;;
+    public double attackActionPoints(EntityLivingBase entity, ResourceLocation weapon) {
+        final double overrideAp = WeaponRegistry.getWeaponInfo(weapon).atk;
+        if (overrideAp > 0) return overrideAp;
+
         final IAttributeInstance attackSpeed = entity.getEntityAttribute(SharedMonsterAttributes.ATTACK_SPEED);
         if (attackSpeed != null) { // Can be null for mobs
             return attackApBase - attackSpeed.getAttributeValue() + overrideAp;
@@ -147,23 +152,28 @@ public class Rules {
     public double movementApFactor = 1;
     public double movementApRiseFactor = 1;
     public double movementApDescentFactor = 0;
+    public double movementApSpeedFactor = 1;
 
-    public double movementActionPoints(Vec3d from, Vec3d to) {
+    public double movementActionPoints(EntityLivingBase entity, Vec3d from, Vec3d to) {
+        final IAttributeInstance speed = entity.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED);
+        final double speedFactor = speed.getBaseValue() / speed.getAttributeValue() * movementApSpeedFactor;
         final double distance = from.distanceTo(to) * movementApFactor;
         final double verticalDelta = to.y - from.y;
+
         if (verticalDelta > 0) {
-            return distance + verticalDelta * movementApRiseFactor;
+            return (distance + verticalDelta * movementApRiseFactor) * speedFactor;
         } else if (verticalDelta < 0) {
-            return distance - verticalDelta * movementApDescentFactor;
+            return (distance - verticalDelta * movementApDescentFactor) * speedFactor;
         } else {
-            return distance;
+            return distance * speedFactor;
         }
     }
 
     public double usageApBase = 5;
 
-    public double usageActionPoints(Item item) {
-        return usageApBase + Combat.getWeaponInfo(item).apUse;
+    public double usageActionPoints(ResourceLocation weapon) {
+        final double override = WeaponRegistry.getWeaponInfo(weapon).use;
+        return override > 0 ? override : usageApBase;
     }
 
     public double apPerMoveBase = 5;

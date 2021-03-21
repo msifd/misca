@@ -17,6 +17,8 @@
     "UnpackedBakedQuadMixin",
     "flan.ItemGunMixin",
     "techguns.GenericGunMixin",
-    "techguns.ReloadStartedMessageMixin"
+    "techguns.ReloadStartedMessageMixin",
+    "wizardry.ItemScrollMixin",
+    "wizardry.ItemWandMixin"
   ]
 }
