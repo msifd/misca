@@ -1,5 +1,6 @@
 package msifeed.misca.combat.client;
 
+import electroblob.wizardry.item.ItemWand;
 import msifeed.mellow.render.RenderShapes;
 import msifeed.mellow.utils.Geom;
 import msifeed.misca.combat.Combat;
@@ -15,7 +16,9 @@ import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.Vec3d;
+import net.minecraftforge.registries.IForgeRegistryEntry;
 
 public class CombatantsBarRender {
     public static float getEntityWidth(EntityLivingBase entity) {
@@ -94,21 +97,35 @@ public class CombatantsBarRender {
     private static void renderActionPointsBar(Geom geom, EntityLivingBase entity) {
         final ICombatant com = CombatantProvider.get(entity);
 
+        final ItemStack heldItem = entity.getHeldItemMainhand();
+        final IForgeRegistryEntry<?> weapon;
+        if (heldItem.getItem() instanceof ItemWand) {
+            weapon = ((ItemWand) heldItem.getItem()).getCurrentSpell(heldItem);
+        } else {
+            weapon = heldItem.getItem();
+        }
+
         final Rules rules = Combat.getRules();
         final double fullAp = com.getActionPoints();
         final double moveAp = rules.movementActionPoints(entity, com.getPosition(), entity.getPositionVector());
-        final double actionAp = rules.attackActionPoints(entity, entity.getHeldItemMainhand().getItem().getRegistryName());
+        final double actionAp = rules.attackActionPoints(entity, weapon);
         final double ap = Math.max(com.getActionPoints() - moveAp, 0);
 
         final int bgColor = ap > 0 ? 0xffffff00 : 0xffff0000;
-        final int barWidth = geom.w - 2;
-        final double pxPerAp = barWidth / fullAp;
+        final double pxPerAp = geom.w / fullAp;
 
         final Geom barGeom = geom.clone();
+
+//        // Single attack
+//        barGeom.y += barGeom.h;
+//        barGeom.w = (int) ((actionAp + com.getActionPointsOverhead()) * pxPerAp);
+//        RenderShapes.rect(barGeom, bgColor);
+//        barGeom.y -= barGeom.h;
 
         barGeom.w = (int) (ap * pxPerAp);
         RenderShapes.rect(barGeom, bgColor);
 
+        // Available attacks marks
         barGeom.w = 1;
         double consumedAp = 0;
         double nextAp = actionAp + com.getActionPointsOverhead();

@@ -25,7 +25,7 @@ public class ItemGunMixin {
     @Inject(method = "gunCantBeHandeled", at = @At(value = "HEAD"), cancellable = true)
     public void cantHandle(GunType type, EntityPlayer player, CallbackInfoReturnable<Boolean> cir) {
         final EntityLivingBase actor = CombatFlow.getCombatActor(player);
-        if (actor != null && !CombatFlow.canAttack(actor, player.getHeldItemMainhand().getItem().getRegistryName())) {
+        if (actor != null && !CombatFlow.canAttack(actor, player.getHeldItemMainhand().getItem())) {
             cir.setReturnValue(true);
         }
     }
@@ -34,7 +34,7 @@ public class ItemGunMixin {
     public void shoot(EnumHand hand, EntityPlayer player, ItemStack stack, PlayerData data, World world, GunAnimations animations, CallbackInfo ci) {
         final EntityLivingBase actor = CombatFlow.getCombatActor(player);
         if (actor != null) {
-            CombatFlow.onAttack(actor, stack.getItem().getRegistryName());
+            CombatFlow.onAttack(actor, stack.getItem());
         }
     }
 
@@ -43,7 +43,7 @@ public class ItemGunMixin {
     public void canReload(ItemStack stack, IInventory inventory, CallbackInfoReturnable<Boolean> cir) {
         final EntityPlayer player = Minecraft.getMinecraft().player;
         final EntityLivingBase actor = CombatFlow.getCombatActor(player);
-        if (actor != null && !CombatFlow.canUse(actor, stack.getItem().getRegistryName())) {
+        if (actor != null && !CombatFlow.canUse(actor, stack.getItem())) {
             cir.setReturnValue(false);
         }
     }
@@ -53,7 +53,7 @@ public class ItemGunMixin {
         if (!(entity instanceof EntityLivingBase)) return;
 
         final EntityLivingBase actor = CombatFlow.getCombatActor((EntityLivingBase) entity);
-        if (actor != null && !CombatFlow.canUse(actor, stack.getItem().getRegistryName())) {
+        if (actor != null && !CombatFlow.canUse(actor, stack.getItem())) {
             cir.setReturnValue(false);
         }
     }

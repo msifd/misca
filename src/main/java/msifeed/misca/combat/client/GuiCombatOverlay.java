@@ -16,7 +16,7 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.item.Item;
 import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
@@ -71,7 +71,7 @@ public class GuiCombatOverlay {
         final EntityLivingBase actor = CombatFlow.getCombatActor(player);
         if (actor == null) return;
         final ICombatant com = CombatantProvider.get(actor);
-        final ResourceLocation weapon = player.getHeldItemMainhand().getItem().getRegistryName();
+        final Item weapon = player.getHeldItemMainhand().getItem();
 
         final Battle state = BattleStateClient.STATE;
         final Rules rules = Combat.getRules();

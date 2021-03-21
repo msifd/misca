@@ -16,23 +16,35 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import java.util.UUID;
 
 public class CombatantSync {
-    public static final String sync = "combatant.sync";
-    public static final String syncSelf = "combatant.syncSelf";
-    public static final String postAttrs = "combatant.postAttrs";
+    public static final String sync = "combat.sync";
+    public static final String syncAp = "combat.syncAp";
+    public static final String syncNeutral = "combat.syncNeutral";
+    public static final String postAttrs = "combat.postAttrs";
 
     public static void sync(EntityPlayerMP receiver, EntityLivingBase target) {
         final NBTTagCompound nbt = CombatantProvider.encode(CombatantProvider.get(target));
-        if (receiver == target)
-            Misca.RPC.sendTo(receiver, CombatantSync.syncSelf, nbt);
-        else
-            Misca.RPC.sendTo(receiver, CombatantSync.sync, target.getUniqueID(), nbt);
+        Misca.RPC.sendTo(receiver, sync, target.getUniqueID(), nbt);
     }
 
     public static void sync(EntityLivingBase target) {
         final NBTTagCompound nbt = CombatantProvider.encode(CombatantProvider.get(target));
         if (target instanceof EntityPlayerMP)
-            Misca.RPC.sendTo((EntityPlayerMP) target, CombatantSync.syncSelf, nbt);
-        Misca.RPC.sendToAllTracking(target, CombatantSync.sync, target.getUniqueID(), nbt);
+            Misca.RPC.sendTo((EntityPlayerMP) target, sync, target.getUniqueID(), nbt);
+        Misca.RPC.sendToAllTracking(target, sync, target.getUniqueID(), nbt);
+    }
+
+    public static void syncAp(EntityLivingBase target) {
+        final ICombatant com = CombatantProvider.get(target);
+        if (target instanceof EntityPlayerMP)
+            Misca.RPC.sendTo((EntityPlayerMP) target, syncAp, target.getUniqueID(), com.getActionPoints(), com.getActionPointsOverhead());
+        Misca.RPC.sendToAllTracking(target, syncAp, target.getUniqueID(), com.getActionPoints(), com.getActionPointsOverhead());
+    }
+
+    public static void syncNeutralDamage(EntityLivingBase target) {
+        final ICombatant com = CombatantProvider.get(target);
+        if (target instanceof EntityPlayerMP)
+            Misca.RPC.sendTo((EntityPlayerMP) target, syncNeutral, target.getUniqueID(), com.getNeutralDamage());
+        Misca.RPC.sendToAllTracking(target, syncNeutral, target.getUniqueID(), com.getNeutralDamage());
     }
 
     public static void postAttrs(EntityLivingBase target, int[] attrs) {
@@ -68,27 +80,36 @@ public class CombatantSync {
     // Client side
 
     @SideOnly(Side.CLIENT)
-    @RpcMethodHandler(syncSelf)
-    public void onSyncSelf(NBTTagCompound nbt) {
-        final ICombatant com = update(Minecraft.getMinecraft().player, nbt);
-        if (!com.isInBattle())
-            BattleStateClient.clear();
-    }
-
-    @SideOnly(Side.CLIENT)
     @RpcMethodHandler(sync)
     public void onSync(UUID uuid, NBTTagCompound nbt) {
         Minecraft.getMinecraft().world.loadedEntityList.stream()
                 .filter(e -> e.getUniqueID().equals(uuid))
                 .findAny()
                 .filter(e -> e instanceof EntityLivingBase)
-                .ifPresent(e -> update((EntityLivingBase) e, nbt));
+                .ifPresent(e -> {
+                    final ICombatant com = CombatantProvider.get((EntityLivingBase) e);
+                    com.replaceWith(CombatantProvider.decode(nbt));
+                });
     }
 
     @SideOnly(Side.CLIENT)
-    private ICombatant update(EntityLivingBase target, NBTTagCompound nbt) {
-        final ICombatant com = CombatantProvider.get(target);
-        com.replaceWith(CombatantProvider.decode(nbt));
-        return com;
+    @RpcMethodHandler(syncAp)
+    public void onSyncAp(UUID uuid, double ap, double apo) {
+        final EntityLivingBase entity = BattleStateClient.STATE.getMember(uuid);
+        if (entity != null) {
+            final ICombatant com = CombatantProvider.get(entity);
+            com.setActionPoints(ap);
+            com.setActionPointsOverhead(apo);
+        }
+    }
+
+    @SideOnly(Side.CLIENT)
+    @RpcMethodHandler(syncNeutral)
+    public void onSyncNeutral(UUID uuid, float neutralDamage) {
+        final EntityLivingBase entity = BattleStateClient.STATE.getMember(uuid);
+        if (entity != null) {
+            final ICombatant com = CombatantProvider.get(entity);
+            com.setNeutralDamage(neutralDamage);
+        }
     }
 }

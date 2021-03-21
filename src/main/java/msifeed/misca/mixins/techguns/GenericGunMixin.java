@@ -18,7 +18,7 @@ public class GenericGunMixin {
 
     @Inject(method = "shootGunPrimary", at = @At(value = "HEAD"), cancellable = true)
     public void shoot(ItemStack stack, World world, EntityPlayer player, boolean zooming, EnumHand hand, Entity target, CallbackInfo ci) {
-        if (!CombatFlow.trySourceAttack(player, stack.getItem().getRegistryName())) {
+        if (!CombatFlow.trySourceAttack(player, stack.getItem())) {
             ci.cancel();
         }
     }
@@ -26,7 +26,7 @@ public class GenericGunMixin {
     @Inject(method = "shootGunPrimary", at = @At(value = "INVOKE", target = CONSUME_AMMO_PLAYER), cancellable = true)
     public void shootReload(ItemStack stack, World world, EntityPlayer player, boolean zooming, EnumHand hand, Entity target, CallbackInfo ci) {
         final EntityLivingBase actor = CombatFlow.getCombatActor(player);
-        if (actor != null && !CombatFlow.canUse(actor, stack.getItem().getRegistryName())) {
+        if (actor != null && !CombatFlow.canUse(actor, stack.getItem())) {
             ci.cancel();
         }
     }
@@ -34,7 +34,7 @@ public class GenericGunMixin {
     @Inject(method = "tryForcedReload", at = @At("HEAD"), cancellable = true)
     public void forcedReload(ItemStack stack, World world, EntityPlayer player, EnumHand hand, CallbackInfo ci) {
         final EntityLivingBase actor = CombatFlow.getCombatActor(player);
-        if (actor != null && !CombatFlow.canUse(actor, stack.getItem().getRegistryName())) {
+        if (actor != null && !CombatFlow.canUse(actor, stack.getItem())) {
             ci.cancel();
         }
     }

@@ -14,7 +14,7 @@ public class ReloadStartedMessageMixin {
     public void onConstructed(EntityLivingBase shooter, EnumHand hand, int firetime, int attackType, CallbackInfo ci) {
         final EntityLivingBase actor = CombatFlow.getCombatActor(shooter);
         if (actor != null) {
-            CombatFlow.onUse(actor, shooter.getHeldItem(hand).getItem().getRegistryName());
+            CombatFlow.onUse(actor, shooter.getHeldItem(hand).getItem());
         }
     }
 }

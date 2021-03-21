@@ -17,7 +17,7 @@ public class ItemWandMixin {
     @Inject(method = "canCast", at = @At(value = "HEAD"), cancellable = true)
     public void canCast(ItemStack stack, Spell spell, EntityPlayer player, EnumHand hand, int castingTick, SpellModifiers modifiers, CallbackInfoReturnable<Boolean> cir) {
         final EntityLivingBase actor = CombatFlow.getCombatActor(player);
-        if (actor != null && !CombatFlow.canAttack(actor, spell.getRegistryName())) {
+        if (actor != null && !CombatFlow.canAttack(actor, spell)) {
             cir.setReturnValue(false);
         }
     }
@@ -27,7 +27,7 @@ public class ItemWandMixin {
         if (cir.getReturnValue()) {
             final EntityLivingBase actor = CombatFlow.getCombatActor(player);
             if (actor != null) {
-                CombatFlow.onAttack(actor, spell.getRegistryName());
+                CombatFlow.onAttack(actor, spell);
             }
         }
     }

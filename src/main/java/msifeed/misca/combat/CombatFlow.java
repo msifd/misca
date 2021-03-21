@@ -6,9 +6,7 @@ import msifeed.misca.combat.cap.CombatantProvider;
 import msifeed.misca.combat.cap.CombatantSync;
 import msifeed.misca.combat.cap.ICombatant;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.item.Item;
-import net.minecraft.util.ResourceLocation;
-import org.codehaus.plexus.util.ExceptionUtils;
+import net.minecraftforge.registries.IForgeRegistryEntry;
 
 import javax.annotation.Nullable;
 
@@ -38,7 +36,7 @@ public class CombatFlow {
 
     // Usage
 
-    public static boolean canUse(EntityLivingBase actor, ResourceLocation weapon) {
+    public static boolean canUse(EntityLivingBase actor, IForgeRegistryEntry<?> weapon) {
         final ICombatant com = CombatantProvider.get(actor);
         if (!com.isInBattle()) return true;
 
@@ -52,15 +50,15 @@ public class CombatFlow {
         return BattleFlow.isEnoughAp(actor, com, usageAp);
     }
 
-    public static void onUse(EntityLivingBase actor, ResourceLocation weapon) {
+    public static void onUse(EntityLivingBase actor, IForgeRegistryEntry<?> weapon) {
         BattleFlow.consumeUsageAp(actor, weapon);
         BattleFlow.consumeMovementAp(actor);
-        CombatantSync.sync(actor);
+        CombatantSync.syncAp(actor);
     }
 
     // Attack
 
-    public static boolean trySourceAttack(EntityLivingBase source, ResourceLocation weapon) {
+    public static boolean trySourceAttack(EntityLivingBase source, IForgeRegistryEntry<?> weapon) {
         final EntityLivingBase actor = getCombatActor(source);
         if (actor == null) return true;
 
@@ -76,11 +74,10 @@ public class CombatFlow {
         final EntityLivingBase actor = getCombatActor(source);
         if (actor == null) return;
 
-        final ResourceLocation weapon = source.getHeldItemMainhand().getItem().getRegistryName();
-        onAttack(actor, weapon);
+        onAttack(actor, source.getHeldItemMainhand().getItem());
     }
 
-    public static boolean canAttack(EntityLivingBase actor, ResourceLocation weapon) {
+    public static boolean canAttack(EntityLivingBase actor, IForgeRegistryEntry<?> weapon) {
         final ICombatant com = CombatantProvider.get(actor);
         if (!com.isInBattle()) return true;
 
@@ -93,20 +90,20 @@ public class CombatFlow {
         return isEnoughAttackAp(actor, weapon);
     }
 
-    public static boolean isEnoughAttackAp(EntityLivingBase actor, ResourceLocation weapon) {
+    public static boolean isEnoughAttackAp(EntityLivingBase actor, IForgeRegistryEntry<?> weapon) {
         final double attackAp = Combat.getRules().attackActionPoints(actor, weapon);
         return BattleFlow.isEnoughAp(actor, CombatantProvider.get(actor), attackAp);
     }
 
-    public static void onAttack(EntityLivingBase actor, ResourceLocation weapon) {
+    public static void onAttack(EntityLivingBase actor, IForgeRegistryEntry<?> weapon) {
         if (actor.world.isRemote) return;
 
-        System.out.println("onAttack " + actor.getName() + " " + CombatantProvider.get(actor).getActionPoints());
+//        System.out.println("onAttack " + actor.getName() + " " + CombatantProvider.get(actor).getActionPoints());
 //        System.out.println(ExceptionUtils.getFullStackTrace(new RuntimeException()));
 
         BattleFlow.consumeActionAp(actor, weapon);
         BattleFlow.consumeMovementAp(actor);
-        CombatantSync.sync(actor);
+        CombatantSync.syncAp(actor);
 
         if (BattleFlow.isApDepleted(actor, weapon)) {
             final ICombatant com = CombatantProvider.get(actor);

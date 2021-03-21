@@ -1,12 +1,8 @@
 {
-  "minecraft:bow": {
-    "dmg": 0.0,
-    "atk": 0.0,
-    "use": 0.0,
-    "chance": 0.0,
-    "traits": [
-      "range",
-      "canHoldUse"
-    ]
+  "overrides": {},
+  "generation": {
+    "apPerSpellCost": 0.3,
+    "spellTierFactor": 0.5,
+    "continuousSpellFactor": -0.99
   }
 }

@@ -13,9 +13,9 @@ import java.util.*;
 import java.util.stream.LongStream;
 
 public class BattleStateSync {
-    private static final String members = "combat.members";
-    private static final String queue = "combat.queue";
-    private static final String delay = "combat.delay";
+    private static final String members = "battle.members";
+    private static final String queue = "battle.queue";
+    private static final String delay = "battle.delay";
 
     public static void sync(Battle battle) {
         final NBTTagCompound nbtMembers = encodeUuids(battle.getMembers().keySet());
