@@ -11,6 +11,7 @@ import net.minecraft.entity.ai.attributes.AbstractAttributeMap;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.event.entity.EntityEvent;
@@ -22,6 +23,8 @@ import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import java.nio.file.Paths;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Charstate {
     private static final int UPDATE_PER_TICKS = 40;
@@ -34,10 +37,11 @@ public class Charstate {
     private final EffortsHandler effortsHandler = new EffortsHandler();
     private final EffectsHandler effectsHandler = new EffectsHandler();
 
-    public static final SyncChannel<ItemEffectsConfig> ITEM_EFFECTS
-            = new SyncChannel<>(Misca.RPC, Paths.get(Misca.MODID, "item_effects.json"), TypeToken.get(ItemEffectsConfig.class));
+    public static final TypeToken<HashMap<ResourceLocation, ItemEffectInfo[]>> ITEM_TT = new TypeToken<HashMap<ResourceLocation, ItemEffectInfo[]>>() {};
+    public static final SyncChannel<HashMap<ResourceLocation, ItemEffectInfo[]>> ITEM_EFFECTS
+            = new SyncChannel<>(Misca.RPC, Paths.get(Misca.MODID, "item_effects.json"), ITEM_TT);
 
-    public static ItemEffectsConfig getItemEffectsConfig() { return ITEM_EFFECTS.get(); }
+    public static HashMap<ResourceLocation, ItemEffectInfo[]> getItemEffects() { return ITEM_EFFECTS.get(); }
 
     public void preInit() {
         CapabilityManager.INSTANCE.register(ICharstate.class, new CharstateStorage(), CharstateImpl::new);

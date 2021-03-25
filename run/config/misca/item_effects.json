@@ -1,0 +1,9 @@
+{
+  "minecraft:golden_apple": [
+    {
+      "effect": "minecraft:hunger",
+      "duration": 10,
+      "amplifier": 10
+    }
+  ]
+}
