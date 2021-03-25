@@ -15,18 +15,17 @@ public class EffectsHandler {
         final HashMap<ResourceLocation, ItemEffectInfo[]> config = Charstate.getItemEffects();
         final ItemEffectInfo[] itemEffects = config.get(stack.getItem().getRegistryName());
 
-        if (itemEffects != null) {
-            for (ItemEffectInfo effectInfo : itemEffects) {
-                if (effectInfo != null) {
-                    final Potion potion = Potion.getPotionFromResourceLocation(effectInfo.effect.toString());
+        if (itemEffects == null) { return; }
 
-                    if (potion != null) {
-                        final PotionEffect effect = new PotionEffect(potion, effectInfo.duration * 20, effectInfo.amplifier, false, true);
+        for (ItemEffectInfo effectInfo : itemEffects) {
+            if (effectInfo == null) { continue; }
+            final Potion potion = Potion.getPotionFromResourceLocation(effectInfo.effect.toString());
 
-                        player.addPotionEffect(effect);
-                    }
-                }
-            }
+            if (potion == null) { continue; }
+
+            final PotionEffect effect = new PotionEffect(potion, effectInfo.duration * 20, effectInfo.amplifier, false, true);
+
+            player.addPotionEffect(effect);
         }
     }
 }
