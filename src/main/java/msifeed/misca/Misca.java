@@ -91,6 +91,7 @@ public class Misca {
         try {
             SHARED.sync();
             Combat.sync();
+            Charstate.sync();
         } catch (Exception e) {
             e.printStackTrace();
         }
