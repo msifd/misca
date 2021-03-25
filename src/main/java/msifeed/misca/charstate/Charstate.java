@@ -1,13 +1,16 @@
 package msifeed.misca.charstate;
 
+import com.google.gson.reflect.TypeToken;
 import msifeed.misca.Misca;
 import msifeed.misca.charstate.cap.*;
 import msifeed.misca.charstate.handler.*;
 import msifeed.misca.chatex.SpeechEvent;
+import msifeed.sys.sync.SyncChannel;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.attributes.AbstractAttributeMap;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.event.entity.EntityEvent;
@@ -18,6 +21,8 @@ import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
+import java.nio.file.Paths;
+
 public class Charstate {
     private static final int UPDATE_PER_TICKS = 40;
     private static final int SYNC_PER_TICKS = 80;
@@ -27,12 +32,22 @@ public class Charstate {
     private final StaminaHandler staminaHandler = new StaminaHandler();
     private final CorruptionHandler corruptionHandler = new CorruptionHandler();
     private final EffortsHandler effortsHandler = new EffortsHandler();
+    private final EffectsHandler effectsHandler = new EffectsHandler();
+
+    public static final SyncChannel<ItemEffectsConfig> ITEM_EFFECTS
+            = new SyncChannel<>(Misca.RPC, Paths.get(Misca.MODID, "item_effects.json"), TypeToken.get(ItemEffectsConfig.class));
+
+    public static ItemEffectsConfig getItemEffectsConfig() { return ITEM_EFFECTS.get(); }
 
     public void preInit() {
         CapabilityManager.INSTANCE.register(ICharstate.class, new CharstateStorage(), CharstateImpl::new);
         MinecraftForge.EVENT_BUS.register(new CharstateHandler());
         MinecraftForge.EVENT_BUS.register(this);
         Misca.RPC.register(new CharstateSync());
+    }
+
+    public static void sync() throws Exception {
+        ITEM_EFFECTS.sync();
     }
 
     @SubscribeEvent
@@ -84,7 +99,10 @@ public class Charstate {
     public void onItemUse(LivingEntityUseItemEvent.Finish event) {
         if (!(event.getEntityLiving() instanceof EntityPlayer)) return;
 
-        sanityHandler.handleItemUse((EntityPlayer) event.getEntityLiving(), event.getResultStack());
+        final EntityPlayer player = (EntityPlayer) event.getEntityLiving();
+
+        sanityHandler.handleItemUse(player, event.getResultStack());
+        effectsHandler.handleItemUse(player, event.getItem());
     }
 
     @SubscribeEvent
