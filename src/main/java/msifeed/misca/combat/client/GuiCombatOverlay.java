@@ -1,7 +1,6 @@
 package msifeed.misca.combat.client;
 
 import msifeed.mellow.render.RenderUtils;
-import msifeed.misca.client.MiscaConfig;
 import msifeed.misca.combat.Combat;
 import msifeed.misca.combat.CombatFlow;
 import msifeed.misca.combat.battle.Battle;
@@ -31,7 +30,6 @@ import java.util.stream.Collectors;
 public class GuiCombatOverlay {
     @SubscribeEvent
     public void onRenderOverlay(RenderGameOverlayEvent.Post event) {
-        if (!MiscaConfig.combatDebug) return;
         if (event.getType() != RenderGameOverlayEvent.ElementType.ALL) return;
 
         final EntityPlayer player = Minecraft.getMinecraft().player;

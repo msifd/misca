@@ -10,7 +10,6 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.attributes.AbstractAttributeMap;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.CapabilityManager;
@@ -24,7 +23,6 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import java.nio.file.Paths;
 import java.util.HashMap;
-import java.util.Map;
 
 public class Charstate {
     private static final int UPDATE_PER_TICKS = 40;
