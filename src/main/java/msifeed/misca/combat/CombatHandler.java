@@ -87,17 +87,17 @@ public class CombatHandler {
         CombatFlow.onAttack(actor, weapon);
     }
 
-    @SubscribeEvent
-    public void onPlayerAttackBlock(PlayerInteractEvent.LeftClickBlock event) {
-        if (event.getEntityLiving().world.isRemote) return;
-
-        final EntityLivingBase actor = CombatFlow.getCombatActor(event.getEntityLiving());
-        if (actor == null) return;
-
-        final ItemStack stack = event.getEntityPlayer().getHeldItemMainhand();
-        final WeaponInfo weapon = Combat.getWeapons().get(stack);
-        CombatFlow.onAttack(actor, weapon);
-    }
+//    @SubscribeEvent
+//    public void onPlayerAttackBlock(PlayerInteractEvent.LeftClickBlock event) {
+//        if (event.getEntityLiving().world.isRemote) return;
+//
+//        final EntityLivingBase actor = CombatFlow.getCombatActor(event.getEntityLiving());
+//        if (actor == null) return;
+//
+//        final ItemStack stack = event.getEntityPlayer().getHeldItemMainhand();
+//        final WeaponInfo weapon = Combat.getWeapons().get(stack);
+//        CombatFlow.onAttack(actor, weapon);
+//    }
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public void onPlayerAttackEntity(AttackEntityEvent event) {
