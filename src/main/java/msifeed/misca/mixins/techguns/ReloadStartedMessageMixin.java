@@ -7,8 +7,9 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import techguns.packets.ReloadStartedMessage;
 
-@Mixin(targets = "techguns.packets.ReloadStartedMessage")
+@Mixin(value = ReloadStartedMessage.class, remap = false)
 public class ReloadStartedMessageMixin {
     @Inject(method = "<init>(Lnet/minecraft/entity/EntityLivingBase;Lnet/minecraft/util/EnumHand;II)V", at = @At("RETURN"))
     public void onConstructed(EntityLivingBase shooter, EnumHand hand, int firetime, int attackType, CallbackInfo ci) {

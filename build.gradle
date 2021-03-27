@@ -1,7 +1,7 @@
 buildscript {
     repositories {
         maven { url = 'https://files.minecraftforge.net/maven' }
-        maven { url = 'https://repo.spongepowered.org/repository/maven-public/' }
+        maven { url = 'https://repo.spongepowered.org/repository/maven-public' }
         jcenter()
     }
     dependencies {
@@ -11,14 +11,14 @@ buildscript {
 }
 
 repositories {
+    maven { url = 'https://repo.spongepowered.org/repository/maven-public' }
     maven { url = 'https://www.cursemaven.com' }
 }
 
 apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'org.spongepowered.mixin'
-apply plugin: 'idea'
 
-version = '2.0.0-alpha.11'
+version = '2.0.0-alpha.12-rc5'
 group = 'msifeed.misca'
 archivesBaseName = 'misca'
 
@@ -35,21 +35,33 @@ minecraft {
             arg '--tweakClass'
             arg 'org.spongepowered.asm.launch.MixinTweaker'
             arg '--mixin'
-            arg 'misca.mixins.json'
+            arg 'mixins.misca.json'
+            arg '--mixin'
+            arg 'mixins.loader.misca.json'
+            arg '--username'
+            arg 'msya'
         }
 
         server {
+            workingDirectory project.file('run')
             arg '--tweakClass'
             arg 'org.spongepowered.asm.launch.MixinTweaker'
             arg '--mixin'
-            arg 'misca.mixins.json'
+            arg 'mixins.misca.json'
+            arg '--mixin'
+            arg 'mixins.loader.misca.json'
         }
     }
 }
 
+configurations {
+    embed
+    compile.extendsFrom(embed)
+}
+
 dependencies {
     minecraft 'net.minecraftforge:forge:1.12.2-14.23.5.2854'
-    compile 'org.spongepowered:mixin:0.8.2'
+    embed 'org.spongepowered:mixin:0.8.2'
 
 //    implementation fg.deobf("curse.maven:botania-225643:2846950")
     implementation fg.deobf("curse.maven:techguns-244201:2958103")
@@ -74,14 +86,16 @@ processResources {
 sourceSets {
     main {
         output.resourcesDir = file('out/production/classes')
-        output.classesDir = file('out/production/classes')
     }
 }
 
 jar {
+    from configurations.embed.collect { it.isDirectory() ? it : zipTree(it) }
+
     manifest.attributes(
             'TweakClass': 'org.spongepowered.asm.launch.MixinTweaker',
-            'MixinConfigs': 'misca.mixins.json',
+            'TweakOrder': 0,
+            'MixinConfigs': 'mixins.misca.json,mixins.loader.misca.json',
             'ForceLoadAsMod': 'true',
             'FMLCorePluginContainsFMLMod': 'true',
             'FMLAT': 'accesstransformer.cfg'

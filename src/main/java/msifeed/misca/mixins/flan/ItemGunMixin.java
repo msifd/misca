@@ -3,6 +3,7 @@ package msifeed.misca.mixins.flan;
 import com.flansmod.client.model.GunAnimations;
 import com.flansmod.common.PlayerData;
 import com.flansmod.common.guns.GunType;
+import com.flansmod.common.guns.ItemGun;
 import msifeed.misca.combat.CombatFlow;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
@@ -20,7 +21,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-@Mixin(targets = "com.flansmod.common.guns.ItemGun")
+@Mixin(value = ItemGun.class, remap = false)
 public class ItemGunMixin {
     @Inject(method = "gunCantBeHandeled", at = @At(value = "HEAD"), cancellable = true)
     public void cantHandle(GunType type, EntityPlayer player, CallbackInfoReturnable<Boolean> cir) {

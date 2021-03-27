@@ -11,8 +11,9 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import techguns.items.guns.GenericGun;
 
-@Mixin(targets = "techguns.items.guns.GenericGun")
+@Mixin(value = GenericGun.class, remap = false)
 public class GenericGunMixin {
     private static final String CONSUME_AMMO_PLAYER = "Ltechguns/util/InventoryUtil;consumeAmmoPlayer(Lnet/minecraft/entity/player/EntityPlayer;[Lnet/minecraft/item/ItemStack;)Z";
 

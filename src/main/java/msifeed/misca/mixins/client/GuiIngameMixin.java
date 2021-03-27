@@ -1,4 +1,4 @@
-package msifeed.misca.mixins;
+package msifeed.misca.mixins.client;
 
 import msifeed.misca.chatex.client.gui.ChatexHud;
 import net.minecraft.client.gui.GuiIngame;

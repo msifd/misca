@@ -1,0 +1,21 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "compatibilityLevel": "JAVA_8",
+  "package": "msifeed.misca.mixins",
+  "refmap": "misca.refmap.json",
+  "mixins": [
+    "AdvancementManagerMixin",
+    "EnchantmentHelperMixin",
+    "EntityLivingBaseMixin",
+    "MinecraftServerMixin",
+    "ModelRendererMixin",
+    "NBTTagLongArrayMixin",
+    "PlayerListMixin",
+    "UnpackedBakedQuadMixin"
+  ],
+  "client": [
+    "client.GuiChatMixin",
+    "client.GuiIngameMixin"
+  ]
+}
