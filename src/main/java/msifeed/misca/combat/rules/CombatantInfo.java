@@ -7,7 +7,6 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EntityDamageSourceIndirect;
 import net.minecraft.util.math.Vec3d;
-import net.minecraftforge.registries.IForgeRegistryEntry;
 
 import java.util.EnumMap;
 import java.util.EnumSet;
@@ -15,17 +14,20 @@ import java.util.EnumSet;
 public class CombatantInfo {
     public final Vec3d pos;
     public final EnumMap<CharAttribute, Double> attributes = new EnumMap<>(CharAttribute.class);
+
+    private final WeaponInfo weapon;
     private final WeaponTrait mainType;
     private final EnumSet<WeaponTrait> traitsMain;
     private final EnumSet<WeaponTrait> traitsOff;
 
-    public CombatantInfo(EntityLivingBase attacker, DamageSource source, IForgeRegistryEntry<?> weapon) {
+    public CombatantInfo(EntityLivingBase attacker, DamageSource source, WeaponInfo weapon) {
         this.pos = attacker.getPositionVector();
 
+        this.weapon = weapon;
         final WeaponTrait defaultType = source instanceof EntityDamageSourceIndirect ? WeaponTrait.range : WeaponTrait.melee;
         this.mainType = getMainType(weapon, defaultType);
-        this.traitsMain = Combat.getWeaponInfo(weapon).traits;
-        this.traitsOff = Combat.getWeaponInfo(attacker.getHeldItemOffhand().getItem()).traits;
+        this.traitsMain = weapon.traits;
+        this.traitsOff = Combat.getWeapons().get(attacker.getHeldItemOffhand()).traits;
 
         for (CharAttribute attr : CharAttribute.values())
             attributes.put(attr, attr.get(attacker));
@@ -34,18 +36,17 @@ public class CombatantInfo {
     public CombatantInfo(EntityLivingBase victim) {
         this.pos = CombatantProvider.get(victim).getPosition();
 
-        this.mainType = getMainType(victim.getHeldItemMainhand().getItem(), WeaponTrait.melee);
-        this.traitsMain = Combat.getWeaponInfo(victim.getHeldItemMainhand().getItem()).traits;
-        this.traitsOff = Combat.getWeaponInfo(victim.getHeldItemOffhand().getItem()).traits;
+        this.weapon = Combat.getWeapons().get(victim.getHeldItemMainhand());
+        this.mainType = getMainType(weapon, WeaponTrait.melee);
+        this.traitsMain = weapon.traits;
+        this.traitsOff = Combat.getWeapons().get(victim.getHeldItemOffhand()).traits;
 
         for (CharAttribute attr : CharAttribute.values())
             attributes.put(attr, attr.get(victim));
     }
 
-    private WeaponTrait getMainType(IForgeRegistryEntry<?> weapon, WeaponTrait defaultType) {
-        final WeaponInfo info = Combat.getWeaponInfo(weapon);
-
-        if (info == WeaponInfo.NONE) return defaultType;
+    private WeaponTrait getMainType(WeaponInfo info, WeaponTrait defaultType) {
+        if (info == WeaponInfoGeneration.NONE) return defaultType;
         if (info.traits.contains(WeaponTrait.range)) return WeaponTrait.range;
         return defaultType;
     }
@@ -55,7 +56,7 @@ public class CombatantInfo {
     }
 
     public boolean isMelee() {
-        return !isRanged();
+        return mainType == WeaponTrait.melee;
     }
 
     public boolean is(WeaponTrait trait) {

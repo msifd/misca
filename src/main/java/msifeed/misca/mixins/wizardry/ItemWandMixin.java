@@ -3,6 +3,7 @@ package msifeed.misca.mixins.wizardry;
 import electroblob.wizardry.item.ItemWand;
 import electroblob.wizardry.spell.Spell;
 import electroblob.wizardry.util.SpellModifiers;
+import msifeed.misca.combat.Combat;
 import msifeed.misca.combat.CombatFlow;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
@@ -18,7 +19,9 @@ public class ItemWandMixin {
     @Inject(method = "canCast", at = @At(value = "HEAD"), cancellable = true)
     public void canCast(ItemStack stack, Spell spell, EntityPlayer player, EnumHand hand, int castingTick, SpellModifiers modifiers, CallbackInfoReturnable<Boolean> cir) {
         final EntityLivingBase actor = CombatFlow.getCombatActor(player);
-        if (actor != null && !CombatFlow.canAttack(actor, spell)) {
+        if (actor == null) return;
+
+        if (!CombatFlow.canAttack(actor, Combat.getWeapons().getSpellInfo(spell))) {
             cir.setReturnValue(false);
         }
     }
@@ -27,9 +30,9 @@ public class ItemWandMixin {
     public void cast(ItemStack stack, Spell spell, EntityPlayer player, EnumHand hand, int castingTick, SpellModifiers modifiers, CallbackInfoReturnable<Boolean> cir) {
         if (cir.getReturnValue()) {
             final EntityLivingBase actor = CombatFlow.getCombatActor(player);
-            if (actor != null) {
-                CombatFlow.onAttack(actor, spell);
-            }
+            if (actor == null) return;
+
+            CombatFlow.onAttack(actor, Combat.getWeapons().getSpellInfo(spell));
         }
     }
 }

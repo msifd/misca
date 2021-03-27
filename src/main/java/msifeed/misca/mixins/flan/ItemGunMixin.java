@@ -4,7 +4,9 @@ import com.flansmod.client.model.GunAnimations;
 import com.flansmod.common.PlayerData;
 import com.flansmod.common.guns.GunType;
 import com.flansmod.common.guns.ItemGun;
+import msifeed.misca.combat.Combat;
 import msifeed.misca.combat.CombatFlow;
+import msifeed.misca.combat.rules.WeaponInfo;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -26,7 +28,10 @@ public class ItemGunMixin {
     @Inject(method = "gunCantBeHandeled", at = @At(value = "HEAD"), cancellable = true)
     public void cantHandle(GunType type, EntityPlayer player, CallbackInfoReturnable<Boolean> cir) {
         final EntityLivingBase actor = CombatFlow.getCombatActor(player);
-        if (actor != null && !CombatFlow.canAttack(actor, player.getHeldItemMainhand().getItem())) {
+        if (actor == null) return;
+
+        final WeaponInfo weapon = Combat.getWeapons().get(player.getHeldItemMainhand());
+        if (!CombatFlow.canAttack(actor, weapon)) {
             cir.setReturnValue(true);
         }
     }
@@ -34,9 +39,9 @@ public class ItemGunMixin {
     @Inject(method = "shoot", at = @At(value = "HEAD"))
     public void shoot(EnumHand hand, EntityPlayer player, ItemStack stack, PlayerData data, World world, GunAnimations animations, CallbackInfo ci) {
         final EntityLivingBase actor = CombatFlow.getCombatActor(player);
-        if (actor != null) {
-            CombatFlow.onAttack(actor, stack.getItem());
-        }
+        if (actor == null) return;
+
+        CombatFlow.onAttack(actor, Combat.getWeapons().get(stack));
     }
 
     @SideOnly(Side.CLIENT)
@@ -44,7 +49,9 @@ public class ItemGunMixin {
     public void canReload(ItemStack stack, IInventory inventory, CallbackInfoReturnable<Boolean> cir) {
         final EntityPlayer player = Minecraft.getMinecraft().player;
         final EntityLivingBase actor = CombatFlow.getCombatActor(player);
-        if (actor != null && !CombatFlow.canUse(actor, stack.getItem())) {
+        if (actor == null) return;
+
+        if (!CombatFlow.canUse(actor, Combat.getWeapons().get(stack))) {
             cir.setReturnValue(false);
         }
     }
@@ -54,7 +61,9 @@ public class ItemGunMixin {
         if (!(entity instanceof EntityLivingBase)) return;
 
         final EntityLivingBase actor = CombatFlow.getCombatActor((EntityLivingBase) entity);
-        if (actor != null && !CombatFlow.canUse(actor, stack.getItem())) {
+        if (actor == null) return;
+
+        if (!CombatFlow.canUse(actor, Combat.getWeapons().get(stack))) {
             cir.setReturnValue(false);
         }
     }

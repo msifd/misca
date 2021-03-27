@@ -28,7 +28,7 @@ import java.util.stream.Stream;
 @Mixin(value = Loader.class, remap = false)
 public class LoaderMixin {
     private static final Logger LOG = LogManager.getLogger("Misca-Core");
-    private static final Set<String> DEPS = Stream.of("flansmod", "ebwizardry", "techguns")
+    private static final Set<String> DEPS = Stream.of("flansmod", "ebwizardry", "techguns", "thaumcraft")
             .collect(Collectors.toSet());
 
     @Shadow

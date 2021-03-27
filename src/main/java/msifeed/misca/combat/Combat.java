@@ -7,13 +7,11 @@ import msifeed.misca.combat.battle.BattleStateSync;
 import msifeed.misca.combat.cap.*;
 import msifeed.misca.combat.client.CombatTheme;
 import msifeed.misca.combat.rules.Rules;
-import msifeed.misca.combat.rules.WeaponInfo;
 import msifeed.misca.combat.rules.WeaponRegistry;
 import msifeed.sys.sync.SyncChannel;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.fml.common.FMLCommonHandler;
-import net.minecraftforge.registries.IForgeRegistryEntry;
 
 import java.nio.file.Paths;
 
@@ -29,10 +27,8 @@ public class Combat {
         return RULES.get();
     }
 
-    public static WeaponInfo getWeaponInfo(IForgeRegistryEntry<?> weapon) {
-        final WeaponRegistry reg = WEAPONS.get();
-        final WeaponInfo info = reg.overrides.get(weapon.getRegistryName());
-        return info != null ? info : reg.generation.generateInfo(weapon);
+    public static WeaponRegistry getWeapons() {
+        return WEAPONS.get();
     }
 
     public static void sync() throws Exception {

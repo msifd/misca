@@ -1,7 +1,6 @@
 package msifeed.misca.combat.rules;
 
 import msifeed.misca.combat.CharAttribute;
-import msifeed.misca.combat.Combat;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.attributes.IAttributeInstance;
@@ -9,7 +8,6 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
-import net.minecraftforge.registries.IForgeRegistryEntry;
 
 /**
  * You know the rules and so do I
@@ -34,8 +32,8 @@ public class Rules {
     public double hitChanceRangePerPer = 0.03;
     public double hitChancePerLck = 0.005;
 
-    public double hitChance(CombatantInfo info, IForgeRegistryEntry<?> weapon) {
-        final double overrideRate = Combat.getWeaponInfo(weapon).chance;
+    public double hitChance(CombatantInfo info, WeaponInfo weapon) {
+        final double overrideRate = weapon.chance;
         final double perFactor = info.isMelee() ? hitChanceMeleePerPer : hitChanceRangePerPer;
         final double perception = CharAttribute.per.get(info);
         final double luck = CharAttribute.lck.get(info);
@@ -137,8 +135,8 @@ public class Rules {
     public double attackApBase = 6;
     public double attackApDefault = 4;
 
-    public double attackActionPoints(EntityLivingBase entity, IForgeRegistryEntry<?> weapon) {
-        final double override = Combat.getWeaponInfo(weapon).atk;
+    public double attackActionPoints(EntityLivingBase entity, WeaponInfo weapon) {
+        final double override = weapon.atk;
         if (override > 0) return override;
 
         final IAttributeInstance attackSpeed = entity.getEntityAttribute(SharedMonsterAttributes.ATTACK_SPEED);
@@ -171,8 +169,8 @@ public class Rules {
 
     public double usageApBase = 5;
 
-    public double usageActionPoints(IForgeRegistryEntry<?> weapon) {
-        final double override = Combat.getWeaponInfo(weapon).use;
+    public double usageActionPoints(WeaponInfo weapon) {
+        final double override = weapon.use;
         return override > 0 ? override : usageApBase;
     }
 

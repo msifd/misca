@@ -1,6 +1,5 @@
 package msifeed.misca.combat.client;
 
-import electroblob.wizardry.item.ItemWand;
 import msifeed.mellow.render.RenderShapes;
 import msifeed.mellow.utils.Geom;
 import msifeed.misca.combat.Combat;
@@ -9,6 +8,7 @@ import msifeed.misca.combat.battle.BattleStateClient;
 import msifeed.misca.combat.cap.CombatantProvider;
 import msifeed.misca.combat.cap.ICombatant;
 import msifeed.misca.combat.rules.Rules;
+import msifeed.misca.combat.rules.WeaponInfo;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
@@ -16,9 +16,7 @@ import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.Vec3d;
-import net.minecraftforge.registries.IForgeRegistryEntry;
 
 public class CombatantsBarRender {
     public static float getEntityWidth(EntityLivingBase entity) {
@@ -96,14 +94,7 @@ public class CombatantsBarRender {
 
     private static void renderActionPointsBar(Geom geom, EntityLivingBase entity) {
         final ICombatant com = CombatantProvider.get(entity);
-
-        final ItemStack heldItem = entity.getHeldItemMainhand();
-        final IForgeRegistryEntry<?> weapon;
-        if (heldItem.getItem() instanceof ItemWand) {
-            weapon = ((ItemWand) heldItem.getItem()).getCurrentSpell(heldItem);
-        } else {
-            weapon = heldItem.getItem();
-        }
+        final WeaponInfo weapon = Combat.getWeapons().get(entity.getHeldItemMainhand());
 
         final Rules rules = Combat.getRules();
         final double fullAp = com.getActionPoints();

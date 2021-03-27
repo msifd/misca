@@ -8,6 +8,7 @@ import msifeed.misca.combat.battle.BattleStateClient;
 import msifeed.misca.combat.cap.CombatantProvider;
 import msifeed.misca.combat.cap.ICombatant;
 import msifeed.misca.combat.rules.Rules;
+import msifeed.misca.combat.rules.WeaponInfo;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.ScaledResolution;
@@ -15,7 +16,6 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.Item;
 import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
@@ -69,7 +69,7 @@ public class GuiCombatOverlay {
         final EntityLivingBase actor = CombatFlow.getCombatActor(player);
         if (actor == null) return;
         final ICombatant com = CombatantProvider.get(actor);
-        final Item weapon = player.getHeldItemMainhand().getItem();
+        final WeaponInfo weapon = Combat.getWeapons().get(player.getHeldItemMainhand());
 
         final Battle state = BattleStateClient.STATE;
         final Rules rules = Combat.getRules();

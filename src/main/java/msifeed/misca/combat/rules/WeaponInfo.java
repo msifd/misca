@@ -4,7 +4,6 @@ import java.util.Arrays;
 import java.util.EnumSet;
 
 public class WeaponInfo {
-    public static final WeaponInfo NONE = new WeaponInfo();
 
     public float dmg = 0;
     public double atk = 0;

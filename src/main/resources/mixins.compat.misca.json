@@ -9,6 +9,7 @@
     "techguns.GenericGunMixin",
     "techguns.ReloadStartedMessageMixin",
     "wizardry.ItemScrollMixin",
-    "wizardry.ItemWandMixin"
+    "wizardry.ItemWandMixin",
+    "thaumcraft.ItemCasterMixin"
   ]
 }

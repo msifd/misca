@@ -6,13 +6,13 @@ import msifeed.misca.combat.cap.CombatantProvider;
 import msifeed.misca.combat.cap.CombatantSync;
 import msifeed.misca.combat.cap.ICombatant;
 import msifeed.misca.combat.rules.Rules;
+import msifeed.misca.combat.rules.WeaponInfo;
+import msifeed.misca.combat.rules.WeaponInfoGeneration;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Items;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.math.Vec3d;
-import net.minecraftforge.registries.IForgeRegistryEntry;
 
 import java.lang.ref.WeakReference;
 import java.util.*;
@@ -126,7 +126,7 @@ public class BattleFlow {
 
     //// Action points management
 
-    public static void consumeActionAp(EntityLivingBase entity, IForgeRegistryEntry<?> weapon) {
+    public static void consumeActionAp(EntityLivingBase entity, WeaponInfo weapon) {
         final ICombatant com = CombatantProvider.get(entity);
         final double apWithOh = Combat.getRules().attackActionPoints(entity, weapon) + com.getActionPointsOverhead();
         if (com.getActionPoints() >= apWithOh) {
@@ -135,7 +135,7 @@ public class BattleFlow {
         }
     }
 
-    public static void consumeUsageAp(EntityLivingBase entity, IForgeRegistryEntry<?> weapon) {
+    public static void consumeUsageAp(EntityLivingBase entity, WeaponInfo weapon) {
         final ICombatant com = CombatantProvider.get(entity);
         final double apWithOh = Combat.getRules().usageActionPoints(weapon) + com.getActionPointsOverhead();
         if (com.getActionPoints() >= apWithOh) {
@@ -151,11 +151,11 @@ public class BattleFlow {
         com.setActionPoints(Math.max(com.getActionPoints() - ap, 0));
     }
 
-    public static boolean isApDepleted(EntityLivingBase entity, IForgeRegistryEntry<?> weapon) {
+    public static boolean isApDepleted(EntityLivingBase entity, WeaponInfo weapon) {
         final ICombatant com = CombatantProvider.get(entity);
         final Rules rules = Combat.getRules();
         final double atk = rules.attackActionPoints(entity, weapon);
-        final double use = rules.usageActionPoints(Items.AIR);
+        final double use = rules.usageActionPoints(WeaponInfoGeneration.NONE);
         final double act = Math.min(atk, use) + com.getActionPointsOverhead();
         final double mov = rules.movementActionPoints(entity, com.getPosition(), entity.getPositionVector());
         return (mov + act) > com.getActionPoints();

@@ -5,8 +5,8 @@ import msifeed.misca.combat.battle.BattleFlow;
 import msifeed.misca.combat.cap.CombatantProvider;
 import msifeed.misca.combat.cap.CombatantSync;
 import msifeed.misca.combat.cap.ICombatant;
+import msifeed.misca.combat.rules.WeaponInfo;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraftforge.registries.IForgeRegistryEntry;
 
 import javax.annotation.Nullable;
 
@@ -36,7 +36,11 @@ public class CombatFlow {
 
     // Usage
 
-    public static boolean canUse(EntityLivingBase actor, IForgeRegistryEntry<?> weapon) {
+//    public static boolean canUse(EntityLivingBase actor, ItemStack weapon) {
+//        return canUse(actor, Combat.getWeaponInfo(weapon.getItem()));
+//    }
+
+    public static boolean canUse(EntityLivingBase actor, WeaponInfo weapon) {
         final ICombatant com = CombatantProvider.get(actor);
         if (!com.isInBattle()) return true;
 
@@ -50,7 +54,7 @@ public class CombatFlow {
         return BattleFlow.isEnoughAp(actor, com, usageAp);
     }
 
-    public static void onUse(EntityLivingBase actor, IForgeRegistryEntry<?> weapon) {
+    public static void onUse(EntityLivingBase actor, WeaponInfo weapon) {
         BattleFlow.consumeUsageAp(actor, weapon);
         BattleFlow.consumeMovementAp(actor);
         CombatantSync.syncAp(actor);
@@ -58,26 +62,11 @@ public class CombatFlow {
 
     // Attack
 
-    public static boolean trySourceAttack(EntityLivingBase source, IForgeRegistryEntry<?> weapon) {
-        final EntityLivingBase actor = getCombatActor(source);
-        if (actor == null) return true;
+//    public static boolean canAttack(EntityLivingBase actor, ItemStack weapon) {
+//        return canAttack(actor, Combat.getWeaponInfo(weapon.getItem()));
+//    }
 
-        if (canAttack(actor, weapon)) {
-            onAttack(actor, weapon);
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    public static void onSourceAttack(EntityLivingBase source) {
-        final EntityLivingBase actor = getCombatActor(source);
-        if (actor == null) return;
-
-        onAttack(actor, source.getHeldItemMainhand().getItem());
-    }
-
-    public static boolean canAttack(EntityLivingBase actor, IForgeRegistryEntry<?> weapon) {
+    public static boolean canAttack(EntityLivingBase actor, WeaponInfo weapon) {
         final ICombatant com = CombatantProvider.get(actor);
         if (!com.isInBattle()) return true;
 
@@ -90,12 +79,16 @@ public class CombatFlow {
         return isEnoughAttackAp(actor, weapon);
     }
 
-    public static boolean isEnoughAttackAp(EntityLivingBase actor, IForgeRegistryEntry<?> weapon) {
+    public static boolean isEnoughAttackAp(EntityLivingBase actor, WeaponInfo weapon) {
         final double attackAp = Combat.getRules().attackActionPoints(actor, weapon);
         return BattleFlow.isEnoughAp(actor, CombatantProvider.get(actor), attackAp);
     }
 
-    public static void onAttack(EntityLivingBase actor, IForgeRegistryEntry<?> weapon) {
+//    public static void onAttack(EntityLivingBase actor, ItemStack weapon) {
+//        onAttack(actor, Combat.getWeaponInfo(weapon.getItem()));
+//    }
+
+    public static void onAttack(EntityLivingBase actor, WeaponInfo weapon) {
         if (actor.world.isRemote) return;
 
 //        System.out.println("onAttack " + actor.getName() + " " + CombatantProvider.get(actor).getActionPoints());
