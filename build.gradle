@@ -5,7 +5,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'net.minecraftforge.gradle:ForgeGradle:3.0.185'
+        classpath 'net.minecraftforge.gradle:ForgeGradle:3.0+'
         classpath 'org.spongepowered:mixingradle:0.7-SNAPSHOT'
     }
 }
@@ -27,29 +27,25 @@ compileJava.options.encoding = compileTestJava.options.encoding = 'UTF-8'
 
 minecraft {
     mappings channel: 'stable', version: '39-1.12'
-    accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
 
     runs {
         client {
             workingDirectory project.file('run')
-            arg '--tweakClass'
-            arg 'org.spongepowered.asm.launch.MixinTweaker'
-            arg '--mixin'
-            arg 'mixins.misca.json'
-            arg '--mixin'
-            arg 'mixins.loader.misca.json'
-            arg '--username'
-            arg 'msya'
+            args(
+                    '--tweakClass', 'org.spongepowered.asm.launch.MixinTweaker',
+                    '--mixin', 'mixins.loader.misca.json',
+                    '--mixin', 'mixins.misca.json',
+                    '--username', 'msifeed'
+            )
         }
 
         server {
             workingDirectory project.file('run')
-            arg '--tweakClass'
-            arg 'org.spongepowered.asm.launch.MixinTweaker'
-            arg '--mixin'
-            arg 'mixins.misca.json'
-            arg '--mixin'
-            arg 'mixins.loader.misca.json'
+            args(
+                    '--tweakClass', 'org.spongepowered.asm.launch.MixinTweaker',
+                    '--mixin', 'mixins.loader.misca.json',
+                    '--mixin', 'mixins.misca.json'
+            )
         }
     }
 }
@@ -86,6 +82,7 @@ processResources {
 
 sourceSets {
     main {
+        ext.refMap = "misca.refmap.json"
         output.resourcesDir = file('out/production/classes')
     }
 }
@@ -98,13 +95,8 @@ jar {
             'TweakOrder': 0,
             'MixinConfigs': 'mixins.misca.json,mixins.loader.misca.json',
             'ForceLoadAsMod': 'true',
-            'FMLCorePluginContainsFMLMod': 'true',
-            'FMLAT': 'accesstransformer.cfg'
+            'FMLCorePluginContainsFMLMod': 'true'
     )
-}
-
-mixin {
-    add sourceSets.main, "misca.refmap.json"
 }
 
 // Example configuration to allow publishing using the maven-publish task

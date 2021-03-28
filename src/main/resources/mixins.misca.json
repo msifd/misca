@@ -16,6 +16,7 @@
   ],
   "client": [
     "client.GuiChatMixin",
-    "client.GuiIngameMixin"
+    "client.GuiIngameMixin",
+    "client.RenderMixin"
   ]
 }

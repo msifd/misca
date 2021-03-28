@@ -7,6 +7,7 @@ import msifeed.mellow.view.text.TextInput;
 import msifeed.mellow.view.text.backend.AutoCompleter;
 import msifeed.misca.Misca;
 import msifeed.misca.chatex.ChatexRpc;
+import msifeed.misca.chatex.client.TypingState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.util.ITabCompleter;
@@ -128,8 +129,8 @@ public class ChatexScreen extends MellowScreen implements ITabCompleter {
     private void inputKey(char c, int key) {
         if (input.onKeyboard(c, key)) {
             historyCursor = 0;
-
             autoCompleter.reset();
+            TypingState.notifyTyping();
         }
     }
 

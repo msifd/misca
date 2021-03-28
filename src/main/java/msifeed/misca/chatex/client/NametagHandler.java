@@ -2,6 +2,7 @@ package msifeed.misca.chatex.client;
 
 import msifeed.misca.charsheet.ICharsheet;
 import msifeed.misca.charsheet.cap.CharsheetProvider;
+import msifeed.misca.mixins.client.RenderMixin;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.client.event.RenderLivingEvent;
@@ -21,15 +22,18 @@ public class NametagHandler {
     public void onRenderNameTag(RenderLivingEvent.Specials.Pre<EntityPlayer> event) {
         if (!(event.getEntity() instanceof EntityPlayer)) return;
 
-        final EntityPlayer self = Minecraft.getMinecraft().player;
         final EntityPlayer player = (EntityPlayer) event.getEntity();
 
         if (TypingState.isTyping(player)) {
             event.setCanceled(true);
+
             final int dotsIndex = (int) (System.currentTimeMillis() / TYPING_DOTS_INTERVAL_MS % TYPING_DOTS.length);
             final String dots = TYPING_DOTS[dotsIndex];
-            event.getRenderer().renderLivingLabel(player, dots, event.getX(), event.getY(), event.getZ(), 64);
+
+            final RenderMixin<EntityPlayer> render = (RenderMixin) event.getRenderer();
+            render.callRenderLivingLabel(player, dots, event.getX(), event.getY(), event.getZ(), 64);
         } else {
+            final EntityPlayer self = Minecraft.getMinecraft().player;
             if (self.getDistance(player) > NAME_VISIBILITY_RANGE)
                 event.setCanceled(true);
         }
