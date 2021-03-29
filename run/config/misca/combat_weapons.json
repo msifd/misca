@@ -1,8 +1,14 @@
 {
   "overrides": {},
   "generation": {
-    "apPerSpellCost": 0.3,
-    "spellTierFactor": 0.5,
-    "continuousSpellFactor": -0.99
+    "wizardryApPerSpellCost": 0.3,
+    "wizardrySpellTierFactor": 0.5,
+    "wizardryContinuousSpellApFactor": -1.0,
+    "wizardryContinuousSpellOverheadFactor": 0.0,
+    "thaumcraftPowerCost": 0.3,
+    "thaumcraftComplexityFactor": 0.5,
+    "tinkerBowApPerDrawTime": 0.05,
+    "tinkerCrossbowApPerShot": 1.0,
+    "tinkerCrossbowApPerDrawTime": 0.05
   }
 }

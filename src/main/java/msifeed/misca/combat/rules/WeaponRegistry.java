@@ -5,11 +5,13 @@ import electroblob.wizardry.spell.Spell;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
+import slimeknights.tconstruct.library.tools.ranged.BowCore;
 import thaumcraft.api.casters.FocusPackage;
 import thaumcraft.api.casters.ICaster;
 import thaumcraft.common.items.casters.ItemFocus;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.HashMap;
 
 public class WeaponRegistry {
@@ -25,6 +27,8 @@ public class WeaponRegistry {
             return getCasterInfo(stack, (ICaster) item);
         else if (item instanceof ISpellCastingItem)
             return getWandInfo(stack, (ISpellCastingItem) item);
+        else if (item instanceof BowCore)
+            return getTinckerBow(stack);
         else
             return getItemInfo(item);
     }
@@ -34,7 +38,7 @@ public class WeaponRegistry {
     }
 
     public WeaponInfo getSpellInfo(Spell spell) {
-        final WeaponInfo override = overrides.get(spell.getRegistryName());
+        final WeaponInfo override = getOverride(spell.getRegistryName());
         return generation.generateSpellInfo(spell, override);
     }
 
@@ -44,12 +48,23 @@ public class WeaponRegistry {
 
         final FocusPackage core = ItemFocus.getPackage(caster.getFocusStack(stack));
 
-        final WeaponInfo override = overrides.get(focus.getRegistryName());
+        final WeaponInfo override = getOverride(focus.getRegistryName());
         return generation.generateFocusInfo(core, override);
+    }
+
+    public WeaponInfo getTinckerBow(ItemStack stack) {
+        final BowCore core = (BowCore) stack.getItem();
+        final WeaponInfo override = getOverride(core.getRegistryName());
+        return generation.generateTinkerBow(stack, core, override);
     }
 
     public WeaponInfo getItemInfo(Item item) {
         final WeaponInfo info = overrides.get(item.getRegistryName());
         return info != null ? info : generation.generateItemInfo(item);
+    }
+
+    @Nonnull
+    private WeaponInfo getOverride(ResourceLocation key) {
+        return overrides.getOrDefault(key, WeaponInfoGeneration.NONE);
     }
 }

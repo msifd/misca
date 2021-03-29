@@ -61,7 +61,7 @@ public class SyncChannel<T> {
     }
 
     public void sync() throws Exception {
-        if (!Files.isRegularFile(filePath)) {
+        if (!Files.exists(filePath)) {
             writeFile();
             return;
         }

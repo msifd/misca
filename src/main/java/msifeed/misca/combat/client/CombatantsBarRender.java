@@ -99,7 +99,7 @@ public class CombatantsBarRender {
         final Rules rules = Combat.getRules();
         final double fullAp = com.getActionPoints();
         final double moveAp = rules.movementActionPoints(entity, com.getPosition(), entity.getPositionVector());
-        final double actionAp = rules.attackActionPoints(entity, weapon);
+        final double attackAp = rules.attackActionPoints(entity, weapon);
         final double ap = Math.max(com.getActionPoints() - moveAp, 0);
 
         final int bgColor = ap > 0 ? 0xffffff00 : 0xffff0000;
@@ -119,13 +119,13 @@ public class CombatantsBarRender {
         // Available attacks marks
         barGeom.w = 1;
         double consumedAp = 0;
-        double nextAp = actionAp + com.getActionPointsOverhead();
+        double nextAp = attackAp + com.getActionPointsOverhead();
         while (ap >= consumedAp + nextAp) {
             barGeom.x = (int) (geom.x + (consumedAp + nextAp) * pxPerAp);
             RenderShapes.rect(barGeom, 0xff000000);
 
             consumedAp += nextAp;
-            nextAp += nextAp / 2;
+            nextAp += nextAp / 2 * weapon.overhead;
         }
     }
 }

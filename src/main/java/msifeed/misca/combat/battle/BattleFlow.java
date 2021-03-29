@@ -131,7 +131,7 @@ public class BattleFlow {
         final double apWithOh = Combat.getRules().attackActionPoints(entity, weapon) + com.getActionPointsOverhead();
         if (com.getActionPoints() >= apWithOh) {
             com.addActionPoints(-apWithOh);
-            com.setActionPointsOverhead(com.getActionPointsOverhead() + apWithOh / 2);
+            com.setActionPointsOverhead(com.getActionPointsOverhead() + apWithOh / 2 * weapon.overhead);
         }
     }
 
@@ -140,7 +140,7 @@ public class BattleFlow {
         final double apWithOh = Combat.getRules().usageActionPoints(weapon) + com.getActionPointsOverhead();
         if (com.getActionPoints() >= apWithOh) {
             com.addActionPoints(-apWithOh);
-            com.setActionPointsOverhead(com.getActionPointsOverhead() + apWithOh / 2);
+            com.setActionPointsOverhead(com.getActionPointsOverhead() + apWithOh / 2 * weapon.overhead);
         }
     }
 
@@ -154,11 +154,8 @@ public class BattleFlow {
     public static boolean isApDepleted(EntityLivingBase entity, WeaponInfo weapon) {
         final ICombatant com = CombatantProvider.get(entity);
         final Rules rules = Combat.getRules();
-        final double atk = rules.attackActionPoints(entity, weapon);
-        final double use = rules.usageActionPoints(WeaponInfoGeneration.NONE);
-        final double act = Math.min(atk, use) + com.getActionPointsOverhead();
-        final double mov = rules.movementActionPoints(entity, com.getPosition(), entity.getPositionVector());
-        return (mov + act) > com.getActionPoints();
+        final double atk = rules.attackActionPoints(entity, weapon) + com.getActionPointsOverhead();
+        return atk > com.getActionPoints();
     }
 
     public static boolean isEnoughAp(EntityLivingBase entity, ICombatant com, double ap) {

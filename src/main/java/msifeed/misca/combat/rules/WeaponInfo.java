@@ -4,10 +4,10 @@ import java.util.Arrays;
 import java.util.EnumSet;
 
 public class WeaponInfo {
-
     public float dmg = 0;
     public double atk = 0;
     public double use = 0;
+    public double overhead = 1;
     public double chance = 0;
     public EnumSet<WeaponTrait> traits = EnumSet.noneOf(WeaponTrait.class);
 

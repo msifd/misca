@@ -36,10 +36,6 @@ public class CombatFlow {
 
     // Usage
 
-//    public static boolean canUse(EntityLivingBase actor, ItemStack weapon) {
-//        return canUse(actor, Combat.getWeaponInfo(weapon.getItem()));
-//    }
-
     public static boolean canUse(EntityLivingBase actor, WeaponInfo weapon) {
         final ICombatant com = CombatantProvider.get(actor);
         if (!com.isInBattle()) return true;
@@ -55,6 +51,8 @@ public class CombatFlow {
     }
 
     public static void onUse(EntityLivingBase actor, WeaponInfo weapon) {
+        if (actor.world.isRemote) return;
+
         BattleFlow.consumeUsageAp(actor, weapon);
         BattleFlow.consumeMovementAp(actor);
         CombatantSync.syncAp(actor);
@@ -62,9 +60,15 @@ public class CombatFlow {
 
     // Attack
 
-//    public static boolean canAttack(EntityLivingBase actor, ItemStack weapon) {
-//        return canAttack(actor, Combat.getWeaponInfo(weapon.getItem()));
-//    }
+    public static boolean canDamage(EntityLivingBase actor) {
+        final ICombatant com = CombatantProvider.get(actor);
+        if (!com.isInBattle()) return true;
+
+        final Battle battle = Combat.MANAGER.getBattle(com.getBattleId());
+        if (battle == null) return true;
+
+        return battle.isLeader(actor.getUniqueID());
+    }
 
     public static boolean canAttack(EntityLivingBase actor, WeaponInfo weapon) {
         final ICombatant com = CombatantProvider.get(actor);
@@ -76,23 +80,12 @@ public class CombatFlow {
         if (!battle.isLeader(actor.getUniqueID())) return false;
         if (battle.isTurnFinishing()) return false;
 
-        return isEnoughAttackAp(actor, weapon);
-    }
-
-    public static boolean isEnoughAttackAp(EntityLivingBase actor, WeaponInfo weapon) {
         final double attackAp = Combat.getRules().attackActionPoints(actor, weapon);
         return BattleFlow.isEnoughAp(actor, CombatantProvider.get(actor), attackAp);
     }
 
-//    public static void onAttack(EntityLivingBase actor, ItemStack weapon) {
-//        onAttack(actor, Combat.getWeaponInfo(weapon.getItem()));
-//    }
-
     public static void onAttack(EntityLivingBase actor, WeaponInfo weapon) {
         if (actor.world.isRemote) return;
-
-//        System.out.println("onAttack " + actor.getName() + " " + CombatantProvider.get(actor).getActionPoints());
-//        System.out.println(ExceptionUtils.getFullStackTrace(new RuntimeException()));
 
         BattleFlow.consumeActionAp(actor, weapon);
         BattleFlow.consumeMovementAp(actor);

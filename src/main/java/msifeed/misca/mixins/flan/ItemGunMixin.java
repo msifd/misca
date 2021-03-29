@@ -63,8 +63,6 @@ public class ItemGunMixin {
         final EntityLivingBase actor = CombatFlow.getCombatActor((EntityLivingBase) entity);
         if (actor == null) return;
 
-        if (!CombatFlow.canUse(actor, Combat.getWeapons().get(stack))) {
-            cir.setReturnValue(false);
-        }
+        CombatFlow.onUse(actor, Combat.getWeapons().get(stack));
     }
 }

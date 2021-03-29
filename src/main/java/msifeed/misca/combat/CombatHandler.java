@@ -84,20 +84,24 @@ public class CombatHandler {
 
         final ItemStack stack = event.getEntityPlayer().getHeldItemMainhand();
         final WeaponInfo weapon = Combat.getWeapons().get(stack);
-        CombatFlow.onAttack(actor, weapon);
+        if (CombatFlow.canAttack(actor, weapon)) {
+            CombatFlow.onAttack(actor, weapon);
+        }
     }
 
-//    @SubscribeEvent
-//    public void onPlayerAttackBlock(PlayerInteractEvent.LeftClickBlock event) {
-//        if (event.getEntityLiving().world.isRemote) return;
-//
-//        final EntityLivingBase actor = CombatFlow.getCombatActor(event.getEntityLiving());
-//        if (actor == null) return;
-//
-//        final ItemStack stack = event.getEntityPlayer().getHeldItemMainhand();
-//        final WeaponInfo weapon = Combat.getWeapons().get(stack);
-//        CombatFlow.onAttack(actor, weapon);
-//    }
+    @SubscribeEvent
+    public void onPlayerAttackBlock(PlayerInteractEvent.LeftClickBlock event) {
+        if (event.getEntityLiving().world.isRemote) return;
+
+        final EntityLivingBase actor = CombatFlow.getCombatActor(event.getEntityLiving());
+        if (actor == null) return;
+
+        final ItemStack stack = event.getEntityPlayer().getHeldItemMainhand();
+        final WeaponInfo weapon = Combat.getWeapons().get(stack);
+        if (CombatFlow.canAttack(actor, weapon)) {
+            CombatFlow.onAttack(actor, weapon);
+        }
+    }
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public void onPlayerAttackEntity(AttackEntityEvent event) {
@@ -122,27 +126,28 @@ public class CombatHandler {
         if (!(src.getTrueSource() instanceof EntityLivingBase)) return;
 
         final EntityLivingBase source = (EntityLivingBase) src.getTrueSource();
+        final boolean isPlayer = source instanceof EntityPlayer;
         // Get weapon from source, not from actor
         final WeaponInfo weapon = Combat.getWeapons().get(source.getHeldItemMainhand());
 
         final EntityLivingBase actor = CombatFlow.getCombatActor(source);
         if (actor == null) return;
 
-        if (!CombatFlow.canAttack(actor, weapon)) {
-            event.setCanceled(true);
-        }
+        if (CombatFlow.canAttack(actor, weapon)) {
+            if (!isPlayer) { // Players consume AP on swing, mobs on attack
+                CombatFlow.onAttack(actor, weapon);
+            }
+        } else {
+            if (!CombatFlow.canDamage(actor)) {
+                event.setCanceled(true);
+            }
 
-        final boolean isNotPlayer = !(actor instanceof EntityPlayer);
-        if (isNotPlayer) {
-            if (event.isCanceled()) {
-                // Mobs cant finish their turn, so help them
+            if (!isPlayer) {
+                // Mobs cant finish their turn, so lets help them
                 final ICombatant com = CombatantProvider.get(actor);
                 final Battle battle = Combat.MANAGER.getBattle(com.getBattleId());
-                if (battle != null)
+                if (battle != null && battle.isLeader(actor.getUniqueID()))
                     Combat.MANAGER.finishTurn(battle);
-            } else {
-                // Players consume AP on swing, mobs on attack
-                CombatFlow.onAttack(actor, weapon);
             }
         }
     }
@@ -266,8 +271,8 @@ public class CombatHandler {
         if (actor == null) return;
 
         final WeaponInfo weapon = Combat.getWeapons().getItemInfo(Items.SPLASH_POTION);
-        if (CombatFlow.canUse(actor, weapon)) {
-            CombatFlow.onUse(actor, weapon);
+        if (CombatFlow.canAttack(actor, weapon)) {
+            CombatFlow.onAttack(actor, weapon);
         } else {
             event.setCanceled(true);
         }

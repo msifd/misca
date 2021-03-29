@@ -132,19 +132,16 @@ public class Rules {
 
     // Action points
 
-    public double attackApBase = 6;
-    public double attackApDefault = 4;
+    public double attackApBase = 2;
+    public double attackApSpeedFactor = 1;
 
     public double attackActionPoints(EntityLivingBase entity, WeaponInfo weapon) {
-        final double override = weapon.atk;
-        if (override > 0) return override;
-
-        final IAttributeInstance attackSpeed = entity.getEntityAttribute(SharedMonsterAttributes.ATTACK_SPEED);
-        if (attackSpeed != null) { // Can be null for mobs
-            return (attackApBase - attackSpeed.getAttributeValue());
-        } else {
-            return attackApDefault;
-        }
+        final IAttributeInstance attackSpeed = entity.getEntityAttribute(SharedMonsterAttributes.ATTACK_SPEED); // Can be null for mobs
+        final double speedRate = attackSpeed != null
+                ? attackSpeed.getBaseValue() / attackSpeed.getAttributeValue() * attackApSpeedFactor
+                : 1;
+        final double cost = weapon.atk > 0 ? weapon.atk : attackApBase;
+        return cost * speedRate;
     }
 
     public double movementApFactor = 1;

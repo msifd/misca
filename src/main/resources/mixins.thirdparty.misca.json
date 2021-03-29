@@ -6,10 +6,12 @@
   "refmap": "misca.refmap.json",
   "mixins": [
     "flan.ItemGunMixin",
+    "tconstruct.BowCoreMixin",
+    "tconstruct.CrossbowMixin",
     "techguns.GenericGunMixin",
     "techguns.ReloadStartedMessageMixin",
+    "thaumcraft.ItemCasterMixin",
     "wizardry.ItemScrollMixin",
-    "wizardry.ItemWandMixin",
-    "thaumcraft.ItemCasterMixin"
+    "wizardry.ItemWandMixin"
   ]
 }
