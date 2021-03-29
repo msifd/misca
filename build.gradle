@@ -108,3 +108,11 @@ jar {
             'ForceLoadAsMod': 'true',
     )
 }
+
+task copyLatestJar(type: Copy) {
+    from jar
+    into 'build/libs'
+    rename { String fileName -> return archivesBaseName + '-latest.jar' }
+}
+
+build.dependsOn copyLatestJar
