@@ -18,7 +18,7 @@ repositories {
 apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'org.spongepowered.mixin'
 
-version = '2.0.0-alpha.12-rc5'
+version = '2.0.0-alpha.12'
 group = 'msifeed.misca'
 archivesBaseName = 'misca'
 
@@ -33,19 +33,19 @@ minecraft {
             workingDirectory project.file('run')
             args(
                     '--tweakClass', 'org.spongepowered.asm.launch.MixinTweaker',
-                    '--mixin', 'mixins.loader.misca.json',
                     '--mixin', 'mixins.misca.json',
                     '--username', 'msifeed'
             )
+            jvmArg '-Dfml.coreMods.load=msifeed.misca.mixins.MiscaDepsPlugin'
         }
 
         server {
             workingDirectory project.file('run')
             args(
                     '--tweakClass', 'org.spongepowered.asm.launch.MixinTweaker',
-                    '--mixin', 'mixins.loader.misca.json',
                     '--mixin', 'mixins.misca.json'
             )
+            jvmArg '-Dfml.coreMods.load=msifeed.misca.mixins.MiscaDepsPlugin'
         }
     }
 }
@@ -93,9 +93,11 @@ jar {
     manifest.attributes(
             'TweakClass': 'org.spongepowered.asm.launch.MixinTweaker',
             'TweakOrder': 0,
-            'MixinConfigs': 'mixins.misca.json,mixins.loader.misca.json',
+            'MixinConfigs': 'mixins.misca.json',
+
+            'FMLCorePlugin': 'msifeed.misca.mixins.MiscaDepsPlugin',
+            'FMLCorePluginContainsFMLMod': 'true',
             'ForceLoadAsMod': 'true',
-            'FMLCorePluginContainsFMLMod': 'true'
     )
 }
 
