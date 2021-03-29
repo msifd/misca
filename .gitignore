@@ -30,3 +30,6 @@ run/config/*
 !run/config
 !run/config/misca
 !run/resourcepacks
+
+# exclude logs fix
+!log4j2_fix.xml

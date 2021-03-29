@@ -1,21 +1,22 @@
 buildscript {
     repositories {
-        maven { url = 'https://files.minecraftforge.net/maven' }
-        maven { url = 'https://repo.spongepowered.org/repository/maven-public' }
-        jcenter()
+        mavenCentral()
+        maven { url 'https://files.minecraftforge.net/maven' }
+        maven { url 'https://repo.spongepowered.org/repository/maven-public' }
     }
     dependencies {
-        classpath 'net.minecraftforge.gradle:ForgeGradle:3.0+'
-        classpath 'org.spongepowered:mixingradle:0.7-SNAPSHOT'
+        classpath 'net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT'
+        classpath 'org.spongepowered:mixingradle:0.6-SNAPSHOT'
     }
 }
 
 repositories {
-    maven { url = 'https://repo.spongepowered.org/repository/maven-public' }
-    maven { url = 'https://www.cursemaven.com' }
+    maven { url 'https://repo.spongepowered.org/repository/maven-public' }
+    maven { url 'https://www.cursemaven.com' }
+    maven { url 'https://dvs1.progwml6.com/files/maven' }
 }
 
-apply plugin: 'net.minecraftforge.gradle'
+apply plugin: 'net.minecraftforge.gradle.forge'
 apply plugin: 'org.spongepowered.mixin'
 
 version = '2.0.0-alpha.12'
@@ -26,28 +27,26 @@ sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = co
 compileJava.options.encoding = compileTestJava.options.encoding = 'UTF-8'
 
 minecraft {
-    mappings channel: 'stable', version: '39-1.12'
+    version = '1.12.2-14.23.5.2847'
+    mappings = 'stable_39'
 
-    runs {
-        client {
-            workingDirectory project.file('run')
-            args(
-                    '--tweakClass', 'org.spongepowered.asm.launch.MixinTweaker',
-                    '--mixin', 'mixins.misca.json',
-                    '--username', 'msifeed'
-            )
-            jvmArg '-Dfml.coreMods.load=msifeed.misca.mixins.MiscaDepsPlugin'
-        }
+    useDepAts = true
+    makeObfSourceJar = false
 
-        server {
-            workingDirectory project.file('run')
-            args(
-                    '--tweakClass', 'org.spongepowered.asm.launch.MixinTweaker',
-                    '--mixin', 'mixins.misca.json'
-            )
-            jvmArg '-Dfml.coreMods.load=msifeed.misca.mixins.MiscaDepsPlugin'
-        }
-    }
+    runDir = 'run'
+    // `setClientRunArgs` and `setClientJvmArgs` don't work, so you need to add them manually.
+    //
+    // Add these to run arguments
+    //     --tweakClass
+    //     org.spongepowered.asm.launch.MixinTweaker
+    //     --mixin
+    //     mixins.misca.json
+    //     --username
+    //     msifeed
+    //
+    // Add these to JVM arguments
+    //     -Dfml.coreMods.load=msifeed.misca.mixins.MiscaDepsPlugin
+    //     -Dlog4j.configurationFile=log4j2_fix.xml
 }
 
 configurations {
@@ -55,35 +54,44 @@ configurations {
     compile.extendsFrom(embed)
 }
 
+sourceSets {
+    main {
+        ext.refMap = "misca.refmap.json"
+        resources {
+            srcDir 'resources'
+        }
+    }
+}
+
 dependencies {
-    minecraft 'net.minecraftforge:forge:1.12.2-14.23.5.2854'
     embed 'org.spongepowered:mixin:0.8.2'
 
-//    implementation fg.deobf("curse.maven:botania-225643:2846950")
-    implementation fg.deobf("curse.maven:techguns-244201:2958103")
-    implementation fg.deobf("curse.maven:baubles-227083:2518667")
-    implementation fg.deobf("curse.maven:flans-mod-5-5-2-317310:3195600")
-    implementation fg.deobf("curse.maven:electroblobs-wizardry-265642:3189062")
-    compileOnly fg.deobf("curse.maven:thaumcraft-223628:2629023")
+//    deobfCompile "curse.maven:botania-225643:2846950"
+    deobfCompile "curse.maven:techguns-244201:2958103"
+    deobfCompile "curse.maven:baubles-227083:2518667"
+    deobfCompile "curse.maven:flans-mod-5-5-2-317310:3195600"
+    deobfCompile "curse.maven:electroblobs-wizardry-265642:3189062"
+    deobfCompile "curse.maven:thaumcraft-223628:2629023"
+    deobfCompile "slimeknights.mantle:Mantle:1.12-1.3.3.55"
+    deobfCompile "slimeknights:TConstruct:1.12.2-2.13.0.190"
 }
 
 processResources {
+    // this will ensure that this task is redone when the versions change.
+    inputs.property "version", project.version
+    inputs.property "mcversion", project.minecraft.version
+
     // replace stuff in mcmod.info, nothing else
     from(sourceSets.main.resources.srcDirs) {
         include 'mcmod.info'
-        expand 'version': project.version
+
+        // replace version and mcversion
+        expand 'version':project.version, 'mcversion':project.minecraft.version
     }
 
     // copy everything else except the mcmod.info
     from(sourceSets.main.resources.srcDirs) {
         exclude 'mcmod.info'
-    }
-}
-
-sourceSets {
-    main {
-        ext.refMap = "misca.refmap.json"
-        output.resourcesDir = file('out/production/classes')
     }
 }
 
@@ -100,15 +108,3 @@ jar {
             'ForceLoadAsMod': 'true',
     )
 }
-
-// Example configuration to allow publishing using the maven-publish task
-// This is the preferred method to reobfuscate your jar file
-jar.finalizedBy('reobfJar')
-
-task copyLatestJar(type: Copy) {
-    from jar
-    into 'build/libs'
-    rename { String fileName -> return archivesBaseName + '-latest.jar' }
-}
-
-build.dependsOn copyLatestJar
