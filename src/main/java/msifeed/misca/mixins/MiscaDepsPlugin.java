@@ -10,7 +10,6 @@ import org.spongepowered.asm.mixin.Mixins;
 import javax.annotation.Nullable;
 import java.io.IOException;
 import java.nio.file.*;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -20,16 +19,17 @@ import java.util.stream.Stream;
 public class MiscaDepsPlugin implements IFMLLoadingPlugin {
     private final Logger LOG = LogManager.getLogger("Misca-Deps");
 
-    private final Map<String, String> REFERENCES = Stream.of(
-            "com.flansmod.common.guns.ItemGun",
-            "thaumcraft.common.items.casters.ItemCaster",
-            "electroblob.wizardry.item.ItemWand",
-            "electroblob.wizardry.item.ItemScroll",
-            "slimeknights.tconstruct.library.tools.ranged.BowCore",
-            "slimeknights.tconstruct.tools.ranged.item.CrossBow"
-    ).collect(Collectors.toMap(s -> s.replace('.', '/') + ".class", s -> s));
-
-    private final List<String> REFERENCE_FILES = new ArrayList<>(REFERENCES.keySet());
+    private final List<String> REFERENCES =
+            Stream.of(
+                "com.flansmod.common.guns.ItemGun",
+                "thaumcraft.common.items.casters.ItemCaster",
+                "electroblob.wizardry.item.ItemWand",
+                "electroblob.wizardry.item.ItemScroll",
+                "slimeknights.tconstruct.library.tools.ranged.BowCore",
+                "slimeknights.tconstruct.tools.ranged.item.CrossBow"
+            )
+            .map(s -> s.replace('.', '/') + ".class")
+            .collect(Collectors.toList());
 
     @Override
     public void injectData(Map<String, Object> data) {
@@ -71,7 +71,7 @@ public class MiscaDepsPlugin implements IFMLLoadingPlugin {
 
         final Path jar = modsDir.relativize(modFile);
         LOG.info("Preload jar " + jar);
-        REFERENCE_FILES.removeAll(refs);
+        REFERENCES.removeAll(refs);
 
         try {
             ((LaunchClassLoader) getClass().getClassLoader()).addURL(modFile.toUri().toURL());
@@ -82,11 +82,11 @@ public class MiscaDepsPlugin implements IFMLLoadingPlugin {
     }
 
     private List<String> findReferenceClasses(Path path) {
-        if (REFERENCE_FILES.isEmpty())
+        if (REFERENCES.isEmpty())
             return Collections.emptyList();
 
         try (FileSystem fs = FileSystems.newFileSystem(path, null)) {
-            return REFERENCE_FILES.stream()
+            return REFERENCES.stream()
                     .filter(ref -> Files.exists(fs.getPath(ref)))
                     .collect(Collectors.toList());
         } catch (IOException e) {
