@@ -21,7 +21,7 @@ public class Rules {
     public float neutralFireDamageFactor = -0.5f;
 
     public float neutralDamageFactor(DamageSource source) {
-        return 1 + neutralDamageFactor + (source.isFireDamage() ? neutralFireDamageFactor : 0);
+        return Math.max(0, 1 + neutralDamageFactor + (source.isFireDamage() ? neutralFireDamageFactor : 0));
     }
 
     public double damageIncreaseMeleePerStr = 0.04;
@@ -153,7 +153,7 @@ public class Rules {
         final double speedRate = attackSpeed != null
                 ? attackSpeed.getBaseValue() / attackSpeed.getAttributeValue() * attackApSpeedFactor
                 : 1;
-        final double cost = weapon.atk > 0 ? weapon.atk : attackApBase;
+        final double cost = weapon.forceAtk || weapon.atk > 0 ? weapon.atk : attackApBase;
         return cost * speedRate;
     }
 

@@ -23,7 +23,7 @@ public abstract class ItemCasterMixin {
         final EntityLivingBase actor = CombatFlow.getCombatActor(player);
         if (actor == null) return;
 
-        final WeaponInfo weapon = Combat.getWeapons().get(player.getHeldItem(hand));
+        final WeaponInfo weapon = Combat.getWeapons().get(player, player.getHeldItem(hand));
         if (!CombatFlow.canAttack(actor, weapon)) {
             cir.setReturnValue(new ActionResult<>(EnumActionResult.FAIL, player.getHeldItem(hand)));
         }
@@ -35,7 +35,7 @@ public abstract class ItemCasterMixin {
     public void cast(World world, EntityPlayer player, EnumHand hand, CallbackInfoReturnable<ActionResult<ItemStack>> cir) {
         final EntityLivingBase actor = CombatFlow.getCombatActor(player);
         if (actor != null) {
-            final WeaponInfo weapon = Combat.getWeapons().get(player.getHeldItem(hand));
+            final WeaponInfo weapon = Combat.getWeapons().get(player, player.getHeldItem(hand));
             CombatFlow.onAttack(actor, weapon);
         }
     }

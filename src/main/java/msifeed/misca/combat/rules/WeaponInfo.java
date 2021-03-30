@@ -11,6 +11,8 @@ public class WeaponInfo {
     public double chance = 0;
     public EnumSet<WeaponTrait> traits = EnumSet.noneOf(WeaponTrait.class);
 
+    public transient boolean forceAtk = false;
+
     public WeaponInfo() {
     }
 

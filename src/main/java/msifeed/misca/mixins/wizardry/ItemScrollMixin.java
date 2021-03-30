@@ -21,7 +21,7 @@ public class ItemScrollMixin {
         final EntityLivingBase actor = CombatFlow.getCombatActor(player);
         if (actor == null) return;
 
-        if (!CombatFlow.canAttack(actor, Combat.getWeapons().getSpellInfo(spell))) {
+        if (!CombatFlow.canAttack(actor, Combat.getWeapons().getSpellInfo(player, stack))) {
             cir.setReturnValue(false);
         }
     }
@@ -32,7 +32,7 @@ public class ItemScrollMixin {
             final EntityLivingBase actor = CombatFlow.getCombatActor(player);
             if (actor == null) return;
 
-            CombatFlow.onAttack(actor, Combat.getWeapons().getSpellInfo(spell));
+            CombatFlow.onAttack(actor, Combat.getWeapons().getSpellInfo(player, stack));
         }
     }
 }

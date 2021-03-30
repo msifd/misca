@@ -27,7 +27,7 @@ public class CombatantInfo {
         final WeaponTrait defaultType = source instanceof EntityDamageSourceIndirect ? WeaponTrait.range : WeaponTrait.melee;
         this.mainType = getMainType(weapon, defaultType);
         this.traitsMain = weapon.traits;
-        this.traitsOff = Combat.getWeapons().get(attacker.getHeldItemOffhand()).traits;
+        this.traitsOff = Combat.getWeapons().get(attacker, attacker.getHeldItemOffhand()).traits;
 
         for (CharAttribute attr : CharAttribute.values())
             attributes.put(attr, attr.get(attacker));
@@ -36,10 +36,10 @@ public class CombatantInfo {
     public CombatantInfo(EntityLivingBase victim) {
         this.pos = CombatantProvider.get(victim).getPosition();
 
-        this.weapon = Combat.getWeapons().get(victim.getHeldItemMainhand());
+        this.weapon = Combat.getWeapons().get(victim, victim.getHeldItemMainhand());
         this.mainType = getMainType(weapon, WeaponTrait.melee);
         this.traitsMain = weapon.traits;
-        this.traitsOff = Combat.getWeapons().get(victim.getHeldItemOffhand()).traits;
+        this.traitsOff = Combat.getWeapons().get(victim, victim.getHeldItemOffhand()).traits;
 
         for (CharAttribute attr : CharAttribute.values())
             attributes.put(attr, attr.get(victim));

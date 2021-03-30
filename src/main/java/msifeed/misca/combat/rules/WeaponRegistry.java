@@ -2,6 +2,7 @@ package msifeed.misca.combat.rules;
 
 import electroblob.wizardry.item.ISpellCastingItem;
 import electroblob.wizardry.spell.Spell;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
@@ -11,7 +12,6 @@ import thaumcraft.api.casters.ICaster;
 import thaumcraft.common.items.casters.ItemFocus;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.HashMap;
 
 public class WeaponRegistry {
@@ -19,27 +19,24 @@ public class WeaponRegistry {
     public WeaponInfoGeneration generation = new WeaponInfoGeneration();
 
     @Nonnull
-    public WeaponInfo get(ItemStack stack) {
+    public WeaponInfo get(EntityLivingBase holder, ItemStack stack) {
         if (stack.isEmpty()) return WeaponInfoGeneration.NONE;
 
         final Item item = stack.getItem();
         if (item instanceof ICaster)
             return getCasterInfo(stack, (ICaster) item);
         else if (item instanceof ISpellCastingItem)
-            return getWandInfo(stack, (ISpellCastingItem) item);
+            return getSpellInfo(holder, stack);
         else if (item instanceof BowCore)
             return getTinckerBow(stack);
         else
             return getItemInfo(item);
     }
 
-    private WeaponInfo getWandInfo(ItemStack stack, ISpellCastingItem wand) {
-        return getSpellInfo(wand.getCurrentSpell(stack));
-    }
-
-    public WeaponInfo getSpellInfo(Spell spell) {
+    public WeaponInfo getSpellInfo(EntityLivingBase caster, ItemStack stack) {
+        final Spell spell = ((ISpellCastingItem) stack.getItem()).getCurrentSpell(stack);
         final WeaponInfo override = getOverride(spell.getRegistryName());
-        return generation.generateSpellInfo(spell, override);
+        return generation.generateSpellInfo(caster, stack, spell, override);
     }
 
     public WeaponInfo getCasterInfo(ItemStack stack, ICaster caster) {

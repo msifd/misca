@@ -24,7 +24,7 @@ public class GenericGunMixin {
         final EntityLivingBase actor = CombatFlow.getCombatActor(player);
         if (actor == null) return;
 
-        final WeaponInfo weapon = Combat.getWeapons().get(stack);
+        final WeaponInfo weapon = Combat.getWeapons().get(player, stack);
         if (CombatFlow.canAttack(actor, weapon)) {
             CombatFlow.onAttack(actor, weapon);
         } else {
@@ -37,7 +37,7 @@ public class GenericGunMixin {
         final EntityLivingBase actor = CombatFlow.getCombatActor(player);
         if (actor == null) return;
 
-        if (!CombatFlow.canUse(actor, Combat.getWeapons().get(stack))) {
+        if (!CombatFlow.canUse(actor, Combat.getWeapons().get(player, stack))) {
             ci.cancel();
         }
     }
@@ -47,7 +47,7 @@ public class GenericGunMixin {
         final EntityLivingBase actor = CombatFlow.getCombatActor(player);
         if (actor == null) return;
 
-        if (!CombatFlow.canUse(actor, Combat.getWeapons().get(stack))) {
+        if (!CombatFlow.canUse(actor, Combat.getWeapons().get(player, stack))) {
             ci.cancel();
         }
     }

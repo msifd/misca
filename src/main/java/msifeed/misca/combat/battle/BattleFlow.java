@@ -7,7 +7,6 @@ import msifeed.misca.combat.cap.CombatantSync;
 import msifeed.misca.combat.cap.ICombatant;
 import msifeed.misca.combat.rules.Rules;
 import msifeed.misca.combat.rules.WeaponInfo;
-import msifeed.misca.combat.rules.WeaponInfoGeneration;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;

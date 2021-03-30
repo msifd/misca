@@ -18,7 +18,7 @@ public class ReloadStartedMessageMixin {
         final EntityLivingBase actor = CombatFlow.getCombatActor(shooter);
         if (actor == null) return;
 
-        final WeaponInfo weapon = Combat.getWeapons().get(shooter.getHeldItem(hand));
+        final WeaponInfo weapon = Combat.getWeapons().get(shooter, shooter.getHeldItem(hand));
         CombatFlow.onUse(actor, weapon);
     }
 }

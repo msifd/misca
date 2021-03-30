@@ -30,7 +30,7 @@ public class ItemGunMixin {
         final EntityLivingBase actor = CombatFlow.getCombatActor(player);
         if (actor == null) return;
 
-        final WeaponInfo weapon = Combat.getWeapons().get(player.getHeldItemMainhand());
+        final WeaponInfo weapon = Combat.getWeapons().get(player, player.getHeldItemMainhand());
         if (!CombatFlow.canAttack(actor, weapon)) {
             cir.setReturnValue(true);
         }
@@ -41,7 +41,7 @@ public class ItemGunMixin {
         final EntityLivingBase actor = CombatFlow.getCombatActor(player);
         if (actor == null) return;
 
-        CombatFlow.onAttack(actor, Combat.getWeapons().get(stack));
+        CombatFlow.onAttack(actor, Combat.getWeapons().get(player, stack));
     }
 
     @SideOnly(Side.CLIENT)
@@ -51,7 +51,7 @@ public class ItemGunMixin {
         final EntityLivingBase actor = CombatFlow.getCombatActor(player);
         if (actor == null) return;
 
-        if (!CombatFlow.canUse(actor, Combat.getWeapons().get(stack))) {
+        if (!CombatFlow.canUse(actor, Combat.getWeapons().get(player, stack))) {
             cir.setReturnValue(false);
         }
     }
@@ -63,6 +63,6 @@ public class ItemGunMixin {
         final EntityLivingBase actor = CombatFlow.getCombatActor((EntityLivingBase) entity);
         if (actor == null) return;
 
-        CombatFlow.onUse(actor, Combat.getWeapons().get(stack));
+        CombatFlow.onUse(actor, Combat.getWeapons().get((EntityLivingBase) entity, stack));
     }
 }

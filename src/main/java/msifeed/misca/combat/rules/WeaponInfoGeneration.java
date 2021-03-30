@@ -1,6 +1,10 @@
 package msifeed.misca.combat.rules;
 
+import electroblob.wizardry.item.ItemWand;
 import electroblob.wizardry.spell.Spell;
+import electroblob.wizardry.util.SpellModifiers;
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemSword;
@@ -34,23 +38,44 @@ public class WeaponInfoGeneration {
 
     public double wizardryApPerSpellCost = 0.3;
     public double wizardrySpellTierFactor = 0.5;
-    public double wizardryContinuousSpellApFactor = -0.8;
     public double wizardryContinuousSpellOverheadFactor = 0;
 
-    public WeaponInfo generateSpellInfo(Spell spell, WeaponInfo override) {
+    public WeaponInfo generateSpellInfo(EntityLivingBase caster, ItemStack stack, Spell spell, WeaponInfo override) {
         final WeaponInfo info = new WeaponInfo(WeaponTrait.range, WeaponTrait.magic);
 
-        final double cost = wizardryApPerSpellCost + override.atk;
+        final double apPerMana = wizardryApPerSpellCost + override.atk;
         double factor = 1 + spell.getTier().level * wizardrySpellTierFactor;
 
         if (spell.isContinuous) {
-            factor += wizardryContinuousSpellApFactor;
             info.overhead = wizardryContinuousSpellOverheadFactor;
         }
 
-        info.atk = spell.getCost() * cost * Math.max(0.01, factor);
+        final int mana = getManaCost(caster, stack, spell);
+        info.atk = mana * apPerMana * Math.max(0, factor);
+        info.forceAtk = true;
 
         return info;
+    }
+
+    private int getManaCost(EntityLivingBase caster, ItemStack stack, Spell spell) {
+        if (!(stack.getItem() instanceof ItemWand) || !(caster instanceof EntityPlayer))
+            return spell.getCost();
+
+        final ItemWand wand = (ItemWand) stack.getItem();
+        final SpellModifiers modifiers = wand.calculateModifiers(stack, (EntityPlayer) caster, spell);
+
+        final int cost = (int) (spell.getCost() * modifiers.get("cost") + 0.1F);
+        if (!spell.isContinuous)
+            return cost;
+
+        final int castingTick = Math.max(0, caster.getItemInUseCount());
+        if (castingTick % 20 == 0) {
+            return cost / 2 + cost % 2;
+        } else if (castingTick % 10 == 0) {
+            return cost / 2;
+        } else {
+            return 0;
+        }
     }
 
     public double thaumcraftPowerCost = 0.3;
@@ -74,19 +99,19 @@ public class WeaponInfoGeneration {
         final WeaponInfo info = new WeaponInfo(WeaponTrait.range);
 
         final float speed = ProjectileLauncherNBT.from(stack).drawSpeed;
-        final double drawTime = core.getDrawTime() / speed;
+        final double drawSpeedRate = core.getDrawTime() / speed;
 
         if (core instanceof CrossBow) {
             info.atk = tinkerCrossbowApPerShot + override.atk;
 
             if (!((CrossBow) core).isLoaded(stack)) {
                 final double cost = tinkerCrossbowApPerDrawTime + override.use;
-                info.use = drawTime * cost;
+                info.use = cost * drawSpeedRate;
                 info.atk = info.use; // For display purposes
             }
         } else {
             final double cost = tinkerBowApPerDrawTime + override.atk;
-            info.atk = drawTime * cost;
+            info.atk = cost * drawSpeedRate;
         }
 
         return info;

@@ -3,7 +3,6 @@
   "generation": {
     "wizardryApPerSpellCost": 0.3,
     "wizardrySpellTierFactor": 0.5,
-    "wizardryContinuousSpellApFactor": 0.9,
     "wizardryContinuousSpellOverheadFactor": 0.0,
     "thaumcraftPowerCost": 0.5,
     "thaumcraftComplexityFactor": 0.5,

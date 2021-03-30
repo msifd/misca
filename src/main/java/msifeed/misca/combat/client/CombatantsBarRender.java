@@ -94,7 +94,7 @@ public class CombatantsBarRender {
 
     private static void renderActionPointsBar(Geom geom, EntityLivingBase entity) {
         final ICombatant com = CombatantProvider.get(entity);
-        final WeaponInfo weapon = Combat.getWeapons().get(entity.getHeldItemMainhand());
+        final WeaponInfo weapon = Combat.getWeapons().get(entity, entity.getHeldItemMainhand());
 
         final Rules rules = Combat.getRules();
         final double fullAp = com.getActionPoints();
@@ -102,7 +102,7 @@ public class CombatantsBarRender {
         final double attackAp = rules.attackActionPoints(entity, weapon);
         final double ap = Math.max(com.getActionPoints() - moveAp, 0);
 
-        final int bgColor = ap > 0 ? 0xffffff00 : 0xffff0000;
+        final int bgColor = ap > 0 ? 0xfff0f000 : 0xffff0000;
         final double pxPerAp = geom.w / fullAp;
 
         final Geom barGeom = geom.clone();
@@ -113,8 +113,12 @@ public class CombatantsBarRender {
 //        RenderShapes.rect(barGeom, bgColor);
 //        barGeom.y -= barGeom.h;
 
-        barGeom.w = (int) (ap * pxPerAp);
+        barGeom.w = (int) ((ap) * pxPerAp);
         RenderShapes.rect(barGeom, bgColor);
+
+        if (attackAp <= 0) {
+            return;
+        }
 
         // Available attacks marks
         barGeom.w = 1;
@@ -122,7 +126,7 @@ public class CombatantsBarRender {
         double nextAp = attackAp + com.getActionPointsOverhead();
         while (ap >= consumedAp + nextAp) {
             barGeom.x = (int) (geom.x + (consumedAp + nextAp) * pxPerAp);
-            RenderShapes.rect(barGeom, 0xff000000);
+            RenderShapes.rect(barGeom, 0xff505050);
 
             consumedAp += nextAp;
             nextAp += nextAp * weapon.overhead;
