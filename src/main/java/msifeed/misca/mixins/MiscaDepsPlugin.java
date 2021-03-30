@@ -24,7 +24,9 @@ public class MiscaDepsPlugin implements IFMLLoadingPlugin {
             "com.flansmod.common.guns.ItemGun",
             "thaumcraft.common.items.casters.ItemCaster",
             "electroblob.wizardry.item.ItemWand",
-            "electroblob.wizardry.item.ItemScroll"
+            "electroblob.wizardry.item.ItemScroll",
+            "slimeknights.tconstruct.library.tools.ranged.BowCore",
+            "slimeknights.tconstruct.tools.ranged.item.CrossBow"
     ).collect(Collectors.toMap(s -> s.replace('.', '/') + ".class", s -> s));
 
     private final List<String> REFERENCE_FILES = new ArrayList<>(REFERENCES.keySet());

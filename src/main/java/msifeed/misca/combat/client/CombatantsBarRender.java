@@ -125,7 +125,7 @@ public class CombatantsBarRender {
             RenderShapes.rect(barGeom, 0xff000000);
 
             consumedAp += nextAp;
-            nextAp += nextAp / 2 * weapon.overhead;
+            nextAp += nextAp * weapon.overhead;
         }
     }
 }

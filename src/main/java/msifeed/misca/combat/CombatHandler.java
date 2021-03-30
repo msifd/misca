@@ -287,8 +287,11 @@ public class CombatHandler {
     }
 
     private void alterDamage(LivingHurtEvent event, EntityLivingBase actor, WeaponInfo weapon) {
-        final float damageOverride = weapon.dmg;
-        final float damageAmount = damageOverride > 0 ? damageOverride : event.getAmount();
+        final float damageAmount = event.getAmount() + weapon.dmg;
+        if (damageAmount <= 0) {
+            event.setCanceled(true);
+            return;
+        }
 
         final EntityLivingBase vicEntity = event.getEntityLiving();
         final CombatantInfo actInfo = new CombatantInfo(actor, event.getSource(), weapon);

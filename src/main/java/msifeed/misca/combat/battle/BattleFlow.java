@@ -131,7 +131,7 @@ public class BattleFlow {
         final double apWithOh = Combat.getRules().attackActionPoints(entity, weapon) + com.getActionPointsOverhead();
         if (com.getActionPoints() >= apWithOh) {
             com.addActionPoints(-apWithOh);
-            com.setActionPointsOverhead(com.getActionPointsOverhead() + apWithOh / 2 * weapon.overhead);
+            com.setActionPointsOverhead(com.getActionPointsOverhead() + apWithOh * weapon.overhead);
         }
     }
 
@@ -140,7 +140,7 @@ public class BattleFlow {
         final double apWithOh = Combat.getRules().usageActionPoints(weapon) + com.getActionPointsOverhead();
         if (com.getActionPoints() >= apWithOh) {
             com.addActionPoints(-apWithOh);
-            com.setActionPointsOverhead(com.getActionPointsOverhead() + apWithOh / 2 * weapon.overhead);
+            com.setActionPointsOverhead(com.getActionPointsOverhead() + apWithOh * weapon.overhead);
         }
     }
 
