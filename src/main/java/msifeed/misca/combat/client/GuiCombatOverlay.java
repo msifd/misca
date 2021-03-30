@@ -1,6 +1,7 @@
 package msifeed.misca.combat.client;
 
 import msifeed.mellow.render.RenderUtils;
+import msifeed.misca.client.MiscaConfig;
 import msifeed.misca.combat.Combat;
 import msifeed.misca.combat.CombatFlow;
 import msifeed.misca.combat.battle.Battle;
@@ -35,8 +36,11 @@ public class GuiCombatOverlay {
         final EntityPlayer player = Minecraft.getMinecraft().player;
         if (!CombatantProvider.get(player).isInBattle()) return;
 
-//        drawTextInfo();
         drawHud();
+
+        if (MiscaConfig.combatDebug) {
+            drawDebugInfo();
+        }
     }
 
     private void drawHud() {
@@ -62,17 +66,16 @@ public class GuiCombatOverlay {
         });
     }
 
-    private static void drawTextInfo() {
-        final EntityPlayer player = Minecraft.getMinecraft().player;
-        final ICombatant selfCom = CombatantProvider.get(player);
+    private static void drawDebugInfo() {
+        final Rules rules = Combat.getRules();
+        final Battle state = BattleStateClient.STATE;
+        final EntityLivingBase leader = state.getLeader();
 
-        final EntityLivingBase actor = CombatFlow.getCombatActor(player);
+        final EntityLivingBase actor = CombatFlow.getCombatActor(leader);
         if (actor == null) return;
         final ICombatant com = CombatantProvider.get(actor);
-        final WeaponInfo weapon = Combat.getWeapons().get(player.getHeldItemMainhand());
+        final WeaponInfo weapon = Combat.getWeapons().get(leader.getHeldItemMainhand());
 
-        final Battle state = BattleStateClient.STATE;
-        final Rules rules = Combat.getRules();
 
         final Vec3d pos = com.getPosition();
         final String joinedMembers = state.getMembers().entrySet().stream()
@@ -89,20 +92,15 @@ public class GuiCombatOverlay {
         final double usageAp = rules.usageActionPoints(weapon) + overheadAp;
 
         final String[] lines = {
-                "members: " + joinedMembers,
-                "queue: " + joinedQueue,
-                "leader: " + leaderName,
-                "your puppet: " + selfCom.getPuppet(),
-                "----",
-                "action points: " + String.format("%.2f", com.getActionPoints()),
-                "pos: " + posStr,
-                "training hp: " + com.getTrainingHealth(),
+                "actor: " + actor.getName(),
+                "health: " + String.format("%.2f/%.2f", actor.getHealth(), actor.getMaxHealth()),
                 "neutral dmg: " + com.getNeutralDamage(),
                 "----",
-                "AP OVERHEAD: " + String.format("%.2f", overheadAp),
+                "AP: " + String.format("%.2f", com.getActionPoints()),
                 "MOVEMENT: " + formatActionPoints(moveAp, com.getActionPoints()),
-                "ATTACK: " + String.format("%s/%.2f", formatActionPoints(attackAp, com.getActionPoints()), com.getActionPoints()),
-                "USAGE_: " + String.format("%s/%.2f", formatActionPoints(usageAp, com.getActionPoints()), com.getActionPoints()),
+                "OVERHEAD: " + String.format("%.2f", overheadAp),
+                "ATTACK: " + formatActionPoints(attackAp, com.getActionPoints()),
+                "USAGE : " + formatActionPoints(usageAp, com.getActionPoints()),
         };
 
         final FontRenderer fr = Minecraft.getMinecraft().fontRenderer;

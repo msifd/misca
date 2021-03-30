@@ -1,4 +1,6 @@
 {
+  "neutralDamageFactor": 0.0,
+  "neutralFireDamageFactor": -0.5,
   "damageIncreaseMeleePerStr": 0.04,
   "damageIncreaseRangePerStr": 0.02,
   "damageAbsorptionPerEnd": 0.02,

@@ -4,6 +4,7 @@ import msifeed.misca.combat.CharAttribute;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.attributes.IAttributeInstance;
+import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
@@ -13,6 +14,16 @@ import net.minecraft.world.World;
  * You know the rules and so do I
  */
 public class Rules {
+
+    // Damage
+
+    public float neutralDamageFactor = 0;
+    public float neutralFireDamageFactor = -0.5f;
+
+    public float neutralDamageFactor(DamageSource source) {
+        return 1 + neutralDamageFactor + (source.isFireDamage() ? neutralFireDamageFactor : 0);
+    }
+
     public double damageIncreaseMeleePerStr = 0.04;
     public double damageIncreaseRangePerStr = 0.02;
 
@@ -26,6 +37,8 @@ public class Rules {
     public float damageAbsorption(CombatantInfo info) {
         return (float) (CharAttribute.end.get(info) * damageAbsorptionPerEnd);
     }
+
+    // Chances
 
     public double hitChanceBase = 0.5;
     public double hitChanceMeleePerPer = 0.015;

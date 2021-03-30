@@ -3,9 +3,9 @@
   "generation": {
     "wizardryApPerSpellCost": 0.3,
     "wizardrySpellTierFactor": 0.5,
-    "wizardryContinuousSpellApFactor": -1.0,
+    "wizardryContinuousSpellApFactor": 0.9,
     "wizardryContinuousSpellOverheadFactor": 0.0,
-    "thaumcraftPowerCost": 0.3,
+    "thaumcraftPowerCost": 0.5,
     "thaumcraftComplexityFactor": 0.5,
     "tinkerBowApPerDrawTime": 0.05,
     "tinkerCrossbowApPerShot": 1.0,

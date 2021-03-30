@@ -191,6 +191,9 @@ public class CombatHandler {
         final Battle battle = Combat.MANAGER.getBattle(com.getBattleId());
         if (battle == null) return;
 
+        final float damageFactor = Combat.getRules().neutralDamageFactor(src);
+        event.setAmount(event.getAmount() * damageFactor);
+
         final boolean isLeader = battle.isLeader(entity.getUniqueID()); // Leader takes damage immediately
         if (!isLeader && !src.getDamageType().startsWith(IGNORE_PREFIX)) {
             com.setNeutralDamage(com.getNeutralDamage() + event.getAmount());
