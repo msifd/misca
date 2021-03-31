@@ -8,7 +8,7 @@ import net.minecraft.entity.ai.attributes.RangedAttribute;
 import net.minecraft.entity.player.EntityPlayer;
 
 public class CorruptionHandler {
-    public static final IAttribute CORRUPTION = new RangedAttribute(null, Misca.MODID + ".corruption", 0, 0, 100);
+    public static final IAttribute CORRUPTION = new RangedAttribute(null, Misca.MODID + ".corruption", 0, 0, 100).setShouldWatch(true);
 
     public void handleTime(EntityPlayer player, long secs) {
         final CharstateConfig config = Misca.getSharedConfig().charstate;
