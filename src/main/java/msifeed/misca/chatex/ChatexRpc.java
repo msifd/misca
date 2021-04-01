@@ -4,8 +4,10 @@ import msifeed.misca.Misca;
 import msifeed.misca.charsheet.CharEffort;
 import msifeed.misca.chatex.client.ChatexClientLogs;
 import msifeed.misca.chatex.client.TypingState;
-import msifeed.misca.chatex.client.format.GlobalFormat;
-import msifeed.misca.chatex.client.format.SpeechFormat;
+import msifeed.misca.chatex.format.RollFormat;
+import msifeed.misca.chatex.format.SpecialSpeechFormat;
+import msifeed.misca.chatex.format.SpeechFormat;
+import msifeed.misca.logs.LogDB;
 import msifeed.sys.rpc.RpcContext;
 import msifeed.sys.rpc.RpcMethodHandler;
 import net.minecraft.client.Minecraft;
@@ -33,12 +35,11 @@ public class ChatexRpc {
     private static final String gmGlobal = "chatex.gmGlobal";
     private static final String speech = "chatex.speech";
     private static final String global = "chatex.global";
+    private static final String offtop = "chatex.offtop";
     private static final String diceRoll = "chatex.diceRoll";
     private static final String effortRoll = "chatex.effortRoll";
     private static final String notifyTyping = "chatex.typing.notify";
     private static final String broadcastTyping = "chatex.typing.broadcast";
-
-    private static final SoundEvent chatSound = new SoundEvent(new ResourceLocation(Misca.MODID, "chatex.chat_message"));
 
     // // // // Shared handlers
 
@@ -61,41 +62,53 @@ public class ChatexRpc {
 
     // // // // Server senders
 
-    public static void directRaw(EntityPlayerMP sender, ITextComponent component) {
-        Misca.RPC.sendTo(sender, raw, component);
+    public static void directRaw(EntityPlayerMP receiver, ITextComponent component) {
+        Misca.RPC.sendTo(receiver, raw, component);
     }
 
     public static void broadcastRaw(EntityPlayerMP sender, int range, ITextComponent component) {
         final NetworkRegistry.TargetPoint point = new NetworkRegistry.TargetPoint(sender.dimension, sender.posX, sender.posY, sender.posZ, range);
         Misca.RPC.sendToAllAround(point, raw, component);
+        LogDB.INSTANCE.log(sender, "raw", component);
     }
 
-    public static void broadcastSpeech(EntityPlayerMP player, int range, String msg) {
-        final SpeechEvent event = new SpeechEvent(player, range, msg, new TextComponentString(msg));
+    public static void broadcastSpeech(EntityPlayerMP sender, int range, String msg) {
+        final SpeechEvent event = new SpeechEvent(sender, range, msg, new TextComponentString(msg));
         if (MinecraftForge.EVENT_BUS.post(event)) return;
 
-        Misca.RPC.sendToAllTracking(player, speech, player.getUniqueID(), range, msg);
-        Misca.RPC.sendTo(player, speech, player.getUniqueID(), range, msg);
+        Misca.RPC.sendToAllTracking(sender, speech, sender.getUniqueID(), range, msg);
+        Misca.RPC.sendTo(sender, speech, sender.getUniqueID(), range, msg);
+        LogDB.INSTANCE.log(sender, "speech", msg);
     }
 
-    public static void broadcastGameMasterGlobal(EntityPlayerMP player, String msg) {
+    public static void broadcastGameMasterGlobal(EntityPlayerMP sender, String msg) {
         // TODO: get name from charsheet
-        Misca.RPC.sendToAll(gmGlobal, player.getName(), msg);
+        Misca.RPC.sendToAll(gmGlobal, sender.getName(), msg);
+        LogDB.INSTANCE.log(sender, "gm-global", msg);
     }
 
-    public static void broadcastGlobal(EntityPlayerMP player, String msg) {
+    public static void broadcastGlobal(EntityPlayerMP sender, String msg) {
         // TODO: get name from charsheet
-        Misca.RPC.sendToAll(global, player.getDisplayNameString(), msg);
+        Misca.RPC.sendToAll(global, sender.getDisplayNameString(), msg);
+        LogDB.INSTANCE.log(sender, "global", msg);
+    }
+
+    public static void broadcastOfftop(EntityPlayerMP sender, int range, String msg) {
+        final NetworkRegistry.TargetPoint point = new NetworkRegistry.TargetPoint(sender.dimension, sender.posX, sender.posY, sender.posZ, range);
+        Misca.RPC.sendToAllAround(point, offtop, sender.getUniqueID(), msg);
+        LogDB.INSTANCE.log(sender, "offtop", SpecialSpeechFormat.offtop(sender, msg));
     }
 
     public static void broadcastDiceRoll(EntityPlayerMP sender, String spec, long result) {
         Misca.RPC.sendToAllTracking(sender, diceRoll, sender.getUniqueID(), spec, result);
         Misca.RPC.sendTo(sender, diceRoll, sender.getUniqueID(), spec, result);
+        LogDB.INSTANCE.log(sender, "dice", RollFormat.dice(sender.getDisplayNameString(), spec, result));
     }
 
     public static void broadcastEffortRoll(EntityPlayerMP sender, CharEffort effort, int amount, int difficulty, boolean result) {
         Misca.RPC.sendToAllTracking(sender, effortRoll, sender.getUniqueID(), effort.ordinal(), amount, difficulty, result);
         Misca.RPC.sendTo(sender, effortRoll, sender.getUniqueID(), effort.ordinal(), amount, difficulty, result);
+        LogDB.INSTANCE.log(sender, "effort", RollFormat.effort(sender, effort, amount, difficulty, result));
     }
 
     public static void notifyTyping() {
@@ -139,14 +152,24 @@ public class ChatexRpc {
     @RpcMethodHandler(gmGlobal)
     public void onGmGlobal(String speaker, String msg) {
         final EntityPlayerSP self = Minecraft.getMinecraft().player;
-        displayMessage(self, self, GlobalFormat.gameMaster(self, speaker, msg));
+        displayMessage(self, self, SpecialSpeechFormat.gmGlobal(self, speaker, msg));
     }
 
     @SideOnly(Side.CLIENT)
     @RpcMethodHandler(global)
     public void onGlobal(String speaker, String msg) {
         final EntityPlayerSP self = Minecraft.getMinecraft().player;
-        displayMessage(self, self, GlobalFormat.regular(self, speaker, msg));
+        displayMessage(self, self, SpecialSpeechFormat.global(self, speaker, msg));
+    }
+
+    @SideOnly(Side.CLIENT)
+    @RpcMethodHandler(offtop)
+    public void onOfftop(UUID uuid, String msg) {
+        final EntityPlayer sender = Minecraft.getMinecraft().world.getPlayerEntityByUUID(uuid);
+        if (sender == null) return;
+
+        final EntityPlayerSP self = Minecraft.getMinecraft().player;
+        displayMessage(self, self, SpecialSpeechFormat.offtop(sender, msg));
     }
 
     @SideOnly(Side.CLIENT)
@@ -156,10 +179,9 @@ public class ChatexRpc {
         final String name = info.getDisplayName() != null
                 ? info.getDisplayName().getFormattedText()
                 : info.getGameProfile().getName();
-        final String msg = String.format("[ROLL] %s: %s = %d", name, spec, result);
 
         final EntityPlayer self = Minecraft.getMinecraft().player;
-        displayMessage(self, self, new TextComponentString(msg));
+        displayMessage(self, self, RollFormat.dice(name, spec, result));
     }
 
     @SideOnly(Side.CLIENT)
@@ -168,11 +190,8 @@ public class ChatexRpc {
         final EntityPlayer target = Minecraft.getMinecraft().world.getPlayerEntityByUUID(uuid);
         if (target == null) return;
 
-        final String name = target.getDisplayNameString();
         final CharEffort effort = CharEffort.values()[effortOrd];
-        final String msg = String.format("[EFFORT] %s: %s %d/%d = %s", name, effort.toString(), amount, difficulty, result ? "SUCCESS" : "FAIL");
-
-        displayMessage(Minecraft.getMinecraft().player, target, new TextComponentString(msg));
+        displayMessage(Minecraft.getMinecraft().player, target, RollFormat.effort(target, effort, amount, difficulty, result));
     }
 
     @SideOnly(Side.CLIENT)
@@ -181,6 +200,8 @@ public class ChatexRpc {
         playNotificationSound(source);
         ChatexClientLogs.logSpeech(tx);
     }
+
+    private static final SoundEvent chatSound = new SoundEvent(new ResourceLocation(Misca.MODID, "chatex.chat_message"));
 
     @SideOnly(Side.CLIENT)
     private static void playNotificationSound(EntityPlayer p) {

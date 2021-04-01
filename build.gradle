@@ -19,7 +19,7 @@ repositories {
 apply plugin: 'net.minecraftforge.gradle.forge'
 apply plugin: 'org.spongepowered.mixin'
 
-version = '2.0.0-alpha.13-rc1'
+version = '2.0.0-alpha.13'
 group = 'msifeed.misca'
 archivesBaseName = 'misca'
 
@@ -65,6 +65,7 @@ sourceSets {
 
 dependencies {
     embed 'org.spongepowered:mixin:0.8.2'
+    embed 'org.mariadb.jdbc:mariadb-java-client:2.7.2'
 
 //    deobfCompile "curse.maven:botania-225643:2846950"
     deobfCompile "curse.maven:techguns-244201:2958103"

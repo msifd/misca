@@ -3,6 +3,7 @@ package msifeed.misca.cmd;
 import msifeed.misca.Misca;
 import msifeed.misca.MiscaPerms;
 import msifeed.misca.combat.Combat;
+import msifeed.misca.logs.LogDB;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
@@ -62,6 +63,7 @@ public class MiscaCommand extends CommandBase {
             ConfigManager.sync(Misca.MODID, Config.Type.INSTANCE);
             Misca.SHARED.sync();
             Combat.sync();
+            LogDB.INSTANCE.reload();
             sender.sendMessage(new TextComponentString("[Misca] Reload config ok"));
         } catch (Exception e) {
             e.printStackTrace();

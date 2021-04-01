@@ -13,7 +13,8 @@
       "darkGrayThreshold": 0.66,
       "missThreshold": 0.9
     },
-    "wikiUrlBase": "https://wiki.ariadna.su/w/"
+    "wikiUrlBase": "https://wiki.ariadna.su/w/",
+    "offtopRange": 15
   },
   "environ": {
     "0": {

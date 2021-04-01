@@ -1,4 +1,4 @@
-package msifeed.misca.chatex.client.format;
+package msifeed.misca.chatex.format;
 
 import msifeed.misca.Misca;
 import msifeed.misca.charsheet.ICharsheet;
@@ -10,6 +10,7 @@ import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.event.ClickEvent;
+import net.minecraft.util.text.event.HoverEvent;
 
 import java.util.Random;
 
@@ -41,6 +42,7 @@ public class SpeechFormat {
         final String wikiPage = cs.getWikiPage().isEmpty() ? cs.getName() : cs.getWikiPage();
         final String wikiUrl = Misca.getSharedConfig().chat.wikiUrlBase + wikiPage;
         cc.getStyle().setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, wikiUrl));
+        cc.getStyle().setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new TextComponentString("meow")));
 
         return cc;
     }

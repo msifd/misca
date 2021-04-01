@@ -20,11 +20,10 @@ public class ChatexClientLogs {
     private static final SimpleDateFormat LOG_TIME_FORMAT = new SimpleDateFormat("HH':'mm':'ss' '");
 
     private static final Calendar date = Calendar.getInstance();
-    private static Path logsDir;
     private static PrintStream output;
 
     public static void init() {
-        logsDir = Paths.get("logs", "chat-" + Minecraft.getMinecraft().getSession().getUsername());
+        final Path logsDir = Paths.get("logs", "chat-" + Minecraft.getMinecraft().getSession().getUsername());
         final Path currentLog = logsDir.resolve(LOG_FILE_FORMAT.format(date.getTime()) + ".log");
 
         try {
@@ -39,8 +38,8 @@ public class ChatexClientLogs {
         }
 
         try {
-            if (!Files.exists(currentLog))
-                Files.createFile(currentLog);
+//            if (!Files.exists(currentLog))
+//                Files.createFile(currentLog);
             output = new PrintStream(new FileOutputStream(currentLog.toFile(), true), true, StandardCharsets.UTF_8.toString());
         } catch (IOException e) {
             e.printStackTrace();
@@ -50,10 +49,18 @@ public class ChatexClientLogs {
     private static void compressLog(Path logPath) {
         if (!Files.isRegularFile(logPath)) return;
 
-        final File zipFile = new File(logPath.getParent().toFile(), logPath.getFileName() + ".gz");
+        try {
+            if (Files.size(logPath) == 0) {
+                Files.delete(logPath);
+                return;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
+        final File zipFile = new File(logPath.getParent().toFile(), logPath.getFileName() + ".gz");
         try (GZIPOutputStream gzip = new GZIPOutputStream(new FileOutputStream(zipFile, true))) {
-            gzip.write(Files.readAllBytes(logPath));
+            Files.copy(logPath, gzip);
             Files.delete(logPath);
         } catch (IOException e) {
             e.printStackTrace();

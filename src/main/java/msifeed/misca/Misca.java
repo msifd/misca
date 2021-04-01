@@ -10,6 +10,7 @@ import msifeed.misca.combat.Combat;
 import msifeed.misca.environ.Environ;
 import msifeed.misca.environ.EnvironCommand;
 import msifeed.misca.locks.Locks;
+import msifeed.misca.logs.LogDB;
 import msifeed.misca.potions.CombatPotions;
 import msifeed.misca.potions.NeedsPotions;
 import msifeed.misca.rename.RenameItems;
@@ -92,6 +93,7 @@ public class Misca {
             SHARED.sync();
             Combat.sync();
             Charstate.sync();
+            LogDB.reload();
         } catch (Exception e) {
             e.printStackTrace();
         }

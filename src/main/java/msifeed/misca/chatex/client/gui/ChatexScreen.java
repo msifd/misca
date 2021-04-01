@@ -23,6 +23,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class ChatexScreen extends MellowScreen implements ITabCompleter {
+    private static final int MAX_MSG_BYTES = 20000;
+
     private final ChatexHud hud = (ChatexHud) Minecraft.getMinecraft().ingameGUI.getChatGUI();
     private final TextInput input = new TextInput();
     private final ResizeHandle resizer = new ResizeHandle();
@@ -136,6 +138,8 @@ public class ChatexScreen extends MellowScreen implements ITabCompleter {
 
     private void commitMessage() {
         final String text = input.getBackend().getLines().collect(Collectors.joining("\n  ")).trim();
+        if (text.getBytes().length > MAX_MSG_BYTES) return;
+
         input.clear();
         if (text.isEmpty()) return;
 
