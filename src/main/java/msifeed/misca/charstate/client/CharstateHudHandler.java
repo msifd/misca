@@ -23,7 +23,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
 public class CharstateHudHandler {
-    ResourceLocation STATS = new ResourceLocation(Misca.MODID, "textures/gui/stats.png");
+    final ResourceLocation STATS = new ResourceLocation(Misca.MODID, "textures/gui/stats.png");
 
     @SubscribeEvent
     public void renderOverlay(RenderGameOverlayEvent.Post event) {
@@ -32,33 +32,33 @@ public class CharstateHudHandler {
 
         if (type == RenderGameOverlayEvent.ElementType.ALL) {
             final ScaledResolution resolution = RenderUtils.getScaledResolution();
-            EntityPlayerSP player = mc.player;
+            final EntityPlayerSP player = mc.player;
 
             final IAttributeInstance integrityInstance = player.getEntityAttribute(IntegrityHandler.INTEGRITY);
-            double integrity = integrityInstance.getAttributeValue();
-            String integrityText = String.format("%.1f", integrity);
+            final double integrity = integrityInstance.getAttributeValue();
+            final String integrityText = String.format("%.1f", integrity);
 
             final IAttributeInstance staminaInstance = player.getEntityAttribute(StaminaHandler.STAMINA);
-            double stamina = staminaInstance.getAttributeValue() * 100;
-            String staminaText = Math.round(stamina) + "%";
+            final double stamina = staminaInstance.getAttributeValue() * 100;
+            final String staminaText = Math.round(stamina) + "%";
 
             final IAttributeInstance corruptionInstance = player.getEntityAttribute(CorruptionHandler.CORRUPTION);
-            double corruption = corruptionInstance.getAttributeValue();
-            String corruptionText = String.format("%.1f", corruption);
+            final double corruption = corruptionInstance.getAttributeValue();
+            final String corruptionText = String.format("%.1f", corruption);
 
             final IAttributeInstance sanityInstance = player.getEntityAttribute(SanityHandler.SANITY);
-            double sanity = sanityInstance.getAttributeValue();
-            String sanityText = String.format("%.1f", sanity);
+            final double sanity = sanityInstance.getAttributeValue();
+            final String sanityText = String.format("%.1f", sanity);
 
-            int width = resolution.getScaledWidth();
-            int height = resolution.getScaledHeight();
-            int xLeft = width / 2 - 81;
-            int xRight = width / 2 - 21;
-            int y = height - GuiIngameForge.left_height + 8;
+            final int width = resolution.getScaledWidth();
+            final int height = resolution.getScaledHeight();
+            final int xLeft = width / 2 - 81;
+            final int xRight = width / 2 - 21;
+            final int y = height - GuiIngameForge.left_height + 8;
 
             GuiIngameForge.left_height += 20;
 
-            GuiIngame gui = mc.ingameGUI;
+            final GuiIngame gui = mc.ingameGUI;
 
             GlStateManager.pushMatrix();
             GlStateManager.enableBlend();
