@@ -3,6 +3,7 @@ package msifeed.misca.charstate;
 import com.google.gson.reflect.TypeToken;
 import msifeed.misca.Misca;
 import msifeed.misca.charstate.cap.*;
+import msifeed.misca.charstate.client.CharstateHudHandler;
 import msifeed.misca.charstate.handler.*;
 import msifeed.misca.chatex.SpeechEvent;
 import msifeed.sys.sync.SyncChannel;
@@ -11,6 +12,7 @@ import net.minecraft.entity.ai.attributes.AbstractAttributeMap;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.event.entity.EntityEvent;
@@ -18,6 +20,7 @@ import net.minecraftforge.event.entity.living.LivingEntityUseItemEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
+import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
@@ -46,6 +49,10 @@ public class Charstate {
         MinecraftForge.EVENT_BUS.register(new CharstateHandler());
         MinecraftForge.EVENT_BUS.register(this);
         Misca.RPC.register(new CharstateSync());
+
+        if (FMLCommonHandler.instance().getSide().isClient()) {
+            MinecraftForge.EVENT_BUS.register(new CharstateHudHandler());
+        }
     }
 
     public static void sync() throws Exception {

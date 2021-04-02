@@ -17,7 +17,7 @@ import net.minecraft.item.ItemStack;
 import java.util.UUID;
 
 public class SanityHandler {
-    public static final IAttribute SANITY = new RangedAttribute(null, Misca.MODID + ".sanity", 100, 0, 150);
+    public static final IAttribute SANITY = new RangedAttribute(null, Misca.MODID + ".sanity", 100, 0, 150).setShouldWatch(true);
 
     private static final AttributeModifier ATTRIBUTE_PENALTY_1 = new AttributeModifier(UUID.fromString("15bf9288-0473-409f-86cf-499a729e3b46"), "Attribute penalty I", -2, 0).setSaved(false);
     private static final AttributeModifier ATTRIBUTE_PENALTY_2 = new AttributeModifier(UUID.fromString("436866e3-3052-4d93-a54f-bfd7d593f532"), "Attribute penalty II", -4, 0).setSaved(false);
