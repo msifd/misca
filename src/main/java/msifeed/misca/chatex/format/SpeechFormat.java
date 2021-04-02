@@ -42,7 +42,6 @@ public class SpeechFormat {
         final String wikiPage = cs.getWikiPage().isEmpty() ? cs.getName() : cs.getWikiPage();
         final String wikiUrl = Misca.getSharedConfig().chat.wikiUrlBase + wikiPage;
         cc.getStyle().setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, wikiUrl));
-        cc.getStyle().setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new TextComponentString("meow")));
 
         return cc;
     }

@@ -34,6 +34,8 @@ public class GenericGunMixin {
 
     @Inject(method = "shootGunPrimary", at = @At(value = "INVOKE", target = CONSUME_AMMO_PLAYER), cancellable = true)
     public void shootReload(ItemStack stack, World world, EntityPlayer player, boolean zooming, EnumHand hand, Entity target, CallbackInfo ci) {
+        if (player.world.isRemote) return;
+
         final EntityLivingBase actor = CombatFlow.getCombatActor(player);
         if (actor == null) return;
 

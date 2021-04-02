@@ -38,6 +38,8 @@ public class ItemGunMixin {
 
     @Inject(method = "shoot", at = @At(value = "HEAD"))
     public void shoot(EnumHand hand, EntityPlayer player, ItemStack stack, PlayerData data, World world, GunAnimations animations, CallbackInfo ci) {
+        if (player.world.isRemote) return;
+
         final EntityLivingBase actor = CombatFlow.getCombatActor(player);
         if (actor == null) return;
 

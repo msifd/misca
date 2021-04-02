@@ -46,13 +46,13 @@ public class ScreenEffortRoll extends MellowScreen {
                     .add(difficultyInput).right().move(0, -2, 0)
                     .centerGroup(Direction.HORIZONTAL)
                     .moveGroup(0, 10, 0)
-                    .endGroup()
+                    .pinGroup()
 
                 .beginGroup()
                     .add(new Label("Amount")).size(50, amountInput.getBaseGeom().h).below().move(0, 4, 0)
                     .add(amountInput).right().move(0, -2, 0)
                     .centerGroup(Direction.HORIZONTAL)
-                    .endGroup()
+                    .pinGroup()
 
                 .beginGroup()
                     .forEach(CharEffort.values(), (ui, effort) -> {
@@ -67,7 +67,7 @@ public class ScreenEffortRoll extends MellowScreen {
                     })
                     .centerGroup(Direction.HORIZONTAL)
                     .moveGroup(0, 10, 0)
-                    .endGroup()
+                    .pinGroup()
 
                 .centerGroup(Direction.BOTH)
                 .moveGroup(0, -30, 0)

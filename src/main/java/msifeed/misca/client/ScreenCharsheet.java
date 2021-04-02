@@ -42,12 +42,12 @@ public class ScreenCharsheet extends MellowScreen {
                     .add(new Label("Name")).size(30, lineHeight).below().move(0, 10, 0)
                     .add(nameInput).right().move(0, -2, 0)
                     .centerGroup(Direction.HORIZONTAL)
-                    .endGroup()
+                    .pinGroup()
                 .beginGroup()
                     .add(new Label("Wiki")).size(30, lineHeight).below().move(0, 4, 0)
                     .add(wikiInput).right().move(0, -2, 0)
                     .centerGroup(Direction.HORIZONTAL)
-                    .endGroup()
+                    .pinGroup()
 
                 .add(() -> {
                     final ButtonLabel btn = new ButtonLabel("[Submit]");

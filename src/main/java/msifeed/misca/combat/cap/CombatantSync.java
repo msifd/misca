@@ -1,6 +1,7 @@
 package msifeed.misca.combat.cap;
 
 import msifeed.misca.Misca;
+import msifeed.misca.MiscaPerms;
 import msifeed.misca.combat.CharAttribute;
 import msifeed.misca.combat.battle.BattleStateClient;
 import msifeed.sys.rpc.RpcContext;
@@ -16,10 +17,10 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import java.util.UUID;
 
 public class CombatantSync {
-    public static final String sync = "combat.sync";
-    public static final String syncAp = "combat.syncAp";
-    public static final String syncNeutral = "combat.syncNeutral";
-    public static final String postAttrs = "combat.postAttrs";
+    private static final String sync = "combat.sync";
+    private static final String syncAp = "combat.syncAp";
+    private static final String syncNeutral = "combat.syncNeutral";
+    private static final String postAttrs = "combat.postAttrs";
 
     public static void sync(EntityPlayerMP receiver, EntityLivingBase target) {
         final NBTTagCompound nbt = CombatantProvider.encode(CombatantProvider.get(target));
@@ -57,8 +58,10 @@ public class CombatantSync {
 
     @RpcMethodHandler(postAttrs)
     public void onPostAttrs(RpcContext ctx, UUID uuid, NBTTagCompound nbt) {
-        final int[] attrs = nbt.getIntArray("attrs");
         final EntityPlayerMP sender = ctx.getServerHandler().player;
+        if (!MiscaPerms.isGameMaster(sender)) return;
+
+        final int[] attrs = nbt.getIntArray("attrs");
 
         sender.world.loadedEntityList.stream()
                 .filter(e -> e.getUniqueID().equals(uuid))

@@ -16,10 +16,13 @@ public interface ICombatant {
     void setBattleId(long value);
 
     default boolean hasPuppet() {
-        return getPuppet() != 0;
+        return getPuppet() >= 0;
     }
     int getPuppet();
     void setPuppet(int value);
+    default void resetPuppet() {
+        setPuppet(-1);
+    }
 
     double getActionPoints();
     void setActionPoints(double value);
@@ -51,7 +54,7 @@ public interface ICombatant {
 
     default void reset() {
         setBattleId(0);
-        setPuppet(0);
+        resetPuppet();
         setActionPoints(0);
         setActionPointsOverhead(0);
         setPosition(Vec3d.ZERO);

@@ -93,8 +93,12 @@ public class CombatantsBarRender {
     }
 
     private static void renderActionPointsBar(Geom geom, EntityLivingBase entity) {
+        final EntityPlayer player = Minecraft.getMinecraft().player;
+        final boolean isPlayersPuppet = CombatantProvider.get(player).getPuppet() == entity.getEntityId();
+
         final ICombatant com = CombatantProvider.get(entity);
-        final WeaponInfo weapon = Combat.getWeapons().get(entity, entity.getHeldItemMainhand());
+        final EntityLivingBase weaponHolder = isPlayersPuppet ? player : entity;
+        final WeaponInfo weapon = Combat.getWeapons().get(weaponHolder, weaponHolder.getHeldItemMainhand());
 
         final Rules rules = Combat.getRules();
         final double fullAp = com.getActionPoints();

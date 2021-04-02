@@ -49,11 +49,11 @@ public class CombatCommand extends CommandBase {
             if (battle == null)
                 return getListOfStringsMatchingLastWord(args, "init");
             if (!battle.isStarted())
-                return getListOfStringsMatchingLastWord(args, "start", "add", "leave", "destroy");
+                return getListOfStringsMatchingLastWord(args, "start", "add", "exit", "destroy");
             if (MiscaPerms.isGameMaster(sender))
-                return getListOfStringsMatchingLastWord(args, "next", "pup", "pos", "add", "leave", "destroy");
+                return getListOfStringsMatchingLastWord(args, "next", "pos", "add", "exit", "destroy", (battle.isInQueue(player.getUniqueID()) ? "leave" : "join"), "pup");
             else
-                return getListOfStringsMatchingLastWord(args, "next", "pos", "add", "leave", "destroy");
+                return getListOfStringsMatchingLastWord(args, "next", "pos", "add", "exit", "destroy", (battle.isInQueue(player.getUniqueID()) ? "leave" : "join"));
         } else if (args.length == 2) {
             if (battle == null)
                 return Collections.emptyList();
@@ -63,7 +63,7 @@ public class CombatCommand extends CommandBase {
                         .map(Entity::getEntityId)
                         .collect(Collectors.toList());
                 pups.add(0);
-                return getListOfStringsMatchingLastWord(args, "next", "pos", "add", "leave", "destroy");
+                return getListOfStringsMatchingLastWord(args, "next", "pos", "add", "exit", "destroy");
             } else {
                 return Collections.emptyList();
             }
@@ -105,47 +105,57 @@ public class CombatCommand extends CommandBase {
             default:
                 player.sendStatusMessage(new TextComponentString("unknown command"), true);
                 break;
-            case "i":
+            case "q":
+                // quick start for testing
+                manager.initBattle(player, args.length > 1);
+                add(player, com);
+                manager.startBattle(player);
             case "init":
                 manager.initBattle(player, args.length > 1);
                 player.sendStatusMessage(new TextComponentString("init"), true);
                 break;
-            case "s":
             case "start":
                 manager.startBattle(player);
                 player.sendStatusMessage(new TextComponentString("start"), true);
                 break;
-            case "l":
-            case "leave":
-                manager.leaveFromBattle(player);
-                player.sendStatusMessage(new TextComponentString("leave"), true);
+            case "exit":
+                manager.exitBattle(player);
+                player.sendStatusMessage(new TextComponentString("exit"), true);
                 break;
-            case "q":
-                // quick start for testing
-                manager.initBattle(player, args.length > 1);
-            case "a":
             case "add":
                 if (!com.isInBattle()) break;
-                player.world.getEntitiesWithinAABBExcludingEntity(player, player.getEntityBoundingBox().grow(2)).stream()
-                        .filter(e -> e instanceof EntityLivingBase)
-                        .map(e -> (EntityLivingBase) e)
-                        .forEach(e -> {
-                            manager.addToBattle(com.getBattleId(), e);
-                            player.sendStatusMessage(new TextComponentString("combat add " + e.getName()), false);
-                        });
-
-                if (args[0].equals("q")) {
-                    manager.startBattle(player);
-                }
+                add(player, com);
                 break;
             case "next": {
                 if (!com.isInBattle()) break;
-                manager.finishTurn(manager.getBattle(com.getBattleId()));
+                final Battle battle = manager.getBattle(com.getBattleId());
+                if (battle == null) break;
+                if (!battle.isLeader(player.getUniqueID()) && !MiscaPerms.isGameMaster(sender)) break;
+                manager.finishTurn(battle);
                 player.sendStatusMessage(new TextComponentString("next"), true);
                 break;
             }
-            case "pup": {
+            case "join":
                 if (!com.isInBattle()) break;
+                manager.joinQueue(com.getBattleId(), player);
+                break;
+            case "leave":
+                if (!com.isInBattle()) break;
+                manager.leaveQueue(com.getBattleId(), player);
+                break;
+            case "pos":
+                if (!MiscaPerms.isGameMaster(sender)) break;
+                manager.repositionMembers(player);
+                break;
+            case "destroy":
+                if (!com.isInBattle()) break;
+                manager.destroyBattle(manager.getBattle(com.getBattleId()));
+                player.sendStatusMessage(new TextComponentString("destroy"), true);
+                break;
+            case "pup": {
+                if (!MiscaPerms.isGameMaster(sender)) break;
+                if (!com.isInBattle()) break;
+
                 final Battle battle = manager.getBattle(com.getBattleId());
                 if (battle == null) break;
 
@@ -167,22 +177,24 @@ public class CombatCommand extends CommandBase {
                         break;
                     }
                 } else {
-                    com.setPuppet(0);
+                    com.resetPuppet();
                     player.sendStatusMessage(new TextComponentString("Puppet disabled"), true);
                 }
 
                 CombatantSync.sync(player);
                 break;
             }
-            case "pos":
-                manager.repositionMembers(player);
-                break;
-            case "destroy":
-                if (!com.isInBattle()) break;
-                manager.destroyBattle(manager.getBattle(com.getBattleId()));
-                player.sendStatusMessage(new TextComponentString("destroy"), true);
-                break;
         }
+    }
+
+    private void add(EntityPlayerMP player, ICombatant com) {
+        player.world.getEntitiesWithinAABBExcludingEntity(player, player.getEntityBoundingBox().grow(2)).stream()
+                .filter(e -> e instanceof EntityLivingBase)
+                .map(e -> (EntityLivingBase) e)
+                .forEach(e -> {
+                    Combat.MANAGER.addToBattle(com.getBattleId(), e);
+                    player.sendStatusMessage(new TextComponentString("combat add " + e.getName()), false);
+                });
     }
 
     private static Optional<EntityLivingBase> uuidToEntity(World w, UUID uuid) {

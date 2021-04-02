@@ -26,7 +26,6 @@ public enum MiscaClient {
 
     public void init() {
         MinecraftForge.EVENT_BUS.register(this);
-        MinecraftForge.EVENT_BUS.register(new DebugRender());
         MinecraftForge.EVENT_BUS.register(new GuiCombatOverlay());
 
         MiscaTheme.load();
@@ -39,7 +38,7 @@ public enum MiscaClient {
         if (charsheetKey.isPressed())
             Minecraft.getMinecraft().displayGuiScreen(new ScreenCharsheet(Minecraft.getMinecraft().player));
         else if (combatKey.isPressed())
-            Minecraft.getMinecraft().displayGuiScreen(new ScreenCombat(Minecraft.getMinecraft().player));
+            Minecraft.getMinecraft().displayGuiScreen(new ScreenCombat());
         else if (rollKey.isPressed())
             Minecraft.getMinecraft().displayGuiScreen(new ScreenEffortRoll(Minecraft.getMinecraft().player));
     }

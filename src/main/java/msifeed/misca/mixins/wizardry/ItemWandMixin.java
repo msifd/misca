@@ -28,6 +28,7 @@ public class ItemWandMixin {
 
     @Inject(method = "cast", at = @At(value = "RETURN"))
     public void cast(ItemStack stack, Spell spell, EntityPlayer player, EnumHand hand, int castingTick, SpellModifiers modifiers, CallbackInfoReturnable<Boolean> cir) {
+        if (player.world.isRemote) return;
         if (cir.getReturnValue()) {
             final EntityLivingBase actor = CombatFlow.getCombatActor(player);
             if (actor == null) return;

@@ -6,7 +6,7 @@ import javax.annotation.Nonnull;
 
 public class Combatant implements ICombatant {
     private long battleId = 0;
-    private int puppet = 0;
+    private int puppet = -1;
     private double actionPoints = 0;
     private double actionPointsOverhead = 0;
     private Vec3d position = Vec3d.ZERO;

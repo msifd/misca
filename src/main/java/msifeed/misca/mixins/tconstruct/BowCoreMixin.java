@@ -34,6 +34,8 @@ public class BowCoreMixin {
 
     @Inject(method = "shootProjectile", at = @At(value = "INVOKE", target = FIRE_EVENT))
     public void shootProjectile(ItemStack ammo, ItemStack bow, World world, EntityPlayer player, int useTime, CallbackInfo ci) {
+        if (player.world.isRemote) return;
+
         final EntityLivingBase actor = CombatFlow.getCombatActor(player);
         if (actor == null) return;
 

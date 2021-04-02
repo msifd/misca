@@ -33,6 +33,8 @@ public abstract class ItemCasterMixin {
 
     @Inject(method = "onItemRightClick", at = @At(value = "INVOKE", target = CAST_FOCUS))
     public void cast(World world, EntityPlayer player, EnumHand hand, CallbackInfoReturnable<ActionResult<ItemStack>> cir) {
+        if (player.world.isRemote) return;
+
         final EntityLivingBase actor = CombatFlow.getCombatActor(player);
         if (actor != null) {
             final WeaponInfo weapon = Combat.getWeapons().get(player, player.getHeldItem(hand));

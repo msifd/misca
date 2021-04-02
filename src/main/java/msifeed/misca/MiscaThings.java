@@ -1,5 +1,6 @@
 package msifeed.misca;
 
+import msifeed.misca.combat.ItemCombatTool;
 import msifeed.misca.supplies.ItemSuppliesBeacon;
 import msifeed.misca.supplies.ItemSuppliesInvoice;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
@@ -19,6 +20,7 @@ public enum MiscaThings {
 
     public static final ItemSuppliesInvoice suppliesInvoice = new ItemSuppliesInvoice();
     public static final ItemSuppliesBeacon suppliesBeacon = new ItemSuppliesBeacon();
+    public static final Item combatTool = new ItemCombatTool();
 
     public static void init() {
         MinecraftForge.EVENT_BUS.register(INSTANCE);
@@ -28,7 +30,8 @@ public enum MiscaThings {
     public void registerItems(RegistryEvent.Register<Item> event) {
         event.getRegistry().registerAll(
                 suppliesInvoice,
-                suppliesBeacon
+                suppliesBeacon,
+                combatTool
         );
     }
 
@@ -36,7 +39,8 @@ public enum MiscaThings {
     public void registerModels(ModelRegistryEvent event) {
         Stream.of(
                 suppliesInvoice,
-                suppliesBeacon
+                suppliesBeacon,
+                combatTool
         ).forEach(MiscaThings::registerItemModel);
     }
 

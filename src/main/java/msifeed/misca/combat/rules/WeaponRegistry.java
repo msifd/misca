@@ -20,7 +20,7 @@ public class WeaponRegistry {
 
     @Nonnull
     public WeaponInfo get(EntityLivingBase holder, ItemStack stack) {
-        if (stack.isEmpty()) return WeaponInfoGeneration.NONE;
+        if (stack.isEmpty()) return WeaponInfoGeneration.GENERIC_MELEE;
 
         final Item item = stack.getItem();
         if (item instanceof ICaster)

@@ -3,6 +3,8 @@ package msifeed.misca.combat.battle;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.world.World;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.common.eventhandler.Event;
 
 import java.util.List;
 import java.util.Set;
@@ -48,5 +50,13 @@ public class BattleStateClient {
 
     public static void clear() {
         STATE.clear();
+    }
+
+    public static void fireUpdateEvent() {
+        MinecraftForge.EVENT_BUS.post(new CombatUpdateEvent());
+    }
+
+    public static class CombatUpdateEvent extends Event {
+
     }
 }

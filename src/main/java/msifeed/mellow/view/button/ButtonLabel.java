@@ -17,6 +17,7 @@ public class ButtonLabel extends View implements InputHandler.MouseClick {
     protected int colorNormal = 0xffffffff;
     protected int colorHover = 0xff707070;
 
+    protected boolean enabled = true;
     protected Runnable callback = () -> {};
 
     public ButtonLabel(String text) {
@@ -39,13 +40,21 @@ public class ButtonLabel extends View implements InputHandler.MouseClick {
         this.textWidth = Minecraft.getMinecraft().fontRenderer.getStringWidth(text);
     }
 
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
+
     public void setCallback(Runnable callback) {
         this.callback = callback;
     }
 
     @Override
     public void render(Geom geom) {
-        final int color = isHovered() ? colorHover : colorNormal;
+        final int color = isEnabled() && isHovered() ? colorHover : colorNormal;
         RenderShapes.rect(geom, 0xbb000000);
 
         final Geom textGeom = geom.add(textOffset);
@@ -54,6 +63,8 @@ public class ButtonLabel extends View implements InputHandler.MouseClick {
 
     @Override
     public void onMouseClick(int mouseX, int mouseY, int button) {
-        callback.run();
+        if (isEnabled()) {
+            callback.run();
+        }
     }
 }

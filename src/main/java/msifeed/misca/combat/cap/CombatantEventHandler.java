@@ -1,6 +1,7 @@
 package msifeed.misca.combat.cap;
 
 import msifeed.misca.combat.Combat;
+import msifeed.misca.combat.battle.BattleStateClient;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -32,7 +33,7 @@ public class CombatantEventHandler {
     @SubscribeEvent
     public void onPlayerSpawn(PlayerEvent.PlayerRespawnEvent event) {
         if (!event.player.world.isRemote) {
-            Combat.MANAGER.leaveFromBattle(event.player);
+            Combat.MANAGER.exitBattle(event.player);
             CombatantProvider.get(event.player).reset();
             CombatantSync.sync((EntityPlayerMP) event.player, event.player);
         }
@@ -41,7 +42,7 @@ public class CombatantEventHandler {
     @SubscribeEvent
     public void onPlayerChangeDim(PlayerEvent.PlayerChangedDimensionEvent event) {
         if (!event.player.world.isRemote) {
-            Combat.MANAGER.leaveFromBattle(event.player);
+            Combat.MANAGER.exitBattle(event.player);
             CombatantProvider.get(event.player).reset();
             CombatantSync.sync((EntityPlayerMP) event.player, event.player);
         }

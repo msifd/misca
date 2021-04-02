@@ -99,6 +99,8 @@ public class CombatHandler {
         if (actor == null) return;
 
         final ItemStack stack = event.getEntityPlayer().getHeldItemMainhand();
+        if (stack.getItem() instanceof ItemCombatTool) return;
+
         final WeaponInfo weapon = Combat.getWeapons().get(source, stack);
         if (CombatFlow.canAttack(actor, weapon)) {
             CombatFlow.onAttack(actor, weapon);
@@ -114,6 +116,8 @@ public class CombatHandler {
         if (actor == null) return;
 
         final ItemStack stack = event.getEntityPlayer().getHeldItemMainhand();
+        if (stack.getItem() instanceof ItemCombatTool) return;
+
         final WeaponInfo weapon = Combat.getWeapons().get(source, stack);
         if (CombatFlow.canAttack(actor, weapon)) {
             CombatFlow.onAttack(actor, weapon);
@@ -145,7 +149,7 @@ public class CombatHandler {
                 event.setCanceled(true);
             }
 
-            if (!isPlayer) {
+            if (!(actor instanceof EntityPlayer)) {
                 // Mobs cant finish their turn, so lets help them
                 final ICombatant com = CombatantProvider.get(actor);
                 final Battle battle = Combat.MANAGER.getBattle(com.getBattleId());

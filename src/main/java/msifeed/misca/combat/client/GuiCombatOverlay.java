@@ -18,6 +18,7 @@ import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
+import net.minecraftforge.client.event.RenderLivingEvent;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
@@ -62,7 +63,8 @@ public class GuiCombatOverlay {
     private static void drawDebugInfo() {
         final Rules rules = Combat.getRules();
         final Battle state = BattleStateClient.STATE;
-        final EntityLivingBase leader = state.getLeader();
+//        final EntityLivingBase leader = state.getLeader();
+        final EntityLivingBase leader = Minecraft.getMinecraft().player;
 
         final EntityLivingBase actor = CombatFlow.getCombatActor(leader);
         if (actor == null) return;
@@ -75,7 +77,7 @@ public class GuiCombatOverlay {
         final double usageAp = rules.usageActionPoints(weapon) + overheadAp;
 
         final String[] lines = {
-                "actor: " + actor.getName(),
+                "actor: " + (CombatantProvider.get(leader).hasPuppet() ? "\u00A74" : "") + actor.getName(),
                 "health: " + String.format("%.2f/%.2f", actor.getHealth(), actor.getMaxHealth()),
                 "neutral dmg: " + com.getNeutralDamage(),
                 "----",
@@ -105,6 +107,20 @@ public class GuiCombatOverlay {
         if (!com.isInBattle()) return;
 
         renderTextAt("pos", com.getPosition().x, com.getPosition().y + 1.2, com.getPosition().z, true);
+    }
+
+    @SubscribeEvent
+    public void onRenderEntity(RenderLivingEvent.Post<EntityLivingBase> event) {
+        final EntityPlayer self = Minecraft.getMinecraft().player;
+        final EntityLivingBase entity = event.getEntity();
+        if (self == entity) return;
+
+        final ICombatant com = CombatantProvider.get(self);
+        if (!com.isInBattle()) return;
+
+        if (com.hasPuppet() && com.getPuppet() == entity.getEntityId()) {
+            renderTextAt("puppet", event.getX(), event.getY() + event.getEntity().getEyeHeight() + 0.6, event.getZ(), false);
+        }
     }
 
     private static void renderTextAt(String str, double posX, double posY, double posZ, boolean absPos) {

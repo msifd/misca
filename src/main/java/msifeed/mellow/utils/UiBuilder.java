@@ -22,7 +22,7 @@ public class UiBuilder {
 
     private UiBuilder(ViewContainer container) {
         this.rootContainer = container;
-        this.groups.add(new Group(container, container, container, null));
+        this.groups.add(new Group(container, container, null));
     }
 
     public void build() {
@@ -34,23 +34,29 @@ public class UiBuilder {
 
     public UiBuilder beginGroup() {
         final Group curr = getGroup();
-        groups.add(new Group(curr.container, null, curr.currView, curr.prevView));
+        groups.add(new Group(curr.container, curr.currView, curr.prevView));
         return this;
     }
 
-    public UiBuilder endGroup() {
-        final Group pop = groups.pop();
-        final Group group = getGroup();
-        group.prevView = group.currView;
-        group.currView = pop.baseView != null ? pop.baseView : pop.currView;
-        group.views.addAll(pop.views);
-
+    public UiBuilder pinGroup() {
+        final Group group = groups.pop();
+        final Group parent = getGroup();
+        if (!group.views.isEmpty()) {
+            parent.prevView = parent.currView;
+            parent.currView = group.views.get(0);
+            parent.views.addAll(group.views);
+        }
         return this;
     }
 
-    public UiBuilder groupBase() {
-        final Group group = getGroup();
-        group.baseView = group.currView;
+    public UiBuilder appendGroup() {
+        final Group group = groups.pop();
+        final Group parent = getGroup();
+        if (!group.views.isEmpty()) {
+            parent.prevView = group.prevView;
+            parent.currView = group.currView;
+            parent.views.addAll(group.views);
+        }
         return this;
     }
 
@@ -106,6 +112,7 @@ public class UiBuilder {
 
     public UiBuilder below() {
         final Group group = getGroup();
+        if (group.prevView == null) return this;
         final Geom pg = group.prevView.getBaseGeom();
         group.currView.setPos(pg.x, pg.y + pg.h, pg.z);
         return this;
@@ -113,6 +120,7 @@ public class UiBuilder {
 
     public UiBuilder right() {
         final Group group = getGroup();
+        if (group.prevView == null) return this;
         final Geom pg = group.prevView.getBaseGeom();
         group.currView.setPos(pg.x + pg.w + 1, pg.y, pg.z);
         return this;
@@ -172,7 +180,14 @@ public class UiBuilder {
         return this;
     }
 
-    // Other
+    // Utils
+
+    public UiBuilder when(boolean condition, Consumer<UiBuilder> consumer) {
+        if (condition) consumer.accept(this);
+        return this;
+    }
+
+    // Internal
 
     private Group getGroup() {
         return groups.peek();
@@ -181,13 +196,11 @@ public class UiBuilder {
     private static class Group {
         ArrayList<View> views = new ArrayList<>();
         ViewContainer container;
-        View baseView;
         View currView;
         View prevView;
 
-        Group(ViewContainer container, View base, View curr, View prev) {
+        Group(ViewContainer container, View curr, View prev) {
             this.container = container;
-            this.baseView = base;
             this.currView = curr;
             this.prevView = prev;
         }

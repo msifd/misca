@@ -92,9 +92,15 @@ public class Battle {
     }
 
     public Stream<EntityLivingBase> getCombatants() {
-        return queue.stream()
-                .map(this::getMember)
-                .filter(Objects::nonNull);
+        if (isStarted()) {
+            return queue.stream()
+                    .map(this::getMember)
+                    .filter(Objects::nonNull);
+        } else {
+            return members.values().stream()
+                    .map(Reference::get)
+                    .filter(Objects::nonNull);
+        }
     }
 
     @Nullable
@@ -105,9 +111,17 @@ public class Battle {
                 .orElse(null);
     }
 
+    public boolean isInQueue(UUID entityId) {
+        return queue.contains(entityId);
+    }
+
     public void joinQueue(UUID entityId) {
         if (isStarted() && members.containsKey(entityId) && !queue.contains(entityId))
             queue.add(entityId);
+    }
+
+    public void leaveQueue(UUID entityId) {
+        queue.remove(entityId);
     }
 
     public boolean isTraining() {
@@ -147,8 +161,6 @@ public class Battle {
         if (isTraining())
             getMemberEntities().forEach(BattleFlow::restoreCombatantHealth);
         getMemberEntities().forEach(BattleFlow::disengageEntity);
-
-        clear();
     }
 
     public void clear() {

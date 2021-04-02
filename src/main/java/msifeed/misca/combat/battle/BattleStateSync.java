@@ -15,6 +15,7 @@ import java.util.stream.LongStream;
 public class BattleStateSync {
     private static final String members = "battle.members";
     private static final String queue = "battle.queue";
+    private static final String destroy = "battle.destroy";
     private static final String delay = "battle.delay";
 
     public static void sync(Battle battle) {
@@ -40,12 +41,17 @@ public class BattleStateSync {
         battle.getPlayers().forEach(p -> Misca.RPC.sendTo(p, delay, battle.getFinishTurnDelay()));
     }
 
+    static void syncDestroy(Battle battle) {
+        battle.getPlayers().forEach(p -> Misca.RPC.sendTo(p, destroy));
+    }
+
     @SideOnly(Side.CLIENT)
     @RpcMethodHandler(members)
     public void onMembersUpdate(NBTTagCompound nbt) {
         final Set<UUID> uuids = new HashSet<>();
         decodeUuidsInto(nbt, uuids);
         BattleStateClient.updateMembers(uuids);
+        BattleStateClient.fireUpdateEvent();
     }
 
     @SideOnly(Side.CLIENT)
@@ -54,6 +60,14 @@ public class BattleStateSync {
         final List<UUID> uuids = new ArrayList<>();
         decodeUuidsInto(nbt, uuids);
         BattleStateClient.updateQueue(uuids);
+        BattleStateClient.fireUpdateEvent();
+    }
+
+    @SideOnly(Side.CLIENT)
+    @RpcMethodHandler(destroy)
+    public void onDestroyUpdate() {
+        BattleStateClient.clear();
+        BattleStateClient.fireUpdateEvent();
     }
 
     @SideOnly(Side.CLIENT)

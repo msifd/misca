@@ -13,6 +13,8 @@ item.pick_magical.name=Magical pick
 item.supplies_invoice.name=Supplies invoice
 item.supplies_beacon.name=Supplies beacon
 
+item.combat_tool.name=Combat tool
+
 misca.chatex.speech=%s: %s
 misca.chatex.global=[GLOB] %s: %s
 
