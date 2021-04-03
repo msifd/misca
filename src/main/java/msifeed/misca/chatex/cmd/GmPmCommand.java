@@ -3,7 +3,7 @@ package msifeed.misca.chatex.cmd;
 import msifeed.misca.MiscaPerms;
 import msifeed.misca.chatex.ChatexRpc;
 import msifeed.misca.chatex.ChatexUtils;
-import msifeed.misca.logs.LogDB;
+import msifeed.misca.logdb.LogDB;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;

@@ -7,7 +7,7 @@ import msifeed.misca.chatex.client.TypingState;
 import msifeed.misca.chatex.format.RollFormat;
 import msifeed.misca.chatex.format.SpecialSpeechFormat;
 import msifeed.misca.chatex.format.SpeechFormat;
-import msifeed.misca.logs.LogDB;
+import msifeed.misca.logdb.LogDB;
 import msifeed.sys.rpc.RpcContext;
 import msifeed.sys.rpc.RpcMethodHandler;
 import net.minecraft.client.Minecraft;

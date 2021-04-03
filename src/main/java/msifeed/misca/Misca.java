@@ -11,7 +11,7 @@ import msifeed.misca.environ.Environ;
 import msifeed.misca.environ.EnvironCommand;
 import msifeed.misca.keeper.KeeperSync;
 import msifeed.misca.locks.Locks;
-import msifeed.misca.logs.LogDB;
+import msifeed.misca.logdb.LogDB;
 import msifeed.misca.potions.CombatPotions;
 import msifeed.misca.potions.NeedsPotions;
 import msifeed.misca.rename.RenameItems;

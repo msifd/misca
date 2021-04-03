@@ -4,7 +4,7 @@ import msifeed.misca.Misca;
 import msifeed.misca.MiscaPerms;
 import msifeed.misca.combat.Combat;
 import msifeed.misca.keeper.KeeperSync;
-import msifeed.misca.logs.LogDB;
+import msifeed.misca.logdb.LogDB;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
