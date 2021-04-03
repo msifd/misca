@@ -1,7 +1,7 @@
 package msifeed.misca.cmd;
 
 import msifeed.misca.MiscaPerms;
-import msifeed.misca.rename.IRenameRpc;
+import msifeed.misca.rename.RenameRpc;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -35,6 +35,6 @@ public class RenameCommand extends CommandBase {
             return;
         }
 
-        IRenameRpc.openGui(player);
+        RenameRpc.openGui(player);
     }
 }

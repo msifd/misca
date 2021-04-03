@@ -33,7 +33,7 @@ public class WeaponInfoGeneration {
                 return GENERIC_RANGE;
         }
 
-        return NONE;
+        return GENERIC_MELEE;
     }
 
     public double wizardryApPerSpellCost = 0.3;

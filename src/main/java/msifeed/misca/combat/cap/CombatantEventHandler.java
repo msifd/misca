@@ -1,11 +1,15 @@
 package msifeed.misca.combat.cap;
 
+import msifeed.misca.combat.CharAttribute;
 import msifeed.misca.combat.Combat;
-import msifeed.misca.combat.battle.BattleStateClient;
+import msifeed.misca.rolls.Dices;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.ai.attributes.IAttributeInstance;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
+import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent;
 
@@ -52,6 +56,23 @@ public class CombatantEventHandler {
     public void onTracking(net.minecraftforge.event.entity.player.PlayerEvent.StartTracking event) {
         if (event.getTarget() instanceof EntityLivingBase) {
             CombatantSync.sync((EntityPlayerMP) event.getEntityPlayer(), (EntityLivingBase) event.getTarget());
+        }
+    }
+
+    @SubscribeEvent
+    public void onEntityJoinWorld(EntityJoinWorldEvent event) {
+        final Entity entity = event.getEntity();
+        if (entity.world.isRemote || entity instanceof EntityPlayer) return;
+        if (!(entity instanceof EntityLivingBase)) return;
+
+        setCombatantAttributes((EntityLivingBase) entity, 5, 5);
+    }
+
+    private static void setCombatantAttributes(EntityLivingBase entity, int min, int d) {
+        for (CharAttribute attr : CharAttribute.values()) {
+            final IAttributeInstance inst = entity.getEntityAttribute(attr.attribute);
+            if (inst.getBaseValue() < min)
+                inst.setBaseValue(Dices.roll(min, d));
         }
     }
 }

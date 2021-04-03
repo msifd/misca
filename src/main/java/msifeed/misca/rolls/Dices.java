@@ -12,4 +12,8 @@ public class Dices {
     public static int checkInt(double chance) {
         return rand.nextDouble() < chance ? 1 : 0;
     }
+
+    public static int roll(int min, int d) {
+        return min + rand.nextInt(d);
+    }
 }

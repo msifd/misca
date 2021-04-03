@@ -1,7 +1,7 @@
 package msifeed.misca.combat.battle;
 
 import msifeed.misca.combat.Combat;
-import msifeed.misca.combat.CombatHandler;
+import msifeed.misca.combat.CombatFlow;
 import msifeed.misca.combat.cap.CombatantProvider;
 import msifeed.misca.combat.cap.CombatantSync;
 import msifeed.misca.combat.cap.ICombatant;
@@ -10,7 +10,6 @@ import msifeed.misca.combat.rules.WeaponInfo;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.DamageSource;
 import net.minecraft.util.math.Vec3d;
 
 import java.lang.ref.WeakReference;
@@ -110,7 +109,7 @@ public class BattleFlow {
         }
 
         if (neutralDamage > 0)
-            entity.attackEntityFrom(new DamageSource(CombatHandler.NEUTRAL_PAYOUT_DT), neutralDamage);
+            entity.attackEntityFrom(CombatFlow.NEUTRAL_DAMAGE, neutralDamage);
     }
 
     public static void repositionCombatant(EntityLivingBase entity) {

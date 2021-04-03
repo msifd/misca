@@ -41,10 +41,6 @@ public class Battle {
 
     public void addMember(EntityLivingBase entity) {
         members.put(entity.getUniqueID(), new WeakReference<>(entity));
-
-        if (!entity.world.isRemote && !(entity instanceof EntityPlayer)) {
-            setCombatantAttributes(entity, 10);
-        }
     }
 
     public void removeMember(UUID entityId) {
@@ -170,11 +166,5 @@ public class Battle {
 
     public boolean shouldBeRemoved() {
         return members.isEmpty() || members.values().stream().allMatch(ref -> ref.get() == null);
-    }
-
-    private static void setCombatantAttributes(EntityLivingBase entity, int amount) {
-        for (CharAttribute attr : CharAttribute.values()) {
-            entity.getEntityAttribute(attr.attribute).setBaseValue(amount);
-        }
     }
 }

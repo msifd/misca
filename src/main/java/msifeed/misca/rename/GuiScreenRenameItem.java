@@ -1,6 +1,6 @@
-package msifeed.misca.client;
+package msifeed.misca.rename;
 
-import msifeed.misca.rename.IRenameRpc;
+import msifeed.misca.rename.RenameRpc;
 import msifeed.sys.gui.GuiMultilineTextField;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
@@ -78,7 +78,7 @@ public class GuiScreenRenameItem extends GuiScreen {
 
         switch (button.id) {
             case 0:
-                IRenameRpc.sendRename(stack);
+                RenameRpc.sendRename(stack);
                 Minecraft.getMinecraft().displayGuiScreen(null);
                 break;
             case 1:

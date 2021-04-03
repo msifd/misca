@@ -54,7 +54,8 @@ public class GuiCombatOverlay {
         state.getCombatants().forEach(entity -> {
             final int frameWidth = (int) (CombatantsBarRender.getEntityWidth(entity) * frame);
             CombatantsBarRender.renderModel(entity, posX[0], 0, frame, frameWidth);
-            CombatantsBarRender.renderBars(entity, posX[0], frame, frameWidth);
+            if (state.isStarted())
+                CombatantsBarRender.renderBars(entity, posX[0], frame, frameWidth);
 
             posX[0] += frameWidth + gap;
         });
@@ -62,8 +63,6 @@ public class GuiCombatOverlay {
 
     private static void drawDebugInfo() {
         final Rules rules = Combat.getRules();
-        final Battle state = BattleStateClient.STATE;
-//        final EntityLivingBase leader = state.getLeader();
         final EntityLivingBase leader = Minecraft.getMinecraft().player;
 
         final EntityLivingBase actor = CombatFlow.getCombatActor(leader);

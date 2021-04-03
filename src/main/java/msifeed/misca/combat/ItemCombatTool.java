@@ -18,6 +18,9 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class ItemCombatTool extends Item {
     public static final String ID = "combat_tool";
@@ -30,8 +33,9 @@ public class ItemCombatTool extends Item {
 
     @Override
     public boolean onEntitySwing(EntityLivingBase entity, ItemStack stack) {
-        if (!entity.isSneaking())
-            Minecraft.getMinecraft().displayGuiScreen(new ScreenCombat());
+        if (!entity.isSneaking() && FMLCommonHandler.instance().getSide().isClient()) {
+            openCombatGui();
+        }
         return true;
     }
 
@@ -49,8 +53,8 @@ public class ItemCombatTool extends Item {
                 return new ActionResult<>(EnumActionResult.FAIL, player.getHeldItem(hand));
             }
         } else {
-            if (player.world.isRemote) {
-                Minecraft.getMinecraft().displayGuiScreen(new ScreenCombatAttributes(player));
+            if (player.world.isRemote && FMLCommonHandler.instance().getSide().isClient()) {
+                openAttributesGui(player);
             }
         }
 
@@ -67,12 +71,22 @@ public class ItemCombatTool extends Item {
                 player.sendStatusMessage(new TextComponentString("Set puppet: " + target.getName()), true);
             }
         } else {
-            if (player.world.isRemote) {
-                Minecraft.getMinecraft().displayGuiScreen(new ScreenCombatAttributes(target));
+            if (player.world.isRemote && FMLCommonHandler.instance().getSide().isClient()) {
+                openAttributesGui(target);
             }
         }
 
         return true;
+    }
+
+    @SideOnly(Side.CLIENT)
+    private void openCombatGui() {
+        Minecraft.getMinecraft().displayGuiScreen(new ScreenCombat());
+    }
+
+    @SideOnly(Side.CLIENT)
+    private void openAttributesGui(EntityLivingBase target) {
+        Minecraft.getMinecraft().displayGuiScreen(new ScreenCombatAttributes(target));
     }
 
     @Override

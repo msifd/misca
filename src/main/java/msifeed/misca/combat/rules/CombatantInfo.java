@@ -12,15 +12,17 @@ import java.util.EnumMap;
 import java.util.EnumSet;
 
 public class CombatantInfo {
+    public final EntityLivingBase entity;
     public final Vec3d pos;
     public final EnumMap<CharAttribute, Double> attributes = new EnumMap<>(CharAttribute.class);
 
-    private final WeaponInfo weapon;
+    public final WeaponInfo weapon;
     private final WeaponTrait mainType;
     private final EnumSet<WeaponTrait> traitsMain;
     private final EnumSet<WeaponTrait> traitsOff;
 
     public CombatantInfo(EntityLivingBase attacker, DamageSource source, WeaponInfo weapon) {
+        this.entity = attacker;
         this.pos = attacker.getPositionVector();
 
         this.weapon = weapon;
@@ -34,6 +36,7 @@ public class CombatantInfo {
     }
 
     public CombatantInfo(EntityLivingBase victim) {
+        this.entity = victim;
         this.pos = CombatantProvider.get(victim).getPosition();
 
         this.weapon = Combat.getWeapons().get(victim, victim.getHeldItemMainhand());
@@ -46,7 +49,7 @@ public class CombatantInfo {
     }
 
     private WeaponTrait getMainType(WeaponInfo info, WeaponTrait defaultType) {
-        if (info == WeaponInfoGeneration.NONE) return defaultType;
+        if (info == WeaponInfoGeneration.GENERIC_MELEE) return defaultType;
         if (info.traits.contains(WeaponTrait.range)) return WeaponTrait.range;
         return defaultType;
     }
@@ -60,10 +63,6 @@ public class CombatantInfo {
     }
 
     public boolean is(WeaponTrait trait) {
-        return traitsMain.contains(trait);
-    }
-
-    public boolean isAny(WeaponTrait trait) {
         return traitsMain.contains(trait) || traitsOff.contains(trait);
     }
 }

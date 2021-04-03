@@ -2,11 +2,23 @@ package msifeed.misca.combat;
 
 import msifeed.misca.combat.battle.Battle;
 import msifeed.misca.combat.battle.BattleFlow;
+import msifeed.misca.combat.battle.BattleStateSync;
 import msifeed.misca.combat.cap.CombatantProvider;
 import msifeed.misca.combat.cap.CombatantSync;
 import msifeed.misca.combat.cap.ICombatant;
+import msifeed.misca.combat.rules.CombatantInfo;
+import msifeed.misca.combat.rules.Rules;
 import msifeed.misca.combat.rules.WeaponInfo;
+import msifeed.misca.rolls.Dices;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.SharedMonsterAttributes;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.CombatRules;
+import net.minecraft.util.DamageSource;
+import net.minecraft.util.EntityDamageSource;
+import net.minecraft.util.text.TextComponentString;
+import net.minecraftforge.event.entity.living.LivingHurtEvent;
+import net.minecraftforge.fml.common.eventhandler.Event;
 
 import javax.annotation.Nullable;
 
@@ -96,6 +108,103 @@ public class CombatFlow {
             final Battle battle = Combat.MANAGER.getBattle(com.getBattleId());
             if (battle != null)
                 Combat.MANAGER.finishTurn(battle);
+        }
+    }
+
+    // Damage
+
+    private static final String IGNORE_PREFIX = "ignore-";
+    private static final String CRIT_EVASION_DAMAGE_TYPE = IGNORE_PREFIX + "evasion";
+    public static final DamageSource NEUTRAL_DAMAGE = new DamageSource(IGNORE_PREFIX + "neutral");
+
+    public static boolean shouldHandleDamage(DamageSource source) {
+        return !source.getDamageType().startsWith(IGNORE_PREFIX);
+    }
+
+    /**
+     * Shitty hack to disable knock back after evasion
+     */
+    public static boolean attackEvaded = false;
+
+//    public static void alterDamage(LivingHurtEvent event, EntityLivingBase actor, WeaponInfo weapon) {
+//
+//    }
+
+    public static void alterDamage(LivingHurtEvent event, EntityLivingBase actor, WeaponInfo weapon) {
+        final float damageAmount = event.getAmount() + weapon.dmg;
+        if (damageAmount <= 0) {
+            event.setCanceled(true);
+            return;
+        }
+
+        final EntityLivingBase victim = event.getEntityLiving();
+        final CombatantInfo actInfo = new CombatantInfo(actor, event.getSource(), weapon);
+        final CombatantInfo vicInfo = new CombatantInfo(victim);
+        final Rules rules = Combat.getRules();
+
+        final double hitChanceRaw = rules.hitChance(actInfo, vicInfo) - rules.evasionChance(actInfo, vicInfo);
+        final double hitChance = Math.min(hitChanceRaw, rules.maxHitChance);
+        final int hitCheck = Dices.checkInt(hitChance);
+        final int criticality = Dices.checkInt(rules.criticalHit(actInfo) + rules.rawChanceToHitCriticality(hitChanceRaw))
+                - Dices.checkInt(rules.criticalEvasion(vicInfo) + rules.rawChanceToEvadeCriticality(hitChanceRaw));
+        final int successfulness = hitCheck + criticality;
+
+        final boolean successfulHit = successfulness >= 1;
+        if (successfulHit) {
+            float damageFactor = rules.damageFactor(actor, victim, weapon);
+
+            final boolean criticalHit = successfulness > 1;
+            if (criticalHit) {
+                damageFactor += 1;
+//                notifyActionBar("crit hit", event.getEntityLiving(), actor);
+            } else if (rules.isCloseRangeMagic(actInfo, victim) && Dices.check(rules.magicCloseRangeSpreadChance)) {
+                final float selfFactor = rules.damageFactor(actor, actor, weapon);
+                actor.attackEntityFrom(event.getSource(), damageAmount * selfFactor);
+
+                if (Dices.check(rules.magicCloseRangeMissChance)) {
+                    damageFactor = 0;
+                }
+            }
+
+            event.setAmount(damageAmount * damageFactor);
+        } else {
+            attackEvaded = true;
+            event.setCanceled(true);
+
+            final boolean criticalEvasion = successfulness < 0;
+            if (criticalEvasion) {
+                final DamageSource ds = new EntityDamageSource(CRIT_EVASION_DAMAGE_TYPE, victim);
+                final float selfDamage = damageAmount * rules.damageFactor(actor, actor, weapon);
+                actor.attackEntityFrom(ds, selfDamage);
+            }
+        }
+    }
+
+    public static void handleDeadlyAttack(Event event, float amount, EntityLivingBase entity, Battle battle) {
+        if (!(entity instanceof EntityPlayer)) return;
+
+        final EntityPlayer victim = (EntityPlayer) entity;
+        final double armorToughness = victim.getEntityAttribute(SharedMonsterAttributes.ARMOR_TOUGHNESS).getAttributeValue();
+        final float damage = CombatRules.getDamageAfterAbsorb(amount, victim.getTotalArmorValue(), (float) armorToughness);
+
+        final boolean mortalWound = victim.getHealth() - damage <= 0;
+        if (!mortalWound) return;
+
+        if (event.isCancelable())
+            event.setCanceled(true);
+
+        if (battle.isTraining()) {
+            victim.setHealth(CombatantProvider.get(victim).getTrainingHealth());
+
+            victim.sendStatusMessage(new TextComponentString("u dead"), false);
+            victim.inventory.damageArmor(damage);
+        } else {
+            victim.setHealth(0.5f);
+
+            if (battle.isLeader(victim.getUniqueID()))
+                Combat.MANAGER.finishTurn(battle);
+            battle.removeFromQueue(victim.getUniqueID());
+            BattleStateSync.syncQueue(battle);
         }
     }
 }
