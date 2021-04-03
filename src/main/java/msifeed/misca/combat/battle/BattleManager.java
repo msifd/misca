@@ -166,8 +166,9 @@ public class BattleManager {
             BattleStateSync.sync(player, battle);
         } else {
             com.reset();
-            CombatantSync.sync(player);
         }
+
+        CombatantSync.sync(player);
     }
 
     @SubscribeEvent

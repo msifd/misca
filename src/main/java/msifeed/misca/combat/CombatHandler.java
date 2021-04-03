@@ -105,6 +105,8 @@ public class CombatHandler {
         final WeaponInfo weapon = Combat.getWeapons().get(source, stack);
         if (CombatFlow.canAttack(actor, weapon)) {
             CombatFlow.onAttack(actor, weapon);
+        } else {
+            event.setCanceled(true);
         }
     }
 

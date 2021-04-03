@@ -1,6 +1,5 @@
 package msifeed.misca.rename;
 
-import msifeed.misca.rename.RenameRpc;
 import msifeed.sys.gui.GuiMultilineTextField;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;

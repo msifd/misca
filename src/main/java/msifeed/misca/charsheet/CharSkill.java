@@ -8,8 +8,17 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.MathHelper;
 
 public enum CharSkill {
-    psychology, management, biology, tech, magic, research,
-    thievery, survival, work, firearms, blacksmith;
+    psychology,
+    management,
+    thievery,
+    survival,
+    hardworking,
+    biology,
+    engineering,
+    sorcery,
+    research,
+    blacksmith,
+    magic;
 
     public static final IAttribute MOD = new RangedAttribute(null, Misca.MODID + ".skillMod", 0, -5, 5);
 

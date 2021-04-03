@@ -34,7 +34,7 @@ public class IntContainer<K extends Enum<K>> implements Cloneable {
             set(key, value);
     }
 
-    public void add(K key, int delta) {
+    public void inc(K key, int delta) {
         set(key, get(key) + delta);
     }
 

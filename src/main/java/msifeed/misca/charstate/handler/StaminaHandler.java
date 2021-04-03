@@ -39,7 +39,7 @@ public class StaminaHandler {
         final IAttributeInstance inst = event.getEntityPlayer().getEntityAttribute(STAMINA);
         inst.setBaseValue(STAMINA.clampValue(inst.getBaseValue() - config.staminaCostPerMiningTick));
 
-        final int workSkill = CharsheetProvider.get(event.getEntityPlayer()).skills().get(CharSkill.work);
+        final int workSkill = CharsheetProvider.get(event.getEntityPlayer()).skills().get(CharSkill.hardworking);
         final double factor = 1 + workSkill * config.workSkillMiningSpeedFactor;
         final double newSpeed = event.getNewSpeed() * config.globalMiningSpeedModifier * inst.getBaseValue() * factor;
         event.setNewSpeed((float) newSpeed);
@@ -56,7 +56,7 @@ public class StaminaHandler {
 
         final ICharsheet charsheet = CharsheetProvider.get(event.player);
         final int survivalSkill = charsheet.skills().get(CharSkill.survival);
-        final int workSkill = charsheet.skills().get(CharSkill.work);
+        final int workSkill = charsheet.skills().get(CharSkill.hardworking);
         final double factor = 1 + survivalSkill * config.survivalSkillNeedsLostFactor + workSkill * config.workSkillCraftCostFactor;
 
         final double lost = ingredients * config.staminaCostPerIngredient * factor;

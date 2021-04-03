@@ -81,19 +81,14 @@ public class EffortsCommand extends CommandBase {
 
     private static CharEffort getEffort(String name) throws CommandException {
         switch (name) {
-            case "mgt":
-            case "might":
-                return CharEffort.might;
-            case "kno":
+            case "impact":
+                return CharEffort.impact;
             case "knowledge":
                 return CharEffort.knowledge;
-            case "int":
-            case "intellect":
-                return CharEffort.intellect;
-            case "con":
+            case "reflection":
+                return CharEffort.reflection;
             case "confidence":
                 return CharEffort.confidence;
-            case "rep":
             case "reputation":
                 return CharEffort.reputation;
             default:

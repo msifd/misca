@@ -1,9 +1,7 @@
 package msifeed.misca.combat.battle;
 
-import msifeed.misca.combat.CharAttribute;
 import msifeed.misca.combat.Combat;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 
 import javax.annotation.Nullable;

@@ -9,6 +9,7 @@ import msifeed.misca.cmd.*;
 import msifeed.misca.combat.Combat;
 import msifeed.misca.environ.Environ;
 import msifeed.misca.environ.EnvironCommand;
+import msifeed.misca.keeper.KeeperSync;
 import msifeed.misca.locks.Locks;
 import msifeed.misca.logs.LogDB;
 import msifeed.misca.potions.CombatPotions;
@@ -94,6 +95,7 @@ public class Misca {
             Combat.sync();
             Charstate.sync();
             LogDB.reload();
+            KeeperSync.reload();
         } catch (Exception e) {
             e.printStackTrace();
         }

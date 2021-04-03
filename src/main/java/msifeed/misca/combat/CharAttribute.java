@@ -19,6 +19,9 @@ public enum CharAttribute {
         return (int) entity.getEntityAttribute(attribute).getBaseValue();
     }
 
+    public void setBase(EntityLivingBase entity, int value) {
+        entity.getEntityAttribute(attribute).setBaseValue(value);
+    }
 
     public double get(EntityLivingBase entity) {
         return entity.getEntityAttribute(MOD).getAttributeValue() + entity.getEntityAttribute(attribute).getAttributeValue();
