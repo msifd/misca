@@ -153,24 +153,33 @@ public class CombatHandler {
             return;
         }
 
-        final EntityDamageSource src = (EntityDamageSource) event.getSource();
-        if (!(src.getTrueSource() instanceof EntityLivingBase)) return;
+        final EntityLivingBase victim = event.getEntityLiving();
+        if (victim.world.isRemote) return;
 
-        final EntityLivingBase srcEntity = (EntityLivingBase) src.getTrueSource();
-        if (event.getEntityLiving().world.isRemote) return;
+        final EntityDamageSource damage = (EntityDamageSource) event.getSource();
+        if (!(damage.getTrueSource() instanceof EntityLivingBase)) return;
 
-        final EntityLivingBase actor = CombatFlow.getCombatActor(srcEntity);
+        final EntityLivingBase source = (EntityLivingBase) damage.getTrueSource();
+        if (source.world.isRemote) return;
+
+        // Get weapon from source, not from actor
+        final WeaponInfo weapon = Combat.getWeapons().get(source, source.getHeldItemMainhand());
+
+        final ICombatant srcCom = CombatantProvider.get(source);
+        if (!srcCom.isInBattle()) {
+            event.setAmount(event.getAmount() * Combat.getRules().damageFactor(source, victim, weapon));
+            return;
+        }
+
+        final EntityLivingBase actor = CombatFlow.getCombatActor(source);
         if (actor == null) return;
 
-        if (CombatFlow.shouldHandleDamage(src)) {
-            // Get weapon from source, not from actor
-            final WeaponInfo weapon = Combat.getWeapons().get(srcEntity, srcEntity.getHeldItemMainhand());
+        if (CombatFlow.shouldHandleDamage(damage)) {
             CombatFlow.alterDamage(event, actor, weapon);
         }
 
-        final ICombatant srcCom = CombatantProvider.get(srcEntity);
         final Battle battle = Combat.MANAGER.getBattle(srcCom.getBattleId());
-        CombatFlow.handleDeadlyAttack(event, event.getAmount(), event.getEntityLiving(), battle);
+        CombatFlow.handleDeadlyAttack(event, event.getAmount(), victim, battle);
     }
 
     private void handleNeutralDamage(LivingHurtEvent event) {
