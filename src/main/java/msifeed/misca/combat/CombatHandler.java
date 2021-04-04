@@ -153,21 +153,18 @@ public class CombatHandler {
             return;
         }
 
-        final EntityLivingBase victim = event.getEntityLiving();
-        if (victim.world.isRemote) return;
-
         final EntityDamageSource damage = (EntityDamageSource) event.getSource();
         if (!(damage.getTrueSource() instanceof EntityLivingBase)) return;
 
         final EntityLivingBase source = (EntityLivingBase) damage.getTrueSource();
         if (source.world.isRemote) return;
 
-        // Get weapon from source, not from actor
-        final WeaponInfo weapon = Combat.getWeapons().get(source, source.getHeldItemMainhand());
+        final EntityLivingBase victim = event.getEntityLiving();
+        if (victim.world.isRemote) return;
 
         final ICombatant srcCom = CombatantProvider.get(source);
         if (!srcCom.isInBattle()) {
-            event.setAmount(event.getAmount() * Combat.getRules().damageFactor(source, victim, weapon));
+            handleNonCombatDamage(event, source);
             return;
         }
 
@@ -175,11 +172,25 @@ public class CombatHandler {
         if (actor == null) return;
 
         if (CombatFlow.shouldHandleDamage(damage)) {
+            // Get weapon from source, not from actor
+            final WeaponInfo weapon = Combat.getWeapons().get(source, source.getHeldItemMainhand());
             CombatFlow.alterDamage(event, actor, weapon);
         }
 
         final Battle battle = Combat.MANAGER.getBattle(srcCom.getBattleId());
         CombatFlow.handleDeadlyAttack(event, event.getAmount(), victim, battle);
+    }
+
+    private void handleNonCombatDamage(LivingHurtEvent event, EntityLivingBase source) {
+        final EntityLivingBase victim = event.getEntityLiving();
+
+        // Get weapon from source, not from actor
+        final WeaponInfo weapon = Combat.getWeapons().get(source, source.getHeldItemMainhand());
+        if (victim instanceof EntityPlayer) {
+            event.setAmount(event.getAmount() * Combat.getRules().damageFactor(source, victim, weapon));
+        } else {
+            event.setAmount(event.getAmount() * Combat.getRules().damageIncreaseFactor(source, weapon));
+        }
     }
 
     private void handleNeutralDamage(LivingHurtEvent event) {

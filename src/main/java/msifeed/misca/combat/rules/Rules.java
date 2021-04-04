@@ -30,12 +30,16 @@ public class Rules {
     public double damageAbsorptionPerEnd = 0.02;
 
     public float damageFactor(EntityLivingBase actor, EntityLivingBase victim, WeaponInfo weapon) {
+        final float absorption = (float) (CharAttribute.end.get(victim) * damageAbsorptionPerEnd);
+        return Math.max(0, damageIncreaseFactor(actor, weapon) - absorption);
+    }
+
+    public float damageIncreaseFactor(EntityLivingBase actor, WeaponInfo weapon) {
         final double strFactor = weapon.traits.contains(WeaponTrait.range)
                 ? damageIncreaseRangePerStr
                 : damageIncreaseMeleePerStr;
         final float increase = (float) (CharAttribute.str.get(actor) * strFactor);
-        final float absorption = (float) (CharAttribute.end.get(victim) * damageAbsorptionPerEnd);
-        return Math.max(0, 1 + increase - absorption);
+        return Math.max(0, 1 + increase);
     }
 
     public double magicCloseRangeDistance = 2;
