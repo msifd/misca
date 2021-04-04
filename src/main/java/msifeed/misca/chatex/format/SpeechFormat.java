@@ -11,10 +11,12 @@ import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.event.ClickEvent;
 
+import javax.annotation.Nullable;
+import java.util.Optional;
 import java.util.Random;
 
 public class SpeechFormat {
-    public static ITextComponent format(EntityPlayer self, EntityPlayer speaker, int range, String msg) {
+    public static Optional<ITextComponent> format(EntityPlayer self, EntityPlayer speaker, int range, String msg) {
         final boolean isMyMessage = self.getUniqueID().equals(speaker.getUniqueID());
 
         final ITextComponent textComp;
@@ -25,10 +27,13 @@ public class SpeechFormat {
             textComp = makeTextComp(msg, distance, range);
         }
 
-        return new TextComponentTranslation(
+        if (textComp.getUnformattedText().isEmpty())
+            return Optional.empty();
+
+        return Optional.of(new TextComponentTranslation(
                 "misca.chatex.speech",
                 makeNamePrefix(speaker, isMyMessage), textComp
-        );
+        ));
     }
 
     private static ITextComponent makeNamePrefix(EntityPlayer player, boolean isSelf) {

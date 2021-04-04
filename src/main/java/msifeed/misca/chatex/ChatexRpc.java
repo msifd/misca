@@ -127,6 +127,8 @@ public class ChatexRpc {
     // // // // Client senders
 
     public static void sendSpeech(UUID speakerId, int range, String msg) {
+        msg = net.minecraftforge.event.ForgeEventFactory.onClientSendMessage(msg);
+        if (msg.isEmpty()) return;
         Misca.RPC.sendToServer(speech, speakerId, range, msg);
     }
 
@@ -138,7 +140,8 @@ public class ChatexRpc {
         final EntityPlayer speaker = self.world.getPlayerEntityByUUID(speakerId);
         if (speaker == null) return;
 
-        displayMessage(self, speaker, SpeechFormat.format(self, speaker, range, msg));
+        SpeechFormat.format(self, speaker, range, msg)
+                .ifPresent(text -> displayMessage(self, speaker, text));
     }
 
     @SideOnly(Side.CLIENT)
