@@ -183,7 +183,7 @@ public class CombatHandler {
 
     private void handleNonCombatDamage(LivingHurtEvent event, EntityLivingBase source) {
         if (!(source instanceof EntityPlayer)) return;
-        
+
         final EntityLivingBase victim = event.getEntityLiving();
 
         // Get weapon from source, not from actor

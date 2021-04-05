@@ -126,10 +126,6 @@ public class CombatFlow {
      */
     public static boolean attackEvaded = false;
 
-//    public static void alterDamage(LivingHurtEvent event, EntityLivingBase actor, WeaponInfo weapon) {
-//
-//    }
-
     public static void alterDamage(LivingHurtEvent event, EntityLivingBase actor, WeaponInfo weapon) {
         final float damageAmount = event.getAmount() + weapon.dmg;
         if (damageAmount <= 0) {
@@ -142,27 +138,19 @@ public class CombatFlow {
         final CombatantInfo vicInfo = new CombatantInfo(victim);
         final Rules rules = Combat.getRules();
 
-        final double hitChanceRaw = rules.hitChance(actInfo, vicInfo) - rules.evasionChance(actInfo, vicInfo);
-        final double hitChance = Math.min(hitChanceRaw, rules.maxHitChance);
-        final int hitCheck = Dices.checkInt(hitChance);
-        final int criticality = Dices.checkInt(rules.criticalHit(actInfo) + rules.rawChanceToHitCriticality(hitChanceRaw))
-                - Dices.checkInt(rules.criticalEvasion(vicInfo) + rules.rawChanceToEvadeCriticality(hitChanceRaw));
-        final int successfulness = hitCheck + criticality;
-
-        final boolean successfulHit = successfulness >= 1;
-        if (successfulHit) {
+        final Rules.AttackResult result = rules.rollAttack(actInfo, vicInfo);
+        if (result.isSuccessful()) {
             float damageFactor = rules.damageFactor(actor, victim, weapon);
 
-            final boolean criticalHit = successfulness > 1;
-            if (criticalHit) {
+            if (result.isCritHit()) {
                 damageFactor += 1;
-//                notifyActionBar("crit hit", event.getEntityLiving(), actor);
             } else if (rules.isCloseRangeMagic(actInfo, victim) && Dices.check(rules.magicCloseRangeSpreadChance)) {
-                final float selfFactor = rules.damageFactor(actor, actor, weapon);
-                actor.attackEntityFrom(event.getSource(), damageAmount * selfFactor);
+                final float selfDamage = damageAmount * rules.damageFactor(actor, actor, weapon);
+                actor.attackEntityFrom(event.getSource(), selfDamage);
 
                 if (Dices.check(rules.magicCloseRangeMissChance)) {
                     damageFactor = 0;
+                    event.setCanceled(true);
                 }
             }
 
@@ -171,8 +159,7 @@ public class CombatFlow {
             attackEvaded = true;
             event.setCanceled(true);
 
-            final boolean criticalEvasion = successfulness < 0;
-            if (criticalEvasion) {
+            if (result.isCritEvade()) {
                 final DamageSource ds = new EntityDamageSource(CRIT_EVASION_DAMAGE_TYPE, victim);
                 final float selfDamage = damageAmount * rules.damageFactor(actor, actor, weapon);
                 actor.attackEntityFrom(ds, selfDamage);

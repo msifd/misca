@@ -1,6 +1,7 @@
 package msifeed.misca.combat.rules;
 
 import msifeed.misca.combat.CharAttribute;
+import msifeed.misca.rolls.Dices;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.attributes.IAttributeInstance;
@@ -53,7 +54,10 @@ public class Rules {
 
     // Chances
 
-    public double hitChanceBase = 0.5;
+    public double minAttackChance = 0.1;
+    public double maxAttackChance = 0.8;
+
+    public double hitChanceBase = 0.25;
     public double hitChanceMeleePerPer = 0.015;
     public double hitChanceRangePerPer = 0.03;
     public double hitChancePerLck = 0.005;
@@ -140,16 +144,10 @@ public class Rules {
     }
 
     // Final hit chance and criticality
-
-    public double maxHitChance = 0.8;
     public double criticalityPerChance = 0.1;
 
-    public double rawChanceToHitCriticality(double chance) {
-        return Math.max(0, maxHitChance - chance) * criticalityPerChance;
-    }
-
-    public double rawChanceToEvadeCriticality(double chance) {
-        return (chance < 0 ? -chance : 0) * criticalityPerChance;
+    public double chanceToCriticality(double chance) {
+        return chance * criticalityPerChance;
     }
 
     public double criticalHitBase = 0.01;
@@ -178,8 +176,8 @@ public class Rules {
     public double attackApSpeedFactor = 1;
 
     public double attackActionPoints(EntityLivingBase entity, WeaponInfo weapon) {
-        final IAttributeInstance attackSpeed = entity.getEntityAttribute(SharedMonsterAttributes.ATTACK_SPEED); // Can be null for mobs
-        final double speedMultiplier = attackSpeed != null
+        final IAttributeInstance attackSpeed = entity.getEntityAttribute(SharedMonsterAttributes.ATTACK_SPEED);
+        final double speedMultiplier = attackSpeed != null // Can be null for mobs
                 ? attackSpeed.getBaseValue() / attackSpeed.getAttributeValue() * attackApSpeedFactor
                 : 1;
         final double cost = weapon.forceAtk || weapon.atk > 0 ? weapon.atk : attackApBase;
@@ -225,6 +223,68 @@ public class Rules {
 
     public double maxActionPoints(EntityLivingBase entity) {
         return maxApBase + CharAttribute.agi.get(entity) * maxApPerAgi;
+    }
+
+    // Complete attack result
+
+    public AttackResult rollAttack(CombatantInfo actor, CombatantInfo victim) {
+        return new AttackResult(actor, victim);
+    }
+
+    /**   crit hit chance            crit evade chance
+     * *        +                            +
+     * *        |                            |
+     * *        v                            v
+     * * chance check: 0/1           chance check: 0/1
+     * *        +                            +
+     * *        |                            |
+     * *        | plus                 minus |
+     * *        +------> criticality <-------+         succ>1
+     * *                   -1/0/1                hit +-------> crit
+     * *                      +                   ^
+     * *                      |plus        succ>0 |
+     * *                      v                   |
+     * *               successfulness +-----------+
+     * *                  -1/0/1/2                |
+     * *                      ^           succ<=0 |
+     * *                      |plus               v    succ<0
+     * *                      +                 evade +------> crit
+     * *              chance check: 0/1
+     * *                      ^
+     * *                      |
+     * *                      +
+     * *           +--> attack chance <--+
+     * *           | plus         minus |
+     * *           +                    +
+     * *       hit chance         evade chance
+     */
+    public class AttackResult {
+        private final int successfulness;
+
+        public boolean isSuccessful() {
+            return successfulness > 0;
+        }
+
+        public boolean isCritHit() {
+            return successfulness > 1;
+        }
+
+        public boolean isCritEvade() {
+            return successfulness < 0;
+        }
+
+        private AttackResult(CombatantInfo actor, CombatantInfo victim) {
+            final double attackChanceRaw = hitChance(actor, victim) - evasionChance(actor, victim);
+            final double attackChance = MathHelper.clamp(attackChanceRaw, minAttackChance, maxAttackChance);
+            final double attackChanceDiff = attackChanceRaw - attackChance;
+            final int attackCheck = Dices.checkInt(attackChance);
+
+            final double critHitChance = criticalHit(actor) + chanceToCriticality(Math.max(0, attackChanceDiff));
+            final double critEvadeChance = criticalEvasion(victim) + chanceToCriticality(Math.min(0, attackChanceDiff));
+            final int criticality = Dices.checkInt(critHitChance) - Dices.checkInt(critEvadeChance);
+
+            successfulness = attackCheck + criticality;
+        }
     }
 
     // Other

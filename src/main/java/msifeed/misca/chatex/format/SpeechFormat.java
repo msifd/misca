@@ -11,7 +11,6 @@ import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.event.ClickEvent;
 
-import javax.annotation.Nullable;
 import java.util.Optional;
 import java.util.Random;
 
