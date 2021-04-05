@@ -2,9 +2,9 @@ package msifeed.misca.potions;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.ai.attributes.AbstractAttributeMap;
 import net.minecraft.entity.ai.attributes.IAttribute;
 import net.minecraft.entity.ai.attributes.IAttributeInstance;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.potion.Potion;
 
 import javax.annotation.Nullable;
@@ -29,11 +29,20 @@ public class InstantPotion extends Potion {
     }
 
     @Override
-    public void affectEntity(@Nullable Entity source, @Nullable Entity indirectSource, EntityLivingBase entity, int amplifier, double health) {
-        if (!(entity instanceof EntityPlayer)) return;
+    public void applyAttributesModifiersToEntity(EntityLivingBase entity, AbstractAttributeMap attributes, int amplifier) {
+        final IAttributeInstance inst = attributes.getAttributeInstance(attribute);
+        if (inst == null) return;
 
         final double value = modifier * (amplifier + 1);
+        inst.setBaseValue(attribute.clampValue(inst.getBaseValue() + value));
+    }
+
+    @Override
+    public void affectEntity(@Nullable Entity source, @Nullable Entity indirectSource, EntityLivingBase entity, int amplifier, double health) {
         final IAttributeInstance inst = entity.getEntityAttribute(attribute);
+        if (inst == null) return;
+
+        final double value = modifier * (amplifier + 1);
         inst.setBaseValue(attribute.clampValue(inst.getBaseValue() + value));
     }
 }
