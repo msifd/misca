@@ -4,10 +4,10 @@ import net.minecraft.network.INetHandler;
 import net.minecraftforge.fml.relauncher.Side;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import sun.reflect.Reflection;
 
 import javax.annotation.Nullable;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.HashMap;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -34,7 +34,7 @@ public class RpcHandlerRegistry {
 
     public void register(String rpcMethod, Object obj, Method m) {
         final Class<?> clazz = obj.getClass();
-        if (!m.isAccessible() && !Reflection.quickCheckMemberAccess(clazz, m.getModifiers()))
+        if (!m.isAccessible() && !Modifier.isPublic(m.getModifiers()))
             throw new RuntimeException(String.format("RPC method '%s::%s' is not accessible", clazz.getName(), m.getName()));
 
         final Class<?>[] types = m.getParameterTypes();

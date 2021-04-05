@@ -2,7 +2,6 @@ package msifeed.sys.cap;
 
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.MathHelper;
-import sun.misc.SharedSecrets;
 
 import java.util.EnumMap;
 import java.util.stream.Stream;
@@ -16,7 +15,7 @@ public class IntContainer<K extends Enum<K>> implements Cloneable {
 
     public IntContainer(Class<K> enumType, int min, int max) {
         this.values = new EnumMap<>(enumType);
-        this.keys = SharedSecrets.getJavaLangAccess().getEnumConstantsShared(enumType);
+        this.keys = enumType.getEnumConstants();
         this.min = min;
         this.max = max;
     }
