@@ -13,11 +13,11 @@ public class CharstateConfig {
     public double sanityCostPerSecInDarkness = 0.000055;
     public double sanityCostPerDamage = 0.1;
 
-    public double staminaRestPerSec = 0.000014;
+    public double staminaRestPerSec = 0.0014;
     public double staminaRestTimeoutSec = 2;
-    public double staminaCostPerMiningTick = 0.0001;
-    public double staminaCostPerIngredient = 0.005;
-    public double staminaCostPerSupplyItem = 0.005;
+    public double staminaCostPerMiningTick = 0.01;
+    public double staminaCostPerIngredient = 0.5;
+    public double staminaCostPerSupplyItem = 0.5;
 
     public double corruptionLostPerSec = 0.00000115;
 

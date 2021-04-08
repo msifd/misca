@@ -17,7 +17,7 @@ import net.minecraftforge.event.entity.player.PlayerEvent;
 import java.util.List;
 
 public class StaminaHandler {
-    public static final IAttribute STAMINA = new RangedAttribute(null, Misca.MODID + ".stamina", 1, 0, 1).setShouldWatch(true);
+    public static final IAttribute STAMINA = new RangedAttribute(null, Misca.MODID + ".stamina", 100, 0, 100).setShouldWatch(true);
 
     public void handleTime(EntityPlayer player, long secs) {
         final CharstateConfig config = Misca.getSharedConfig().charstate;
@@ -41,7 +41,8 @@ public class StaminaHandler {
 
         final int workSkill = CharsheetProvider.get(event.getEntityPlayer()).skills().get(CharSkill.hardworking);
         final double factor = 1 + workSkill * config.workSkillMiningSpeedFactor;
-        final double newSpeed = event.getNewSpeed() * config.globalMiningSpeedModifier * inst.getBaseValue() * factor;
+        final double staminaFactor = inst.getBaseValue() / 100;
+        final double newSpeed = event.getNewSpeed() * config.globalMiningSpeedModifier * staminaFactor * factor;
         event.setNewSpeed((float) newSpeed);
     }
 
