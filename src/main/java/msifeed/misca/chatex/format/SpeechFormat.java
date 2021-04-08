@@ -26,7 +26,7 @@ public class SpeechFormat {
             textComp = makeTextComp(msg, distance, range);
         }
 
-        if (textComp.getUnformattedText().isEmpty())
+        if (textComp.getUnformattedText().trim().isEmpty())
             return Optional.empty();
 
         return Optional.of(new TextComponentTranslation(
