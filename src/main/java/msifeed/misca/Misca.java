@@ -17,6 +17,7 @@ import msifeed.misca.potions.NeedsPotions;
 import msifeed.misca.rename.RenameItems;
 import msifeed.misca.rolls.RollRpc;
 import msifeed.misca.supplies.BackgroundSupplies;
+import msifeed.misca.tweaks.DisableSomeWorkstations;
 import msifeed.sys.rpc.RpcChannel;
 import msifeed.sys.sync.SyncChannel;
 import net.minecraftforge.common.MinecraftForge;
@@ -29,7 +30,6 @@ import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
-import net.minecraftforge.fml.common.event.FMLServerStoppingEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import java.nio.file.Paths;
@@ -67,6 +67,7 @@ public class Misca {
 
         MinecraftForge.EVENT_BUS.register(new NeedsPotions());
         MinecraftForge.EVENT_BUS.register(new CombatPotions());
+        MinecraftForge.EVENT_BUS.register(new DisableSomeWorkstations());
 
         Misca.RPC.register(new RollRpc());
 
@@ -112,11 +113,6 @@ public class Misca {
         event.registerServerCommand(new EffortsCommand());
         event.registerServerCommand(new SkillsCommand());
         event.registerServerCommand(new BlessCommand());
-    }
-
-    @EventHandler
-    public void serverStopping(FMLServerStoppingEvent event) {
-        ConfigManager.sync(MODID, Config.Type.INSTANCE);
     }
 
     @SubscribeEvent
