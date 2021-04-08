@@ -65,6 +65,16 @@ public class ChatexScreen extends MellowScreen implements ITabCompleter {
     }
 
     @Override
+    public void drawScreen(int mouseX, int mouseY, float partialTicks) {
+        super.drawScreen(mouseX, mouseY, partialTicks);
+
+        final ITextComponent hovered = hud.getChatComponent(Mouse.getX(), Mouse.getY());
+        if (hovered != null && hovered.getStyle().getHoverEvent() != null) {
+            handleComponentHover(hovered, mouseX, mouseY);
+        }
+    }
+
+    @Override
     public void handleMouseInput() throws IOException {
         super.handleMouseInput();
 
@@ -82,7 +92,7 @@ public class ChatexScreen extends MellowScreen implements ITabCompleter {
     @Override
     protected void mouseClicked(int mouseX, int mouseY, int mouseButton) {
         if (mouseButton == 0) {
-            final ITextComponent tc = this.mc.ingameGUI.getChatGUI().getChatComponent(Mouse.getX(), Mouse.getY());
+            final ITextComponent tc = hud.getChatComponent(Mouse.getX(), Mouse.getY());
             if (tc != null && this.handleComponentClick(tc))
                 return;
         }

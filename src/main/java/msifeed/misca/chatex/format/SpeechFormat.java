@@ -36,9 +36,7 @@ public class SpeechFormat {
     }
 
     private static ITextComponent makeNamePrefix(EntityPlayer player, boolean isSelf) {
-        final String csName = CharsheetProvider.get(player).getName();
-
-        final ITextComponent cc = csName.isEmpty() ? player.getDisplayName() : new TextComponentString(csName);
+        final ITextComponent cc = player.getDisplayName();
         cc.getStyle().setColor(isSelf ? TextFormatting.YELLOW : TextFormatting.GREEN);
 
         final ICharsheet cs = CharsheetProvider.get(player);
