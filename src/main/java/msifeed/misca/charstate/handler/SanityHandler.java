@@ -29,7 +29,7 @@ public class SanityHandler {
     public void handleTime(EntityPlayer player, long secs) {
         if (player.isCreative() || player.isSpectator()) return;
 
-        // TODO: disable darkness
+        // TODO: a way disable darkness for nocturnal players
         final CharstateConfig config = Misca.getSharedConfig().charstate;
         final int light = player.world.getLight(player.getPosition(), false);
         final double sanPerSec = light < 7 ? config.sanityCostPerSecInDarkness : config.sanityCostPerSec;
