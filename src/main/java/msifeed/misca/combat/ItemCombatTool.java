@@ -18,7 +18,11 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.common.eventhandler.EventPriority;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -29,6 +33,8 @@ public class ItemCombatTool extends Item {
         setRegistryName(Misca.MODID, ID);
         setTranslationKey(ID);
         setCreativeTab(CreativeTabs.COMBAT);
+
+        MinecraftForge.EVENT_BUS.register(this);
     }
 
     @Override
@@ -61,8 +67,17 @@ public class ItemCombatTool extends Item {
         return new ActionResult<>(EnumActionResult.SUCCESS, player.getHeldItem(hand));
     }
 
-    @Override
-    public boolean itemInteractionForEntity(ItemStack stack, EntityPlayer player, EntityLivingBase target, EnumHand hand) {
+    /**
+     * Move here to handle CustomNPC interactions
+     */
+    @SubscribeEvent(priority = EventPriority.HIGHEST)
+    public void onInteractWithEntity(PlayerInteractEvent.EntityInteractSpecific event) {
+        if (!(event.getTarget() instanceof EntityLivingBase)) return;
+        final EntityLivingBase target = (EntityLivingBase) event.getTarget();
+
+        final EntityPlayer player = event.getEntityPlayer();
+        if (player.getHeldItem(event.getHand()).getItem() != this) return;
+
         if (player.isSneaking()) {
             final ICombatant com = CombatantProvider.get(player);
             com.setPuppet(target.getEntityId());
@@ -75,7 +90,10 @@ public class ItemCombatTool extends Item {
                 openAttributesGui(target);
             }
         }
+    }
 
+    @Override
+    public boolean itemInteractionForEntity(ItemStack stack, EntityPlayer player, EntityLivingBase target, EnumHand hand) {
         return true;
     }
 
