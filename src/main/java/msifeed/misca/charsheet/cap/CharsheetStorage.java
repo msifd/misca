@@ -12,6 +12,7 @@ import javax.annotation.Nullable;
 import java.util.Map;
 
 public class CharsheetStorage implements Capability.IStorage<ICharsheet> {
+
     @Nullable
     @Override
     public NBTBase writeNBT(Capability<ICharsheet> capability, ICharsheet instance, EnumFacing side) {

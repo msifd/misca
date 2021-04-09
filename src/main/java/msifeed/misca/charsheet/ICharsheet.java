@@ -10,6 +10,7 @@ import java.util.Map;
 
 public interface ICharsheet extends Cloneable {
     ResourceLocation KEY = new ResourceLocation(Misca.MODID, "sheet");
+    int MAX_NAME_LENGTH = 30;
 
     String getName();
     void setName(String name);

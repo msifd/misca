@@ -27,7 +27,10 @@ public class CharsheetImpl implements ICharsheet {
 
     @Override
     public void setName(String name) {
-        this.name = name;
+        if (name.length() > MAX_NAME_LENGTH)
+            this.name = name.substring(0, MAX_NAME_LENGTH);
+        else
+            this.name = name;
     }
 
     @Override

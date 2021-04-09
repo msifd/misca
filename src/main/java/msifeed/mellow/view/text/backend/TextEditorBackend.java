@@ -27,6 +27,7 @@ public class TextEditorBackend {
     private int viewWidthReserve = 4;
 
     private int maxLines = 1;
+    private int maxColumns = Integer.MAX_VALUE;
     private int maxWidth = Integer.MAX_VALUE;
 
     public TextEditorBackend() {
@@ -88,6 +89,14 @@ public class TextEditorBackend {
 
     public void setMaxLines(int n) {
         this.maxLines = n;
+    }
+
+    public int getMaxColumns() {
+        return maxColumns;
+    }
+
+    public void setMaxColumns(int maxColumns) {
+        this.maxColumns = maxColumns;
     }
 
     public void setMaxWidth(int maxWidth) {
@@ -406,6 +415,9 @@ public class TextEditorBackend {
         }
 
         public boolean insert(char c) {
+            if (columns >= maxColumns)
+                return false;
+
             final int cw = fontRenderer.getCharWidth(c);
             if (width + cw > maxWidth)
                 return false;
@@ -427,9 +439,12 @@ public class TextEditorBackend {
         }
 
         public String insertAtPos(String s, int pos) {
-            final String trimmed = fontRenderer.trimStringToWidth(s, maxWidth - width);
+            String trimmed = fontRenderer.trimStringToWidth(s, maxWidth - width);
             if (trimmed.isEmpty())
                 return s;
+
+            if (columns + trimmed.length() > maxColumns)
+                trimmed = s.substring(0, Math.max(0, Math.min(trimmed.length() - 1, maxColumns - columns)));
 
             sb.insert(pos, trimmed);
             columns += trimmed.length();

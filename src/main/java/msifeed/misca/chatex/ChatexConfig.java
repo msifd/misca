@@ -7,6 +7,7 @@ public class ChatexConfig {
     public GarbleSettings garble = new GarbleSettings();
     public String wikiUrlBase = "https://wiki.ariadna.su/w/";
     public int offtopRange = 15;
+    public int diceRollRange = 15;
 
     public int getSpeechRange(int level) {
         final int mid = (speechRanges.length - 1) / 2;

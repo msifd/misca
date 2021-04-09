@@ -99,9 +99,9 @@ public class ChatexRpc {
         LogDB.INSTANCE.log(sender, "offtop", SpecialSpeechFormat.offtop(sender, msg));
     }
 
-    public static void broadcastDiceRoll(EntityPlayerMP sender, String spec, long result) {
-        Misca.RPC.sendToAllTracking(sender, diceRoll, sender.getUniqueID(), spec, result);
-        Misca.RPC.sendTo(sender, diceRoll, sender.getUniqueID(), spec, result);
+    public static void broadcastDiceRoll(EntityPlayerMP sender, int range, String spec, long result) {
+        final NetworkRegistry.TargetPoint point = new NetworkRegistry.TargetPoint(sender.dimension, sender.posX, sender.posY, sender.posZ, range);
+        Misca.RPC.sendToAllAround(point, diceRoll, sender.getUniqueID(), spec, result);
         LogDB.INSTANCE.log(sender, "dice", RollFormat.dice(sender.getDisplayNameString(), spec, result));
     }
 

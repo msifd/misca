@@ -24,6 +24,7 @@ public class ScreenCharsheet extends MellowScreen {
 
         nameInput.grow(100, 0);
         nameInput.insert(charsheet.getName());
+        nameInput.getBackend().setMaxColumns(ICharsheet.MAX_NAME_LENGTH);
 
         wikiInput.grow(100, 0);
         wikiInput.insert(charsheet.getWikiPage());

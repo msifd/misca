@@ -92,7 +92,7 @@ public class SpeechFormat {
                 sb.setLength(0);
             }
 
-            if (Character.isLetterOrDigit(cp) && r > settings.missThreshold) {
+            if (r > settings.missThreshold) {
                 sb.append(' ');
             } else {
                 sb.appendCodePoint(cp);
