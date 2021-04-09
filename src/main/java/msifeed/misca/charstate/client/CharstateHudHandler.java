@@ -37,7 +37,7 @@ public class CharstateHudHandler {
             final double integrityLevel = Math.floor(integrity / 25);
 
             final IAttributeInstance staminaInstance = player.getEntityAttribute(StaminaHandler.STAMINA);
-            final double stamina = staminaInstance.getAttributeValue() * 100;
+            final double stamina = staminaInstance.getAttributeValue();
             final String staminaText = Math.round(stamina) + "%";
             final double staminaLevel = Math.floor(stamina / 25);
 
