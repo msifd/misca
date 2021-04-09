@@ -17,6 +17,7 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderLivingEvent;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
@@ -63,12 +64,14 @@ public class GuiCombatOverlay {
 
     private static void drawDebugInfo() {
         final Rules rules = Combat.getRules();
-        final EntityLivingBase leader = Minecraft.getMinecraft().player;
+        final EntityLivingBase self = Minecraft.getMinecraft().player;
+        final EntityLivingBase leader = BattleStateClient.STATE.getLeader();
+        final Vec3d leaderPos = leader != null ? leader.getPositionVector() : self.getPositionVector();
 
-        final EntityLivingBase actor = CombatFlow.getCombatActor(leader);
+        final EntityLivingBase actor = CombatFlow.getCombatActor(self);
         if (actor == null) return;
         final ICombatant com = CombatantProvider.get(actor);
-        final WeaponInfo weapon = Combat.getWeapons().get(leader, leader.getHeldItemMainhand());
+        final WeaponInfo weapon = Combat.getWeapons().get(self, self.getHeldItemMainhand());
 
         final double moveAp = rules.movementActionPoints(actor, com.getPosition(), actor.getPositionVector());
         final double overheadAp = com.getActionPointsOverhead();
@@ -76,7 +79,7 @@ public class GuiCombatOverlay {
         final double usageAp = rules.usageActionPoints(weapon) + overheadAp;
 
         final String[] lines = {
-                "actor: " + (CombatantProvider.get(leader).hasPuppet() ? "\u00A74" : "") + actor.getName(),
+                "actor: " + (CombatantProvider.get(self).hasPuppet() ? "\u00A74" : "") + actor.getName(),
                 "health: " + String.format("%.2f/%.2f", actor.getHealth(), actor.getMaxHealth()),
                 "neutral dmg: " + com.getNeutralDamage(),
                 "----",
@@ -85,6 +88,8 @@ public class GuiCombatOverlay {
                 "OVERHEAD: " + String.format("%.2f", overheadAp),
                 "ATTACK: " + formatActionPoints(attackAp, com.getActionPoints()),
                 "USAGE : " + formatActionPoints(usageAp, com.getActionPoints()),
+                "----",
+                "YOU-LEAD COVER: " + rules.coverPoints(self, self.getPositionVector(), leaderPos),
         };
 
         final FontRenderer fr = Minecraft.getMinecraft().fontRenderer;

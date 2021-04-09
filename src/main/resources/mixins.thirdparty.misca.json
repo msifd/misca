@@ -11,6 +11,7 @@
     "techguns.GenericGunMixin",
     "techguns.ReloadStartedMessageMixin",
     "thaumcraft.ItemCasterMixin",
+    "wizardry.EntityMagicConstructMixin",
     "wizardry.ItemScrollMixin",
     "wizardry.ItemWandMixin"
   ]

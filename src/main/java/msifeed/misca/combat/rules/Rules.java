@@ -1,12 +1,15 @@
 package msifeed.misca.combat.rules;
 
+import electroblob.wizardry.entity.construct.EntityIceBarrier;
 import msifeed.misca.combat.CharAttribute;
 import msifeed.misca.rolls.Dices;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.attributes.IAttributeInstance;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -117,30 +120,52 @@ public class Rules {
 
     public double evasionFactor(CombatantInfo actor, CombatantInfo victim) {
         if (actor.isRanged()) {
-            double cover = victim.is(WeaponTrait.evadeRange) ? coverPerBlock : 0;
-            cover += coverBlocks(victim.entity.world, victim.pos, actor.pos);
+            final double cover = victim.is(WeaponTrait.evadeRange) ? coverPerBlock : 0
+                    + coverPoints(victim.entity, victim.pos, actor.pos);
             return MathHelper.clamp(cover, 0, 1);
         }
 
         return 1;
     }
 
-    public double coverBlocks(World world, Vec3d vPos, Vec3d sPos) {
-        final Vec3d vec = sPos.subtract(vPos);
+    public double coverPoints(EntityLivingBase victim, Vec3d vPos, Vec3d aPos) {
+        final double blocks = blockCover(victim.world, vPos, aPos);
+        if (blocks >= 1) return blocks;
+
+        final double entities = entityCover(victim, vPos, aPos);
+        return blocks + entities;
+    }
+
+    public double blockCover(World world, Vec3d vPos, Vec3d aPos) {
+        final Vec3d vec = aPos.subtract(vPos);
 
         final EnumFacing facingX = EnumFacing.getFacingFromVector((float) vec.x, 0, 0);
         final EnumFacing facingZ = EnumFacing.getFacingFromVector(0, 0, (float) vec.z);
         final BlockPos posX = new BlockPos(vPos).offset(facingX);
         final BlockPos posZ = new BlockPos(vPos).offset(facingZ);
 
-        final double coverage = blockCoverage(world, posX) + blockCoverage(world, posX.up())
-                + blockCoverage(world, posZ) + blockCoverage(world, posZ.up());
+        final double coverage = oneBlockCoverage(world, posX) + oneBlockCoverage(world, posX.up())
+                + oneBlockCoverage(world, posZ) + oneBlockCoverage(world, posZ.up());
 
         return coverage * coverPerBlock;
     }
 
-    private static int blockCoverage(World world, BlockPos pos) {
+    private static int oneBlockCoverage(World world, BlockPos pos) {
         return world.getBlockState(pos).getBlock().isPassable(world, pos) ? 0 : 1;
+    }
+
+    public double entityCover(EntityLivingBase victim, Vec3d vPos, Vec3d aPos) {
+        final World world = victim.world;
+
+        final Vec3d vec = aPos.subtract(aPos).normalize().scale(2);
+        final AxisAlignedBB bb = victim.getEntityBoundingBox().offset(vec);
+        for (Entity e : world.getEntitiesWithinAABBExcludingEntity(victim, bb)) {
+            if (e instanceof EntityIceBarrier) {
+                return 1;
+            }
+        }
+
+        return 0;
     }
 
     // Final hit chance and criticality
@@ -231,7 +256,8 @@ public class Rules {
         return new AttackResult(actor, victim);
     }
 
-    /**   crit hit chance            crit evade chance
+    /**
+     * crit hit chance            crit evade chance
      * *        +                            +
      * *        |                            |
      * *        v                            v
