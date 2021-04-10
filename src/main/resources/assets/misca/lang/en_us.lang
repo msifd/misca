@@ -1,5 +1,7 @@
 key.categories.misca=Misca
 key.misca.charsheet=Charsheet
+key.misca.effort=Efforts
+key.misca.combat=Combat
 
 item.blank_key.name=Blank key
 item.mechanical_key.name=Key

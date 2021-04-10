@@ -3,6 +3,8 @@ package msifeed.misca.client;
 import msifeed.misca.combat.client.GuiCombatOverlay;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.settings.KeyBinding;
+import net.minecraftforge.client.settings.KeyConflictContext;
+import net.minecraftforge.client.settings.KeyModifier;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -16,9 +18,9 @@ import org.lwjgl.opengl.Display;
 public enum MiscaClient {
     INSTANCE;
 
-    public static KeyBinding charsheetKey = new KeyBinding("key.misca.charsheet", Keyboard.KEY_I, "key.categories.misca");
-    public static KeyBinding combatKey = new KeyBinding("key.misca.combat", Keyboard.KEY_O, "key.categories.misca");
-    public static KeyBinding rollKey = new KeyBinding("key.misca.roll", Keyboard.KEY_P, "key.categories.misca");
+    public static KeyBinding charsheetKey = new KeyBinding("key.misca.charsheet", KeyConflictContext.IN_GAME, KeyModifier.SHIFT, Keyboard.KEY_I, "key.categories.misca");
+    public static KeyBinding effortsKey = new KeyBinding("key.misca.effort", KeyConflictContext.IN_GAME, Keyboard.KEY_I, "key.categories.misca");
+    public static KeyBinding combatKey = new KeyBinding("key.misca.combat", KeyConflictContext.IN_GAME, Keyboard.KEY_O, "key.categories.misca");
 
     public void preInit() {
         Display.setTitle(MiscaConfig.windowTitle);
@@ -30,6 +32,7 @@ public enum MiscaClient {
 
         MiscaTheme.load();
         ClientRegistry.registerKeyBinding(charsheetKey);
+        ClientRegistry.registerKeyBinding(effortsKey);
         ClientRegistry.registerKeyBinding(combatKey);
     }
 
@@ -39,7 +42,7 @@ public enum MiscaClient {
             Minecraft.getMinecraft().displayGuiScreen(new ScreenCharsheet(Minecraft.getMinecraft().player));
         else if (combatKey.isPressed())
             Minecraft.getMinecraft().displayGuiScreen(new ScreenCombat());
-        else if (rollKey.isPressed())
+        else if (effortsKey.isPressed())
             Minecraft.getMinecraft().displayGuiScreen(new ScreenEffortRoll(Minecraft.getMinecraft().player));
     }
 }
