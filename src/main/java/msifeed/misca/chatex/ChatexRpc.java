@@ -16,6 +16,7 @@ import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.client.network.NetworkPlayerInfo;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvent;
@@ -23,14 +24,17 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.client.FMLClientHandler;
+import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.fml.server.FMLServerHandler;
 
 import java.util.Objects;
 import java.util.UUID;
 
 public class ChatexRpc {
+    private static final String cmd = "chatex.cmd";
     private static final String raw = "chatex.raw";
     private static final String gmGlobal = "chatex.gmGlobal";
     private static final String speech = "chatex.speech";
@@ -117,6 +121,12 @@ public class ChatexRpc {
 
     // // // // Server handlers
 
+    @RpcMethodHandler(cmd)
+    public void onCommand(RpcContext ctx, String command) {
+        final MinecraftServer server = FMLCommonHandler.instance().getMinecraftServerInstance();
+        server.getCommandManager().executeCommand(ctx.getServerHandler().player, command);
+    }
+
     @RpcMethodHandler(notifyTyping)
     public void onNotifyTyping(RpcContext ctx) {
         final EntityPlayerMP sender = ctx.getServerHandler().player;
@@ -125,6 +135,10 @@ public class ChatexRpc {
     }
 
     // // // // Client senders
+
+    public static void sendCommand(String msg) {
+        Misca.RPC.sendToServer(cmd, msg);
+    }
 
     public static void sendSpeech(UUID speakerId, int range, String msg) {
         msg = net.minecraftforge.event.ForgeEventFactory.onClientSendMessage(msg);

@@ -7,10 +7,18 @@ import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
 
+import java.util.Collections;
+import java.util.List;
+
 public class OfftopCommand extends CommandBase {
     @Override
     public String getName() {
         return "offtop";
+    }
+
+    @Override
+    public List<String> getAliases() {
+        return Collections.singletonList("o");
     }
 
     @Override

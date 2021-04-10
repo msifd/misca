@@ -26,7 +26,7 @@ public enum GameMasterParams {
 
     public static class Entry {
         public boolean replaceSpeech = false;
-        public int range = 15;
+        public int range = 20;
         public TextFormatting color = TextFormatting.DARK_PURPLE;
         public String prefix = "";
 

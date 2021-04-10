@@ -13,6 +13,7 @@ import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.util.ITabCompleter;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraftforge.client.ClientCommandHandler;
 import net.minecraftforge.common.config.Config;
 import net.minecraftforge.common.config.ConfigManager;
 import org.lwjgl.input.Keyboard;
@@ -34,6 +35,7 @@ public class ChatexScreen extends MellowScreen implements ITabCompleter {
     private String historyInputBuffer = "";
 
     public ChatexScreen(String text) {
+        input.getBackend().setMaxLines(100);
         input.setSize(width, RenderUtils.lineHeight());
         input.insert(text);
 
@@ -52,6 +54,7 @@ public class ChatexScreen extends MellowScreen implements ITabCompleter {
         final int inputHeight = inputLineHeight * input.getBackend().getLineCount() + 3;
         input.setPos(5, height - inputHeight - 5, 1);
         input.setSize(inputWidth, inputHeight);
+        input.getBackend().getView().setSize(inputWidth, inputHeight);
         FocusState.INSTANCE.setFocus(input);
 
         resizer.getScreenSize().set(width, height);
@@ -154,7 +157,7 @@ public class ChatexScreen extends MellowScreen implements ITabCompleter {
         if (text.isEmpty()) return;
 
         if (text.startsWith("/")) {
-            sendChatMessage(text);
+            sendCommand(text);
         } else {
             final EntityPlayerSP self = Minecraft.getMinecraft().player;
             ChatexRpc.sendSpeech(self.getUniqueID(), Misca.getSharedConfig().chat.getSpeechRange(0), text);
@@ -162,6 +165,14 @@ public class ChatexScreen extends MellowScreen implements ITabCompleter {
 
         hud.addToSentMessages(text);
         historyCursor = 0;
+    }
+
+    private void sendCommand(String msg) {
+        msg = net.minecraftforge.event.ForgeEventFactory.onClientSendMessage(msg);
+        if (msg.isEmpty()) return;
+        if (ClientCommandHandler.instance.executeCommand(mc.player, msg) != 0) return;
+
+        ChatexRpc.sendCommand(msg);
     }
 
     private void setHistoryMessage(int cursorDelta) {
