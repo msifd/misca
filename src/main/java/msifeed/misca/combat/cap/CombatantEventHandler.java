@@ -25,6 +25,7 @@ public class CombatantEventHandler {
         final ICombatant original = CombatantProvider.get(event.getOriginal());
         final ICombatant cloned = CombatantProvider.get(event.getEntityPlayer());
         cloned.replaceWith(original);
+        CombatantSync.sync(event.getEntityPlayer());
     }
 
     @SubscribeEvent

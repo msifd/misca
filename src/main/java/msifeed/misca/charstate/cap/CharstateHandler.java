@@ -17,5 +17,6 @@ public class CharstateHandler {
         final ICharstate original = CharstateProvider.get(event.getOriginal());
         final ICharstate cloned = CharstateProvider.get(event.getEntityPlayer());
         cloned.replaceWith(original);
+        CharstateSync.sync(event.getEntityPlayer());
     }
 }

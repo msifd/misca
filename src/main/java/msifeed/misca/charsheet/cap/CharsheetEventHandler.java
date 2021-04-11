@@ -57,5 +57,6 @@ public class CharsheetEventHandler {
         final ICharsheet original = CharsheetProvider.get(event.getOriginal());
         final ICharsheet cloned = CharsheetProvider.get(event.getEntityPlayer());
         cloned.replaceWith(original);
+        CharsheetSync.sync(event.getEntityPlayer());
     }
 }
