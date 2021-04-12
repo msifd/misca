@@ -2,6 +2,7 @@ package msifeed.misca.combat;
 
 import msifeed.misca.Misca;
 import msifeed.misca.combat.rules.CombatantInfo;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.attributes.IAttribute;
 import net.minecraft.entity.ai.attributes.RangedAttribute;
@@ -31,5 +32,13 @@ public enum CharAttribute {
 
     public double get(CombatantInfo ci) {
         return ci.attributes.get(this);
+    }
+
+    public String tr() {
+        return I18n.format("enum.misca.attribute." + name());
+    }
+
+    public String trFull() {
+        return I18n.format("enum.misca.attribute.full." + name());
     }
 }

@@ -4,12 +4,13 @@ import msifeed.mellow.MellowScreen;
 import msifeed.mellow.utils.Direction;
 import msifeed.mellow.utils.UiBuilder;
 import msifeed.mellow.view.button.ButtonLabel;
-import msifeed.mellow.view.text.Label;
+import msifeed.mellow.view.text.LabelTr;
 import msifeed.misca.combat.battle.Battle;
 import msifeed.misca.combat.battle.BattleStateClient;
 import msifeed.misca.combat.cap.CombatantProvider;
 import msifeed.misca.combat.cap.ICombatant;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -40,27 +41,27 @@ public class ScreenCombat extends MellowScreen {
         final boolean notInQueue = started && !inQueue;
 
         UiBuilder.of(container)
-                .add(new Label("Combat")).center(Direction.HORIZONTAL)
+                .add(new LabelTr("gui.misca.combat")).center(Direction.HORIZONTAL)
 
                 .beginGroup() // Content
 
                 .beginGroup()
-                    .when(started, ui -> ui.add(makeButton("Finish Turn", "next")).below())
+                    .when(started, ui -> ui.add(makeButton("finishTurn", "next")).below())
                     .moveGroup(0, 10, 0)
                     .appendGroup()
 
                 .beginGroup()
-                    .when(inQueue, ui -> ui.add(makeButton("Leave queue", "leave")).below())
-                    .when(notInQueue, ui -> ui.add(makeButton("Join queue", "join")).below())
-                    .when(!inBattle, ui -> ui.add(makeButton("Init", "init")).below())
-                    .when(canStart, ui -> ui.add(makeButton("Start", "start")).below())
-                    .when(inBattle, ui -> ui.add(makeButton("Add", "add")).below())
+                    .when(inQueue, ui -> ui.add(makeButton("leaveQueue", "leave")).below())
+                    .when(notInQueue, ui -> ui.add(makeButton("joinQueue", "join")).below())
+                    .when(!inBattle, ui -> ui.add(makeButton("init", "init")).below())
+                    .when(canStart, ui -> ui.add(makeButton("start", "start")).below())
+                    .when(inBattle, ui -> ui.add(makeButton("add", "add")).below())
                     .moveGroup(0, 10, 0)
                     .appendGroup()
 
                 .beginGroup()
-                    .when(inBattle, ui -> ui.add(makeButton("Exit", "exit")).below())
-                    .when(inBattle, ui -> ui.add(makeButton("Destroy", "destroy")).below())
+                    .when(inBattle, ui -> ui.add(makeButton("exit", "exit")).below())
+                    .when(inBattle, ui -> ui.add(makeButton("destroy", "destroy")).below())
                     .moveGroup(0, 10, 0)
                     .appendGroup()
 
@@ -72,9 +73,9 @@ public class ScreenCombat extends MellowScreen {
                 .build();
     }
 
-    private ButtonLabel makeButton(String label, String cmd) {
-        final ButtonLabel btn = new ButtonLabel(label);
-        btn.setSize(80, 15);
+    private ButtonLabel makeButton(String key, String cmd) {
+        final ButtonLabel btn = new ButtonLabel(I18n.format("gui.misca.combat." + key));
+        btn.setSize(100, 15);
         btn.setCallback(() -> sendChatMessage("/combat " + cmd, false));
         return btn;
     }

@@ -2,7 +2,6 @@ package msifeed.misca.cmd;
 
 import msifeed.misca.MiscaPerms;
 import msifeed.misca.charsheet.CharEffort;
-import msifeed.misca.charsheet.ICharsheet;
 import msifeed.misca.charsheet.cap.CharsheetProvider;
 import msifeed.misca.charstate.cap.CharstateProvider;
 import msifeed.sys.cap.FloatContainer;
@@ -64,18 +63,17 @@ public class EffortsCommand extends CommandBase {
         final EntityPlayerMP player = getPlayer(server, sender, args[0]);
         final CharEffort eff = getEffort(args[1]);
 
-        final ICharsheet sheet = CharsheetProvider.get(player);
         final FloatContainer<CharEffort> efforts = CharstateProvider.get(player).efforts();
+        final int max = CharsheetProvider.get(player).effortPools().get(eff);
 
         if (args.length >= 4 && MiscaPerms.isGameMaster(sender)) {
             final boolean set = args[2].equalsIgnoreCase("set");
             final float value = (float) parseDouble(args[3], -50, 50);
-            final int max = sheet.effortPools().get(eff);
             if (set) efforts.set(eff, MathHelper.clamp(value, 0, max));
             else efforts.set(eff, MathHelper.clamp(value + efforts.get(eff), 0, max));
         }
 
-        final String rep = String.format("%s's %s: %.4f", player.getDisplayNameString(), eff.toString(), efforts.get(eff));
+        final String rep = String.format("%s's %s: %.2f/%d", player.getDisplayNameString(), eff.tr(), efforts.get(eff), max);
         sender.sendMessage(new TextComponentString(rep));
     }
 

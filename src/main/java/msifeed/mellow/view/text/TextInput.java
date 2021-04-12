@@ -20,6 +20,7 @@ public class TextInput extends View implements InputHandler.Keyboard, InputHandl
     protected int colorCursor = 0xffffffff;
 
     protected long lastTimePressed = 0;
+    protected Runnable changeCallback = null;
 
     public TextInput() {
         setSize(0, RenderUtils.lineHeight() + textOffset.y);
@@ -35,6 +36,7 @@ public class TextInput extends View implements InputHandler.Keyboard, InputHandl
 
     public void insert(CharSequence text) {
         backend.insert(text);
+        if (changeCallback != null) changeCallback.run();
     }
 
     public void clear() {
@@ -56,6 +58,10 @@ public class TextInput extends View implements InputHandler.Keyboard, InputHandl
         getBackend().getView().setPos(0, 0);
     }
 
+    public void setCallback(Runnable changeCallback) {
+        this.changeCallback = changeCallback;
+    }
+
     @Override
     public boolean isFocusable() {
         return true;
@@ -64,7 +70,9 @@ public class TextInput extends View implements InputHandler.Keyboard, InputHandl
     @Override
     public boolean onKeyboard(char c, int key) {
         lastTimePressed = System.currentTimeMillis();
-        return inputHelper.onKeyboard(c, key);
+        final boolean result = inputHelper.onKeyboard(c, key);
+        if (result && changeCallback != null) changeCallback.run();
+        return result;
     }
 
     @Override

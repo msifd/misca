@@ -11,7 +11,7 @@
       60
     ],
     "garble": {
-      "rangeThresholdPart": 0.6,
+      "thresholdPart": 0.6,
       "gray": 0.5,
       "darkGray": 0.7,
       "miss": 0.9

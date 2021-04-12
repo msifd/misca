@@ -4,7 +4,7 @@ import msifeed.mellow.MellowScreen;
 import msifeed.mellow.utils.Direction;
 import msifeed.mellow.utils.UiBuilder;
 import msifeed.mellow.view.button.ButtonLabel;
-import msifeed.mellow.view.text.Label;
+import msifeed.mellow.view.text.LabelTr;
 import msifeed.mellow.view.text.TextInput;
 import msifeed.misca.charsheet.CharEffort;
 import msifeed.misca.charsheet.ICharsheet;
@@ -21,15 +21,18 @@ public class ScreenEffortRoll extends MellowScreen {
 
     final TextInput difficultyInput = new TextInput();
     final TextInput amountInput = new TextInput();
+    final LabelTr chanceLabel = new LabelTr("gui.misca.efforts.chance", getChance());
 
     public ScreenEffortRoll(EntityPlayer target) {
         this.target = target;
         this.charsheet = CharsheetProvider.get(target);
         this.state = CharstateProvider.get(target);
 
+        difficultyInput.setCallback(() -> chanceLabel.setText("gui.misca.efforts.chance", getChance()));
         difficultyInput.grow(30, 0);
         difficultyInput.insert("2");
 
+        amountInput.setCallback(() -> chanceLabel.setText("gui.misca.efforts.chance", getChance()));
         amountInput.grow(30, 0);
         amountInput.insert("1");
     }
@@ -39,26 +42,32 @@ public class ScreenEffortRoll extends MellowScreen {
         super.initGui();
 
         UiBuilder.of(container)
-                .add(new Label("Efforts: " + target.getDisplayNameString())).center(Direction.HORIZONTAL)
+                .add(new LabelTr("gui.misca.efforts", target.getDisplayNameString())).center(Direction.HORIZONTAL)
 
                 .beginGroup()
-                    .add(new Label("Difficulty")).size(50, difficultyInput.getBaseGeom().h).below().move(0, 4, 0)
+
+                .beginGroup()
+                    .add(new LabelTr("gui.misca.efforts.diff")).size(50, difficultyInput.getBaseGeom().h).below().move(0, 4, 0)
                     .add(difficultyInput).right().move(0, -2, 0)
-                    .centerGroup(Direction.HORIZONTAL)
                     .moveGroup(0, 10, 0)
                     .pinGroup()
 
                 .beginGroup()
-                    .add(new Label("Amount")).size(50, amountInput.getBaseGeom().h).below().move(0, 4, 0)
+                    .add(new LabelTr("gui.misca.efforts.amount")).size(50, amountInput.getBaseGeom().h).below().move(0, 4, 0)
                     .add(amountInput).right().move(0, -2, 0)
-                    .centerGroup(Direction.HORIZONTAL)
+                    .add(chanceLabel).size(30, amountInput.getBaseGeom().h).right().move(2, 1, 0)
+//                    .centerGroup(Direction.HORIZONTAL)
                     .pinGroup()
+
+                .centerGroup(Direction.HORIZONTAL)
+//                .moveGroup(0, 10, 0)
+                .appendGroup()
 
                 .beginGroup()
                     .forEach(CharEffort.values(), (ui, effort) -> {
                         final int available = (int) Math.floor(state.efforts().get(effort));
                         final int poolSize = charsheet.effortPools().get(effort);
-                        final String label = String.format("%s %d/%d", effort.toString(), available, poolSize);
+                        final String label = String.format("%s %d/%d", effort.tr(), available, poolSize);
                         final ButtonLabel btn = new ButtonLabel(label);
                         btn.setSize(100, 15);
                         btn.setCallback(() -> roll(effort));
@@ -96,5 +105,14 @@ public class ScreenEffortRoll extends MellowScreen {
         } catch (Exception e) {
             return 0;
         }
+    }
+
+    private int getChance() {
+        final int diff = getDifficulty();
+        final int amount = getAmount();
+        if (diff > 0 && amount > 0)
+            return (int) ((double) amount / diff * 100);
+        else
+            return 0;
     }
 }

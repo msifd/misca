@@ -20,3 +20,61 @@ item.combat_tool.name=Combat tool
 misca.chatex.speech=%s: %s
 misca.chatex.global=[GLOB] %s: %s
 
+enum.misca.effort.impact=Воздействие
+enum.misca.effort.knowledge=Знание
+enum.misca.effort.reflection=Размышление
+enum.misca.effort.confidence=Уверенность
+enum.misca.effort.reputation=Репутация
+
+enum.misca.skill.psychology=Психология
+enum.misca.skill.management=Управление
+enum.misca.skill.thievery=Воровство
+enum.misca.skill.survival=Выживание
+enum.misca.skill.hardworking=Работа
+enum.misca.skill.biology=Биология
+enum.misca.skill.engineering=Инженерия
+enum.misca.skill.sorcery=Колдовство
+enum.misca.skill.research=Исследование
+enum.misca.skill.blacksmith=Кузнечество
+enum.misca.skill.magic=Магия
+
+enum.misca.resource.est=Эст
+enum.misca.resource.ord=Орд
+enum.misca.resource.seal=Печати
+
+enum.misca.attribute.str=СИЛ
+enum.misca.attribute.per=ВСП
+enum.misca.attribute.end=ВЫН
+enum.misca.attribute.ref=РЕФ
+enum.misca.attribute.agi=ЛОВ
+enum.misca.attribute.lck=УДЧ
+
+enum.misca.attribute.full.str=Мастерство
+enum.misca.attribute.full.per=Восприятие
+enum.misca.attribute.full.end=Стойкость
+enum.misca.attribute.full.ref=Рефлексы
+enum.misca.attribute.full.agi=Подвижность
+enum.misca.attribute.full.lck=Удача
+
+gui.misca.submit=Применить
+
+gui.misca.efforts=Усилия %s
+gui.misca.efforts.diff=Сложность
+gui.misca.efforts.amount=Затраты
+gui.misca.efforts.chance=Шанс: %d%%
+
+gui.misca.attrs=Атрибуты %s
+
+gui.misca.combat=Бой
+gui.misca.combat.finishTurn=Закончить ход
+gui.misca.combat.leaveQueue=Выйти из очереди
+gui.misca.combat.joinQueue=Вступить в очередь
+gui.misca.combat.init=Создать бой
+gui.misca.combat.start=Начать бой
+gui.misca.combat.add=Добавить ближайших
+gui.misca.combat.exit=Выйти из боя
+gui.misca.combat.destroy=Уничтожить бой
+
+gui.misca.charsheet=Персонаж %s
+gui.misca.charsheet.name=Имя
+gui.misca.charsheet.wiki=Вики

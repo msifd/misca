@@ -87,6 +87,8 @@ public class BattleManager {
         battle.destroy();
         battles.remove(battle.getId());
         BattleStateSync.syncDestroy(battle);
+
+        System.out.println("battle destroyed " + battles.size());
     }
 
     public void addToBattle(long bid, EntityLivingBase entity) {
@@ -138,6 +140,8 @@ public class BattleManager {
 
         final boolean leaderRemoved = battle.isLeader(entity.getUniqueID());
         battle.removeMember(entity.getUniqueID());
+        if (entity instanceof EntityPlayerMP)
+            BattleStateSync.sync((EntityPlayerMP) entity, battle);
 
         if (leaderRemoved) {
             if (BattleFlow.selectNextLeader(battle)) {

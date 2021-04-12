@@ -5,9 +5,11 @@ import msifeed.mellow.utils.Direction;
 import msifeed.mellow.utils.UiBuilder;
 import msifeed.mellow.view.button.ButtonLabel;
 import msifeed.mellow.view.text.Label;
+import msifeed.mellow.view.text.LabelTr;
 import msifeed.mellow.view.text.TextInput;
 import msifeed.misca.combat.CharAttribute;
 import msifeed.misca.combat.cap.CombatantSync;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.EntityLivingBase;
 
 import java.util.EnumMap;
@@ -37,12 +39,12 @@ public class ScreenCombatAttributes extends MellowScreen {
         final int lineHeight = attrInputs.get(CharAttribute.str).getBaseGeom().h;
 
         UiBuilder.of(container)
-                .add(new Label("Attributes: " + target.getName())).center(Direction.HORIZONTAL)
+                .add(new LabelTr("gui.misca.attrs", target.getName())).center(Direction.HORIZONTAL)
 
                 .beginGroup()
                     .forEach(CharAttribute.values(), (ui, attr) ->
                         ui.beginGroup()
-                        .add(new Label(attr.name())).size(20, lineHeight).below().move(0, 3, 0)
+                        .add(new Label(attr.tr())).size(20, lineHeight).below().move(0, 3, 0)
                         .add(attrInputs.get(attr)).right().move(0, -1, 0)
                         .centerGroup(Direction.HORIZONTAL)
                         .pinGroup())
@@ -50,7 +52,7 @@ public class ScreenCombatAttributes extends MellowScreen {
                     .appendGroup()
 
                 .add(() -> {
-                    final ButtonLabel btn = new ButtonLabel("[Submit]");
+                    final ButtonLabel btn = new ButtonLabel(I18n.format("gui.misca.submit"));
                     btn.setSize(50, 15);
                     btn.setCallback(this::submit);
                     return btn;
