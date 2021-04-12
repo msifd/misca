@@ -33,22 +33,22 @@ public class CharstateHudHandler {
 
             final IAttributeInstance integrityInstance = player.getEntityAttribute(IntegrityHandler.INTEGRITY);
             final double integrity = integrityInstance.getAttributeValue();
-            final String integrityText = String.format("%.1f", integrity);
+            final String integrityText = String.format("%.0f%%", integrity);
             final double integrityLevel = Math.floor(integrity / 25);
 
             final IAttributeInstance staminaInstance = player.getEntityAttribute(StaminaHandler.STAMINA);
             final double stamina = staminaInstance.getAttributeValue();
-            final String staminaText = Math.round(stamina) + "%";
+            final String staminaText = String.format("%.0f%%", stamina);
             final double staminaLevel = Math.floor(stamina / 25);
 
             final IAttributeInstance corruptionInstance = player.getEntityAttribute(CorruptionHandler.CORRUPTION);
             final double corruption = corruptionInstance.getAttributeValue();
-            final String corruptionText = String.format("%.1f", corruption);
+            final String corruptionText = String.format("%.0f%%", corruption);
             final double corruptionLevel = Math.floor((100 - corruption) / 25);
 
             final IAttributeInstance sanityInstance = player.getEntityAttribute(SanityHandler.SANITY);
             final double sanity = sanityInstance.getAttributeValue();
-            final String sanityText = String.format("%.1f", sanity);
+            final String sanityText = String.format("%.0f%%", sanity);
             final double sanityLevel = Math.floor(sanity / 25);
 
             final int width = resolution.getScaledWidth();
