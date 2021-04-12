@@ -71,8 +71,7 @@ public class ChatexRpc {
     }
 
     public static void broadcastRaw(EntityPlayerMP sender, int range, ITextComponent component) {
-        final NetworkRegistry.TargetPoint point = new NetworkRegistry.TargetPoint(sender.dimension, sender.posX, sender.posY, sender.posZ, range);
-        Misca.RPC.sendToAllAround(point, raw, component);
+        Misca.RPC.sendToAllAround(sender, range, raw, component);
         LogDB.INSTANCE.log(sender, "raw", component);
     }
 
@@ -80,8 +79,7 @@ public class ChatexRpc {
         final SpeechEvent event = new SpeechEvent(sender, range, msg, new TextComponentString(msg));
         if (MinecraftForge.EVENT_BUS.post(event)) return;
 
-        Misca.RPC.sendToAllTracking(sender, speech, sender.getUniqueID(), range, msg);
-        Misca.RPC.sendTo(sender, speech, sender.getUniqueID(), range, msg);
+        Misca.RPC.sendToAllVisibleTo(sender, speech, sender.getUniqueID(), range, msg);
         LogDB.INSTANCE.log(sender, "speech", msg);
     }
 
@@ -98,20 +96,17 @@ public class ChatexRpc {
     }
 
     public static void broadcastOfftop(EntityPlayerMP sender, int range, String msg) {
-        final NetworkRegistry.TargetPoint point = new NetworkRegistry.TargetPoint(sender.dimension, sender.posX, sender.posY, sender.posZ, range);
-        Misca.RPC.sendToAllAround(point, offtop, sender.getUniqueID(), msg);
+        Misca.RPC.sendToAllAround(sender, range, offtop, sender.getUniqueID(), msg);
         LogDB.INSTANCE.log(sender, "offtop", SpecialSpeechFormat.offtop(sender, msg));
     }
 
     public static void broadcastDiceRoll(EntityPlayerMP sender, int range, String spec, long result) {
-        final NetworkRegistry.TargetPoint point = new NetworkRegistry.TargetPoint(sender.dimension, sender.posX, sender.posY, sender.posZ, range);
-        Misca.RPC.sendToAllAround(point, diceRoll, sender.getUniqueID(), spec, result);
+        Misca.RPC.sendToAllAround(sender, range, diceRoll, sender.getUniqueID(), spec, result);
         LogDB.INSTANCE.log(sender, "dice", RollFormat.dice(sender.getDisplayNameString(), spec, result));
     }
 
     public static void broadcastEffortRoll(EntityPlayerMP sender, CharEffort effort, int amount, int difficulty, boolean result) {
-        Misca.RPC.sendToAllTracking(sender, effortRoll, sender.getUniqueID(), effort.ordinal(), amount, difficulty, result);
-        Misca.RPC.sendTo(sender, effortRoll, sender.getUniqueID(), effort.ordinal(), amount, difficulty, result);
+        Misca.RPC.sendToAllVisibleTo(sender, effortRoll, sender.getUniqueID(), effort.ordinal(), amount, difficulty, result);
         LogDB.INSTANCE.log(sender, "effort", RollFormat.effort(sender, effort, amount, difficulty, result));
     }
 
@@ -131,7 +126,7 @@ public class ChatexRpc {
     public void onNotifyTyping(RpcContext ctx) {
         final EntityPlayerMP sender = ctx.getServerHandler().player;
         final long now = System.currentTimeMillis();
-        Misca.RPC.sendToAllTracking(sender, broadcastTyping, sender.getEntityId(), now);
+        Misca.RPC.sendToAllAround(sender, 16, broadcastTyping, sender.getEntityId(), now);
     }
 
     // // // // Client senders

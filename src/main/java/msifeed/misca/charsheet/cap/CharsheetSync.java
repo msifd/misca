@@ -32,9 +32,7 @@ public class CharsheetSync {
 
     public static void sync(EntityPlayer target) {
         final NBTTagCompound nbt = CharsheetProvider.encode(CharsheetProvider.get(target));
-        if (target instanceof EntityPlayerMP)
-            Misca.RPC.sendTo((EntityPlayerMP) target, syncSelf, nbt);
-        Misca.RPC.sendToAllTracking(target, sync, target.getUniqueID(), nbt);
+        Misca.RPC.sendToAllVisibleTo(target, sync, target.getUniqueID(), nbt);
     }
 
     @RpcMethodHandler(post)

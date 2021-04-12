@@ -1,8 +1,10 @@
 package msifeed.sys.rpc;
 
+import com.google.common.annotations.Beta;
 import io.netty.channel.ChannelFutureListener;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.network.FMLEmbeddedChannel;
 import net.minecraftforge.fml.common.network.FMLOutboundHandler;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
@@ -46,10 +48,20 @@ public class RpcChannel {
         channels.get(Side.SERVER).writeAndFlush(new RpcMessage(method, args)).addListener(ChannelFutureListener.FIRE_EXCEPTION_ON_FAILURE);
     }
 
+    public void sendToAllAround(Entity entity, int range, String method, Object... args) {
+        final NetworkRegistry.TargetPoint point = new NetworkRegistry.TargetPoint(entity.dimension, entity.posX, entity.posY, entity.posZ, range);
+        sendToAllAround(point, method, args);
+    }
+
     public void sendToAllAround(NetworkRegistry.TargetPoint point, String method, Object... args) {
         channels.get(Side.SERVER).attr(FMLOutboundHandler.FML_MESSAGETARGET).set(FMLOutboundHandler.OutboundTarget.ALLAROUNDPOINT);
         channels.get(Side.SERVER).attr(FMLOutboundHandler.FML_MESSAGETARGETARGS).set(point);
         channels.get(Side.SERVER).writeAndFlush(new RpcMessage(method, args)).addListener(ChannelFutureListener.FIRE_EXCEPTION_ON_FAILURE);
+    }
+
+    public void sendToAllVisibleTo(Entity entity, String method, Object... args) {
+        final NetworkRegistry.TargetPoint point = new NetworkRegistry.TargetPoint(entity.dimension, entity.posX, entity.posY, entity.posZ, 0);
+        sendToAllTracking(point, method, args);
     }
 
     public void sendToAllTracking(NetworkRegistry.TargetPoint point, String method, Object... args) {
@@ -58,6 +70,9 @@ public class RpcChannel {
         channels.get(Side.SERVER).writeAndFlush(new RpcMessage(method, args)).addListener(ChannelFutureListener.FIRE_EXCEPTION_ON_FAILURE);
     }
 
+    /**
+     * Will not work as expected
+     */
     public void sendToAllTracking(Entity entity, String method, Object... args) {
         channels.get(Side.SERVER).attr(FMLOutboundHandler.FML_MESSAGETARGET).set(FMLOutboundHandler.OutboundTarget.TRACKING_ENTITY);
         channels.get(Side.SERVER).attr(FMLOutboundHandler.FML_MESSAGETARGETARGS).set(entity);

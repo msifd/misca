@@ -17,9 +17,7 @@ public class CharstateSync {
 
     public static void sync(EntityPlayer target) {
         final NBTTagCompound nbt = CharstateProvider.encode(CharstateProvider.get(target));
-        Misca.RPC.sendToAllTracking(target, sync, target.getUniqueID(), nbt);
-        if (target instanceof EntityPlayerMP)
-            Misca.RPC.sendTo((EntityPlayerMP) target, syncSelf, nbt);
+        Misca.RPC.sendToAllVisibleTo(target, sync, target.getUniqueID(), nbt);
     }
 
     @SideOnly(Side.CLIENT)
