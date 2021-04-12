@@ -12,7 +12,8 @@
     "ModelRendererMixin",
     "NBTTagLongArrayMixin",
     "PlayerListMixin",
-    "UnpackedBakedQuadMixin"
+    "UnpackedBakedQuadMixin",
+    "SimpleChannelHandlerWrapperMixin"
   ],
   "client": [
     "client.GuiChatMixin",
