@@ -115,7 +115,7 @@ public class Charstate {
 
     @SubscribeEvent
     public void onSpeech(SpeechEvent event) {
-        sanityHandler.handleSpeech(event.getPlayer(), event.range, event.getMessage());
+        sanityHandler.handleSpeech(event.getPlayer(), event.getMessage());
     }
 
     @SubscribeEvent

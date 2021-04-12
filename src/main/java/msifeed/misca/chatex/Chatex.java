@@ -26,8 +26,6 @@ public class Chatex {
     public void registerCommands(FMLServerStartingEvent event) {
         event.registerServerCommand(new OfftopCommand());
         event.registerServerCommand(new GlobalCommand());
-        event.registerServerCommand(new WhisperCommand());
-        event.registerServerCommand(new YellCommand());
 
         event.registerServerCommand(new GmGlobalCommand());
         event.registerServerCommand(new GmPmCommand());

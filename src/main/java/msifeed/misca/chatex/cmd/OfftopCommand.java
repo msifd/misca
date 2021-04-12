@@ -1,6 +1,5 @@
 package msifeed.misca.chatex.cmd;
 
-import msifeed.misca.Misca;
 import msifeed.misca.chatex.ChatexRpc;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommandSender;
@@ -35,9 +34,7 @@ public class OfftopCommand extends CommandBase {
     public void execute(MinecraftServer server, ICommandSender sender, String[] args) {
         if (!(sender instanceof EntityPlayerMP)) return;
 
-        final int range = Misca.getSharedConfig().chat.offtopRange;
         final String text = String.join(" ", args);
-
-        ChatexRpc.broadcastOfftop((EntityPlayerMP) sender, range, text);
+        ChatexRpc.broadcastOfftop((EntityPlayerMP) sender, text);
     }
 }

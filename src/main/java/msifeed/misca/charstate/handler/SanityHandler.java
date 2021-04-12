@@ -4,6 +4,7 @@ import msifeed.misca.Misca;
 import msifeed.misca.charsheet.CharSkill;
 import msifeed.misca.charsheet.cap.CharsheetProvider;
 import msifeed.misca.charstate.CharstateConfig;
+import msifeed.misca.chatex.ChatexUtils;
 import msifeed.misca.combat.CharAttribute;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.ai.attributes.IAttribute;
@@ -78,10 +79,11 @@ public class SanityHandler {
         inst.setBaseValue(SANITY.clampValue(inst.getBaseValue() + restored));
     }
 
-    public void handleSpeech(EntityPlayerMP source, int range, String msg) {
+    public void handleSpeech(EntityPlayerMP source, String msg) {
         final CharstateConfig config = Misca.getSharedConfig().charstate;
         final int psychology = CharsheetProvider.get(source).skills().get(CharSkill.psychology);
         final double psychologyMod = 1 + config.sanityRestModPerPsySkill * psychology;
+        final int range = ChatexUtils.getSpeechRange(msg);
 
         for (EntityPlayer player : source.world.playerEntities) {
             if (player == source) continue;

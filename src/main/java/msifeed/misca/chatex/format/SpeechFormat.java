@@ -4,6 +4,7 @@ import msifeed.misca.Misca;
 import msifeed.misca.charsheet.ICharsheet;
 import msifeed.misca.charsheet.cap.CharsheetProvider;
 import msifeed.misca.chatex.ChatexConfig;
+import msifeed.misca.chatex.ChatexUtils;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
@@ -12,18 +13,16 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.event.ClickEvent;
 
 import java.util.Optional;
-import java.util.Random;
 
 public class SpeechFormat {
-    public static Optional<ITextComponent> format(EntityPlayer self, EntityPlayer speaker, int range, String msg) {
+    public static Optional<ITextComponent> format(EntityPlayer self, EntityPlayer speaker, String msg) {
         final boolean isMyMessage = self.getUniqueID().equals(speaker.getUniqueID());
 
         final ITextComponent textComp;
         if (isMyMessage) {
             textComp = new TextComponentString(msg);
         } else {
-            final double distance = self.getDistance(speaker);
-            textComp = makeTextComp(msg, distance, range);
+            textComp = garbleficateString(msg, self.getDistance(speaker));
         }
 
         if (textComp.getUnformattedText().trim().isEmpty())
@@ -47,38 +46,32 @@ public class SpeechFormat {
         return cc;
     }
 
-    private static ITextComponent makeTextComp(String msg, double distance, int range) {
-        final int thresholdDistance = Misca.getSharedConfig().chat.garble.thresholdDistance;
-
-        if (distance > thresholdDistance) {
-            final double garblness = (distance - thresholdDistance) / (double) range;
-            return garbleficateString(msg, garblness);
-        } else {
-            return new TextComponentString(msg);
-        }
-    }
-
-    private static TextComponentString garbleficateString(String input, double garblness) {
+    private static ITextComponent garbleficateString(String input, double distance) {
         if (input.isEmpty())
             return new TextComponentString("");
 
+        final int range = ChatexUtils.getSpeechRange(input);
+        final double threshold = range * Misca.getSharedConfig().chat.garble.thresholdPart;
+        if (distance <= threshold)
+            return new TextComponentString(input);
+
         final ChatexConfig.GarbleSettings settings = Misca.getSharedConfig().chat.garble;
 
-        final Random rand = new Random();
+        final double garblness = (distance - threshold) / range;
 
         final TextComponentString root = new TextComponentString("");
         final TextFormatting[] prevColor = {null};
         final StringBuilder sb = new StringBuilder();
 
         input.codePoints().forEach(cp -> {
-            final double r = garblness + rand.nextFloat() / 2;
+            final double r = garblness + Math.random() / 2;
 
             final TextFormatting color;
-            if (r > settings.missThreshold) {
+            if (r > settings.miss) {
                 color = prevColor[0];
-            } else if (r > settings.darkGrayThreshold) {
+            } else if (r > settings.darkGray) {
                 color = TextFormatting.DARK_GRAY;
-            } else if (r > settings.grayThreshold) {
+            } else if (r > settings.gray) {
                 color = TextFormatting.GRAY;
             } else {
                 color = null;
@@ -92,7 +85,7 @@ public class SpeechFormat {
                 sb.setLength(0);
             }
 
-            if (r > settings.missThreshold) {
+            if (r > settings.miss) {
                 sb.append(' ');
             } else {
                 sb.appendCodePoint(cp);

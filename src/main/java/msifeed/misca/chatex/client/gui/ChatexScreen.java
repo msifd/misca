@@ -160,7 +160,7 @@ public class ChatexScreen extends MellowScreen implements ITabCompleter {
             sendCommand(text);
         } else {
             final EntityPlayerSP self = Minecraft.getMinecraft().player;
-            ChatexRpc.sendSpeech(self.getUniqueID(), Misca.getSharedConfig().chat.getSpeechRange(0), text);
+            ChatexRpc.sendSpeech(self.getUniqueID(), text);
         }
 
         hud.addToSentMessages(text);

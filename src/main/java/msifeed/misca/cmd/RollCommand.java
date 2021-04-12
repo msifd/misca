@@ -1,6 +1,5 @@
 package msifeed.misca.cmd;
 
-import msifeed.misca.Misca;
 import msifeed.misca.chatex.ChatexRpc;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommandSender;
@@ -63,8 +62,7 @@ public class RollCommand extends CommandBase {
         result += modifier;
 
         if (sender instanceof EntityPlayerMP) {
-            final int range = Misca.getSharedConfig().chat.diceRollRange;
-            ChatexRpc.broadcastDiceRoll((EntityPlayerMP) sender, range, joined, result);
+            ChatexRpc.broadcastDiceRoll((EntityPlayerMP) sender, joined, result);
         } else {
             final String name = sender.getDisplayName().getFormattedText();
             final String msg = String.format("[ROLL] %s: %s = %d", name, joined, result);

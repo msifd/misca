@@ -1,5 +1,8 @@
 {
   "chat": {
+    "wikiUrlBase": "https://wiki.ariadna.su/w/",
+    "offtopRange": 15,
+    "rollRange": 15,
     "speechRanges": [
       2,
       5,
@@ -8,14 +11,11 @@
       60
     ],
     "garble": {
-      "thresholdDistance": 4,
-      "grayThreshold": 0.33,
-      "darkGrayThreshold": 0.66,
-      "missThreshold": 0.9
-    },
-    "wikiUrlBase": "https://wiki.ariadna.su/w/",
-    "offtopRange": 15,
-    "diceRollRange": 15
+      "rangeThresholdPart": 0.6,
+      "gray": 0.5,
+      "darkGray": 0.7,
+      "miss": 0.9
+    }
   },
   "environ": {
     "0": {

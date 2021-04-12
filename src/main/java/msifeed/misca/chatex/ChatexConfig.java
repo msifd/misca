@@ -3,11 +3,11 @@ package msifeed.misca.chatex;
 import net.minecraft.util.math.MathHelper;
 
 public class ChatexConfig {
-    public int[] speechRanges = {2, 5, 15, 30, 60};
-    public GarbleSettings garble = new GarbleSettings();
     public String wikiUrlBase = "https://wiki.ariadna.su/w/";
     public int offtopRange = 15;
-    public int diceRollRange = 15;
+    public int rollRange = 15;
+
+    public int[] speechRanges = {2, 5, 15, 30, 60};
 
     public int getSpeechRange(int level) {
         final int mid = (speechRanges.length - 1) / 2;
@@ -15,10 +15,12 @@ public class ChatexConfig {
         return speechRanges[index];
     }
 
+    public GarbleSettings garble = new GarbleSettings();
+
     public static class GarbleSettings {
-        public int thresholdDistance = 4;
-        public float grayThreshold = 0.33f;
-        public float darkGrayThreshold = 0.66f;
-        public float missThreshold = 0.9f;
+        public double thresholdPart = 0.6;
+        public double gray = 0.5;
+        public double darkGray = 0.7;
+        public double miss = 0.9;
     }
 }
