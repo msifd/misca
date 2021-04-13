@@ -13,7 +13,8 @@
     "NBTTagLongArrayMixin",
     "PlayerListMixin",
     "UnpackedBakedQuadMixin",
-    "SimpleChannelHandlerWrapperMixin"
+    "SimpleChannelHandlerWrapperMixin",
+    "PotionMixin"
   ],
   "client": [
     "client.GuiChatMixin",

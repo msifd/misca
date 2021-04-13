@@ -90,9 +90,11 @@ public class BlessCommand extends CommandBase  {
 
         final ICharsheet sheet = CharsheetProvider.get(player);
         if (level > 0) {
+            potion.applyAttributesModifiersToEntity(player, player.getAttributeMap(), level - 1);
             sheet.potions().put(potion, level - 1);
             sender.sendMessage(new TextComponentString("Potion blessing added"));
         } else {
+            potion.removeAttributesModifiersFromEntity(player, player.getAttributeMap(), 0);
             sheet.potions().remove(potion);
             sender.sendMessage(new TextComponentString("Potion blessing removed"));
         }
