@@ -107,6 +107,7 @@ public class ChatexScreen extends MellowScreen implements ITabCompleter {
     protected void keyTyped(char c, int key) {
         final int linesBefore = input.getBackend().getLineCount();
         final boolean shiftPressed = Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT);
+        final boolean singleLine = input.getBackend().getLineCount() == 1;
 
         switch (key) {
             case Keyboard.KEY_ESCAPE:
@@ -118,11 +119,11 @@ public class ChatexScreen extends MellowScreen implements ITabCompleter {
                 else commitMessage();
                 break;
             case Keyboard.KEY_UP:
-                if (shiftPressed) setHistoryMessage(1);
+                if (singleLine || shiftPressed) setHistoryMessage(1);
                 else inputKey(c, key);
                 break;
             case Keyboard.KEY_DOWN:
-                if (shiftPressed) setHistoryMessage(-1);
+                if (singleLine || shiftPressed) setHistoryMessage(-1);
                 else inputKey(c, key);
                 break;
             case Keyboard.KEY_TAB:
