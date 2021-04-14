@@ -29,18 +29,17 @@ public class CombatantEventHandler {
     }
 
     @SubscribeEvent
-    public void onPlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
-        if (!event.player.world.isRemote) {
-            Combat.MANAGER.rejoinToBattle((EntityPlayerMP) event.player);
+    public void onPlayerSpawn(EntityJoinWorldEvent event) {
+        if (event.getWorld().isRemote) return;
+        if (event.getEntity() instanceof EntityPlayerMP) {
+            Combat.MANAGER.rejoinToBattle((EntityPlayerMP) event.getEntity());
         }
     }
 
     @SubscribeEvent
-    public void onPlayerSpawn(PlayerEvent.PlayerRespawnEvent event) {
+    public void onPlayerRespawn(PlayerEvent.PlayerRespawnEvent event) {
         if (!event.player.world.isRemote) {
             Combat.MANAGER.exitBattle(event.player);
-            CombatantProvider.get(event.player).reset();
-            CombatantSync.sync((EntityPlayerMP) event.player, event.player);
         }
     }
 
@@ -48,8 +47,6 @@ public class CombatantEventHandler {
     public void onPlayerChangeDim(PlayerEvent.PlayerChangedDimensionEvent event) {
         if (!event.player.world.isRemote) {
             Combat.MANAGER.exitBattle(event.player);
-            CombatantProvider.get(event.player).reset();
-            CombatantSync.sync((EntityPlayerMP) event.player, event.player);
         }
     }
 

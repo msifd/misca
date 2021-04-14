@@ -45,7 +45,7 @@ public class Charstate {
 
     public void preInit() {
         CapabilityManager.INSTANCE.register(ICharstate.class, new CharstateStorage(), CharstateImpl::new);
-        MinecraftForge.EVENT_BUS.register(new CharstateHandler());
+        MinecraftForge.EVENT_BUS.register(new CharstateEventHandler());
         MinecraftForge.EVENT_BUS.register(this);
         Misca.RPC.register(new CharstateSync());
 

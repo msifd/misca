@@ -4,6 +4,7 @@ import msifeed.misca.Misca;
 import msifeed.sys.rpc.RpcMethodHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -17,6 +18,11 @@ public class CharstateSync {
     public static void sync(EntityPlayer target) {
         final NBTTagCompound nbt = CharstateProvider.encode(CharstateProvider.get(target));
         Misca.RPC.sendToAllVisibleTo(target, sync, target.getUniqueID(), nbt);
+    }
+
+    public static void sync(EntityPlayerMP receiver, EntityPlayer target) {
+        final NBTTagCompound nbt = CharstateProvider.encode(CharstateProvider.get(target));
+        Misca.RPC.sendTo(receiver, sync, target.getUniqueID(), nbt);
     }
 
     @SideOnly(Side.CLIENT)

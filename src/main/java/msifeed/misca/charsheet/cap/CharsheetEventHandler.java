@@ -9,6 +9,7 @@ import net.minecraft.entity.ai.attributes.AbstractAttributeMap;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
+import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent;
 
@@ -27,22 +28,15 @@ public class CharsheetEventHandler {
 
     @SubscribeEvent
     public void onPlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
-        if (!event.player.world.isRemote) {
-            CharsheetSync.sync((EntityPlayerMP) event.player, event.player);
+        if (!event.player.world.isRemote)
             KeeperSync.INSTANCE.sync((EntityPlayerMP) event.player);
-        }
     }
 
     @SubscribeEvent
-    public void onPlayerSpawn(PlayerEvent.PlayerRespawnEvent event) {
-        if (!event.player.world.isRemote)
-            CharsheetSync.sync((EntityPlayerMP) event.player, event.player);
-    }
-
-    @SubscribeEvent
-    public void onPlayerChangeDim(PlayerEvent.PlayerChangedDimensionEvent event) {
-        if (!event.player.world.isRemote)
-            CharsheetSync.sync((EntityPlayerMP) event.player, event.player);
+    public void onPlayerSpawn(EntityJoinWorldEvent event) {
+        if (event.getWorld().isRemote) return;
+        if (event.getEntity() instanceof EntityPlayerMP)
+            CharsheetSync.sync((EntityPlayerMP) event.getEntity());
     }
 
     @SubscribeEvent

@@ -47,6 +47,7 @@ public class CharsheetSync {
 
         final EntityPlayer target = (EntityPlayer) targetEntity;
         CharsheetProvider.get(target).replaceWith(CharsheetProvider.decode(nbt));
+        target.refreshDisplayName();
         sync(target);
 
         sender.sendStatusMessage(new TextComponentString("Charsheet changed"), true);
