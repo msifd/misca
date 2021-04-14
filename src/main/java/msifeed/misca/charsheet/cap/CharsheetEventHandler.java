@@ -28,15 +28,18 @@ public class CharsheetEventHandler {
 
     @SubscribeEvent
     public void onPlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
-        if (!event.player.world.isRemote)
+        if (!event.player.world.isRemote) {
             KeeperSync.INSTANCE.sync((EntityPlayerMP) event.player);
+            CharsheetSync.sync((EntityPlayerMP) event.player, event.player);
+        }
     }
 
     @SubscribeEvent
     public void onPlayerSpawn(EntityJoinWorldEvent event) {
         if (event.getWorld().isRemote) return;
-        if (event.getEntity() instanceof EntityPlayerMP)
+        if (event.getEntity() instanceof EntityPlayerMP) {
             CharsheetSync.sync((EntityPlayerMP) event.getEntity());
+        }
     }
 
     @SubscribeEvent
