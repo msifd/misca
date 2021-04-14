@@ -3,19 +3,18 @@ key.misca.charsheet=Charsheet
 key.misca.effort=Efforts
 key.misca.combat=Combat
 
-item.blank_key.name=Blank key
-item.mechanical_key.name=Key
-item.skeletal_key.name=Skeletal key
-item.lock_mechanical.name=Mechanical lock
-item.lock_digital.name=Digital lock
-item.lock_magical.name=Magical lock
-item.pick_mechanical.name=Mechanical pick
-item.pick_magical.name=Magical pick
-
+item.blank_key.name=Ключ-болванка
+item.mechanical_key.name=Ключ
+item.skeletal_key.name=Скелетный ключ
+item.lock_mechanical.name=Механический замок
+item.lock_digital.name=Цифровой замок
+item.lock_magical.name=Рунический замок
+item.pick_mechanical.name=Отмычка
+item.pick_magical.name=Калибровщик рун
 item.supplies_invoice.name=Supplies invoice
 item.supplies_beacon.name=Supplies beacon
-
 item.combat_tool.name=Combat tool
+item.note_sign.name=Знак-заметка
 
 misca.chatex.speech=%s: %s
 misca.chatex.global=[GLOB] %s: %s
