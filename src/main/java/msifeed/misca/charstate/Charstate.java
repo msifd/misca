@@ -15,9 +15,9 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.event.entity.EntityEvent;
+import net.minecraftforge.event.entity.living.LivingDamageEvent;
 import net.minecraftforge.event.entity.living.LivingEntityUseItemEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
-import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
@@ -92,11 +92,10 @@ public class Charstate {
     }
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
-    public void onPlayerHurt(LivingHurtEvent event) {
+    public void onPlayerDamaged(LivingDamageEvent event) {
         if (event.isCanceled() || event.getAmount() < 1) return;
-        if (!(event.getEntity() instanceof EntityPlayer)) return;
         if (event.getEntity().world.isRemote) return;
-        if (event.getSource().canHarmInCreative()) return;
+        if (!(event.getEntity() instanceof EntityPlayer)) return;
 
         final EntityPlayer player = (EntityPlayer) event.getEntityLiving();
         integrityHandler.handleDamage(player, event.getAmount());

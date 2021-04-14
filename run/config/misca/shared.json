@@ -49,7 +49,7 @@
   "charstate": {
     "globalMiningSpeedModifier": 0.5,
     "integrityRestPerSec": 1.6E-5,
-    "integrityCostPerDamage": 0.1,
+    "integrityCostPerDamage": 1.0,
     "sanityRestPerFood": 1.0,
     "sanityRestPerSpeechChar": 0.001,
     "sanityRestModPerPsySkill": 0.15,
