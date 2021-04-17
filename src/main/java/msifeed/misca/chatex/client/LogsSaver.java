@@ -15,7 +15,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.zip.GZIPOutputStream;
 
-public class ChatexClientLogs {
+public class LogsSaver {
     private static final SimpleDateFormat LOG_FILE_FORMAT = new SimpleDateFormat("yyyy'-'MM'-'dd");
     private static final SimpleDateFormat LOG_TIME_FORMAT = new SimpleDateFormat("HH':'mm':'ss' '");
 
@@ -32,14 +32,12 @@ public class ChatexClientLogs {
                     .filter(path -> path.getFileName().toString().endsWith(".log"))
                     .filter(Files::isRegularFile)
                     .filter(path -> !path.equals(currentLog))
-                    .forEach(ChatexClientLogs::compressLog);
+                    .forEach(LogsSaver::compressLog);
         } catch (IOException e) {
             e.printStackTrace();
         }
 
         try {
-//            if (!Files.exists(currentLog))
-//                Files.createFile(currentLog);
             output = new PrintStream(new FileOutputStream(currentLog.toFile(), true), true, StandardCharsets.UTF_8.toString());
         } catch (IOException e) {
             e.printStackTrace();

@@ -25,4 +25,8 @@ public class ChatexHud extends GuiNewChat {
     public int getChatHeight() {
         return MiscaConfig.chatSize.y;
     }
+
+    @Override
+    public void clearChatMessages(boolean clearSent) {
+    }
 }

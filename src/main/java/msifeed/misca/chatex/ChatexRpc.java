@@ -2,7 +2,7 @@ package msifeed.misca.chatex;
 
 import msifeed.misca.Misca;
 import msifeed.misca.charsheet.CharEffort;
-import msifeed.misca.chatex.client.ChatexClientLogs;
+import msifeed.misca.chatex.client.LogsSaver;
 import msifeed.misca.chatex.client.TypingState;
 import msifeed.misca.chatex.format.RollFormat;
 import msifeed.misca.chatex.format.SpecialSpeechFormat;
@@ -211,7 +211,7 @@ public class ChatexRpc {
     private static void displayMessage(EntityPlayer self, EntityPlayer source, ITextComponent tx) {
         self.sendMessage(tx);
         playNotificationSound(source);
-        ChatexClientLogs.logSpeech(tx);
+        LogsSaver.logSpeech(tx);
     }
 
     private static final SoundEvent chatSound = new SoundEvent(new ResourceLocation(Misca.MODID, "chatex.chat_message"));

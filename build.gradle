@@ -19,7 +19,7 @@ repositories {
 apply plugin: 'net.minecraftforge.gradle.forge'
 apply plugin: 'org.spongepowered.mixin'
 
-version = '2.1.2'
+version = '2.1.3'
 group = 'msifeed.misca'
 archivesBaseName = 'misca'
 
@@ -34,19 +34,23 @@ minecraft {
     makeObfSourceJar = false
 
     runDir = 'run'
-    // `setClientRunArgs` and `setClientJvmArgs` don't work, so you need to add them manually.
-    //
-    // Add these to run arguments
-    //     --tweakClass
-    //     org.spongepowered.asm.launch.MixinTweaker
-    //     --mixin
-    //     mixins.misca.json
-    //     --username
-    //     msifeed
-    //
-    // Add these to JVM arguments
-    //     -Dfml.coreMods.load=msifeed.misca.mixins.MiscaDepsPlugin
-    //     -Dlog4j.configurationFile=log4j2_fix.xml
+    setClientRunArgs([
+            "--tweakClass", "org.spongepowered.asm.launch.MixinTweaker",
+            "--mixin", "mixins.misca.json",
+            "--username", "msifeed",
+    ])
+    setServerRunArgs([
+            "--tweakClass", "org.spongepowered.asm.launch.MixinTweaker",
+            "--mixin", "mixins.misca.json",
+    ])
+    setClientJvmArgs([
+            "-Dfml.coreMods.load=msifeed.misca.mixins.MiscaDepsPlugin",
+            "-Dlog4j.configurationFile=log4j2_fix.xml", // Fixes chat in 2021
+    ])
+    setServerJvmArgs([
+            "-Dfml.coreMods.load=msifeed.misca.mixins.MiscaDepsPlugin",
+            "-Dlog4j.configurationFile=log4j2_fix.xml", // Fixes chat in 2021
+    ])
 }
 
 configurations {
