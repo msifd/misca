@@ -9,6 +9,7 @@ import msifeed.misca.chatex.SpeechEvent;
 import msifeed.sys.sync.SyncChannel;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.attributes.AbstractAttributeMap;
+import net.minecraft.entity.ai.attributes.IAttribute;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.ResourceLocation;
@@ -70,6 +71,25 @@ public class Charstate {
     }
 
     @SubscribeEvent
+    public void onPlayerClone(PlayerEvent.Clone event) {
+        final AbstractAttributeMap src = event.getOriginal().getAttributeMap();
+        final AbstractAttributeMap dst = event.getEntityPlayer().getAttributeMap();
+        copyAttribute(src, dst, IntegrityHandler.INTEGRITY);
+        copyAttribute(src, dst, SanityHandler.SANITY);
+        copyAttribute(src, dst, StaminaHandler.STAMINA);
+        copyAttribute(src, dst, CorruptionHandler.CORRUPTION);
+    }
+
+    private static void copyAttribute(AbstractAttributeMap src, AbstractAttributeMap dst, IAttribute attr) {
+        final double base = src.getAttributeInstance(attr).getBaseValue();
+        dst.getAttributeInstance(attr).setBaseValue(base);
+//        final ModifiableAttributeInstance instance = (ModifiableAttributeInstance) dst.getAttributeInstance(attr);
+//        for (AttributeModifier mod : src.getAttributeInstance(attr).getModifiers()) {
+//            instance.applyModifier(mod);
+//        }
+    }
+
+    @SubscribeEvent
     public void onPlayerTick(LivingEvent.LivingUpdateEvent event) {
         if (!(event.getEntity() instanceof EntityPlayerMP)) return;
         if (event.getEntity().ticksExisted % UPDATE_PER_TICKS != 1) return;
@@ -98,8 +118,10 @@ public class Charstate {
         if (!(event.getEntity() instanceof EntityPlayer)) return;
 
         final EntityPlayer player = (EntityPlayer) event.getEntityLiving();
-        integrityHandler.handleDamage(player, event.getAmount());
-        sanityHandler.handleDamage(player, event.getAmount());
+        final float amount = Math.min(player.getHealth(), event.getAmount());
+
+        integrityHandler.handleDamage(player,amount);
+        sanityHandler.handleDamage(player,amount);
     }
 
     @SubscribeEvent
