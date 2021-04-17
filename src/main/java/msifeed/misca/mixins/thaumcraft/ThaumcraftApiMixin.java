@@ -11,7 +11,7 @@ import thaumcraft.api.aspects.AspectList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-@Mixin(ThaumcraftApi.class)
+@Mixin(value = ThaumcraftApi.class, remap = false)
 public class ThaumcraftApiMixin {
     private static ExecutorService executorService;
 
