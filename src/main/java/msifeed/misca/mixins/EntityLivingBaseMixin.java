@@ -5,6 +5,7 @@ import msifeed.misca.charsheet.ICharsheet;
 import msifeed.misca.charsheet.cap.CharsheetProvider;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.MobEffects;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
 import org.spongepowered.asm.mixin.Mixin;
@@ -30,11 +31,12 @@ public abstract class EntityLivingBaseMixin {
         }
     }
 
-    @Inject(method = "isPotionActive", at = @At("RETURN"), cancellable = true)
+    @Inject(method = "isPotionActive", at = @At("HEAD"), cancellable = true)
     public void isPotionActive(Potion potion, CallbackInfoReturnable<Boolean> cir) {
+        if (potion == MobEffects.GLOWING) cir.setReturnValue(false);
+
         final EntityLivingBase self = (EntityLivingBase) (Object) this;
         if (!(self instanceof EntityPlayer)) return;
-        if (cir.getReturnValue()) return;
 
         final ICharsheet sheet = CharsheetProvider.get((EntityPlayer) self);
         if (sheet.potions().containsKey(potion))
