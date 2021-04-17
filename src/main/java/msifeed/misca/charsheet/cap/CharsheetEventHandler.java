@@ -30,7 +30,6 @@ public class CharsheetEventHandler {
     public void onPlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
         if (!event.player.world.isRemote) {
             KeeperSync.INSTANCE.sync((EntityPlayerMP) event.player);
-            CharsheetSync.sync((EntityPlayerMP) event.player, event.player);
         }
     }
 
