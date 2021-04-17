@@ -33,11 +33,6 @@ public class BlessCommand extends CommandBase  {
     }
 
     @Override
-    public boolean checkPermission(MinecraftServer server, ICommandSender sender) {
-        return MiscaPerms.userLevel(sender, "misca.bless");
-    }
-
-    @Override
     public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender, String[] args, @Nullable BlockPos targetPos) {
         switch (args.length) {
             case 1:
@@ -63,6 +58,9 @@ public class BlessCommand extends CommandBase  {
         if (args.length < 2) throw new SyntaxErrorException("Usage: " + getUsage(sender));
 
         final EntityPlayerMP player = getPlayer(server, sender, args[0]);
+        if (!MiscaPerms.userLevel(sender, "misca.bless." + args[1])) {
+            throw new CommandException("commands.generic.permission");
+        }
 
         switch (args[1].toLowerCase()) {
             case potionArg:
@@ -84,7 +82,11 @@ public class BlessCommand extends CommandBase  {
         }
     }
 
-    private void addPotion(ICommandSender sender, EntityPlayerMP player, String key, int level) throws SyntaxErrorException {
+    private void addPotion(ICommandSender sender, EntityPlayerMP player, String key, int level) throws CommandException {
+        if (!MiscaPerms.userLevel(sender, "misca.bless." + potionArg + '.' + key)) {
+            throw new CommandException("commands.generic.permission");
+        }
+
         final Potion potion = Potion.getPotionFromResourceLocation(key);
         if (potion == null) throw new SyntaxErrorException("Unknown potion: " + key);
 
@@ -102,7 +104,11 @@ public class BlessCommand extends CommandBase  {
         CharsheetSync.sync(player);
     }
 
-    private void addEnchant(ICommandSender sender, EntityPlayerMP player, String key, int level) throws SyntaxErrorException {
+    private void addEnchant(ICommandSender sender, EntityPlayerMP player, String key, int level) throws CommandException {
+        if (!MiscaPerms.userLevel(sender, "misca.bless." + enchantArg + '.' + key)) {
+            throw new CommandException("commands.generic.permission");
+        }
+
         final Enchantment enchantment = Enchantment.getEnchantmentByLocation(key);
         if (enchantment == null) throw new SyntaxErrorException("Unknown enchant: " + key);
 
