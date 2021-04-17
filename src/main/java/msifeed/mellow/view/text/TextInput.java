@@ -51,6 +51,10 @@ public class TextInput extends View implements InputHandler.Keyboard, InputHandl
         return pref;
     }
 
+    public Geom getTextOffset() {
+        return textOffset;
+    }
+
     @Override
     public void setSize(int w, int h) {
         super.setSize(w, h);
@@ -94,9 +98,9 @@ public class TextInput extends View implements InputHandler.Keyboard, InputHandl
         if (!isFocused() || (System.currentTimeMillis() - lastTimePressed) % 1000 > 500)
             return;
 
-        final int lineHeight = RenderUtils.lineHeight();
+        final int lineHeight = RenderUtils.lineHeight() + pref.gap;
         geom.translate(backend.getCursorXOffset(), lineHeight * inputHelper.getCursorLineInView() - textOffset.y / 2);
-        geom.setSize(1, lineHeight);
+        geom.setSize(1, lineHeight - pref.gap);
         RenderShapes.rect(geom, colorCursor);
     }
 }

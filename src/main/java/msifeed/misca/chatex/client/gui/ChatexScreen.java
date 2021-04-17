@@ -37,6 +37,7 @@ public class ChatexScreen extends MellowScreen implements ITabCompleter {
     public ChatexScreen(String text) {
         input.getBackend().setMaxLines(100);
         input.setSize(width, RenderUtils.lineHeight());
+        input.getTextOffset().setPos(2, 3);
         input.insert(text);
 
         container.addView(input);
