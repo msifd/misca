@@ -7,6 +7,7 @@ public class SuppliesInvoice implements ISuppliesInvoice {
     private long lastDelivery = 0;
     private long interval = 0;
     private int maxSequence = 0;
+    private int deliveryPrice = 1;
     private final List<Batch> batches = new ArrayList<>();
 
     @Override
@@ -37,6 +38,16 @@ public class SuppliesInvoice implements ISuppliesInvoice {
     @Override
     public void setMaxDeliverySequence(int value) {
         this.maxSequence = value;
+    }
+
+    @Override
+    public int getDeliveryPrice() {
+        return deliveryPrice;
+    }
+
+    @Override
+    public void setDeliveryPrice(int value) {
+        this.deliveryPrice = value;
     }
 
     @Override

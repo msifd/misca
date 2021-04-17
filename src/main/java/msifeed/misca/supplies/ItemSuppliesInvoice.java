@@ -41,6 +41,7 @@ public class ItemSuppliesInvoice extends Item {
         if (invoice == null || invoice.isEmpty()) return EnumActionResult.FAIL;
 
         supplies.replaceWith(invoice);
+        supplies.setLastDeliveryIndex(supplies.currentDeliveryIndex());
         player.sendStatusMessage(new TextComponentString("Supplies are set!"), true);
 
         return EnumActionResult.SUCCESS;
@@ -54,7 +55,7 @@ public class ItemSuppliesInvoice extends Item {
             return;
         }
 
-        tooltip.addAll(BackgroundSupplies.getAbsoluteInfoLines(invoice));
+        tooltip.addAll(SuppliesFlow.getAbsoluteInfoLines(invoice));
     }
 
     @Nullable

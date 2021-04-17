@@ -17,6 +17,7 @@ import msifeed.misca.potions.NeedsPotions;
 import msifeed.misca.rename.RenameItems;
 import msifeed.misca.rolls.RollRpc;
 import msifeed.misca.supplies.BackgroundSupplies;
+import msifeed.misca.supplies.InvoiceCommand;
 import msifeed.misca.tweaks.DisableSomeWorkstations;
 import msifeed.misca.tweaks.MiscaCrashInfo;
 import msifeed.sys.rpc.RpcChannel;

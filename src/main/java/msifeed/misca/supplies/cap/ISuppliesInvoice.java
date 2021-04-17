@@ -1,10 +1,11 @@
 package msifeed.misca.supplies.cap;
 
+import msifeed.misca.rolls.Dices;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 public interface ISuppliesInvoice {
     long getLastDeliveryIndex();
@@ -18,6 +19,10 @@ public interface ISuppliesInvoice {
     int getMaxDeliverySequence();
 
     void setMaxDeliverySequence(int value);
+
+    int getDeliveryPrice();
+
+    void setDeliveryPrice(int value);
 
     List<Batch> getBatches();
 
@@ -35,6 +40,7 @@ public interface ISuppliesInvoice {
         this.setLastDeliveryIndex(System.currentTimeMillis());
         this.setDeliveryInterval(invoice.getDeliveryInterval());
         this.setMaxDeliverySequence(invoice.getMaxDeliverySequence());
+        this.setDeliveryPrice(invoice.getDeliveryPrice());
         this.getBatches().clear();
         for (Batch b : invoice.getBatches())
             this.addBatch(b);
@@ -44,9 +50,13 @@ public interface ISuppliesInvoice {
         public NonNullList<ItemStack> products = NonNullList.create();
         public double chance = 1;
 
-        public NonNullList<ItemStack> getProductsWithChance() {
-            final boolean lucky = new Random().nextDouble() <= chance;
-            return lucky ? products : NonNullList.create();
+        public List<ItemStack> getProductsWithChance(int times) {
+            final List<ItemStack> result = new ArrayList<>();
+            for (int i = 0; i < times; i++) {
+                if (Dices.check(chance))
+                    result.addAll(products);
+            }
+            return result;
         }
     }
 }

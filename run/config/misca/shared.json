@@ -60,7 +60,6 @@
     "staminaRestTimeoutSec": 2.0,
     "staminaCostPerMiningTick": 0.01,
     "staminaCostPerIngredient": 0.5,
-    "staminaCostPerSupplyItem": 0.5,
     "corruptionLostPerSec": 1.15E-6,
     "effortRestPerSec": 2.7E-4,
     "survivalSkillNeedsLostFactor": -0.15,

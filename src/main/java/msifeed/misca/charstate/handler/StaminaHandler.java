@@ -11,10 +11,10 @@ import net.minecraft.entity.ai.attributes.IAttribute;
 import net.minecraft.entity.ai.attributes.IAttributeInstance;
 import net.minecraft.entity.ai.attributes.RangedAttribute;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.event.entity.player.PlayerEvent;
-
-import java.util.List;
 
 public class StaminaHandler {
     public static final IAttribute STAMINA = new RangedAttribute(null, Misca.MODID + ".stamina", 100, 0, 100).setShouldWatch(true);
@@ -70,13 +70,24 @@ public class StaminaHandler {
         }
     }
 
-    public static void consumeSuppliesDelivery(EntityPlayer player, List<ItemStack> delivery) {
+    public static double getStaminaForDelivery(EntityPlayer player) {
         final CharstateConfig config = Misca.getSharedConfig().charstate;
-        final int items = delivery.stream().mapToInt(ItemStack::getCount).sum();
-        final double factor = 1 + CharsheetProvider.get(player).skills().get(CharSkill.survival) * config.survivalSkillNeedsLostFactor;
-        final double lost = items * config.staminaCostPerSupplyItem * factor;
+        final double factor = 1 + CharsheetProvider.get(player).skills().get(CharSkill.survival) * -config.survivalSkillNeedsLostFactor; // factor >= 1
+        final IAttributeInstance inst = player.getEntityAttribute(STAMINA);
+        return inst.getBaseValue() * factor;
+    }
+
+    public static void consumeDelivery(EntityPlayer player, double amount) {
+        final CharstateConfig config = Misca.getSharedConfig().charstate;
+        final double factor = 1 + CharsheetProvider.get(player).skills().get(CharSkill.survival) * config.survivalSkillNeedsLostFactor; // factor <= 1
+        final double lost = amount * factor;
 
         final IAttributeInstance inst = player.getEntityAttribute(STAMINA);
         inst.setBaseValue(STAMINA.clampValue(inst.getBaseValue() - lost));
+
+        final ITextComponent comp = new TextComponentString("You lost " + lost + " stamina.");
+        comp.getStyle().setColor(TextFormatting.DARK_GRAY);
+        comp.getStyle().setItalic(true);
+        player.sendStatusMessage(comp, false);
     }
 }

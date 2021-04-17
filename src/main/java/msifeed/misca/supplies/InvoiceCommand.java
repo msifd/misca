@@ -1,9 +1,8 @@
-package msifeed.misca.cmd;
+package msifeed.misca.supplies;
 
 import msifeed.misca.MiscaPerms;
 import msifeed.misca.MiscaThings;
-import msifeed.misca.supplies.BackgroundSupplies;
-import msifeed.misca.supplies.ItemSuppliesBeacon;
+import msifeed.misca.charstate.handler.StaminaHandler;
 import msifeed.misca.supplies.cap.ISuppliesInvoice;
 import msifeed.misca.supplies.cap.SuppliesInvoiceProvider;
 import net.minecraft.command.CommandBase;
@@ -32,7 +31,7 @@ public class InvoiceCommand extends CommandBase {
     @Override
     public String getUsage(ICommandSender sender) {
         return "/invoice\n" +
-                "  create <interval minutes> <max sequence>\n" +
+                "  create <interval minutes> <max sequence> <stamina price>\n" +
                 "  add [ chance (0;1] ]\n" +
                 "  beacon\n" +
                 "  OR point at chest without arguments";
@@ -64,6 +63,8 @@ public class InvoiceCommand extends CommandBase {
             handleCreateBeacon(player);
         } else if (args[0].equals("add")) {
             handleAddBatch(player, args);
+        } else if (args[0].equals("pop")) {
+            handlePopEntry(player);
         } else if (args.length >= 3) {
             handleCreateInvoice(player, args);
         } else {
@@ -74,12 +75,14 @@ public class InvoiceCommand extends CommandBase {
     private void handleCreateInvoice(EntityPlayerMP player, String[] args) throws CommandException {
         final long interval = parseLong(args[1], 1, Long.MAX_VALUE);
         final int maxSequence = parseInt(args[2], 1, 100);
+        final int price = parseInt(args[3], 1, 100);
 
         final ItemStack item = new ItemStack(MiscaThings.suppliesInvoice);
         final ISuppliesInvoice invoice = SuppliesInvoiceProvider.get(item);
         if (invoice != null) {
             invoice.setDeliveryInterval(interval * 60000);
             invoice.setMaxDeliverySequence(maxSequence);
+            invoice.setDeliveryPrice(price);
         }
 
         player.addItemStackToInventory(item);
@@ -128,6 +131,21 @@ public class InvoiceCommand extends CommandBase {
 //        player.connection.sendPacket(new SPacketHeldItemChange(player.inventory.currentItem));
     }
 
+    private void handlePopEntry(EntityPlayerMP player) throws CommandException {
+        final ItemStack stack = player.inventory.getCurrentItem();
+        if (stack.getItem() != MiscaThings.suppliesInvoice) {
+            player.sendMessage(new TextComponentString("You need to take invoice in main hand!"));
+            return;
+        }
+
+        final ISuppliesInvoice invoice = SuppliesInvoiceProvider.get(stack);
+        if (invoice == null || invoice.getBatches().isEmpty()) return;
+
+        invoice.getBatches().remove(invoice.getBatches().size() - 1);
+
+        player.addItemStackToInventory(stack.copy());
+    }
+
     private static void handleCreateBeacon(EntityPlayerMP player) {
         final ItemStack stack = player.getHeldItemMainhand();
         if (stack.getItem() != MiscaThings.suppliesInvoice) {
@@ -142,11 +160,6 @@ public class InvoiceCommand extends CommandBase {
         }
 
         final ItemStack beacon = ItemSuppliesBeacon.createBeaconItem(invoice);
-        if (beacon == null) {
-            player.sendMessage(new TextComponentString("Cant create beacon from this invoice, somehow."));
-            return;
-        }
-
         player.addItemStackToInventory(beacon);
     }
 
@@ -160,8 +173,14 @@ public class InvoiceCommand extends CommandBase {
             return;
         }
 
+        if (invoice.isEmpty()) {
+            player.sendMessage(new TextComponentString("No supplies"));
+            return;
+        }
+
+        final double stamina = StaminaHandler.getStaminaForDelivery(player);
         player.sendMessage(new TextComponentString("=== Supplies ==="));
-        BackgroundSupplies.getRelativeInfoLines(invoice).stream()
+        SuppliesFlow.getRelativeInfoLines(invoice, stamina).stream()
                 .map(TextComponentString::new)
                 .forEach(player::sendMessage);
     }
