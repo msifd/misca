@@ -5,6 +5,7 @@ import msifeed.misca.supplies.cap.ISuppliesInvoice;
 import msifeed.misca.supplies.cap.SuppliesInvoice;
 import msifeed.misca.supplies.cap.SuppliesInvoiceProvider;
 import msifeed.misca.supplies.cap.SuppliesInvoiceStorage;
+import net.minecraft.inventory.IInventory;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
@@ -25,7 +26,7 @@ public class BackgroundSupplies {
 
     @SubscribeEvent
     public void onAttachTileCapability(AttachCapabilitiesEvent<TileEntity> event) {
-        if (event.getObject().hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null))
+        if (event.getObject() instanceof IInventory)
             event.addCapability(CAP, new SuppliesInvoiceProvider());
     }
 
