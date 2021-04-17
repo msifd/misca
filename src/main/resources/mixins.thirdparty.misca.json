@@ -12,6 +12,7 @@
     "techguns.ReloadStartedMessageMixin",
     "thaumcraft.ItemCasterMixin",
     "thaumcraft.ThaumcraftApiMixin",
+    "thebetweenlands.ElixirEffectMixin",
     "wizardry.EntityMagicConstructMixin",
     "wizardry.ItemScrollMixin",
     "wizardry.ItemWandMixin"

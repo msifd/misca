@@ -12,13 +12,13 @@
     "ModelRendererMixin",
     "NBTTagLongArrayMixin",
     "PlayerListMixin",
-    "UnpackedBakedQuadMixin",
-    "SimpleChannelHandlerWrapperMixin",
-    "PotionMixin"
+    "PotionMixin",
+    "SimpleChannelHandlerWrapperMixin"
   ],
   "client": [
     "client.GuiChatMixin",
     "client.GuiIngameMixin",
-    "client.RenderMixin"
+    "client.RenderMixin",
+    "client.UnpackedBakedQuadMixin"
   ]
 }

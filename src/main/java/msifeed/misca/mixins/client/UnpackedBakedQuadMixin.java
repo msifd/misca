@@ -1,4 +1,4 @@
-package msifeed.misca.mixins;
+package msifeed.misca.mixins.client;
 
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraftforge.client.model.pipeline.IVertexConsumer;
@@ -15,7 +15,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class UnpackedBakedQuadMixin {
     private static final float[][][] EMPTY = new float[0][][];
 
-    @Accessor
+    @Accessor(remap = false)
     protected abstract void setUnpackedData(float[][][] value);
 
     @Shadow
