@@ -29,17 +29,17 @@ public class CombatantSync {
 
     public static void sync(EntityLivingBase target) {
         final NBTTagCompound nbt = CombatantProvider.encode(CombatantProvider.get(target));
-        Misca.RPC.sendToAllVisibleTo(target, sync, target.getUniqueID(), nbt);
+        Misca.RPC.sendToAllAround(target, sync, target.getUniqueID(), nbt);
     }
 
     public static void syncAp(EntityLivingBase target) {
         final ICombatant com = CombatantProvider.get(target);
-        Misca.RPC.sendToAllVisibleTo(target, syncAp, target.getUniqueID(), com.getActionPoints(), com.getActionPointsOverhead());
+        Misca.RPC.sendToAllAround(target, syncAp, target.getUniqueID(), com.getActionPoints(), com.getActionPointsOverhead());
     }
 
     public static void syncNeutralDamage(EntityLivingBase target) {
         final ICombatant com = CombatantProvider.get(target);
-        Misca.RPC.sendToAllVisibleTo(target, syncNeutral, target.getUniqueID(), com.getNeutralDamage());
+        Misca.RPC.sendToAllAround(target, syncNeutral, target.getUniqueID(), com.getNeutralDamage());
     }
 
     public static void postAttrs(EntityLivingBase target, int[] attrs) {

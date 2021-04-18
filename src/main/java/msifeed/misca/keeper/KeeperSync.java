@@ -11,7 +11,6 @@ import msifeed.misca.charsheet.CharResource;
 import msifeed.misca.charsheet.CharSkill;
 import msifeed.misca.charsheet.ICharsheet;
 import msifeed.misca.charsheet.cap.CharsheetProvider;
-import msifeed.misca.charsheet.cap.CharsheetSync;
 import msifeed.misca.combat.CharAttribute;
 import net.minecraft.entity.player.EntityPlayerMP;
 import org.apache.logging.log4j.LogManager;
@@ -81,7 +80,5 @@ public enum KeeperSync {
             cs.effortPools().set(key, sheet.efforts.getOrDefault(key.name(), 0));
         for (CharAttribute key : CharAttribute.values())
             key.setBase(player, sheet.attributes.getOrDefault(key.name(), 0));
-
-        CharsheetSync.sync(player);
     }
 }

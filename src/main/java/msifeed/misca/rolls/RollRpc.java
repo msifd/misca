@@ -8,21 +8,20 @@ import msifeed.misca.charstate.cap.ICharstate;
 import msifeed.misca.chatex.ChatexRpc;
 import msifeed.sys.rpc.RpcContext;
 import msifeed.sys.rpc.RpcMethodHandler;
+import msifeed.sys.rpc.RpcUtils;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-import java.util.UUID;
-
 public class RollRpc {
     private static final String effortRoll = "roll.effort";
 
     @RpcMethodHandler(effortRoll)
-    public void onEffortRoll(RpcContext ctx, UUID uuid, int effortOrd, int amount, int difficulty) {
+    public void onEffortRoll(RpcContext ctx, int eid, int effortOrd, int amount, int difficulty) {
         final EntityPlayerMP sender = ctx.getServerHandler().player;
-        final EntityPlayerMP target = (EntityPlayerMP) sender.world.getPlayerEntityByUUID(uuid);
+        final EntityPlayerMP target = RpcUtils.findPlayerMP(sender.world, eid);
 
         final CharEffort effort = CharEffort.values()[effortOrd];
         final ICharstate state = CharstateProvider.get(sender);
@@ -43,6 +42,6 @@ public class RollRpc {
 
     @SideOnly(Side.CLIENT)
     public static void doEffortRoll(EntityLivingBase target, CharEffort effort, int amount, int difficulty) {
-        Misca.RPC.sendToServer(effortRoll, target.getUniqueID(), effort.ordinal(), amount, difficulty);
+        Misca.RPC.sendToServer(effortRoll, target.getEntityId(), effort.ordinal(), amount, difficulty);
     }
 }

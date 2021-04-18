@@ -9,7 +9,6 @@ import msifeed.misca.Misca;
 import msifeed.misca.chatex.ChatexRpc;
 import msifeed.misca.chatex.client.TypingState;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.util.ITabCompleter;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.ITextComponent;
@@ -161,8 +160,7 @@ public class ChatexScreen extends MellowScreen implements ITabCompleter {
         if (text.startsWith("/")) {
             sendCommand(text);
         } else {
-            final EntityPlayerSP self = Minecraft.getMinecraft().player;
-            ChatexRpc.sendSpeech(self.getUniqueID(), text);
+            ChatexRpc.sendSpeech(text);
         }
 
         hud.addToSentMessages(text);

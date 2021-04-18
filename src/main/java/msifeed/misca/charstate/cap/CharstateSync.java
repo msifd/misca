@@ -2,6 +2,7 @@ package msifeed.misca.charstate.cap;
 
 import msifeed.misca.Misca;
 import msifeed.sys.rpc.RpcMethodHandler;
+import msifeed.sys.rpc.RpcUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -9,33 +10,23 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-import java.util.UUID;
-
 public class CharstateSync {
     private static final String sync = "charstate.sync";
-    private static final String syncSelf = "charstate.syncSelf";
 
     public static void sync(EntityPlayer target) {
         final NBTTagCompound nbt = CharstateProvider.encode(CharstateProvider.get(target));
-        Misca.RPC.sendToAllVisibleTo(target, sync, target.getUniqueID(), nbt);
+        Misca.RPC.sendToAllAround(target, sync, target.getEntityId(), nbt);
     }
 
     public static void sync(EntityPlayerMP receiver, EntityPlayer target) {
         final NBTTagCompound nbt = CharstateProvider.encode(CharstateProvider.get(target));
-        Misca.RPC.sendTo(receiver, sync, target.getUniqueID(), nbt);
-    }
-
-    @SideOnly(Side.CLIENT)
-    @RpcMethodHandler(syncSelf)
-    public void onSyncSelf(NBTTagCompound nbt) {
-        final EntityPlayer self = Minecraft.getMinecraft().player;
-        update(self, nbt);
+        Misca.RPC.sendTo(receiver, sync, target.getEntityId(), nbt);
     }
 
     @SideOnly(Side.CLIENT)
     @RpcMethodHandler(sync)
-    public void onSync(UUID uuid, NBTTagCompound nbt) {
-        final EntityPlayer target = Minecraft.getMinecraft().world.getPlayerEntityByUUID(uuid);
+    public void onSync(int eid, NBTTagCompound nbt) {
+        final EntityPlayer target = RpcUtils.findPlayer(Minecraft.getMinecraft().world, eid);
         if (target != null)
             update(target, nbt);
     }

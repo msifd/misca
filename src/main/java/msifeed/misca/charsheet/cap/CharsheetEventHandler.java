@@ -30,6 +30,8 @@ public class CharsheetEventHandler {
     public void onPlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
         if (!event.player.world.isRemote) {
             KeeperSync.INSTANCE.sync((EntityPlayerMP) event.player);
+//            event.player.sendMessage(new TextComponentString("login sync " + event.player.getEntityId()));
+            CharsheetSync.sync(event.player);
         }
     }
 
@@ -37,6 +39,7 @@ public class CharsheetEventHandler {
     public void onPlayerSpawn(EntityJoinWorldEvent event) {
         if (event.getWorld().isRemote) return;
         if (event.getEntity() instanceof EntityPlayerMP) {
+//            event.getEntity().sendMessage(new TextComponentString("join sync " + event.getEntity().getEntityId()));
             CharsheetSync.sync((EntityPlayerMP) event.getEntity());
         }
     }
@@ -44,6 +47,7 @@ public class CharsheetEventHandler {
     @SubscribeEvent
     public void onPlayerTracking(net.minecraftforge.event.entity.player.PlayerEvent.StartTracking event) {
         if (event.getTarget() instanceof EntityPlayer) {
+//            event.getEntity().sendMessage(new TextComponentString("tracking sync " + event.getTarget().getEntityId() + " " + event.getTarget().getName()));
             CharsheetSync.sync((EntityPlayerMP) event.getEntityPlayer(), (EntityPlayer) event.getTarget());
         }
     }
@@ -53,6 +57,7 @@ public class CharsheetEventHandler {
         final ICharsheet original = CharsheetProvider.get(event.getOriginal());
         final ICharsheet cloned = CharsheetProvider.get(event.getEntityPlayer());
         cloned.replaceWith(original);
+//        event.getEntity().sendMessage(new TextComponentString("copy sync " + event.getEntity().getEntityId() + " " + event.getEntity().getName()));
         CharsheetSync.sync(event.getEntityPlayer());
     }
 }

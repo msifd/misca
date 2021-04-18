@@ -6,8 +6,9 @@ import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextFormatting;
 
 public class SpecialSpeechFormat {
-    public static ITextComponent offtop(EntityPlayer sender, String msg) {
-        final ITextComponent tc = new TextComponentString("[OFF] " + sender.getDisplayNameString() + ": " + msg);
+    public static ITextComponent offtop(EntityPlayer speaker, String msg) {
+        final String name = speaker != null ? speaker.getDisplayNameString() : "???";
+        final ITextComponent tc = new TextComponentString("[OFF] " + name + ": " + msg);
         tc.getStyle().setColor(TextFormatting.GRAY);
         return tc;
     }

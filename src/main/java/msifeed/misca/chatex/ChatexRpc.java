@@ -10,16 +10,17 @@ import msifeed.misca.chatex.format.SpeechFormat;
 import msifeed.misca.logdb.LogDB;
 import msifeed.sys.rpc.RpcContext;
 import msifeed.sys.rpc.RpcMethodHandler;
+import msifeed.sys.rpc.RpcUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.multiplayer.WorldClient;
-import net.minecraft.client.network.NetworkPlayerInfo;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvent;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraftforge.common.MinecraftForge;
@@ -28,39 +29,18 @@ import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-import java.util.Objects;
-import java.util.UUID;
-
 public class ChatexRpc {
     private static final String cmd = "chatex.cmd";
     private static final String raw = "chatex.raw";
     private static final String gmGlobal = "chatex.gmGlobal";
-    private static final String speech = "chatex.speech";
+    private static final String speechSend = "chatex.speech.send";
+    private static final String speechBroadcast = "chatex.speech";
     private static final String global = "chatex.global";
     private static final String offtop = "chatex.offtop";
     private static final String diceRoll = "chatex.diceRoll";
     private static final String effortRoll = "chatex.effortRoll";
     private static final String notifyTyping = "chatex.typing.notify";
     private static final String broadcastTyping = "chatex.typing.broadcast";
-
-    // // // // Shared handlers
-
-    @RpcMethodHandler(speech)
-    public void onSpeech(RpcContext ctx, UUID speakerId, String msg) {
-        if (ctx.side.isServer()) {
-            final EntityPlayerMP sender = ctx.getServerHandler().player;
-            final EntityPlayerMP speaker = (EntityPlayerMP) sender.world.getPlayerEntityByUUID(speakerId);
-
-            if (sender == speaker && GameMasterParams.INSTANCE.shouldUseGmSay(speaker)) {
-                final GameMasterParams.Entry params = GameMasterParams.INSTANCE.getOrCreate(speaker.getUniqueID());
-                broadcastRaw(speaker, params.range, params.format(msg));
-            } else {
-                broadcastSpeech(speaker, msg);
-            }
-        } else {
-            onSpeechClient(speakerId, msg);
-        }
-    }
 
     // // // // Server senders
 
@@ -77,7 +57,7 @@ public class ChatexRpc {
         final SpeechEvent event = new SpeechEvent(sender, msg, new TextComponentString(msg));
         if (MinecraftForge.EVENT_BUS.post(event)) return;
 
-        Misca.RPC.sendToAllVisibleTo(sender, speech, sender.getUniqueID(), msg);
+        Misca.RPC.sendToAllAround(sender, speechBroadcast, sender.getEntityId(), sender.getPosition(), msg);
         LogDB.INSTANCE.log(sender, "speech", msg);
     }
 
@@ -95,19 +75,19 @@ public class ChatexRpc {
 
     public static void broadcastOfftop(EntityPlayerMP sender, String msg) {
         final int range = Misca.getSharedConfig().chat.offtopRange;
-        Misca.RPC.sendToAllAround(sender, range, offtop, sender.getUniqueID(), msg);
+        Misca.RPC.sendToAllAround(sender, range, offtop, sender.getEntityId(), msg);
         LogDB.INSTANCE.log(sender, "offtop", SpecialSpeechFormat.offtop(sender, msg));
     }
 
     public static void broadcastDiceRoll(EntityPlayerMP sender, String spec, long result) {
         final int range = Misca.getSharedConfig().chat.rollRange;
-        Misca.RPC.sendToAllAround(sender, range, diceRoll, sender.getUniqueID(), spec, result);
-        LogDB.INSTANCE.log(sender, "dice", RollFormat.dice(sender.getDisplayNameString(), spec, result));
+        Misca.RPC.sendToAllAround(sender, range, diceRoll, sender.getEntityId(), spec, result);
+        LogDB.INSTANCE.log(sender, "dice", RollFormat.dice(sender, spec, result));
     }
 
     public static void broadcastEffortRoll(EntityPlayerMP sender, CharEffort effort, int amount, int difficulty, boolean result) {
         final int range = Misca.getSharedConfig().chat.rollRange;
-        Misca.RPC.sendToAllAround(sender, range, effortRoll, sender.getUniqueID(), effort.ordinal(), amount, difficulty, result);
+        Misca.RPC.sendToAllAround(sender, range, effortRoll, sender.getEntityId(), effort.ordinal(), amount, difficulty, result);
         LogDB.INSTANCE.log(sender, "effort", RollFormat.effort(sender, effort, amount, difficulty, result));
     }
 
@@ -116,6 +96,17 @@ public class ChatexRpc {
     }
 
     // // // // Server handlers
+
+    @RpcMethodHandler(speechSend)
+    public void onSpeech(RpcContext ctx, String msg) {
+        final EntityPlayerMP speaker = ctx.getServerHandler().player;
+        if (GameMasterParams.INSTANCE.shouldUseGmSay(speaker)) {
+            final GameMasterParams.Entry params = GameMasterParams.INSTANCE.getOrCreate(speaker.getUniqueID());
+            broadcastRaw(speaker, params.range, params.format(msg));
+        } else {
+            broadcastSpeech(speaker, msg);
+        }
+    }
 
     @RpcMethodHandler(cmd)
     public void onCommand(RpcContext ctx, String command) {
@@ -136,21 +127,20 @@ public class ChatexRpc {
         Misca.RPC.sendToServer(cmd, msg);
     }
 
-    public static void sendSpeech(UUID speakerId, String msg) {
+    public static void sendSpeech(String msg) {
         msg = net.minecraftforge.event.ForgeEventFactory.onClientSendMessage(msg);
         if (msg.isEmpty()) return;
-        Misca.RPC.sendToServer(speech, speakerId, msg);
+        Misca.RPC.sendToServer(speechSend, msg);
     }
 
     // // // // Client handlers
 
     @SideOnly(Side.CLIENT)
-    private void onSpeechClient(UUID speakerId, String msg) {
+    @RpcMethodHandler(speechBroadcast)
+    public void onSpeechClient(int eid, BlockPos pos, String msg) {
         final EntityPlayerSP self = Minecraft.getMinecraft().player;
-        final EntityPlayer speaker = self.world.getPlayerEntityByUUID(speakerId);
-        if (speaker == null) return;
-
-        SpeechFormat.format(self, speaker, msg)
+        final EntityPlayer speaker = RpcUtils.findPlayer(Minecraft.getMinecraft().world, eid);
+        SpeechFormat.format(self, speaker, pos, msg)
                 .ifPresent(text -> displayMessage(self, speaker, text));
     }
 
@@ -177,34 +167,26 @@ public class ChatexRpc {
 
     @SideOnly(Side.CLIENT)
     @RpcMethodHandler(offtop)
-    public void onOfftop(UUID uuid, String msg) {
-        final EntityPlayer sender = Minecraft.getMinecraft().world.getPlayerEntityByUUID(uuid);
-        if (sender == null) return;
-
+    public void onOfftop(int eid, String msg) {
         final EntityPlayerSP self = Minecraft.getMinecraft().player;
-        displayMessage(self, self, SpecialSpeechFormat.offtop(sender, msg));
+        final EntityPlayer speaker = RpcUtils.findPlayer(Minecraft.getMinecraft().world, eid);
+        displayMessage(self, self, SpecialSpeechFormat.offtop(speaker, msg));
     }
 
     @SideOnly(Side.CLIENT)
     @RpcMethodHandler(diceRoll)
-    public void onDiceRoll(RpcContext ctx, UUID uuid, String spec, long result) {
-        final NetworkPlayerInfo info = Objects.requireNonNull(ctx.getClientHandler().getPlayerInfo(uuid));
-        final String name = info.getDisplayName() != null
-                ? info.getDisplayName().getFormattedText()
-                : info.getGameProfile().getName();
-
+    public void onDiceRoll(RpcContext ctx, int eid, String spec, long result) {
         final EntityPlayer self = Minecraft.getMinecraft().player;
-        displayMessage(self, self, RollFormat.dice(name, spec, result));
+        final EntityPlayer speaker = RpcUtils.findPlayer(Minecraft.getMinecraft().world, eid);
+        displayMessage(self, speaker, RollFormat.dice(speaker, spec, result));
     }
 
     @SideOnly(Side.CLIENT)
     @RpcMethodHandler(effortRoll)
-    public void onEffortRoll(RpcContext ctx, UUID uuid, int effortOrd, int amount, int difficulty, boolean result) {
-        final EntityPlayer target = Minecraft.getMinecraft().world.getPlayerEntityByUUID(uuid);
-        if (target == null) return;
-
+    public void onEffortRoll(RpcContext ctx, int eid, int effortOrd, int amount, int difficulty, boolean result) {
+        final EntityPlayer speaker = RpcUtils.findPlayer(Minecraft.getMinecraft().world, eid);
         final CharEffort effort = CharEffort.values()[effortOrd];
-        displayMessage(Minecraft.getMinecraft().player, target, RollFormat.effort(target, effort, amount, difficulty, result));
+        displayMessage(Minecraft.getMinecraft().player, speaker, RollFormat.effort(speaker, effort, amount, difficulty, result));
     }
 
     @SideOnly(Side.CLIENT)
@@ -218,6 +200,8 @@ public class ChatexRpc {
 
     @SideOnly(Side.CLIENT)
     private static void playNotificationSound(EntityPlayer p) {
+        if (p == null) p = Minecraft.getMinecraft().player;
+
         final WorldClient w = FMLClientHandler.instance().getWorldClient();
         w.playSound(p.posX, p.posY, p.posZ, chatSound, SoundCategory.PLAYERS, 1.0F, 0.7F, true);
     }

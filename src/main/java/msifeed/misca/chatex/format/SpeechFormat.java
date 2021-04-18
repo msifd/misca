@@ -6,23 +6,26 @@ import msifeed.misca.charsheet.cap.CharsheetProvider;
 import msifeed.misca.chatex.ChatexConfig;
 import msifeed.misca.chatex.ChatexUtils;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.event.ClickEvent;
 
+import javax.annotation.Nullable;
 import java.util.Optional;
 
 public class SpeechFormat {
-    public static Optional<ITextComponent> format(EntityPlayer self, EntityPlayer speaker, String msg) {
-        final boolean isMyMessage = self.getUniqueID().equals(speaker.getUniqueID());
+    public static Optional<ITextComponent> format(EntityPlayer self, @Nullable EntityPlayer speaker, BlockPos pos, String msg) {
+        final boolean isMyMessage = speaker != null && self.getUniqueID().equals(speaker.getUniqueID());
 
         final ITextComponent textComp;
         if (isMyMessage) {
             textComp = new TextComponentString(msg);
         } else {
-            textComp = garbleficateString(msg, self.getDistance(speaker));
+            final double distance = self.getDistance(pos.getX(), pos.getY(), pos.getZ());
+            textComp = garbleficateString(msg, distance);
         }
 
         if (textComp.getUnformattedText().trim().isEmpty())
@@ -35,13 +38,18 @@ public class SpeechFormat {
     }
 
     private static ITextComponent makeNamePrefix(EntityPlayer player, boolean isSelf) {
-        final ITextComponent cc = player.getDisplayName();
+        final ITextComponent cc = player != null
+                ? player.getDisplayName()
+                : new TextComponentString("???");
+
         cc.getStyle().setColor(isSelf ? TextFormatting.YELLOW : TextFormatting.GREEN);
 
-        final ICharsheet cs = CharsheetProvider.get(player);
-        final String wikiPage = cs.getWikiPage().isEmpty() ? cs.getName() : cs.getWikiPage();
-        final String wikiUrl = Misca.getSharedConfig().chat.wikiUrlBase + wikiPage;
-        cc.getStyle().setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, wikiUrl));
+        if (player != null) {
+            final ICharsheet cs = CharsheetProvider.get(player);
+            final String wikiPage = cs.getWikiPage().isEmpty() ? cs.getName() : cs.getWikiPage();
+            final String wikiUrl = Misca.getSharedConfig().chat.wikiUrlBase + wikiPage;
+            cc.getStyle().setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, wikiUrl));
+        }
 
         return cc;
     }

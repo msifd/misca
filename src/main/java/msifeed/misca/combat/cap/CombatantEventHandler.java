@@ -63,7 +63,7 @@ public class CombatantEventHandler {
         if (entity.world.isRemote || entity instanceof EntityPlayer) return;
         if (!(entity instanceof EntityLivingBase)) return;
 
-        setCombatantAttributes((EntityLivingBase) entity, 5, 5);
+        setCombatantAttributes((EntityLivingBase) entity, 3, 5);
     }
 
     private static void setCombatantAttributes(EntityLivingBase entity, int min, int d) {
