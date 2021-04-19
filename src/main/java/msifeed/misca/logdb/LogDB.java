@@ -1,9 +1,13 @@
 package msifeed.misca.logdb;
 
 import net.minecraft.command.ICommandSender;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.EntityDamageSource;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextComponentString;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.CommandEvent;
+import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent;
@@ -51,6 +55,25 @@ public enum LogDB {
     @SubscribeEvent
     public void onPlayerLoggedOut(PlayerEvent.PlayerLoggedOutEvent event) {
         log(event.player, "login", "[logged out]");
+    }
+
+    @SubscribeEvent
+    public void onPlayerDeath(LivingDeathEvent event) {
+        if (event.getEntityLiving().world.isRemote) return;
+        if (!(event.getEntityLiving() instanceof EntityPlayer)) return;
+
+        final String msg;
+        if (event.getSource() instanceof EntityDamageSource) {
+            final EntityDamageSource src = (EntityDamageSource) event.getSource();
+            msg = String.format("source: %s, entity: %s, immediate entity: %s",
+                    src.damageType,
+                    src.getTrueSource() != null ? src.getTrueSource().getName() : "???",
+                    src.getImmediateSource() != null ? src.getImmediateSource().getName() : "???");
+        } else {
+            msg = String.format("source: %s", event.getSource().damageType);
+        }
+
+        log(event.getEntityLiving(), "death", msg);
     }
 
     @SubscribeEvent
