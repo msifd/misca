@@ -26,4 +26,9 @@ public class CharstateConfig {
     public float survivalSkillEffortsRestFactor = 0.15f;
     public float workSkillMiningSpeedFactor = 0.33f;
     public float workSkillCraftCostFactor = -0.02f;
+
+    public int ordIncreaseAmount = 2;
+    public long ordIncreaseIntervalSec = 24 * 60 * 60;
+    public long ordIncreaseMaxWindowSec = 7 * 24 * 60 * 60;
+    public int ordToSealRate = 40;
 }

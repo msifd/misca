@@ -65,6 +65,10 @@
     "survivalSkillNeedsLostFactor": -0.15,
     "survivalSkillEffortsRestFactor": 0.15,
     "workSkillMiningSpeedFactor": 0.33,
-    "workSkillCraftCostFactor": -0.02
+    "workSkillCraftCostFactor": -0.02,
+    "ordIncreaseAmount": 2,
+    "ordIncreaseIntervalSec": 86400,
+    "ordIncreaseMaxWindowSec": 604800,
+    "ordToSealRate": 40
   }
 }

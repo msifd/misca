@@ -37,8 +37,8 @@ enum.misca.skill.research=Исследование
 enum.misca.skill.blacksmith=Кузнечество
 enum.misca.skill.magic=Магия
 
-enum.misca.resource.est=Эст
-enum.misca.resource.ord=Орд
+enum.misca.resource.est=Эститенция
+enum.misca.resource.ord=Ордеция
 enum.misca.resource.seal=Печати
 
 enum.misca.attribute.str=СИЛ

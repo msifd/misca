@@ -18,7 +18,7 @@ import net.minecraft.potion.Potion;
 import java.util.Map;
 import java.util.Set;
 
-public class BlessingsHandler {
+public class BlessingsFlow {
     public static boolean shouldPerformPotionsEffect(EntityLivingBase self) {
         final ICombatant com = CombatantProvider.getOptional(self);
         if (com == null || !com.isInBattle())

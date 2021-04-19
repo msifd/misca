@@ -25,6 +25,12 @@ public interface ICharsheet extends Cloneable {
     Map<Potion, Integer> potions();
     Map<Enchantment, Integer> enchants();
 
+    long getLastUpdated();
+    void setLastUpdated(long value);
+    default long timeSinceUpdate() {
+        return System.currentTimeMillis() / 1000 - getLastUpdated();
+    }
+
     void replaceWith(ICharsheet charsheet);
     ICharsheet clone();
 }

@@ -73,7 +73,7 @@ public class EffortsCommand extends CommandBase {
             else efforts.set(eff, MathHelper.clamp(value + efforts.get(eff), 0, max));
         }
 
-        final String rep = String.format("%s's %s: %.2f/%d", player.getDisplayNameString(), eff.tr(), efforts.get(eff), max);
+        final String rep = String.format("%s's %s: %.2f/%d", player.getDisplayNameString(), eff.name(), efforts.get(eff), max);
         sender.sendMessage(new TextComponentString(rep));
     }
 

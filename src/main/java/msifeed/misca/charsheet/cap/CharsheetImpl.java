@@ -19,6 +19,7 @@ public class CharsheetImpl implements ICharsheet {
     private final IntContainer<CharResource> resources = new IntContainer<>(CharResource.class, 0, 1000);
     private final HashMap<Potion, Integer> potions = new HashMap<>();
     private final HashMap<Enchantment, Integer> enchants = new HashMap<>();
+    private long lastUpdated = System.currentTimeMillis() / 1000;
 
     @Override
     public String getName() {
@@ -69,6 +70,16 @@ public class CharsheetImpl implements ICharsheet {
     }
 
     @Override
+    public long getLastUpdated() {
+        return lastUpdated;
+    }
+
+    @Override
+    public void setLastUpdated(long value) {
+        this.lastUpdated = value;
+    }
+
+    @Override
     public void replaceWith(ICharsheet charsheet) {
         name = charsheet.getName();
         wikiPage = charsheet.getWikiPage();
@@ -79,6 +90,7 @@ public class CharsheetImpl implements ICharsheet {
         potions.putAll(charsheet.potions());
         enchants.clear();
         enchants.putAll(charsheet.enchants());
+        lastUpdated = charsheet.getLastUpdated();
     }
 
     @Override

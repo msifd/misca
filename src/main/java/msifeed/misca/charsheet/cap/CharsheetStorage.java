@@ -34,6 +34,8 @@ public class CharsheetStorage implements Capability.IStorage<ICharsheet> {
             enchantsNbt.setByte(entry.getKey().getRegistryName().toString(), entry.getValue().byteValue());
         nbt.setTag(Tag.enchants, enchantsNbt);
 
+        nbt.setLong(Tag.updated, instance.getLastUpdated());
+
         return nbt;
     }
 
@@ -63,6 +65,10 @@ public class CharsheetStorage implements Capability.IStorage<ICharsheet> {
                 instance.enchants().put(e, (int) enchantsNbt.getByte(key));
             }
         }
+
+        if (nbt.hasKey(Tag.updated)) {
+            instance.setLastUpdated(nbt.getLong(Tag.updated));
+        }
     }
 
     private static class Tag {
@@ -73,5 +79,6 @@ public class CharsheetStorage implements Capability.IStorage<ICharsheet> {
         private static final String resources = "resources";
         private static final String potions = "potions";
         private static final String enchants = "enchants";
+        private static final String updated = "updated";
     }
 }

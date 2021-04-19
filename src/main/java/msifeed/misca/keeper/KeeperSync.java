@@ -72,8 +72,9 @@ public enum KeeperSync {
         LOG.info("Found entry: " + new Gson().toJson(sheet));
 
         final ICharsheet cs = CharsheetProvider.get(player);
-        for (CharResource key : CharResource.values())
-            cs.resources().set(key, sheet.special_stats.getOrDefault(key.name(), 0));
+        cs.resources().set(CharResource.est, sheet.special_stats.get("est"));
+//        for (CharResource key : CharResource.values())
+//            cs.resources().set(key, sheet.special_stats.getOrDefault(key.name(), 0));
         for (CharSkill key : CharSkill.values())
             cs.skills().set(key, sheet.skills.getOrDefault(key.name(), 0));
         for (CharEffort key : CharEffort.values())

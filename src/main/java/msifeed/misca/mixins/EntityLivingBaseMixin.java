@@ -1,6 +1,6 @@
 package msifeed.misca.mixins;
 
-import msifeed.misca.charsheet.BlessingsHandler;
+import msifeed.misca.charsheet.BlessingsFlow;
 import msifeed.misca.charsheet.ICharsheet;
 import msifeed.misca.charsheet.cap.CharsheetProvider;
 import net.minecraft.entity.EntityLivingBase;
@@ -21,13 +21,13 @@ public abstract class EntityLivingBaseMixin {
         final EntityLivingBase self = (EntityLivingBase) (Object) this; // Beautiful T_T
 
         if (self instanceof EntityPlayer) {
-            BlessingsHandler.checkPotionAttributes((EntityPlayer) self);
+            BlessingsFlow.checkPotionAttributes((EntityPlayer) self);
         }
 
-        if (!BlessingsHandler.shouldPerformPotionsEffect(self)) {
+        if (!BlessingsFlow.shouldPerformPotionsEffect(self)) {
             ci.cancel();
         } else if (self instanceof EntityPlayer) {
-            BlessingsHandler.performPotionEffects((EntityPlayer) self);
+            BlessingsFlow.performPotionEffects((EntityPlayer) self);
         }
     }
 
