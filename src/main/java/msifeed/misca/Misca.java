@@ -116,6 +116,7 @@ public class Misca {
         event.registerServerCommand(new EffortsCommand());
         event.registerServerCommand(new SkillsCommand());
         event.registerServerCommand(new BlessCommand());
+        event.registerServerCommand(new UnstuckCommand());
     }
 
     @SubscribeEvent
