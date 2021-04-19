@@ -49,6 +49,7 @@ public class StaminaHandler {
     public void handleCrafting(net.minecraftforge.fml.common.gameevent.PlayerEvent.ItemCraftedEvent event) {
         final CharstateConfig config = Misca.getSharedConfig().charstate;
 
+        final int results = event.crafting.getCount();
         int ingredients = 0;
         for (int i = 0; i < event.craftMatrix.getSizeInventory(); i++) {
             if (!event.craftMatrix.getStackInSlot(i).isEmpty())
@@ -59,9 +60,10 @@ public class StaminaHandler {
         final int survivalSkill = charsheet.skills().get(CharSkill.survival);
         final int workSkill = charsheet.skills().get(CharSkill.hardworking);
         final double factor = 1 + survivalSkill * config.survivalSkillNeedsLostFactor + workSkill * config.workSkillCraftCostFactor;
+        final double avgIngredients = (ingredients + results) / 2d;
 
-        final double lost = ingredients * config.staminaCostPerIngredient * factor;
-        
+        final double lost = avgIngredients * config.staminaCostPerIngredient * factor;
+
         final IAttributeInstance inst = event.player.getEntityAttribute(STAMINA);
         inst.setBaseValue(STAMINA.clampValue(inst.getBaseValue() - lost));
 
