@@ -38,9 +38,9 @@ public class Charstate {
     private final EffortsHandler effortsHandler = new EffortsHandler();
     private final EffectsHandler effectsHandler = new EffectsHandler();
 
-    public static final TypeToken<HashMap<ResourceLocation, ItemEffectInfo[]>> ITEM_TT = new TypeToken<HashMap<ResourceLocation, ItemEffectInfo[]>>() {};
-    public static final SyncChannel<HashMap<ResourceLocation, ItemEffectInfo[]>> ITEM_EFFECTS
-            = new SyncChannel<>(Misca.RPC, Paths.get(Misca.MODID, "item_effects.json"), ITEM_TT);
+    public static class ItemEffectsConfig extends HashMap<ResourceLocation, ItemEffectInfo[]> { }
+    public static final SyncChannel<ItemEffectsConfig> ITEM_EFFECTS
+            = new SyncChannel<>(Misca.RPC, Paths.get(Misca.MODID, "item_effects.json"), TypeToken.get(ItemEffectsConfig.class));
 
     public static HashMap<ResourceLocation, ItemEffectInfo[]> getItemEffects() { return ITEM_EFFECTS.get(); }
 

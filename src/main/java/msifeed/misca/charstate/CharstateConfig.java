@@ -17,6 +17,7 @@ public class CharstateConfig {
     public double staminaRestTimeoutSec = 2;
     public double staminaCostPerMiningTick = 0.01;
     public double staminaCostPerIngredient = 0.5;
+    public int staminaCostIngredientThreshold = 4;
 
     public double corruptionLostPerSec = 0.00000115;
 
