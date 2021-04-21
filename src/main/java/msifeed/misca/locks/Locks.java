@@ -20,15 +20,17 @@ import msifeed.misca.locks.cap.pick.LockPickStorage;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
+import net.minecraft.world.gen.ChunkProviderServer;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.world.BlockEvent;
-import net.minecraftforge.event.world.ChunkEvent;
+import net.minecraftforge.event.world.ChunkWatchEvent;
 import net.minecraftforge.fml.common.eventhandler.Event;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -58,9 +60,17 @@ public class Locks {
     }
 
     @SubscribeEvent
-    public void onChunkLoad(ChunkEvent.Load event) {
-        if (event.getWorld().isRemote)
-            LocksRpc.requestChunkLocks(event.getChunk());
+    public void onChunkWatch(ChunkWatchEvent.Watch event) {
+        if (event.getChunkInstance() != null) {
+            LocksRpc.sendChunkLocks(event.getPlayer(), event.getChunkInstance());
+        } else {
+            // Add some silly loading
+            event.getPlayer().sendStatusMessage(new TextComponentString("Woah! Chunk is not loaded! Loading ASAP!"), true);
+            final ChunkProviderServer provider = (ChunkProviderServer) event.getPlayer().world.getChunkProvider();
+            provider.loadChunk(event.getChunk().x, event.getChunk().z, () -> {
+                LocksRpc.sendChunkLocks(event.getPlayer(), event.getChunkInstance());
+            });
+        }
     }
 
     @SubscribeEvent(priority = EventPriority.HIGH)

@@ -5,7 +5,6 @@ import msifeed.misca.locks.cap.chunk.ChunkLockableProvider;
 import msifeed.misca.locks.cap.chunk.IChunkLockable;
 import msifeed.misca.locks.cap.lock.ILockable;
 import msifeed.misca.locks.cap.lock.LockableProvider;
-import msifeed.sys.rpc.RpcContext;
 import msifeed.sys.rpc.RpcMethodHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -20,14 +19,13 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class LocksRpc {
     private static final String tileLock = "locks.tile";
-    private static final String chunkLocksRequest = "locks.chunkReq";
     private static final String chunkLocks = "locks.chunk";
 
     public static void syncTileLock(TileEntity tile, ILockable lock) {
         final BlockPos pos = tile.getPos();
         final NetworkRegistry.TargetPoint point = new NetworkRegistry.TargetPoint(
                 tile.getWorld().provider.getDimension(), pos.getX(), pos.getY(), pos.getZ(), 0);
-        Misca.RPC.sendToAllTracking(point, LocksRpc.tileLock, pos, lock.getType().ordinal(), lock.getSecret());
+        Misca.RPC.sendToAllTracking(point, tileLock, pos, lock.getType().ordinal(), lock.getSecret());
     }
 
     @SideOnly(Side.CLIENT)
@@ -44,25 +42,16 @@ public class LocksRpc {
         lock.setSecret(secret);
     }
 
-    public static void requestChunkLocks(Chunk chunk) {
-        Misca.RPC.sendToServer(chunkLocksRequest, chunk.x, chunk.z);
+    public static void sendChunkLocks(EntityPlayerMP player, Chunk chunk) {
+        final IChunkLockable locks = ChunkLockableProvider.get(chunk);
+        if (!locks.getLocks().isEmpty())
+            Misca.RPC.sendTo(player, chunkLocks, chunk.x, chunk.z, ChunkLockableProvider.encode(locks));
     }
 
-    public static void syncChunkLocks(Chunk chunk, IChunkLockable chunkLocks) {
+    public static void syncChunkLocks(Chunk chunk, IChunkLockable locks) {
         final NetworkRegistry.TargetPoint point = new NetworkRegistry.TargetPoint(
                 chunk.getWorld().provider.getDimension(), chunk.x * 16 + 8, 0,chunk.z * 16 + 8, 0);
-        Misca.RPC.sendToAllTracking(point, LocksRpc.chunkLocks, chunk.x, chunk.z, ChunkLockableProvider.encode(chunkLocks));
-    }
-
-    @RpcMethodHandler(chunkLocksRequest)
-    public void onChunkLocksRequest(RpcContext ctx, int x, int z) {
-        final EntityPlayerMP player = ctx.getServerHandler().player;
-        final Chunk chunk = player.world.getChunkProvider().getLoadedChunk(x, z);
-        if (chunk == null) return;
-
-        final IChunkLockable chunkLocks = ChunkLockableProvider.get(chunk);
-        if (!chunkLocks.getLocks().isEmpty())
-            Misca.RPC.sendTo(player, LocksRpc.chunkLocks, x, z, ChunkLockableProvider.encode(chunkLocks));
+        Misca.RPC.sendToAllTracking(point, chunkLocks, chunk.x, chunk.z, ChunkLockableProvider.encode(locks));
     }
 
     @SideOnly(Side.CLIENT)
