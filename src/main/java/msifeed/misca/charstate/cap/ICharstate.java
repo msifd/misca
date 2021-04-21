@@ -10,14 +10,12 @@ public interface ICharstate {
 
     long getUpdateTime();
     void setUpdateTime(long value);
-    /**
-     * @return seconds passed from stored time
-     */
-    default long consumeTime() {
+    default long passedFromUpdate() {
         final long now = System.currentTimeMillis() / 1000;
-        final long diff = now - getUpdateTime();
-        setUpdateTime(now);
-        return diff;
+        return now - getUpdateTime();
+    }
+    default void resetUpdateTime() {
+        setUpdateTime(System.currentTimeMillis() / 1000);
     }
 
     long getMiningTime();

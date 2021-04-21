@@ -30,8 +30,7 @@ import java.util.HashMap;
 public enum Charstate {
     INSTANCE;
 
-    private static final int UPDATE_PER_TICKS = 40;
-    private static final int SYNC_PER_TICKS = 80;
+    private static final int UPDATE_INTERVAL_SEC = 2;
 
     private final IntegrityHandler integrityHandler = new IntegrityHandler();
     private final SanityHandler sanityHandler = new SanityHandler();
@@ -94,23 +93,22 @@ public enum Charstate {
     @SubscribeEvent
     public void onPlayerTick(LivingEvent.LivingUpdateEvent event) {
         if (!(event.getEntity() instanceof EntityPlayerMP)) return;
-        if (event.getEntity().ticksExisted % UPDATE_PER_TICKS != 1) return;
         if (event.getEntity().world.isRemote) return;
 
         final EntityPlayerMP player = (EntityPlayerMP) event.getEntityLiving();
 
         final ICharstate state = CharstateProvider.get(player);
-        final long absSec = state.consumeTime();
-        final long relSec = UPDATE_PER_TICKS / 20;
+        final long passedSec = state.passedFromUpdate();
+        if (passedSec < UPDATE_INTERVAL_SEC) return;
 
-        integrityHandler.handleTime(player, absSec);
-        sanityHandler.handleTime(player, relSec);
-        staminaHandler.handleTime(player, absSec);
-        corruptionHandler.handleTime(player, absSec);
-        effortsHandler.handleTime(player, absSec);
+        integrityHandler.handleTime(player, passedSec);
+        sanityHandler.handleTime(player, UPDATE_INTERVAL_SEC);
+        staminaHandler.handleTime(player, passedSec);
+        corruptionHandler.handleTime(player, passedSec);
+        effortsHandler.handleTime(player, passedSec);
 
-        if (event.getEntity().ticksExisted % SYNC_PER_TICKS == 1)
-            CharstateSync.sync(player);
+        state.resetUpdateTime();
+        CharstateSync.sync(player);
     }
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
