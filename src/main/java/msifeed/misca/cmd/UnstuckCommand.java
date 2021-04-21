@@ -8,6 +8,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
+import net.minecraft.world.gen.ChunkProviderServer;
 
 public class UnstuckCommand extends CommandBase {
     @Override
@@ -31,22 +32,31 @@ public class UnstuckCommand extends CommandBase {
         final World world = ((EntityPlayer) sender).world;
 
         final BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos(player.getPosition());
-        final Chunk chunk = world.getChunk(pos);
-        boolean blocks = true;
+        final ChunkProviderServer provider = (ChunkProviderServer) world.getChunkProvider();
 
-        while (pos.getY() < world.getActualHeight()) {
-            if (chunk.getBlockState(pos).getMaterial().blocksMovement()) {
-                blocks = true;
-                pos.setY(pos.getY() + 1);
-            } else if (!blocks) {
-                pos.setY(pos.getY() - 1);
-                break;
-            } else {
-                blocks = false;
-                pos.setY(pos.getY() + 1);
+        provider.loadChunk(pos.getX() >> 4, pos.getZ() >> 4, () -> {
+            final Chunk chunk = world.getChunk(pos);
+            boolean platform = false;
+            boolean blocks = true;
+
+            final int topY = world.getTopSolidOrLiquidBlock(pos).getY();
+
+            pos.setY(pos.getY() - 3);
+            while (pos.getY() < topY) {
+                if (chunk.getBlockState(pos).getMaterial().blocksMovement()) {
+                    platform = true;
+                    blocks = true;
+                    pos.setY(pos.getY() + 1);
+                } else if (!blocks && platform) {
+                    pos.setY(pos.getY() - 1);
+                    break;
+                } else {
+                    blocks = false;
+                    pos.setY(pos.getY() + 1);
+                }
             }
-        }
 
-        player.setPositionAndUpdate(player.posX, pos.getY(), player.posZ);
+            player.setPositionAndUpdate(player.prevPosX, pos.getY(), player.prevPosZ);
+        });
     }
 }
