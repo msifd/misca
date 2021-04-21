@@ -8,6 +8,7 @@
     "AdvancementManagerMixin",
     "EnchantmentHelperMixin",
     "EntityLivingBaseMixin",
+    "ItemFoodMixin",
     "MinecraftServerMixin",
     "ModelRendererMixin",
     "NBTTagLongArrayMixin",

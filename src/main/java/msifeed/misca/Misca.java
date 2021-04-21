@@ -50,7 +50,6 @@ public class Misca {
     private final Environ environ = new Environ();
     private final Locks locks = new Locks();
     private final BackgroundSupplies supplies = new BackgroundSupplies();
-    private final Charstate charstate = new Charstate();
 
     public static MiscaSharedConfig getSharedConfig() {
         return SHARED.get();
@@ -66,7 +65,7 @@ public class Misca {
         combat.preInit();
         locks.preInit();
         supplies.preInit();
-        charstate.preInit();
+        Charstate.INSTANCE.preInit();
 
         MinecraftForge.EVENT_BUS.register(new NeedsPotions());
         MinecraftForge.EVENT_BUS.register(new CombatPotions());

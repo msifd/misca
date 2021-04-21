@@ -12,12 +12,12 @@ import net.minecraft.entity.ai.attributes.AbstractAttributeMap;
 import net.minecraft.entity.ai.attributes.IAttribute;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.event.entity.EntityEvent;
 import net.minecraftforge.event.entity.living.LivingDamageEvent;
-import net.minecraftforge.event.entity.living.LivingEntityUseItemEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.fml.common.FMLCommonHandler;
@@ -27,7 +27,9 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import java.nio.file.Paths;
 import java.util.HashMap;
 
-public class Charstate {
+public enum Charstate {
+    INSTANCE;
+
     private static final int UPDATE_PER_TICKS = 40;
     private static final int SYNC_PER_TICKS = 80;
 
@@ -125,16 +127,6 @@ public class Charstate {
     }
 
     @SubscribeEvent
-    public void onItemUse(LivingEntityUseItemEvent.Finish event) {
-        if (!(event.getEntityLiving() instanceof EntityPlayer)) return;
-
-        final EntityPlayer player = (EntityPlayer) event.getEntityLiving();
-
-        sanityHandler.handleItemUse(player, event.getResultStack());
-        effectsHandler.handleItemUse(player, event.getItem());
-    }
-
-    @SubscribeEvent
     public void onSpeech(SpeechEvent event) {
         sanityHandler.handleSpeech(event.getPlayer(), event.getMessage());
     }
@@ -151,5 +143,12 @@ public class Charstate {
         if (event.player.world.isRemote) return;
 
         staminaHandler.handleCrafting(event);
+    }
+
+    public void onFoodEaten(EntityPlayer player, ItemStack stack) {
+        if (player.world.isRemote) return;
+
+        sanityHandler.handleItemUse(player, stack);
+        effectsHandler.handleItemUse(player, stack);
     }
 }
