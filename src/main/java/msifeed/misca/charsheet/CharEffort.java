@@ -1,6 +1,6 @@
 package msifeed.misca.charsheet;
 
-import net.minecraft.client.resources.I18n;
+import net.minecraft.util.text.translation.I18n;
 
 public enum CharEffort {
     impact,
@@ -10,6 +10,6 @@ public enum CharEffort {
     reputation;
 
     public String tr() {
-        return I18n.format("enum.misca.effort." + name());
+        return I18n.translateToLocal("enum.misca.effort." + name());
     }
 }

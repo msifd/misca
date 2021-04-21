@@ -1,8 +1,6 @@
 package msifeed.misca.chatex.format;
 
 import msifeed.misca.Misca;
-import msifeed.misca.charsheet.ICharsheet;
-import msifeed.misca.charsheet.cap.CharsheetProvider;
 import msifeed.misca.chatex.ChatexConfig;
 import msifeed.misca.chatex.ChatexUtils;
 import net.minecraft.entity.player.EntityPlayer;
@@ -11,47 +9,27 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.TextFormatting;
-import net.minecraft.util.text.event.ClickEvent;
 
-import javax.annotation.Nullable;
 import java.util.Optional;
 
 public class SpeechFormat {
-    public static Optional<ITextComponent> format(EntityPlayer self, @Nullable EntityPlayer speaker, BlockPos pos, String msg) {
-        final boolean isMyMessage = speaker != null && self.getUniqueID().equals(speaker.getUniqueID());
-
-        final ITextComponent textComp;
-        if (isMyMessage) {
-            textComp = new TextComponentString(msg);
-        } else {
-            final double distance = self.getDistance(pos.getX(), pos.getY(), pos.getZ());
-            textComp = garbleficateString(msg, distance);
-        }
-
-        if (textComp.getUnformattedText().trim().isEmpty())
-            return Optional.empty();
-
-        return Optional.of(new TextComponentTranslation(
-                "misca.chatex.speech",
-                makeNamePrefix(speaker, isMyMessage), textComp
-        ));
+    public static ITextComponent join(ITextComponent name, ITextComponent text) {
+        return new TextComponentTranslation("misca.chatex.speech", name, text);
     }
 
-    private static ITextComponent makeNamePrefix(EntityPlayer player, boolean isSelf) {
-        final ITextComponent cc = player != null
-                ? player.getDisplayName()
-                : new TextComponentString("???");
+    public static ITextComponent formatName(ITextComponent name, boolean isSelf) {
+        name.getStyle().setColor(isSelf ? TextFormatting.YELLOW : TextFormatting.GREEN);
 
-        cc.getStyle().setColor(isSelf ? TextFormatting.YELLOW : TextFormatting.GREEN);
+        return name;
+    }
 
-        if (player != null) {
-            final ICharsheet cs = CharsheetProvider.get(player);
-            final String wikiPage = cs.getWikiPage().isEmpty() ? cs.getName() : cs.getWikiPage();
-            final String wikiUrl = Misca.getSharedConfig().chat.wikiUrlBase + wikiPage;
-            cc.getStyle().setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, wikiUrl));
-        }
+    public static Optional<ITextComponent> formatMessage(EntityPlayer self, BlockPos pos, String msg) {
+        final double distance = self.getDistance(pos.getX(), pos.getY(), pos.getZ());
+        final ITextComponent text = garbleficateString(msg, distance);
 
-        return cc;
+        return text.getUnformattedText().trim().isEmpty()
+                ? Optional.empty()
+                : Optional.of(text);
     }
 
     private static ITextComponent garbleficateString(String input, double distance) {

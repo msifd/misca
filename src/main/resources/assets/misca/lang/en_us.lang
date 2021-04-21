@@ -17,7 +17,11 @@ item.combat_tool.name=Combat tool
 item.note_sign.name=Знак-заметка
 
 misca.chatex.speech=%s: %s
+misca.chatex.offtop=[OFF] %s: %s
 misca.chatex.global=[GLOB] %s: %s
+misca.chatex.gmGlobal=[GMGL] %s: %s
+misca.chatex.dice=[DICE] %s: %s = %d
+misca.chatex.effort=[EFFORT] %s: %s %d/%d = %s
 
 enum.misca.effort.impact=Воздействие
 enum.misca.effort.knowledge=Знание

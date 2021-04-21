@@ -10,7 +10,6 @@ import msifeed.misca.chatex.format.SpeechFormat;
 import msifeed.misca.logdb.LogDB;
 import msifeed.sys.rpc.RpcContext;
 import msifeed.sys.rpc.RpcMethodHandler;
-import msifeed.sys.rpc.RpcUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.multiplayer.WorldClient;
@@ -28,6 +27,8 @@ import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+
+import java.util.UUID;
 
 public class ChatexRpc {
     private static final String cmd = "chatex.cmd";
@@ -57,38 +58,36 @@ public class ChatexRpc {
         final SpeechEvent event = new SpeechEvent(sender, msg, new TextComponentString(msg));
         if (MinecraftForge.EVENT_BUS.post(event)) return;
 
-        Misca.RPC.sendToAllAround(sender, speechBroadcast, sender.getEntityId(), sender.getPosition(), msg);
+        Misca.RPC.sendToAllAround(sender, speechBroadcast, sender.getUniqueID(), sender.getPosition(), sender.getDisplayName(), msg);
         LogDB.INSTANCE.log(sender, "speech", msg);
     }
 
     public static void broadcastGameMasterGlobal(EntityPlayerMP sender, String msg) {
-        // TODO: get name from charsheet
         Misca.RPC.sendToAll(gmGlobal, sender.getName(), msg);
         LogDB.INSTANCE.log(sender, "gm-global", msg);
     }
 
     public static void broadcastGlobal(EntityPlayerMP sender, String msg) {
-        // TODO: get name from charsheet
         Misca.RPC.sendToAll(global, sender.getDisplayNameString(), msg);
         LogDB.INSTANCE.log(sender, "global", msg);
     }
 
     public static void broadcastOfftop(EntityPlayerMP sender, String msg) {
         final int range = Misca.getSharedConfig().chat.offtopRange;
-        Misca.RPC.sendToAllAround(sender, range, offtop, sender.getEntityId(), msg);
-        LogDB.INSTANCE.log(sender, "offtop", SpecialSpeechFormat.offtop(sender, msg));
+        Misca.RPC.sendToAllAround(sender, range, offtop, sender.getPosition(), sender.getDisplayName(), msg);
+        LogDB.INSTANCE.log(sender, "offtop", SpecialSpeechFormat.offtop(sender.getDisplayName(), msg));
     }
 
     public static void broadcastDiceRoll(EntityPlayerMP sender, String spec, long result) {
         final int range = Misca.getSharedConfig().chat.rollRange;
-        Misca.RPC.sendToAllAround(sender, range, diceRoll, sender.getEntityId(), spec, result);
-        LogDB.INSTANCE.log(sender, "dice", RollFormat.dice(sender, spec, result));
+        Misca.RPC.sendToAllAround(sender, range, diceRoll, sender.getPosition(), sender.getDisplayName(), spec, result);
+        LogDB.INSTANCE.log(sender, "dice", RollFormat.dice(sender.getDisplayName(), spec, result));
     }
 
     public static void broadcastEffortRoll(EntityPlayerMP sender, CharEffort effort, int amount, int difficulty, boolean result) {
         final int range = Misca.getSharedConfig().chat.rollRange;
-        Misca.RPC.sendToAllAround(sender, range, effortRoll, sender.getEntityId(), effort.ordinal(), amount, difficulty, result);
-        LogDB.INSTANCE.log(sender, "effort", RollFormat.effort(sender, effort, amount, difficulty, result));
+        Misca.RPC.sendToAllAround(sender, range, effortRoll, sender.getPosition(), sender.getDisplayName(), effort.ordinal(), amount, difficulty, result);
+        LogDB.INSTANCE.log(sender, "effort", RollFormat.effort(sender.getDisplayName(), effort, amount, difficulty, result));
     }
 
     public static void notifyTyping() {
@@ -137,80 +136,79 @@ public class ChatexRpc {
 
     @SideOnly(Side.CLIENT)
     @RpcMethodHandler(speechBroadcast)
-    public void onSpeechClient(int eid, BlockPos pos, String msg) {
+    public void onSpeechClient(UUID uuid, BlockPos pos, ITextComponent name, String msg) {
         final EntityPlayerSP self = Minecraft.getMinecraft().player;
-        final EntityPlayer speaker = RpcUtils.findPlayer(Minecraft.getMinecraft().world, eid);
-        SpeechFormat.format(self, speaker, pos, msg)
-                .ifPresent(text -> displayMessage(self, speaker, text));
+
+        final ITextComponent text = SpeechFormat.formatMessage(self, pos, msg).orElse(null);
+        if (text == null) return;
+
+        final ITextComponent fmtName = SpeechFormat.formatName(name, self.getUniqueID().equals(uuid));
+        displayMessage(self, pos, SpeechFormat.join(fmtName, text));
     }
 
     @SideOnly(Side.CLIENT)
     @RpcMethodHandler(raw)
     public void onRaw(ITextComponent component) {
         final EntityPlayerSP self = Minecraft.getMinecraft().player;
-        displayMessage(self, self, component);
+        displayMessage(self, self.getPosition(), component);
     }
 
     @SideOnly(Side.CLIENT)
     @RpcMethodHandler(gmGlobal)
-    public void onGmGlobal(String speaker, String msg) {
+    public void onGmGlobal(String name, String msg) {
         final EntityPlayerSP self = Minecraft.getMinecraft().player;
-        displayMessage(self, self, SpecialSpeechFormat.gmGlobal(self, speaker, msg));
+        displayMessage(self, self.getPosition(), SpecialSpeechFormat.gmGlobal(name, msg));
     }
 
     @SideOnly(Side.CLIENT)
     @RpcMethodHandler(global)
-    public void onGlobal(String speaker, String msg) {
+    public void onGlobal(String name, String msg) {
         final EntityPlayerSP self = Minecraft.getMinecraft().player;
-        displayMessage(self, self, SpecialSpeechFormat.global(self, speaker, msg));
+        displayMessage(self, self.getPosition(), SpecialSpeechFormat.global(name, msg));
     }
 
     @SideOnly(Side.CLIENT)
     @RpcMethodHandler(offtop)
-    public void onOfftop(int eid, String msg) {
+    public void onOfftop(BlockPos pos, ITextComponent name, String msg) {
         final EntityPlayerSP self = Minecraft.getMinecraft().player;
-        final EntityPlayer speaker = RpcUtils.findPlayer(Minecraft.getMinecraft().world, eid);
-        displayMessage(self, self, SpecialSpeechFormat.offtop(speaker, msg));
+
+        displayMessage(self, pos, SpecialSpeechFormat.offtop(name, msg));
     }
 
     @SideOnly(Side.CLIENT)
     @RpcMethodHandler(diceRoll)
-    public void onDiceRoll(RpcContext ctx, int eid, String spec, long result) {
+    public void onDiceRoll(RpcContext ctx, BlockPos pos, ITextComponent name, String spec, long result) {
         final EntityPlayer self = Minecraft.getMinecraft().player;
-        final EntityPlayer speaker = RpcUtils.findPlayer(Minecraft.getMinecraft().world, eid);
-        displayMessage(self, speaker, RollFormat.dice(speaker, spec, result));
+        displayMessage(self, pos, RollFormat.dice(name, spec, result));
     }
 
     @SideOnly(Side.CLIENT)
     @RpcMethodHandler(effortRoll)
-    public void onEffortRoll(RpcContext ctx, int eid, int effortOrd, int amount, int difficulty, boolean result) {
-        final EntityPlayer speaker = RpcUtils.findPlayer(Minecraft.getMinecraft().world, eid);
+    public void onEffortRoll(RpcContext ctx, BlockPos pos, ITextComponent name, int effortOrd, int amount, int difficulty, boolean result) {
         final CharEffort effort = CharEffort.values()[effortOrd];
-        displayMessage(Minecraft.getMinecraft().player, speaker, RollFormat.effort(speaker, effort, amount, difficulty, result));
+        displayMessage(Minecraft.getMinecraft().player, pos, RollFormat.effort(name, effort, amount, difficulty, result));
     }
 
     @SideOnly(Side.CLIENT)
-    private static void displayMessage(EntityPlayer self, EntityPlayer source, ITextComponent tx) {
+    private static void displayMessage(EntityPlayer self, BlockPos pos, ITextComponent tx) {
         self.sendMessage(tx);
-        playNotificationSound(source);
+        playNotificationSound(pos);
         LogsSaver.logSpeech(tx);
     }
 
     private static final SoundEvent chatSound = new SoundEvent(new ResourceLocation(Misca.MODID, "chatex.chat_message"));
 
     @SideOnly(Side.CLIENT)
-    private static void playNotificationSound(EntityPlayer p) {
-        if (p == null) p = Minecraft.getMinecraft().player;
-
+    private static void playNotificationSound(BlockPos p) {
         final WorldClient w = FMLClientHandler.instance().getWorldClient();
-        w.playSound(p.posX, p.posY, p.posZ, chatSound, SoundCategory.PLAYERS, 1.0F, 0.7F, true);
+        w.playSound(p.getX(), p.getY(), p.getZ(), chatSound, SoundCategory.PLAYERS, 1.0F, 0.7F, true);
     }
 
     // // // //
 
     @SideOnly(Side.CLIENT)
     @RpcMethodHandler(broadcastTyping)
-    public void onBroadcastTyping(int entityId, long time) {
-        TypingState.updateTyping(entityId, time);
+    public void onBroadcastTyping(int eid, long time) {
+        TypingState.updateTyping(eid, time);
     }
 }
