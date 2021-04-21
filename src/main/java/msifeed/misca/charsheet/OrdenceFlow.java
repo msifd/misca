@@ -24,25 +24,24 @@ public class OrdenceFlow {
         notify(player, "Вы получили " + increase + " ордеции.");
         LogDB.INSTANCE.log(player, "resource", "gain " + increase + "ord");
 
-        convert(player);
+        convertOrdToSeal(player);
     }
 
-    public static boolean convert(EntityPlayer player) {
+    public static void convertOrdToSeal(EntityPlayer player) {
         final ICharsheet sheet = CharsheetProvider.get(player);
         final CharstateConfig config = Misca.getSharedConfig().charstate;
 
         final int ord = sheet.resources().get(CharResource.ord);
         final int convert = ord / config.ordToSealRate;
-        if (convert <= 0) return false;
+        if (convert <= 0) return;
 
         final int lost = convert * config.ordToSealRate;
         sheet.resources().increase(CharResource.ord, -lost);
         sheet.resources().increase(CharResource.seal, convert);
+        sheet.setLastUpdated(System.currentTimeMillis() / 1000);
 
         notify(player, "Вы преобразовали " + lost + " ордеции в печати.");
         LogDB.INSTANCE.log(player, "resource", "convert " + lost + " ost into " + convert + " seal");
-
-        return true;
     }
 
     private static void notify(EntityPlayer player, String msg) {
