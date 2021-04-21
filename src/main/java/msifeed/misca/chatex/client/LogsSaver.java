@@ -13,18 +13,18 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.zip.GZIPOutputStream;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 public class LogsSaver {
     private static final SimpleDateFormat LOG_FILE_FORMAT = new SimpleDateFormat("yyyy'-'MM'-'dd");
     private static final SimpleDateFormat LOG_TIME_FORMAT = new SimpleDateFormat("HH':'mm':'ss' '");
 
-    private static final Calendar date = Calendar.getInstance();
     private static PrintStream output;
 
     public static void init() {
         final Path logsDir = Paths.get("logs", "chat-" + Minecraft.getMinecraft().getSession().getUsername());
-        final Path currentLog = logsDir.resolve(LOG_FILE_FORMAT.format(date.getTime()) + ".log");
+        final Path currentLog = logsDir.resolve(LOG_FILE_FORMAT.format(Calendar.getInstance().getTime()) + ".log");
 
         try {
             Files.createDirectories(logsDir);
@@ -56,9 +56,13 @@ public class LogsSaver {
             e.printStackTrace();
         }
 
-        final File zipFile = new File(logPath.getParent().toFile(), logPath.getFileName() + ".gz");
-        try (GZIPOutputStream gzip = new GZIPOutputStream(new FileOutputStream(zipFile, true))) {
-            Files.copy(logPath, gzip);
+        final File zipFile = new File(logPath.getParent().toFile(), logPath.getFileName() + ".zip");
+        try (ZipOutputStream zip = new ZipOutputStream(new FileOutputStream(zipFile))) {
+            final ZipEntry entry = new ZipEntry(logPath.getFileName().toString());
+            zip.putNextEntry(entry);
+            Files.copy(logPath, zip);
+            zip.closeEntry();
+
             Files.delete(logPath);
         } catch (IOException e) {
             e.printStackTrace();
@@ -68,6 +72,6 @@ public class LogsSaver {
     public static void logSpeech(ITextComponent tc) {
         if (output == null) return;
 
-        output.println(LOG_TIME_FORMAT.format(date.getTime()) + tc.getUnformattedText());
+        output.println(LOG_TIME_FORMAT.format(Calendar.getInstance().getTime()) + tc.getUnformattedText());
     }
 }
