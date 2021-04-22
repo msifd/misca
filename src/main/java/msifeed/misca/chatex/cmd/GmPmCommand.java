@@ -54,8 +54,8 @@ public class GmPmCommand extends CommandBase {
         final String formatted = ChatexUtils.fromAmpersandFormat(text);
         final String senderText = "[GMPM][" + target.getDisplayNameString() + "]: " + formatted;
 
-        ChatexRpc.directRaw(sender, new TextComponentString(senderText));
-        ChatexRpc.directRaw(target, new TextComponentString(formatted));
+        ChatexRpc.sendGameMasterPM(sender, new TextComponentString(senderText));
+        ChatexRpc.sendGameMasterPM(target, new TextComponentString(formatted));
         LogDB.INSTANCE.log(sender, "raw", new TextComponentString(senderText).getUnformattedText());
     }
 }

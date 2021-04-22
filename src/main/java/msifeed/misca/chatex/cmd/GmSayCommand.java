@@ -59,7 +59,7 @@ public class GmSayCommand extends CommandBase {
             handleConfig(sender, args, params);
         } else {
             final String text = String.join(" ", args);
-            ChatexRpc.broadcastRaw(player, params.range, params.format(text));
+            ChatexRpc.broadcastGameMasterSay(player, params.range, params.format(text));
         }
     }
 

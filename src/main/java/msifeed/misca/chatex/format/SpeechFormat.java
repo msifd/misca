@@ -1,6 +1,8 @@
 package msifeed.misca.chatex.format;
 
 import msifeed.misca.Misca;
+import msifeed.misca.charsheet.ICharsheet;
+import msifeed.misca.charsheet.cap.CharsheetProvider;
 import msifeed.misca.chatex.ChatexConfig;
 import msifeed.misca.chatex.ChatexUtils;
 import net.minecraft.entity.player.EntityPlayer;
@@ -9,18 +11,34 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.TextFormatting;
+import net.minecraft.util.text.event.ClickEvent;
 
 import java.util.Optional;
+import java.util.UUID;
 
 public class SpeechFormat {
     public static ITextComponent join(ITextComponent name, ITextComponent text) {
         return new TextComponentTranslation("misca.chatex.speech", name, text);
     }
 
-    public static ITextComponent formatName(ITextComponent name, boolean isSelf) {
-        name.getStyle().setColor(isSelf ? TextFormatting.YELLOW : TextFormatting.GREEN);
+    public static ITextComponent formatName(EntityPlayer self, UUID uuid, String name) {
+        final boolean isMyMessage = self.getUniqueID().equals(uuid);
+        final EntityPlayer sender = self.world.getPlayerEntityByUUID(uuid);
 
-        return name;
+        final ITextComponent comp;
+        if (sender != null) {
+            comp = sender.getDisplayName();
+            final ICharsheet cs = CharsheetProvider.get(sender);
+            final String wikiPage = cs.getWikiPage().isEmpty() ? cs.getName() : cs.getWikiPage();
+            final String wikiUrl = Misca.getSharedConfig().chat.wikiUrlBase + wikiPage;
+            comp.getStyle().setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, wikiUrl));
+        } else {
+            comp = new TextComponentString(name);
+        }
+
+        comp.getStyle().setColor(isMyMessage ? TextFormatting.YELLOW : TextFormatting.GREEN);
+
+        return comp;
     }
 
     public static Optional<ITextComponent> formatMessage(EntityPlayer self, BlockPos pos, String msg) {

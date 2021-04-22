@@ -3,7 +3,7 @@ package msifeed.misca.chatex;
 import msifeed.misca.Misca;
 import msifeed.misca.chatex.client.ChatGuiHandler;
 import msifeed.misca.chatex.client.LogsSaver;
-import msifeed.misca.chatex.client.NametagHandler;
+import msifeed.misca.chatex.client.NametagRender;
 import msifeed.misca.chatex.cmd.*;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.FMLCommonHandler;
@@ -15,7 +15,7 @@ public class Chatex {
 
         if (FMLCommonHandler.instance().getSide().isClient()) {
             MinecraftForge.EVENT_BUS.register(new ChatGuiHandler());
-            MinecraftForge.EVENT_BUS.register(new NametagHandler());
+            MinecraftForge.EVENT_BUS.register(new NametagRender());
 
             LogsSaver.init();
         }
