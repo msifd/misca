@@ -28,6 +28,9 @@ public class StaminaHandler {
 
         final IAttributeInstance inst = player.getEntityAttribute(STAMINA);
         inst.setBaseValue(STAMINA.clampValue(inst.getBaseValue() + restored));
+
+        if (Double.isNaN(inst.getBaseValue()))
+            inst.setBaseValue(STAMINA.getDefaultValue());
     }
 
     public void handleMining(PlayerEvent.BreakSpeed event) {
@@ -49,7 +52,6 @@ public class StaminaHandler {
     public void handleCrafting(net.minecraftforge.fml.common.gameevent.PlayerEvent.ItemCraftedEvent event) {
         final CharstateConfig config = Misca.getSharedConfig().charstate;
 
-        final int results = event.crafting.getCount();
         int ingredients = 0;
         for (int i = 0; i < event.craftMatrix.getSizeInventory(); i++) {
             if (!event.craftMatrix.getStackInSlot(i).isEmpty())
@@ -61,11 +63,7 @@ public class StaminaHandler {
         final int workSkill = charsheet.skills().get(CharSkill.hardworking);
         final double factor = 1 + survivalSkill * config.survivalSkillNeedsLostFactor + workSkill * config.workSkillCraftCostFactor;
 
-        final int threshold = config.staminaCostIngredientThreshold;
-        final double corrIngredients = Math.min(ingredients, threshold)
-                + Math.max(0, ingredients - threshold) * (results / (double) ingredients);
-
-        final double lost = corrIngredients * config.staminaCostPerIngredient * factor;
+        final double lost = ingredients * config.staminaCostPerIngredient * factor;
 
         final IAttributeInstance inst = event.player.getEntityAttribute(STAMINA);
         inst.setBaseValue(STAMINA.clampValue(inst.getBaseValue() - lost));
