@@ -29,19 +29,21 @@ public class CharsheetEventHandler {
 
     @SubscribeEvent
     public void onPlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
-        if (!event.player.world.isRemote) {
-            KeeperSync.INSTANCE.sync((EntityPlayerMP) event.player);
-            OrdenceFlow.increaseOrd(event.player);
-            CharsheetSync.sync(event.player);
-        }
+        if (event.player.world.isRemote) return;
+
+        KeeperSync.INSTANCE.sync((EntityPlayerMP) event.player);
+        OrdenceFlow.increaseOrd(event.player);
+        event.player.refreshDisplayName();
     }
 
     @SubscribeEvent
     public void onPlayerSpawn(EntityJoinWorldEvent event) {
         if (event.getWorld().isRemote) return;
-        if (event.getEntity() instanceof EntityPlayerMP) {
-            CharsheetSync.sync((EntityPlayerMP) event.getEntity());
-        }
+        if (!(event.getEntity() instanceof EntityPlayerMP)) return;
+
+        final EntityPlayerMP player = (EntityPlayerMP) event.getEntity();
+        CharsheetSync.sync(player, player);
+        player.refreshDisplayName();
     }
 
     @SubscribeEvent
@@ -57,5 +59,12 @@ public class CharsheetEventHandler {
         final ICharsheet cloned = CharsheetProvider.get(event.getEntityPlayer());
         cloned.replaceWith(original);
         CharsheetSync.sync(event.getEntityPlayer());
+    }
+
+    @SubscribeEvent
+    public void onNameUpdate(net.minecraftforge.event.entity.player.PlayerEvent.NameFormat event) {
+        final ICharsheet cs = CharsheetProvider.get(event.getEntityPlayer());
+        if (!cs.getName().isEmpty())
+            event.setDisplayname(cs.getName());
     }
 }

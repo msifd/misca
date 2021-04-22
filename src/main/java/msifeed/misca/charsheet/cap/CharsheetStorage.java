@@ -17,7 +17,6 @@ public class CharsheetStorage implements Capability.IStorage<ICharsheet> {
     @Override
     public NBTBase writeNBT(Capability<ICharsheet> capability, ICharsheet instance, EnumFacing side) {
         final NBTTagCompound nbt = new NBTTagCompound();
-        nbt.setBoolean("IsPlayer", true);
         nbt.setString(Tag.name, instance.getName());
         nbt.setString(Tag.wikiPage, instance.getWikiPage());
         instance.skills().writeNBT(Tag.skills, nbt);
