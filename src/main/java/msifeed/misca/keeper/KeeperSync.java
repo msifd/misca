@@ -63,23 +63,27 @@ public enum KeeperSync {
         final String username = player.getGameProfile().getName();
         LOG.info("Sync {} with Keeper DB...", username);
 
-        final KeeperCharsheet sheet = sheets.find(Filters.eq("character", username)).first();
-        if (sheet == null) {
-            LOG.warn("Player entry is not found");
-            return;
-        }
+        try {
+            final KeeperCharsheet sheet = sheets.find(Filters.eq("character", username)).first();
+            if (sheet == null) {
+                LOG.warn("Player entry is not found");
+                return;
+            }
 
-        LOG.info("Found entry: " + new Gson().toJson(sheet));
+            LOG.info("Found entry: " + new Gson().toJson(sheet));
 
-        final ICharsheet cs = CharsheetProvider.get(player);
-        cs.resources().set(CharResource.est, sheet.special_stats.get("est"));
+            final ICharsheet cs = CharsheetProvider.get(player);
+            cs.resources().set(CharResource.est, sheet.special_stats.get("est"));
 //        for (CharResource key : CharResource.values())
 //            cs.resources().set(key, sheet.special_stats.getOrDefault(key.name(), 0));
-        for (CharSkill key : CharSkill.values())
-            cs.skills().set(key, sheet.skills.getOrDefault(key.name(), 0));
-        for (CharEffort key : CharEffort.values())
-            cs.effortPools().set(key, sheet.efforts.getOrDefault(key.name(), 0));
-        for (CharAttribute key : CharAttribute.values())
-            key.setBase(player, sheet.attributes.getOrDefault(key.name(), 0));
+            for (CharSkill key : CharSkill.values())
+                cs.skills().set(key, sheet.skills.getOrDefault(key.name(), 0));
+            for (CharEffort key : CharEffort.values())
+                cs.effortPools().set(key, sheet.efforts.getOrDefault(key.name(), 0));
+            for (CharAttribute key : CharAttribute.values())
+                key.setBase(player, sheet.attributes.getOrDefault(key.name(), 0));
+        } catch (Exception e) {
+            LOG.error("Failed to get info from Keeper", e);
+        }
     }
 }
