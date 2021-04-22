@@ -13,22 +13,15 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 public class CharstateSync {
     private static final String sync = "charstate.sync";
 
-    public static void sync(EntityPlayer target) {
+    public static void sync(EntityPlayerMP target) {
         final NBTTagCompound nbt = CharstateProvider.encode(CharstateProvider.get(target));
-        Misca.RPC.sendToAllAround(target, sync, target.getEntityId(), nbt);
-    }
-
-    public static void sync(EntityPlayerMP receiver, EntityPlayer target) {
-        final NBTTagCompound nbt = CharstateProvider.encode(CharstateProvider.get(target));
-        Misca.RPC.sendTo(receiver, sync, target.getEntityId(), nbt);
+        Misca.RPC.sendTo(target, sync, nbt);
     }
 
     @SideOnly(Side.CLIENT)
     @RpcMethodHandler(sync)
-    public void onSync(int eid, NBTTagCompound nbt) {
-        final EntityPlayer target = RpcUtils.findPlayer(Minecraft.getMinecraft().world, eid);
-        if (target != null)
-            update(target, nbt);
+    public void onSync(NBTTagCompound nbt) {
+        update(Minecraft.getMinecraft().player, nbt);
     }
 
     @SideOnly(Side.CLIENT)

@@ -18,15 +18,10 @@ public class CharstateEventHandler {
     @SubscribeEvent
     public void onPlayerSpawn(EntityJoinWorldEvent event) {
         if (event.getWorld().isRemote) return;
-        if (event.getEntity() instanceof EntityPlayerMP)
-            CharstateSync.sync((EntityPlayerMP) event.getEntity());
-    }
+        if (!(event.getEntity() instanceof EntityPlayerMP)) return;
 
-    @SubscribeEvent
-    public void onPlayerTracking(PlayerEvent.StartTracking event) {
-        if (event.getTarget() instanceof EntityPlayer) {
-            CharstateSync.sync((EntityPlayerMP) event.getEntityPlayer(), (EntityPlayer) event.getTarget());
-        }
+        final EntityPlayerMP player = (EntityPlayerMP) event.getEntity();
+        CharstateSync.sync(player);
     }
 
     @SubscribeEvent
@@ -34,6 +29,7 @@ public class CharstateEventHandler {
         final ICharstate original = CharstateProvider.get(event.getOriginal());
         final ICharstate cloned = CharstateProvider.get(event.getEntityPlayer());
         cloned.replaceWith(original);
-        CharstateSync.sync(event.getEntityPlayer());
+        if (event.getEntityPlayer() instanceof EntityPlayerMP)
+            CharstateSync.sync((EntityPlayerMP) event.getEntityPlayer());
     }
 }
