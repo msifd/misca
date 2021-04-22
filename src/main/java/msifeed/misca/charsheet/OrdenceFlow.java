@@ -20,6 +20,7 @@ public class OrdenceFlow {
 
         final int increase = config.ordIncreaseAmount * times;
         sheet.resources().increase(CharResource.ord, increase);
+        sheet.setLastUpdated(System.currentTimeMillis() / 1000);
 
         notify(player, "Вы получили " + increase + " ордеции.");
         LogDB.INSTANCE.log(player, "resource", "gain " + increase + "ord");
@@ -38,7 +39,6 @@ public class OrdenceFlow {
         final int lost = convert * config.ordToSealRate;
         sheet.resources().increase(CharResource.ord, -lost);
         sheet.resources().increase(CharResource.seal, convert);
-        sheet.setLastUpdated(System.currentTimeMillis() / 1000);
 
         notify(player, "Вы преобразовали " + lost + " ордеции в печати.");
         LogDB.INSTANCE.log(player, "resource", "convert " + lost + " ost into " + convert + " seal");

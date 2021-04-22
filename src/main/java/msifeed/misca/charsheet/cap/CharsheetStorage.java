@@ -75,7 +75,7 @@ public class CharsheetStorage implements Capability.IStorage<ICharsheet> {
         private static final String wikiPage = "wiki";
         private static final String skills = "skills";
         private static final String effortPools = "effortPools";
-        private static final String resources = "res";
+        private static final String resources = "Resources";
         private static final String potions = "potions";
         private static final String enchants = "enchants";
         private static final String updated = "updated";
