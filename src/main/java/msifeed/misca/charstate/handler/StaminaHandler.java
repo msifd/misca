@@ -11,10 +11,15 @@ import net.minecraft.entity.ai.attributes.IAttribute;
 import net.minecraft.entity.ai.attributes.IAttributeInstance;
 import net.minecraft.entity.ai.attributes.RangedAttribute;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.event.entity.player.PlayerEvent;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class StaminaHandler {
     public static final IAttribute STAMINA = new RangedAttribute(null, Misca.MODID + ".stamina", 100, 0, 100).setShouldWatch(true);
@@ -57,11 +62,15 @@ public class StaminaHandler {
     public void handleCrafting(net.minecraftforge.fml.common.gameevent.PlayerEvent.ItemCraftedEvent event) {
         final CharstateConfig config = Misca.getSharedConfig().charstate;
 
-        int ingredients = 0;
+        final Map<Item, Integer> uniqueIngredients = new HashMap<>();
         for (int i = 0; i < event.craftMatrix.getSizeInventory(); i++) {
-            if (!event.craftMatrix.getStackInSlot(i).isEmpty())
-                ingredients++;
+            final ItemStack stack = event.craftMatrix.getStackInSlot(i);
+            if (!stack.isEmpty())
+                uniqueIngredients.compute(stack.getItem(), (k, v) -> (v == null ? 1 : v + 1));
         }
+        final int ingredients = uniqueIngredients.values().stream()
+                .mapToInt(value -> Math.min(value, config.craftMaxIngredientsOfOneType))
+                .sum();
 
         final ICharsheet charsheet = CharsheetProvider.get(event.player);
         final int survivalSkill = charsheet.skills().get(CharSkill.survival);

@@ -14,16 +14,18 @@ public class CharstateConfig {
     public double sanityCostPerDamage = 0.1;
 
     public double staminaRestPerSec = 0.0014;
-    public long staminaRestTimeoutSec = 2;
+    public long staminaRestMiningTimeoutSec = 2;
+    public double staminaMiningSlowdownThreshold = 0.25;
     public double staminaCostPerMiningTick = 0.01;
     public double staminaCostPerIngredient = 0.5;
-    public int staminaCostIngredientThreshold = 4;
+    public int craftMaxIngredientsOfOneType = 4;
 
     public double corruptionLostPerSec = 0.00000115;
 
     public float effortRestPerSec = 0.00027f;
 
     public float survivalSkillNeedsLostFactor = -0.15f;
+    public float survivalSkillCraftCostFactor = -0.05f;
     public float survivalSkillEffortsRestFactor = 0.15f;
     public float workSkillMiningSpeedFactor = 0.33f;
     public float workSkillCraftCostFactor = -0.02f;
