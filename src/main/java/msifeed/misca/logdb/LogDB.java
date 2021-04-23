@@ -48,12 +48,12 @@ public enum LogDB {
 
     @SubscribeEvent
     public void onPlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
-        log(event.player, "login", "[logged in]");
+        log(event.player, "log", "[logged in]");
     }
 
     @SubscribeEvent
     public void onPlayerLoggedOut(PlayerEvent.PlayerLoggedOutEvent event) {
-        log(event.player, "login", "[logged out]");
+        log(event.player, "log", "[logged out]");
     }
 
     @SubscribeEvent
@@ -64,15 +64,15 @@ public enum LogDB {
         final String msg;
         if (event.getSource() instanceof EntityDamageSource) {
             final EntityDamageSource src = (EntityDamageSource) event.getSource();
-            msg = String.format("source: %s, entity: %s, immediate entity: %s",
+            msg = String.format("[death] source: %s, entity: %s, immediate entity: %s",
                     src.damageType,
                     src.getTrueSource() != null ? src.getTrueSource().getName() : "???",
                     src.getImmediateSource() != null ? src.getImmediateSource().getName() : "???");
         } else {
-            msg = String.format("source: %s", event.getSource().damageType);
+            msg = String.format("[death] source: %s", event.getSource().damageType);
         }
 
-        log(event.getEntityLiving(), "death", msg);
+        log(event.getEntityLiving(), "log", msg);
     }
 
     @SubscribeEvent
