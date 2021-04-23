@@ -22,7 +22,7 @@ public class StaminaHandler {
     public void handleTime(EntityPlayer player, long secs) {
         final CharstateConfig config = Misca.getSharedConfig().charstate;
         final ICharstate state = CharstateProvider.get(player);
-        if (state.passedFromMining() < config.staminaRestTimeoutSec) return;
+        if (state.passedFromMining() < config.staminaRestMiningTimeoutSec) return;
 
         final double restored = secs * config.staminaRestPerSec;
 
@@ -44,7 +44,12 @@ public class StaminaHandler {
 
         final int workSkill = CharsheetProvider.get(event.getEntityPlayer()).skills().get(CharSkill.hardworking);
         final double factor = 1 + workSkill * config.workSkillMiningSpeedFactor;
-        final double staminaFactor = inst.getBaseValue() / 100;
+
+        final double staminaPercent = inst.getBaseValue() / 100;
+        final double staminaFactor = staminaPercent < config.staminaMiningSlowdownThreshold
+                ? staminaPercent / config.staminaMiningSlowdownThreshold
+                : 1;
+
         final double newSpeed = event.getNewSpeed() * config.globalMiningSpeedModifier * staminaFactor * factor;
         event.setNewSpeed((float) newSpeed);
     }
@@ -61,7 +66,7 @@ public class StaminaHandler {
         final ICharsheet charsheet = CharsheetProvider.get(event.player);
         final int survivalSkill = charsheet.skills().get(CharSkill.survival);
         final int workSkill = charsheet.skills().get(CharSkill.hardworking);
-        final double factor = 1 + survivalSkill * config.survivalSkillNeedsLostFactor + workSkill * config.workSkillCraftCostFactor;
+        final double factor = Math.max(0.1, 1 + survivalSkill * config.survivalSkillCraftCostFactor + workSkill * config.workSkillCraftCostFactor);
 
         final double lost = ingredients * config.staminaCostPerIngredient * factor;
 
