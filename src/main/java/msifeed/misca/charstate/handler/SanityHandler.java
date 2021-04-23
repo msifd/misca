@@ -4,7 +4,7 @@ import msifeed.misca.Misca;
 import msifeed.misca.charsheet.CharSkill;
 import msifeed.misca.charsheet.cap.CharsheetProvider;
 import msifeed.misca.charstate.CharstateConfig;
-import msifeed.misca.chatex.ChatexUtils;
+import msifeed.misca.chatex.ChatexConfig;
 import msifeed.misca.combat.CharAttribute;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.ai.attributes.IAttribute;
@@ -81,9 +81,12 @@ public class SanityHandler {
 
     public void handleSpeech(EntityPlayerMP source, String msg) {
         final CharstateConfig config = Misca.getSharedConfig().charstate;
+        final ChatexConfig chat = Misca.getSharedConfig().chat;
+
         final int psychology = CharsheetProvider.get(source).skills().get(CharSkill.psychology);
         final double psychologyMod = 1 + config.sanityRestModPerPsySkill * psychology;
-        final int range = ChatexUtils.getSpeechRange(msg);
+        final int range = chat.getSpeechRange(msg);
+        final double threshold = range * chat.garble.thresholdPart;
 
         for (EntityPlayer player : source.world.playerEntities) {
             if (player == source) continue;
@@ -91,7 +94,9 @@ public class SanityHandler {
             final float distance = player.getDistance(source);
             if (distance > range) continue;
 
-            final double distanceMod = (range - distance) / range;
+            final double distanceMod = distance > threshold
+                    ? 1 - (distance - threshold) / range
+                    : 1;
             final double restored = msg.length() * config.sanityRestPerSpeechChar * psychologyMod * distanceMod;
 
             final IAttributeInstance inst = player.getEntityAttribute(SANITY);

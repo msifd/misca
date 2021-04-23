@@ -4,7 +4,6 @@ import msifeed.misca.Misca;
 import msifeed.misca.charsheet.ICharsheet;
 import msifeed.misca.charsheet.cap.CharsheetProvider;
 import msifeed.misca.chatex.ChatexConfig;
-import msifeed.misca.chatex.ChatexUtils;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
@@ -54,8 +53,9 @@ public class SpeechFormat {
         if (input.isEmpty())
             return new TextComponentString("");
 
-        final int range = ChatexUtils.getSpeechRange(input);
-        final double threshold = range * Misca.getSharedConfig().chat.garble.thresholdPart;
+        final ChatexConfig config = Misca.getSharedConfig().chat;
+        final int range = config.getSpeechRange(input);
+        final double threshold = range * config.garble.thresholdPart;
         if (distance <= threshold)
             return new TextComponentString(input);
 

@@ -2,7 +2,6 @@ package msifeed.misca.charstate.cap;
 
 import msifeed.misca.Misca;
 import msifeed.sys.rpc.RpcMethodHandler;
-import msifeed.sys.rpc.RpcUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;

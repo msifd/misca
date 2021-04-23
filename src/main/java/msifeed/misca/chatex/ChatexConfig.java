@@ -9,7 +9,30 @@ public class ChatexConfig {
 
     public int[] speechRanges = {2, 5, 15, 30, 60};
 
-    public int getSpeechRange(int level) {
+    public int getSpeechRange(String text) {
+        int level = 0;
+
+        for (int i = text.length() - 1; i >= 0; --i) {
+            switch (text.charAt(i)) {
+                case '!':
+                    level++;
+                case '?':
+                    continue;
+            }
+            break;
+        }
+
+        for (int i = 0; i < text.length(); ++i) {
+            if (text.charAt(i) == '(')
+                level--;
+            else
+                break;
+        }
+
+        return getSpeechLevelRange(level);
+    }
+
+    public int getSpeechLevelRange(int level) {
         final int mid = (speechRanges.length - 1) / 2;
         final int index = MathHelper.clamp(mid + level, 0, speechRanges.length - 1);
         return speechRanges[index];
