@@ -59,6 +59,7 @@ public class Locks {
         event.addCapability(ILockable.KEY, new ChunkLockableProvider());
     }
 
+    @SuppressWarnings("deprecation")
     @SubscribeEvent
     public void onChunkWatch(ChunkWatchEvent.Watch event) {
         if (event.getChunkInstance() != null) {
