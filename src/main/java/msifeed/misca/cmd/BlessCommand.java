@@ -58,7 +58,7 @@ public class BlessCommand extends CommandBase  {
         if (args.length < 2) throw new SyntaxErrorException("Usage: " + getUsage(sender));
 
         final EntityPlayerMP player = getPlayer(server, sender, args[0]);
-        if (!MiscaPerms.userLevel(sender, "misca.bless." + args[1])) {
+        if ((sender != player) && !MiscaPerms.check(sender, "misca.bless.other")) {
             throw new CommandException("commands.generic.permission");
         }
 
@@ -83,7 +83,7 @@ public class BlessCommand extends CommandBase  {
     }
 
     private void addPotion(ICommandSender sender, EntityPlayerMP player, String key, int level) throws CommandException {
-        if (!MiscaPerms.userLevel(sender, "misca.bless." + potionArg + '.' + key)) {
+        if (!MiscaPerms.check(sender, "misca.bless." + potionArg + '.' + key + '.' + level)) {
             throw new CommandException("commands.generic.permission");
         }
 
@@ -105,7 +105,7 @@ public class BlessCommand extends CommandBase  {
     }
 
     private void addEnchant(ICommandSender sender, EntityPlayerMP player, String key, int level) throws CommandException {
-        if (!MiscaPerms.userLevel(sender, "misca.bless." + enchantArg + '.' + key)) {
+        if (!MiscaPerms.check(sender, "misca.bless." + enchantArg + '.' + key + '.' + level)) {
             throw new CommandException("commands.generic.permission");
         }
 
@@ -124,7 +124,11 @@ public class BlessCommand extends CommandBase  {
         CharsheetSync.sync(player);
     }
 
-    private void listBlessings(ICommandSender sender, EntityPlayerMP player) {
+    private void listBlessings(ICommandSender sender, EntityPlayerMP player) throws CommandException {
+        if (!MiscaPerms.check(sender, "misca.bless.list")) {
+            throw new CommandException("commands.generic.permission");
+        }
+
         final ICharsheet sheet = CharsheetProvider.get(player);
 
         final ArrayList<String> blessings = new ArrayList<>();
@@ -134,7 +138,11 @@ public class BlessCommand extends CommandBase  {
         sender.sendMessage(new TextComponentString("Blessings: " + joinNiceStringFromCollection(blessings)));
     }
 
-    private void clearBlessings(ICommandSender sender, EntityPlayerMP player) {
+    private void clearBlessings(ICommandSender sender, EntityPlayerMP player) throws CommandException {
+        if (!MiscaPerms.check(sender, "misca.bless.clear")) {
+            throw new CommandException("commands.generic.permission");
+        }
+
         final ICharsheet sheet = CharsheetProvider.get(player);
         sheet.potions().clear();
         sheet.enchants().clear();

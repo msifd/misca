@@ -11,7 +11,7 @@ public final class MiscaPerms {
         return sender.canUseCommand(3, "misca.gm");
     }
 
-    public static boolean userLevel(ICommandSender sender, String perm) {
-        return sender.canUseCommand(0, perm);
+    public static boolean check(ICommandSender sender, String perm) {
+        return sender.canUseCommand(2, perm);
     }
 }

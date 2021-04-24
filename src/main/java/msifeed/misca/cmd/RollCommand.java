@@ -27,11 +27,6 @@ public class RollCommand extends CommandBase {
     }
 
     @Override
-    public int getRequiredPermissionLevel() {
-        return 0;
-    }
-
-    @Override
     public void execute(MinecraftServer server, ICommandSender sender, String[] args) {
         final String joined = String.join(" ", args);
         final Matcher matcher = pattern.matcher(joined);

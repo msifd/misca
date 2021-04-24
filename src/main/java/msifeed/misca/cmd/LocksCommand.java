@@ -31,11 +31,6 @@ public class LocksCommand extends CommandBase {
     }
 
     @Override
-    public boolean checkPermission(MinecraftServer server, ICommandSender sender) {
-        return MiscaPerms.userLevel(sender, "misca.locks");
-    }
-
-    @Override
     public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender, String[] args, @Nullable BlockPos targetPos) {
         if (args.length == 1)
             return getListOfStringsMatchingLastWord(args, "toggle", "remove");

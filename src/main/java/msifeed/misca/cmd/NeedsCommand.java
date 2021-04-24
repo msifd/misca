@@ -32,11 +32,6 @@ public class NeedsCommand extends CommandBase {
     }
 
     @Override
-    public boolean checkPermission(MinecraftServer server, ICommandSender sender) {
-        return MiscaPerms.userLevel(sender, "misca.needs");
-    }
-
-    @Override
     public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender, String[] args, @Nullable BlockPos targetPos) {
         switch (args.length) {
             case 1:

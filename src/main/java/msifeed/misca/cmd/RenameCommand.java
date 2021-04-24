@@ -23,7 +23,7 @@ public class RenameCommand extends CommandBase {
 
     @Override
     public boolean checkPermission(MinecraftServer server, ICommandSender sender) {
-        return sender instanceof EntityPlayerMP && MiscaPerms.userLevel(sender, "misca.rename");
+        return sender instanceof EntityPlayerMP && super.checkPermission(server, sender);
     }
 
     @Override

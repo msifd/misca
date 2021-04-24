@@ -37,7 +37,7 @@ public class CombatCommand extends CommandBase {
 
     @Override
     public boolean checkPermission(MinecraftServer server, ICommandSender sender) {
-        return sender instanceof EntityPlayer && MiscaPerms.userLevel(sender, "misca.combat");
+        return sender instanceof EntityPlayer && super.checkPermission(server, sender);
     }
 
     @Override
