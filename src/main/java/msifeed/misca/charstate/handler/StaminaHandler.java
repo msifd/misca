@@ -29,7 +29,8 @@ public class StaminaHandler {
         final ICharstate state = CharstateProvider.get(player);
         if (state.passedFromMining() < config.staminaRestMiningTimeoutSec) return;
 
-        final double restored = secs * config.staminaRestPerSec;
+        final double factor = 1 + config.foodRestMod(player);
+        final double restored = secs * config.staminaRestPerSec * factor;
 
         final IAttributeInstance inst = player.getEntityAttribute(STAMINA);
         inst.setBaseValue(STAMINA.clampValue(inst.getBaseValue() + restored));

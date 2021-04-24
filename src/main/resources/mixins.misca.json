@@ -8,6 +8,7 @@
     "AdvancementManagerMixin",
     "EnchantmentHelperMixin",
     "EntityLivingBaseMixin",
+    "EntityPlayerMixin",
     "ItemFoodMixin",
     "MinecraftServerMixin",
     "ModelRendererMixin",

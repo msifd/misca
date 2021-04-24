@@ -20,7 +20,8 @@ public class IntegrityHandler {
 
     public void handleTime(EntityPlayer player, long secs) {
         final CharstateConfig config = Misca.getSharedConfig().charstate;
-        final double restored = secs * config.integrityRestPerSec;
+        final double factor = 1 + config.foodRestMod(player);
+        final double restored = secs * config.integrityRestPerSec * factor;
 
         final IAttributeInstance inst = player.getEntityAttribute(INTEGRITY);
         inst.setBaseValue(INTEGRITY.clampValue(inst.getBaseValue() + restored));

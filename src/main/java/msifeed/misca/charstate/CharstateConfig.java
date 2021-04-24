@@ -1,5 +1,7 @@
 package msifeed.misca.charstate;
 
+import net.minecraft.entity.player.EntityPlayer;
+
 public class CharstateConfig {
     public double globalMiningSpeedModifier = 0.5;
 
@@ -34,4 +36,18 @@ public class CharstateConfig {
     public long ordIncreaseIntervalSec = 24 * 60 * 60;
     public long ordIncreaseMaxWindowSec = 7 * 24 * 60 * 60;
     public int ordToSealRate = 40;
+
+    public int foodEffectThreshold = 16;
+    public float foodNeedsRestMod = 0.25f;
+    public float foodExhaustionMod = 0.25f;
+
+    public final float foodRestMod(EntityPlayer player) {
+        final float food = player.getFoodStats().getFoodLevel();
+        return food > foodEffectThreshold ? foodNeedsRestMod : 0;
+    }
+
+    public final float exhaustionMod(EntityPlayer player) {
+        final float food = player.getFoodStats().getFoodLevel();
+        return food > foodEffectThreshold ? foodExhaustionMod : 0;
+    }
 }

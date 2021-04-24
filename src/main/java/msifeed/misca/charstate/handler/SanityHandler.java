@@ -73,7 +73,8 @@ public class SanityHandler {
 
         final ItemFood item = (ItemFood) stack.getItem();
         final CharstateConfig config = Misca.getSharedConfig().charstate;
-        final double restored = item.getHealAmount(stack) * config.sanityRestPerFood;
+        final double factor = 1 + config.foodRestMod(player);
+        final double restored = item.getHealAmount(stack) * config.sanityRestPerFood * factor;
 
         final IAttributeInstance inst = player.getEntityAttribute(SANITY);
         inst.setBaseValue(SANITY.clampValue(inst.getBaseValue() + restored));
@@ -84,7 +85,7 @@ public class SanityHandler {
         final ChatexConfig chat = Misca.getSharedConfig().chat;
 
         final int psychology = CharsheetProvider.get(source).skills().get(CharSkill.psychology);
-        final double psychologyMod = 1 + config.sanityRestModPerPsySkill * psychology;
+        final double psychologyMod = config.sanityRestModPerPsySkill * psychology;
         final int range = chat.getSpeechRange(msg);
         final double threshold = range * chat.garble.thresholdPart;
 
@@ -95,9 +96,10 @@ public class SanityHandler {
             if (distance > range) continue;
 
             final double distanceMod = distance > threshold
-                    ? 1 - (distance - threshold) / range
-                    : 1;
-            final double restored = msg.length() * config.sanityRestPerSpeechChar * psychologyMod * distanceMod;
+                    ? -(distance - threshold) / range
+                    : 0;
+            final double factor = 1 + psychologyMod + distanceMod + config.foodRestMod(player);
+            final double restored = msg.length() * config.sanityRestPerSpeechChar * factor;
 
             final IAttributeInstance inst = player.getEntityAttribute(SANITY);
             inst.setBaseValue(SANITY.clampValue(inst.getBaseValue() + restored));

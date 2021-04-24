@@ -72,6 +72,9 @@
     "ordIncreaseAmount": 2,
     "ordIncreaseIntervalSec": 86400,
     "ordIncreaseMaxWindowSec": 604800,
-    "ordToSealRate": 40
+    "ordToSealRate": 40,
+    "foodEffectThreshold": 16,
+    "foodNeedsRestMod": 0.25,
+    "foodExhaustionMod": 0.25
   }
 }
