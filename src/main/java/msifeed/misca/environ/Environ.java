@@ -14,6 +14,7 @@ import javax.annotation.Nullable;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.ZoneOffset;
 
 public class Environ {
     public void init() {
@@ -61,13 +62,9 @@ public class Environ {
         final Duration mcTimeFix = Duration.ofHours(6);
         final LocalDateTime now = LocalDateTime.now(timezone).minus(mcTimeFix);
 
-        final long secs = now.toLocalTime().toSecondOfDay();
-
-        final long day = now.toLocalDate().toEpochDay();
-        final long moonPhaseTime = (day % 8) * 24000;
-
-        final long time = (secs * 23999) / 86400;
-        world.setWorldTime(time + moonPhaseTime);
+        final long secs = now.toEpochSecond(ZoneOffset.UTC);
+        final long time = (secs * 24000) / 86400; // Convert from real day to minecraft day
+        world.setWorldTime(time);
     }
 
     private void setScaledTime(World world, double scale) {
