@@ -4,6 +4,7 @@ import msifeed.misca.Misca;
 import msifeed.misca.locks.items.*;
 import net.minecraft.client.renderer.block.model.ModelBakery;
 import net.minecraft.item.Item;
+import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.model.ModelLoader;
@@ -32,6 +33,13 @@ public class LockItems {
                 pickMagical,
                 key,
                 skeletalKey
+        );
+    }
+
+    @SubscribeEvent
+    public void registerRecipes(RegistryEvent.Register<IRecipe> event) {
+        event.getRegistry().registerAll(
+                new RecipeKeyCloning(key).setRegistryName(Misca.MODID, "clone_mechanical_key")
         );
     }
 

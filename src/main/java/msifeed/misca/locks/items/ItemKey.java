@@ -99,6 +99,10 @@ public class ItemKey extends Item implements IUnlockTool {
         }
     }
 
+    public static boolean isBlank(ItemStack stack) {
+        return stack.getItemDamage() == 0;
+    }
+
     private static void sendStatus(EntityPlayer player, String message, TextFormatting color) {
         final ITextComponent te = new TextComponentString(message);
         te.getStyle().setColor(color);
