@@ -11,6 +11,7 @@ import net.minecraft.entity.ai.attributes.IAttribute;
 import net.minecraft.entity.ai.attributes.IAttributeInstance;
 import net.minecraft.entity.ai.attributes.RangedAttribute;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.IInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.ITextComponent;
@@ -61,11 +62,17 @@ public class StaminaHandler {
     }
 
     public void handleCrafting(net.minecraftforge.fml.common.gameevent.PlayerEvent.ItemCraftedEvent event) {
+        final double lost = getCraftCost(event.player, event.craftMatrix);
+        final IAttributeInstance inst = event.player.getEntityAttribute(STAMINA);
+        inst.setBaseValue(STAMINA.clampValue(inst.getBaseValue() - lost));
+    }
+
+    public static double getCraftCost(EntityPlayer player, IInventory matrix) {
         final CharstateConfig config = Misca.getSharedConfig().charstate;
 
         final Map<Item, Integer> uniqueIngredients = new HashMap<>();
-        for (int i = 0; i < event.craftMatrix.getSizeInventory(); i++) {
-            final ItemStack stack = event.craftMatrix.getStackInSlot(i);
+        for (int i = 0; i < matrix.getSizeInventory(); i++) {
+            final ItemStack stack = matrix.getStackInSlot(i);
             if (!stack.isEmpty())
                 uniqueIngredients.compute(stack.getItem(), (k, v) -> (v == null ? 1 : v + 1));
         }
@@ -73,19 +80,17 @@ public class StaminaHandler {
                 .mapToInt(value -> Math.min(value, config.craftMaxIngredientsOfOneType))
                 .sum();
 
-        final ICharsheet charsheet = CharsheetProvider.get(event.player);
+        final ICharsheet charsheet = CharsheetProvider.get(player);
         final int survivalSkill = charsheet.skills().get(CharSkill.survival);
         final int workSkill = charsheet.skills().get(CharSkill.hardworking);
         final double factor = Math.max(0.1, 1 + survivalSkill * config.survivalSkillCraftCostFactor + workSkill * config.workSkillCraftCostFactor);
 
-        final double lost = ingredients * config.staminaCostPerIngredient * factor;
+        return ingredients * config.staminaCostPerIngredient * factor;
+    }
 
-        final IAttributeInstance inst = event.player.getEntityAttribute(STAMINA);
-        inst.setBaseValue(STAMINA.clampValue(inst.getBaseValue() - lost));
-
-        if (inst.getBaseValue() < 0.01) {
-            event.player.closeScreen();
-        }
+    public static boolean canCraft(EntityPlayer player, IInventory matrix) {
+        final IAttributeInstance inst = player.getEntityAttribute(STAMINA);
+        return inst.getBaseValue() >= getCraftCost(player, matrix);
     }
 
     public static double getStaminaForDelivery(EntityPlayer player) {
