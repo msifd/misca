@@ -24,15 +24,12 @@ public class SpeechFormat {
         final boolean isMyMessage = self.getUniqueID().equals(uuid);
         final EntityPlayer sender = self.world.getPlayerEntityByUUID(uuid);
 
-        final ITextComponent comp;
+        final ITextComponent comp = new TextComponentString(name);
         if (sender != null) {
-            comp = sender.getDisplayName();
             final ICharsheet cs = CharsheetProvider.get(sender);
             final String wikiPage = cs.getWikiPage().isEmpty() ? cs.getName() : cs.getWikiPage();
             final String wikiUrl = Misca.getSharedConfig().chat.wikiUrlBase + wikiPage;
             comp.getStyle().setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, wikiUrl));
-        } else {
-            comp = new TextComponentString(name);
         }
 
         comp.getStyle().setColor(isMyMessage ? TextFormatting.YELLOW : TextFormatting.GREEN);
