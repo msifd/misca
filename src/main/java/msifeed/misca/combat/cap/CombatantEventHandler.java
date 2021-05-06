@@ -22,6 +22,10 @@ public class CombatantEventHandler {
 
     @SubscribeEvent
     public void onPlayerClone(net.minecraftforge.event.entity.player.PlayerEvent.Clone event) {
+        for (CharAttribute a : CharAttribute.values()) {
+            a.setBase(event.getEntityPlayer(), a.getBase(event.getOriginal()));
+        }
+
         final ICombatant original = CombatantProvider.get(event.getOriginal());
         final ICombatant cloned = CombatantProvider.get(event.getEntityPlayer());
         cloned.replaceWith(original);
