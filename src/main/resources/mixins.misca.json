@@ -6,6 +6,7 @@
   "refmap": "misca.refmap.json",
   "mixins": [
     "AdvancementManagerMixin",
+    "BlockFrostedIceMixin",
     "ContainerMixin",
     "EnchantmentHelperMixin",
     "EntityLivingBaseMixin",
