@@ -18,6 +18,7 @@ import msifeed.misca.rename.RenameItems;
 import msifeed.misca.rolls.RollRpc;
 import msifeed.misca.supplies.BackgroundSupplies;
 import msifeed.misca.supplies.InvoiceCommand;
+import msifeed.misca.tweaks.DisableSomeDamageTypes;
 import msifeed.misca.tweaks.DisableSomeWorkstations;
 import msifeed.misca.tweaks.MiscaCrashInfo;
 import msifeed.sys.rpc.RpcChannel;
@@ -70,6 +71,7 @@ public class Misca {
         MinecraftForge.EVENT_BUS.register(new NeedsPotions());
         MinecraftForge.EVENT_BUS.register(new CombatPotions());
         MinecraftForge.EVENT_BUS.register(new DisableSomeWorkstations());
+        MinecraftForge.EVENT_BUS.register(new DisableSomeDamageTypes());
 
         Misca.RPC.register(new RollRpc());
 
