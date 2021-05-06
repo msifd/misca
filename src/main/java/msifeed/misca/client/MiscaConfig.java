@@ -10,4 +10,5 @@ public class MiscaConfig {
     public static boolean combatDebug = false;
 
     public static Point chatSize = new Point(320, 180);
+    public static boolean logSystemMessages = true;
 }
