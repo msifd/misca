@@ -3,7 +3,7 @@ package msifeed.misca.keeper;
 import msifeed.misca.Misca;
 import net.minecraftforge.common.config.Config;
 
-@Config(modid = Misca.MODID, name = "keeper_db")
+@Config(modid = Misca.MODID, category = "keeper_db")
 public class KeeperConfig {
     public static boolean disabled = true;
 

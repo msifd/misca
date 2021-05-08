@@ -3,7 +3,7 @@ package msifeed.misca.logdb;
 import msifeed.misca.Misca;
 import net.minecraftforge.common.config.Config;
 
-@Config(modid = Misca.MODID, name = "log_db")
+@Config(modid = Misca.MODID, category = "log_db")
 public class LogDBConfig {
     public static boolean disabled = true;
 
