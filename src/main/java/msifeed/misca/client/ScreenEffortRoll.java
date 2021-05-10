@@ -68,11 +68,20 @@ public class ScreenEffortRoll extends MellowScreen {
                         final int available = (int) Math.floor(state.efforts().get(effort));
                         final int poolSize = charsheet.effortPools().get(effort);
                         final String label = String.format("%s %d/%d", effort.tr(), available, poolSize);
-                        final ButtonLabel btn = new ButtonLabel(label);
-                        btn.setSize(100, 15);
-                        btn.setCallback(() -> roll(effort));
+                        final ButtonLabel effBtn = new ButtonLabel(label);
+                        effBtn.setSize(100, 15);
+                        effBtn.setCallback(() -> effortRoll(effort));
 
-                        ui.add(btn).below().move(0, 2, 0);
+                        final ButtonLabel diceBtn = new ButtonLabel("Dice");
+                        diceBtn.setSize(30, 15);
+                        diceBtn.setCallback(() -> diceRoll(effort));
+
+                        ui.beginGroup()
+                            .add(effBtn).below()
+                            .add(diceBtn).right()
+                            .moveGroup(0, 2, 0)
+                            .pinGroup()
+                            ;
                     })
                     .centerGroup(Direction.HORIZONTAL)
                     .moveGroup(0, 10, 0)
@@ -83,12 +92,16 @@ public class ScreenEffortRoll extends MellowScreen {
                 .build();
     }
 
-    private void roll(CharEffort effort) {
+    private void effortRoll(CharEffort effort) {
         final int diff = getDifficulty();
         final int amount = getAmount();
         if (diff < 1 || amount < 1) return;
 
-        RollRpc.doEffortRoll(target, effort, amount, diff);
+        RollRpc.doEffortRoll(effort, amount, diff);
+    }
+
+    private void diceRoll(CharEffort effort) {
+        RollRpc.doEffortDice(effort);
     }
 
     private int getDifficulty() {
