@@ -245,7 +245,7 @@ public class LockAccessor {
     }
 
     @Nullable
-    private static LocksConfig.Lookup getBlockLookup(@Nonnull Block block) {
+    public static LocksConfig.Lookup getBlockLookup(@Nonnull Block block) {
         return Misca.getSharedConfig().locks.tileless.get(block.getRegistryName());
     }
 
@@ -253,7 +253,7 @@ public class LockAccessor {
         BlockPos bestPos = pos;
         for (EnumFacing e : EnumFacing.HORIZONTALS) {
             final BlockPos offPos = pos.offset(e);
-            final IBlockState offState = world.getBlockState(pos.offset(e));
+            final IBlockState offState = world.getBlockState(offPos);
             if (offState.getBlock().equals(block) && offPos.toLong() < bestPos.toLong()) {
                 bestPos = offPos;
             }

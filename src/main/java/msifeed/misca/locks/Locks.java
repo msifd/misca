@@ -17,8 +17,11 @@ import msifeed.misca.locks.cap.lock.LockableStorage;
 import msifeed.misca.locks.cap.pick.ILockPick;
 import msifeed.misca.locks.cap.pick.LockPickImpl;
 import msifeed.misca.locks.cap.pick.LockPickStorage;
+import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
@@ -79,14 +82,35 @@ public class Locks {
         if (LockAccessor.isLocked(event.getWorld(), event.getPos())) {
             event.setUseBlock(Event.Result.DENY);
             event.setUseItem(Event.Result.ALLOW);
-
-//            final Item heldItem = event.getItemStack().getItem();
-//            if (!event.getWorld().isRemote && !(heldItem instanceof IUnlockTool)) {
-//                final ITextComponent te = new TextComponentString("Locked!");
-//                te.getStyle().setColor(TextFormatting.YELLOW);
-//                event.getEntityPlayer().sendStatusMessage(te, true);
-//            }
         }
+    }
+
+    @SubscribeEvent(priority = EventPriority.HIGH)
+    public void onBlockPlace(BlockEvent.EntityPlaceEvent event) {
+        final Block block = event.getPlacedBlock().getBlock();
+        final LocksConfig.Lookup lookup = LockAccessor.getBlockLookup(block);
+        if (lookup != LocksConfig.Lookup.adjacent) return;
+
+        if (hasAdjacentLockedBlock(event.getWorld(), event.getPos(), block)) {
+            event.setCanceled(true);
+        }
+    }
+
+    private boolean hasAdjacentLockedBlock(World world, BlockPos pos, Block block) {
+        for (EnumFacing e : EnumFacing.HORIZONTALS) {
+            final BlockPos offPos = pos.offset(e);
+            final IBlockState state = world.getBlockState(offPos);
+            if (!state.getBlock().equals(block)) continue;
+
+            final TileEntity tile = world.getTileEntity(offPos);
+            if (tile == null) continue;
+
+            final ILockable lock = LockableProvider.get(tile);
+            if (lock != null && lock.isLocked())
+                return true;
+        }
+
+        return false;
     }
 
     @SubscribeEvent(priority = EventPriority.HIGH)
