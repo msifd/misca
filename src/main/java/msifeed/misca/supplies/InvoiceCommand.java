@@ -9,6 +9,7 @@ import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.MinecraftServer;
@@ -85,7 +86,7 @@ public class InvoiceCommand extends CommandBase {
             invoice.setDeliveryPrice(price);
         }
 
-        player.addItemStackToInventory(item);
+        player.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, item);
     }
 
     private void handleAddBatch(EntityPlayerMP player, String[] args) throws CommandException {
@@ -124,11 +125,7 @@ public class InvoiceCommand extends CommandBase {
             invoice.addBatch(batch);
         }
 
-//        player.inventory.setInventorySlotContents(player.inventory.currentItem, stack.copy());
-        player.addItemStackToInventory(stack.copy());
-//        stack.shrink(1);
-//        player.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, stack);
-//        player.connection.sendPacket(new SPacketHeldItemChange(player.inventory.currentItem));
+        player.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, stack.copy());
     }
 
     private void handlePopEntry(EntityPlayerMP player) throws CommandException {
@@ -142,8 +139,7 @@ public class InvoiceCommand extends CommandBase {
         if (invoice == null || invoice.getBatches().isEmpty()) return;
 
         invoice.getBatches().remove(invoice.getBatches().size() - 1);
-
-        player.addItemStackToInventory(stack.copy());
+        player.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, stack.copy());
     }
 
     private static void handleCreateBeacon(EntityPlayerMP player) {

@@ -42,12 +42,6 @@ public class ItemSuppliesBeacon extends Item {
         return beacon;
     }
 
-    @Nullable
-    @Override
-    public ICapabilityProvider initCapabilities(ItemStack stack, @Nullable NBTTagCompound nbt) {
-        return new SuppliesInvoiceProvider();
-    }
-
     @Override
     public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer player, EnumHand hand) {
         final ItemStack stack = player.getHeldItem(hand);
@@ -84,5 +78,33 @@ public class ItemSuppliesBeacon extends Item {
 
         final double stamina = StaminaHandler.getStaminaForDelivery(Minecraft.getMinecraft().player);
         tooltip.addAll(SuppliesFlow.getRelativeInfoLines(invoice, stamina));
+    }
+
+    @Nullable
+    @Override
+    public ICapabilityProvider initCapabilities(ItemStack stack, @Nullable NBTTagCompound nbt) {
+        final SuppliesInvoiceProvider provider = new SuppliesInvoiceProvider();
+        if (nbt != null) {
+            provider.deserializeNBT(nbt.getTag("Invoice"));
+        }
+        return provider;
+    }
+
+    @Nullable
+    @Override
+    public NBTTagCompound getNBTShareTag(ItemStack stack) {
+        final ISuppliesInvoice invoice = SuppliesInvoiceProvider.get(stack);
+        final NBTTagCompound nbt = stack.hasTagCompound() ? stack.getTagCompound() : new NBTTagCompound();
+        nbt.setTag("Invoice", SuppliesInvoiceProvider.encode(invoice));
+        return nbt;
+    }
+
+    @Override
+    public void readNBTShareTag(ItemStack stack, @Nullable NBTTagCompound nbt) {
+        stack.setTagCompound(nbt);
+        if (nbt != null) {
+            final ISuppliesInvoice invoice = SuppliesInvoiceProvider.get(stack);
+            SuppliesInvoiceProvider.CAP.readNBT(invoice, null, nbt.getTag("Invoice"));
+        }
     }
 }
