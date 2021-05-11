@@ -12,6 +12,8 @@ import msifeed.misca.environ.EnvironCommand;
 import msifeed.misca.keeper.KeeperSync;
 import msifeed.misca.locks.Locks;
 import msifeed.misca.logdb.LogDB;
+import msifeed.misca.pest.CommandPest;
+import msifeed.misca.pest.PestControl;
 import msifeed.misca.potions.CombatPotions;
 import msifeed.misca.potions.NeedsPotions;
 import msifeed.misca.rename.RenameItems;
@@ -35,8 +37,6 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
-import java.nio.file.Paths;
-
 @Mod(modid = Misca.MODID, name = Misca.NAME)
 public class Misca {
     public static final String MODID = "misca";
@@ -44,7 +44,7 @@ public class Misca {
 
     public static final RpcChannel RPC = new RpcChannel(MODID + ":rpc");
     public static final SyncChannel<MiscaSharedConfig> SHARED
-            = new SyncChannel<>(RPC, Paths.get(MODID, "shared.json"), TypeToken.get(MiscaSharedConfig.class));
+            = new SyncChannel<>(RPC, "shared.json", TypeToken.get(MiscaSharedConfig.class));
 
     private final Chatex chatex = new Chatex();
     private final Combat combat = new Combat();
@@ -67,6 +67,7 @@ public class Misca {
         locks.preInit();
         supplies.preInit();
         Charstate.INSTANCE.preInit();
+        PestControl.init();
 
         MinecraftForge.EVENT_BUS.register(new NeedsPotions());
         MinecraftForge.EVENT_BUS.register(new CombatPotions());
@@ -118,6 +119,7 @@ public class Misca {
         event.registerServerCommand(new SkillsCommand());
         event.registerServerCommand(new BlessCommand());
         event.registerServerCommand(new UnstuckCommand());
+        event.registerServerCommand(new CommandPest());
     }
 
     @SubscribeEvent

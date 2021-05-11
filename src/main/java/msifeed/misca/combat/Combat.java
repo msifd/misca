@@ -13,15 +13,13 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 
-import java.nio.file.Paths;
-
 public class Combat {
     public static final BattleManager MANAGER = new BattleManager();
 
     public static final SyncChannel<Rules> RULES
-            = new SyncChannel<>(Misca.RPC, Paths.get(Misca.MODID, "combat_rules.json"), TypeToken.get(Rules.class));
+            = new SyncChannel<>(Misca.RPC, "combat_rules.json", TypeToken.get(Rules.class));
     public static final SyncChannel<WeaponRegistry> WEAPONS = new SyncChannel<>(
-            Misca.RPC, Paths.get(Misca.MODID, "combat_weapons.json"), TypeToken.get(WeaponRegistry.class));
+            Misca.RPC, "combat_weapons.json", TypeToken.get(WeaponRegistry.class));
 
     public static Rules getRules() {
         return RULES.get();

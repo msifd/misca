@@ -24,7 +24,6 @@ import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
-import java.nio.file.Paths;
 import java.util.HashMap;
 
 public enum Charstate {
@@ -41,7 +40,7 @@ public enum Charstate {
 
     public static class ItemEffectsConfig extends HashMap<ResourceLocation, ItemEffectInfo[]> { }
     public static final SyncChannel<ItemEffectsConfig> ITEM_EFFECTS
-            = new SyncChannel<>(Misca.RPC, Paths.get(Misca.MODID, "item_effects.json"), TypeToken.get(ItemEffectsConfig.class));
+            = new SyncChannel<>(Misca.RPC, "item_effects.json", TypeToken.get(ItemEffectsConfig.class));
 
     public static HashMap<ResourceLocation, ItemEffectInfo[]> getItemEffects() { return ITEM_EFFECTS.get(); }
 

@@ -78,6 +78,13 @@ public class ChatexScreen extends MellowScreen implements ITabCompleter {
     }
 
     @Override
+    protected void setText(String newChatText, boolean shouldOverwrite) {
+        if (shouldOverwrite)
+            input.clear();
+        input.insert(newChatText);
+    }
+
+    @Override
     public void handleMouseInput() throws IOException {
         super.handleMouseInput();
 

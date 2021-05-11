@@ -1,6 +1,5 @@
 package msifeed.misca.cmd;
 
-import msifeed.misca.MiscaPerms;
 import msifeed.misca.locks.Locks;
 import msifeed.misca.locks.cap.LockAccessor;
 import net.minecraft.command.CommandBase;
