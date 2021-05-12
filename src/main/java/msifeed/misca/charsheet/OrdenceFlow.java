@@ -20,7 +20,9 @@ public class OrdenceFlow {
 
         final int increase = config.ordIncreaseAmount * times;
         sheet.resources().increase(CharResource.ord, increase);
-        sheet.setLastUpdated(System.currentTimeMillis() / 1000);
+
+        final long timeLeft = passed % config.ordIncreaseIntervalSec;
+        sheet.setLastUpdated(System.currentTimeMillis() / 1000 - timeLeft);
 
         notify(player, "Вы получили " + increase + " ордеции.");
         LogDB.INSTANCE.log(player, "resource", "gain " + increase + "ord");

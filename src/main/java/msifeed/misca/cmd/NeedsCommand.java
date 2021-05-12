@@ -5,6 +5,7 @@ import msifeed.misca.charstate.handler.CorruptionHandler;
 import msifeed.misca.charstate.handler.IntegrityHandler;
 import msifeed.misca.charstate.handler.SanityHandler;
 import msifeed.misca.charstate.handler.StaminaHandler;
+import msifeed.misca.logdb.LogDB;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
@@ -56,12 +57,17 @@ public class NeedsCommand extends CommandBase {
         if (args.length >= 4 && MiscaPerms.isGameMaster(sender)) {
             final boolean set = args[2].equalsIgnoreCase("set");
             final double value = (float) parseDouble(args[3], -200, 200);
-            if (set) inst.setBaseValue(attr.clampValue(value));
-            else inst.setBaseValue(attr.clampValue(inst.getBaseValue() + value));
-        }
+            final double curr = inst.getBaseValue();
+            final double modified = attr.clampValue(set ? value : value + curr);
 
-        final String rep = String.format("%s's %s: %.3f (base %.3f)", player.getDisplayNameString(), attr.getName(), inst.getAttributeValue(), inst.getBaseValue());
-        sender.sendMessage(new TextComponentString(rep));
+            inst.setBaseValue(modified);
+            final String msg = String.format("Change %s's %s from %.3f to %.3f", player.getName(), args[1], curr, modified);
+            sender.sendMessage(new TextComponentString(msg));
+            LogDB.INSTANCE.log(sender, "need", msg);
+        } else {
+            final String rep = String.format("%s's %s: %.3f (base %.3f)", player.getDisplayNameString(), args[1], inst.getAttributeValue(), inst.getBaseValue());
+            sender.sendMessage(new TextComponentString(rep));
+        }
     }
 
     private static IAttribute getAttribute(String name) throws CommandException {

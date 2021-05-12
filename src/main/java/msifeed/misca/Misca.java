@@ -120,6 +120,7 @@ public class Misca {
         event.registerServerCommand(new BlessCommand());
         event.registerServerCommand(new UnstuckCommand());
         event.registerServerCommand(new CommandPest());
+        event.registerServerCommand(new CharsheetCommand());
     }
 
     @SubscribeEvent
