@@ -197,6 +197,8 @@ public class Rules {
 
     // Action points
 
+    public double apOverheadPart = 0.5;
+
     public double attackApBase = 2;
     public double attackApSpeedFactor = 1;
 
@@ -258,31 +260,31 @@ public class Rules {
 
     /**
      * crit hit chance            crit evade chance
-     * *        +                            +
-     * *        |                            |
-     * *        v                            v
-     * * chance check: 0/1           chance check: 0/1
-     * *        +                            +
-     * *        |                            |
-     * *        | plus                 minus |
-     * *        +------> criticality <-------+         succ>1
-     * *                   -1/0/1                hit +-------> crit
-     * *                      +                   ^
-     * *                      |plus        succ>0 |
-     * *                      v                   |
-     * *               successfulness +-----------+
-     * *                  -1/0/1/2                |
-     * *                      ^           succ<=0 |
-     * *                      |plus               v    succ<0
-     * *                      +                 evade +------> crit
-     * *              chance check: 0/1
-     * *                      ^
-     * *                      |
-     * *                      +
-     * *           +--> attack chance <--+
-     * *           | plus         minus |
-     * *           +                    +
-     * *       hit chance         evade chance
+     *        +                            +
+     *        |                            |
+     *        v                            v
+     * chance check: 0/1           chance check: 0/1
+     *        +                            +
+     *        |                            |
+     *        | plus                 minus |
+     *        +------> criticality <-------+         succ>1
+     *                   -1/0/1                hit +-------> crit
+     *                      +                   ^
+     *                      |plus        succ>0 |
+     *                      v                   |
+     *               successfulness +-----------+
+     *                  -1/0/1/2                |
+     *                      ^           succ<=0 |
+     *                      |plus               v    succ<0
+     *                      +                 evade +------> crit
+     *              chance check: 0/1
+     *                      ^
+     *                      |
+     *                      +
+     *           +--> attack chance <--+
+     *           | plus         minus |
+     *           +                    +
+     *       hit chance         evade chance
      */
     public class AttackResult {
         private final int successfulness;

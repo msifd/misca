@@ -8,6 +8,7 @@ public class Combatant implements ICombatant {
     private long battleId = 0;
     private int puppet = -1;
     private double actionPoints = 0;
+    private double actionPointsSpent = 0;
     private double actionPointsOverhead = 0;
     private Vec3d position = Vec3d.ZERO;
     private float trainingHealth = 0;
@@ -41,6 +42,16 @@ public class Combatant implements ICombatant {
     @Override
     public void setActionPoints(double value) {
         this.actionPoints = value;
+    }
+
+    @Override
+    public double getActionPointsSpent() {
+        return actionPointsSpent;
+    }
+
+    @Override
+    public void setActionPointsSpent(double value) {
+        actionPointsSpent = value;
     }
 
     @Override

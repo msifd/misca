@@ -101,7 +101,7 @@ public class CombatantsBarRender {
         final WeaponInfo weapon = Combat.getWeapons().get(weaponHolder, weaponHolder.getHeldItemMainhand());
 
         final Rules rules = Combat.getRules();
-        final double fullAp = com.getActionPoints();
+        final double fullAp = com.getActionPoints() + com.getActionPointsSpent();
         final double moveAp = rules.movementActionPoints(entity, com.getPosition(), entity.getPositionVector());
         final double attackAp = rules.attackActionPoints(entity, weapon);
         final double ap = Math.max(com.getActionPoints() - moveAp, 0);

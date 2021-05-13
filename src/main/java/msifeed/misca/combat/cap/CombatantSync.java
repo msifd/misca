@@ -34,7 +34,7 @@ public class CombatantSync {
 
     public static void syncAp(EntityLivingBase target) {
         final ICombatant com = CombatantProvider.get(target);
-        Misca.RPC.sendToAllAround(target, syncAp, target.getUniqueID(), com.getActionPoints(), com.getActionPointsOverhead());
+        Misca.RPC.sendToAllAround(target, syncAp, target.getUniqueID(), com.getActionPoints(), com.getActionPointsSpent(), com.getActionPointsOverhead());
     }
 
     public static void syncNeutralDamage(EntityLivingBase target) {
@@ -91,11 +91,12 @@ public class CombatantSync {
 
     @SideOnly(Side.CLIENT)
     @RpcMethodHandler(syncAp)
-    public void onSyncAp(UUID uuid, double ap, double apo) {
+    public void onSyncAp(UUID uuid, double ap, double aps, double apo) {
         final EntityLivingBase entity = BattleStateClient.STATE.getMember(uuid);
         if (entity != null) {
             final ICombatant com = CombatantProvider.get(entity);
             com.setActionPoints(ap);
+            com.setActionPointsSpent(aps);
             com.setActionPointsOverhead(apo);
         }
     }

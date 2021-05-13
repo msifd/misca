@@ -17,6 +17,7 @@ public class CombatantStorage implements Capability.IStorage<ICombatant> {
             nbt.setLong("bid", instance.getBattleId());
             nbt.setInteger("pup", instance.getPuppet());
             nbt.setFloat("ap", (float) instance.getActionPoints());
+            nbt.setFloat("aps", (float) instance.getActionPointsSpent());
             nbt.setFloat("apo", (float) instance.getActionPointsOverhead());
             nbt.setDouble("posX", instance.getPosition().x);
             nbt.setDouble("posY", instance.getPosition().y);
@@ -39,6 +40,7 @@ public class CombatantStorage implements Capability.IStorage<ICombatant> {
             if (nbt.hasKey("pup"))
                 instance.setPuppet(nbt.getInteger("pup"));
             instance.setActionPoints(nbt.getFloat("ap"));
+            instance.setActionPointsOverhead(nbt.getFloat("aps"));
             instance.setActionPointsOverhead(nbt.getFloat("apo"));
             instance.setPosition(new Vec3d(
                     nbt.getDouble("posX"),

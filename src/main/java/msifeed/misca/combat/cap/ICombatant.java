@@ -30,6 +30,9 @@ public interface ICombatant {
         setActionPoints(getActionPoints() + value);
     }
 
+    double getActionPointsSpent();
+    void setActionPointsSpent(double value);
+
     double getActionPointsOverhead();
     void setActionPointsOverhead(double value);
 
@@ -46,6 +49,7 @@ public interface ICombatant {
         setBattleId(com.getBattleId());
         setPuppet(com.getPuppet());
         setActionPoints(com.getActionPoints());
+        setActionPointsSpent(com.getActionPointsSpent());
         setActionPointsOverhead(com.getActionPointsOverhead());
         setPosition(com.getPosition());
         setTrainingHealth(com.getTrainingHealth());
@@ -56,6 +60,7 @@ public interface ICombatant {
         setBattleId(0);
         resetPuppet();
         setActionPoints(0);
+        setActionPointsSpent(0);
         setActionPointsOverhead(0);
         setPosition(Vec3d.ZERO);
         setTrainingHealth(0);

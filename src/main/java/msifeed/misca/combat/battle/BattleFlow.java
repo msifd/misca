@@ -55,6 +55,7 @@ public class BattleFlow {
 
         final ICombatant com = CombatantProvider.get(leader);
         com.setActionPoints(Math.min(com.getActionPoints(), Combat.getRules().maxActionPoints(leader)));
+        com.setActionPointsSpent(0);
         com.setActionPointsOverhead(0);
         com.setPosition(leader.getPositionVector());
         CombatantSync.sync(leader);
@@ -75,6 +76,7 @@ public class BattleFlow {
     public static void engageEntity(EntityLivingBase entity) {
         final ICombatant com = CombatantProvider.get(entity);
         com.setActionPoints(0);
+        com.setActionPointsSpent(0);
         com.setActionPointsOverhead(0);
         com.setPosition(entity.getPositionVector());
         CombatantSync.sync(entity);
@@ -126,20 +128,20 @@ public class BattleFlow {
 
     public static void consumeActionAp(EntityLivingBase entity, WeaponInfo weapon) {
         final ICombatant com = CombatantProvider.get(entity);
-        final double apWithOh = Combat.getRules().attackActionPoints(entity, weapon) + com.getActionPointsOverhead();
-        if (com.getActionPoints() >= apWithOh) {
-            com.addActionPoints(-apWithOh);
-            com.setActionPointsOverhead(com.getActionPointsOverhead() + apWithOh * weapon.overhead);
-        }
+        final double ap = Combat.getRules().attackActionPoints(entity, weapon);
+        final double apWithOh = ap + com.getActionPointsOverhead();
+        com.addActionPoints(-apWithOh);
+        com.setActionPointsSpent(com.getActionPointsSpent() + ap);
+        com.setActionPointsOverhead(com.getActionPointsOverhead() + apWithOh * weapon.overhead);
     }
 
     public static void consumeUsageAp(EntityLivingBase entity, WeaponInfo weapon) {
         final ICombatant com = CombatantProvider.get(entity);
-        final double apWithOh = Combat.getRules().usageActionPoints(weapon) + com.getActionPointsOverhead();
-        if (com.getActionPoints() >= apWithOh) {
-            com.addActionPoints(-apWithOh);
-            com.setActionPointsOverhead(com.getActionPointsOverhead() + apWithOh * weapon.overhead);
-        }
+        final double ap = Combat.getRules().usageActionPoints(weapon);
+        final double apWithOh = ap + com.getActionPointsOverhead();
+        com.addActionPoints(-apWithOh);
+        com.setActionPointsSpent(com.getActionPointsSpent() + ap);
+        com.setActionPointsOverhead(com.getActionPointsOverhead() + apWithOh * weapon.overhead);
     }
 
     public static void consumeMovementAp(EntityLivingBase entity) {

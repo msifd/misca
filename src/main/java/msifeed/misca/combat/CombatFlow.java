@@ -117,8 +117,16 @@ public class CombatFlow {
     private static final String CRIT_EVASION_DAMAGE_TYPE = IGNORE_PREFIX + "evasion";
     public static final DamageSource NEUTRAL_DAMAGE = new DamageSource(IGNORE_PREFIX + "neutral");
 
-    public static boolean shouldHandleDamage(DamageSource source) {
+    public static boolean isAttackIgnored(DamageSource source) {
         return !source.getDamageType().startsWith(IGNORE_PREFIX);
+    }
+
+    public static boolean canNotTakeDamage(EntityLivingBase leader) {
+        if (leader == null) return false;
+        if (!(leader instanceof EntityPlayer)) return false;
+
+        final ICombatant com = CombatantProvider.get(leader);
+        return com.getActionPointsSpent() <= 0;
     }
 
     /**

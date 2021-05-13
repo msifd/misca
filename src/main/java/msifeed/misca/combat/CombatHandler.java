@@ -113,21 +113,26 @@ public class CombatHandler {
     @SubscribeEvent
     public void onAttack(LivingAttackEvent event) {
         if (!(event.getSource() instanceof EntityDamageSource)) return;
-        if (!CombatFlow.shouldHandleDamage(event.getSource())) return;
+        if (!CombatFlow.isAttackIgnored(event.getSource())) return;
 
         final EntityDamageSource src = (EntityDamageSource) event.getSource();
         if (!(src.getTrueSource() instanceof EntityLivingBase)) return;
 
         final EntityLivingBase source = (EntityLivingBase) src.getTrueSource();
-        final boolean isPlayer = source instanceof EntityPlayer;
         // Get weapon from source, not from actor
         final WeaponInfo weapon = Combat.getWeapons().get(source, source.getHeldItemMainhand());
 
         final EntityLivingBase actor = CombatFlow.getCombatActor(source);
         if (actor == null) return;
 
+        if (CombatFlow.canNotTakeDamage(actor)) {
+            event.setCanceled(true);
+            return;
+        }
+
         if (CombatFlow.canAttack(actor, weapon)) {
-            if (!isPlayer) { // Players consume AP on swing, mobs on attack
+            final boolean isPlayer = source instanceof EntityPlayer; // Players consume AP on swing, mobs on attack
+            if (!isPlayer) {
                 CombatFlow.onAttack(actor, weapon);
             }
         } else {
@@ -171,7 +176,7 @@ public class CombatHandler {
         final EntityLivingBase actor = CombatFlow.getCombatActor(source);
         if (actor == null) return;
 
-        if (CombatFlow.shouldHandleDamage(damage)) {
+        if (CombatFlow.isAttackIgnored(damage)) {
             // Get weapon from source, not from actor
             final WeaponInfo weapon = Combat.getWeapons().get(source, source.getHeldItemMainhand());
             CombatFlow.alterDamage(event, actor, weapon);
@@ -206,11 +211,16 @@ public class CombatHandler {
         final Battle battle = Combat.MANAGER.getBattle(com.getBattleId());
         if (battle == null) return;
 
+        final boolean isLeader = battle.isLeader(entity.getUniqueID()); // Leader takes damage immediately
+
+        if (!isLeader && CombatFlow.canNotTakeDamage(battle.getLeader())) {
+            event.setCanceled(true);
+            return;
+        }
+
         final float damageFactor = Combat.getRules().neutralDamageFactor(src);
         event.setAmount(event.getAmount() * damageFactor);
-
-        final boolean isLeader = battle.isLeader(entity.getUniqueID()); // Leader takes damage immediately
-        if (!isLeader && CombatFlow.shouldHandleDamage(src)) {
+        if (!isLeader && CombatFlow.isAttackIgnored(src)) {
             com.setNeutralDamage(com.getNeutralDamage() + event.getAmount());
             CombatantSync.syncNeutralDamage(entity);
             event.setCanceled(true);
