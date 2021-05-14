@@ -22,6 +22,7 @@ import msifeed.misca.supplies.BackgroundSupplies;
 import msifeed.misca.supplies.InvoiceCommand;
 import msifeed.misca.tweaks.DisableSomeDamageTypes;
 import msifeed.misca.tweaks.DisableSomeWorkstations;
+import msifeed.misca.tweaks.HealthCareRegulations;
 import msifeed.misca.tweaks.MiscaCrashInfo;
 import msifeed.sys.rpc.RpcChannel;
 import msifeed.sys.sync.SyncChannel;
