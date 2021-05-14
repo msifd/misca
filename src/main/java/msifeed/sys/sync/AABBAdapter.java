@@ -29,12 +29,12 @@ public class AABBAdapter implements JsonDeserializer<AxisAlignedBB>, JsonSeriali
     @Override
     public JsonElement serialize(AxisAlignedBB src, Type typeOfSrc, JsonSerializationContext context) {
         final JsonArray array = new JsonArray();
-        array.add(new JsonPrimitive(src.minX));
-        array.add(new JsonPrimitive(src.minY));
-        array.add(new JsonPrimitive(src.minZ));
-        array.add(new JsonPrimitive(src.maxX));
-        array.add(new JsonPrimitive(src.maxY));
-        array.add(new JsonPrimitive(src.maxZ));
+        array.add(new JsonPrimitive((long) src.minX));
+        array.add(new JsonPrimitive((long) src.minY));
+        array.add(new JsonPrimitive((long) src.minZ));
+        array.add(new JsonPrimitive((long) src.maxX));
+        array.add(new JsonPrimitive((long) src.maxY));
+        array.add(new JsonPrimitive((long) src.maxZ));
         return array;
     }
 }

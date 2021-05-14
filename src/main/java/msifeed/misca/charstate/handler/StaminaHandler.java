@@ -25,12 +25,12 @@ import java.util.Map;
 public class StaminaHandler {
     public static final IAttribute STAMINA = new RangedAttribute(null, Misca.MODID + ".stamina", 100, 0, 100).setShouldWatch(true);
 
-    public void handleTime(EntityPlayer player, long secs) {
+    public void handleTime(EntityPlayer player, long secs, double factorMod) {
         final CharstateConfig config = Misca.getSharedConfig().charstate;
         final ICharstate state = CharstateProvider.get(player);
         if (state.passedFromMining() < config.staminaRestMiningTimeoutSec) return;
 
-        final double factor = 1 + config.foodRestMod(player);
+        final double factor = Math.max(0, 1 + factorMod + config.foodRestMod(player));
         final double restored = secs * config.staminaRestPerSec * factor;
 
         final IAttributeInstance inst = player.getEntityAttribute(STAMINA);

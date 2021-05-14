@@ -1,0 +1,23 @@
+{
+  "0": [
+    {
+      "name": "spooder",
+      "aabb": [
+        19,
+        3,
+        10,
+        24,
+        6,
+        18
+      ],
+      "needs": {
+        "SAN": 0.1,
+        "STA": 0.1
+      },
+      "blacklist": [
+        "net.minecraft.entity.monster.EntitySpider"
+      ],
+      "whitelist": []
+    }
+  ]
+}

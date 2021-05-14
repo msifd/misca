@@ -18,9 +18,9 @@ public class IntegrityHandler {
     private final Potion miningFatigue = Potion.getPotionById(4);
     private final Potion weakness = Potion.getPotionById(18);
 
-    public void handleTime(EntityPlayer player, long secs) {
+    public void handleTime(EntityPlayer player, long secs, double factorMod) {
         final CharstateConfig config = Misca.getSharedConfig().charstate;
-        final double factor = 1 + config.foodRestMod(player);
+        final double factor = Math.max(0, 1 + factorMod + config.foodRestMod(player));
         final double restored = secs * config.integrityRestPerSec * factor;
 
         final IAttributeInstance inst = player.getEntityAttribute(INTEGRITY);
@@ -39,7 +39,7 @@ public class IntegrityHandler {
 
     public void handleDamage(EntityPlayer player, float amount) {
         final CharstateConfig config = Misca.getSharedConfig().charstate;
-        final double factor = 1 + CharsheetProvider.get(player).skills().get(CharSkill.survival) * config.survivalSkillNeedsLostFactor;
+        final double factor = Math.max(0, 1 + CharsheetProvider.get(player).skills().get(CharSkill.survival) * config.survivalSkillNeedsLostFactor);
         final double lost = amount * config.integrityCostPerDamage * factor;
 
         final IAttributeInstance inst = player.getEntityAttribute(INTEGRITY);

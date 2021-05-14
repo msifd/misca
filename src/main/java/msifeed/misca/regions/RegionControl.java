@@ -1,4 +1,4 @@
-package msifeed.misca.pest;
+package msifeed.misca.regions;
 
 import com.google.gson.reflect.TypeToken;
 import msifeed.sys.sync.JsonConfig;
@@ -12,19 +12,22 @@ import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import java.io.IOException;
-import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-public class PestControl {
-    private static final JsonConfig<PestConfig> config = new JsonConfig<>("pest-control.json", TypeToken.get(PestConfig.class));
+public class RegionControl {
+    private static final JsonConfig<RegionConfig> config = new JsonConfig<>("regions.json", TypeToken.get(RegionConfig.class));
 
     public static void init() {
-        MinecraftForge.EVENT_BUS.register(PestControl.class);
+        MinecraftForge.EVENT_BUS.register(RegionControl.class);
     }
 
-    public static PestConfig config() {
+    public static RegionConfig config() {
         return config.get();
+    }
+
+    public static void sync() throws Exception {
+        config.sync();
     }
 
     public static void writeConfig() throws IOException {
@@ -41,28 +44,27 @@ public class PestControl {
         }
     }
 
-    public static List<PestConfig.Rule> getLocalRules(World world, Vec3d pos) {
+    public static Stream<RegionConfig.Region> getLocalRules(World world, Vec3d pos) {
         final int dim = world.provider.getDimension();
-        final List<PestConfig.Rule> rules = config.get().worlds.get(dim);
-        if (rules == null || rules.isEmpty()) return Collections.emptyList();
+        final List<RegionConfig.Region> regions = config.get().get(dim);
+        if (regions == null || regions.isEmpty()) return Stream.empty();
 
-        return rules.stream()
-                .filter(r -> r.aabb == null || r.aabb.contains(pos))
-                .collect(Collectors.toList());
-
+        return regions.stream().filter(r -> r.contains(pos));
     }
 
     private static boolean isBlocked(World world, EntityLivingBase entity) {
         final int dim = world.provider.getDimension();
-        final List<PestConfig.Rule> rules = config.get().worlds.get(dim);
-        if (rules == null || rules.isEmpty()) return false;
+        final List<RegionConfig.Region> regions = config.get().get(dim);
+        if (regions == null || regions.isEmpty()) return false;
 
         final Class<?> ec = entity.getClass();
-        for (PestConfig.Rule r : rules) {
-            // Null aabb are global
-            if (r.aabb != null && !r.aabb.contains(entity.getPositionVector())) continue;
-
-            for (Class<?> c : r.classes) {
+        for (RegionConfig.Region r : regions) {
+            if (!r.contains(entity.getPositionVector())) continue;
+            for (Class<?> c : r.whitelist) {
+                if (ec.isAssignableFrom(c))
+                    return false;
+            }
+            for (Class<?> c : r.blacklist) {
                 if (ec.isAssignableFrom(c))
                     return true;
             }

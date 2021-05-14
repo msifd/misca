@@ -27,14 +27,14 @@ public class SanityHandler {
     private static final AttributeModifier SKILL_PENALTY_1 = new AttributeModifier(UUID.fromString("45d90c52-6ed7-4bb2-8ad1-7d8ba23f84c5"), "Skill penalty I", -1, 0).setSaved(false);
     private static final AttributeModifier SKILL_PENALTY_2 = new AttributeModifier(UUID.fromString("49495e01-77e9-4c1a-8b5c-bab0935bd898"), "Skill penalty II", -2, 0).setSaved(false);
 
-    public void handleTime(EntityPlayer player, long secs) {
+    public void handleTime(EntityPlayer player, long secs, double factorMod) {
         if (player.isCreative() || player.isSpectator()) return;
 
         // TODO: a way disable darkness for nocturnal players
         final CharstateConfig config = Misca.getSharedConfig().charstate;
         final int light = player.world.getLight(player.getPosition(), false);
         final double sanPerSec = light < 7 ? config.sanityCostPerSecInDarkness : config.sanityCostPerSec;
-        final double factor = 1 + CharsheetProvider.get(player).skills().get(CharSkill.survival) * config.survivalSkillNeedsLostFactor;
+        final double factor = Math.max(0, 1 + factorMod + CharsheetProvider.get(player).skills().get(CharSkill.survival) * config.survivalSkillNeedsLostFactor);
         final double lost = secs * sanPerSec * factor;
 
         final IAttributeInstance inst = player.getEntityAttribute(SANITY);
@@ -61,7 +61,7 @@ public class SanityHandler {
 
     public void handleDamage(EntityPlayer player, float amount) {
         final CharstateConfig config = Misca.getSharedConfig().charstate;
-        final double factor = 1 + CharsheetProvider.get(player).skills().get(CharSkill.survival) * config.survivalSkillNeedsLostFactor;
+        final double factor = Math.max(0, 1 + CharsheetProvider.get(player).skills().get(CharSkill.survival) * config.survivalSkillNeedsLostFactor);
         final double lost = amount * config.sanityCostPerDamage * factor;
 
         final IAttributeInstance inst = player.getEntityAttribute(SANITY);
@@ -73,14 +73,14 @@ public class SanityHandler {
 
         final ItemFood item = (ItemFood) stack.getItem();
         final CharstateConfig config = Misca.getSharedConfig().charstate;
-        final double factor = 1 + config.foodRestMod(player);
+        final double factor = Math.max(0, 1 + config.foodRestMod(player));
         final double restored = item.getHealAmount(stack) * config.sanityRestPerFood * factor;
 
         final IAttributeInstance inst = player.getEntityAttribute(SANITY);
         inst.setBaseValue(SANITY.clampValue(inst.getBaseValue() + restored));
     }
 
-    public void handleSpeech(EntityPlayerMP source, String msg) {
+    public void handleSpeech(EntityPlayerMP source, String msg, double factorMod) {
         final CharstateConfig config = Misca.getSharedConfig().charstate;
         final ChatexConfig chat = Misca.getSharedConfig().chat;
 
@@ -98,7 +98,7 @@ public class SanityHandler {
             final double distanceMod = distance > threshold
                     ? -(distance - threshold) / range
                     : 0;
-            final double factor = 1 + psychologyMod + distanceMod + config.foodRestMod(player);
+            final double factor = Math.max(0, 1 + + factorMod + psychologyMod + distanceMod + config.foodRestMod(player));
             final double restored = msg.length() * config.sanityRestPerSpeechChar * factor;
 
             final IAttributeInstance inst = player.getEntityAttribute(SANITY);

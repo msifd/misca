@@ -2,17 +2,12 @@ package msifeed.misca.cmd;
 
 import msifeed.misca.Misca;
 import msifeed.misca.MiscaPerms;
-import msifeed.misca.combat.Combat;
-import msifeed.misca.keeper.KeeperSync;
-import msifeed.misca.logdb.LogDB;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
-import net.minecraftforge.common.config.Config;
-import net.minecraftforge.common.config.ConfigManager;
 
 import javax.annotation.Nullable;
 import java.util.Collections;
@@ -61,11 +56,8 @@ public class MiscaCommand extends CommandBase {
 
     private void reloadConfig(ICommandSender sender) {
         try {
-            ConfigManager.sync(Misca.MODID, Config.Type.INSTANCE);
-            Misca.SHARED.sync();
-            Combat.sync();
-            LogDB.reload();
-            KeeperSync.reload();
+//            ConfigManager.sync(Misca.MODID, Config.Type.INSTANCE);
+            Misca.syncConfig();
             sender.sendMessage(new TextComponentString("[Misca] Reload config ok"));
         } catch (Exception e) {
             e.printStackTrace();

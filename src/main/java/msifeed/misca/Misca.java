@@ -12,17 +12,16 @@ import msifeed.misca.environ.EnvironCommand;
 import msifeed.misca.keeper.KeeperSync;
 import msifeed.misca.locks.Locks;
 import msifeed.misca.logdb.LogDB;
-import msifeed.misca.pest.CommandPest;
-import msifeed.misca.pest.PestControl;
 import msifeed.misca.potions.CombatPotions;
 import msifeed.misca.potions.NeedsPotions;
+import msifeed.misca.regions.CommandRegions;
+import msifeed.misca.regions.RegionControl;
 import msifeed.misca.rename.RenameItems;
 import msifeed.misca.rolls.RollRpc;
 import msifeed.misca.supplies.BackgroundSupplies;
 import msifeed.misca.supplies.InvoiceCommand;
 import msifeed.misca.tweaks.DisableSomeDamageTypes;
 import msifeed.misca.tweaks.DisableSomeWorkstations;
-import msifeed.misca.tweaks.HealthCareRegulations;
 import msifeed.misca.tweaks.MiscaCrashInfo;
 import msifeed.sys.rpc.RpcChannel;
 import msifeed.sys.sync.SyncChannel;
@@ -68,7 +67,7 @@ public class Misca {
         locks.preInit();
         supplies.preInit();
         Charstate.INSTANCE.preInit();
-        PestControl.init();
+        RegionControl.init();
 
         MinecraftForge.EVENT_BUS.register(new NeedsPotions());
         MinecraftForge.EVENT_BUS.register(new CombatPotions());
@@ -95,14 +94,19 @@ public class Misca {
             MiscaClient.INSTANCE.init();
     }
 
+    public static void syncConfig() throws Exception {
+        SHARED.sync();
+        Combat.sync();
+        Charstate.sync();
+        LogDB.reload();
+        KeeperSync.reload();
+        RegionControl.sync();
+    }
+
     @EventHandler
     public void serverStarting(FMLServerStartingEvent event) {
         try {
-            SHARED.sync();
-            Combat.sync();
-            Charstate.sync();
-            LogDB.reload();
-            KeeperSync.reload();
+            syncConfig();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -120,7 +124,7 @@ public class Misca {
         event.registerServerCommand(new SkillsCommand());
         event.registerServerCommand(new BlessCommand());
         event.registerServerCommand(new UnstuckCommand());
-        event.registerServerCommand(new CommandPest());
+        event.registerServerCommand(new CommandRegions());
         event.registerServerCommand(new CharsheetCommand());
     }
 

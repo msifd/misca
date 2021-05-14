@@ -6,6 +6,7 @@ import msifeed.misca.charstate.cap.*;
 import msifeed.misca.charstate.client.CharstateHudHandler;
 import msifeed.misca.charstate.handler.*;
 import msifeed.misca.chatex.SpeechEvent;
+import msifeed.misca.regions.RegionControl;
 import msifeed.sys.sync.SyncChannel;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.attributes.AbstractAttributeMap;
@@ -25,6 +26,8 @@ import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import java.util.HashMap;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public enum Charstate {
     INSTANCE;
@@ -38,11 +41,15 @@ public enum Charstate {
     private final EffortsHandler effortsHandler = new EffortsHandler();
     private final EffectsHandler effectsHandler = new EffectsHandler();
 
-    public static class ItemEffectsConfig extends HashMap<ResourceLocation, ItemEffectInfo[]> { }
+    public static class ItemEffectsConfig extends HashMap<ResourceLocation, ItemEffectInfo[]> {
+    }
+
     public static final SyncChannel<ItemEffectsConfig> ITEM_EFFECTS
             = new SyncChannel<>(Misca.RPC, "item_effects.json", TypeToken.get(ItemEffectsConfig.class));
 
-    public static HashMap<ResourceLocation, ItemEffectInfo[]> getItemEffects() { return ITEM_EFFECTS.get(); }
+    public static HashMap<ResourceLocation, ItemEffectInfo[]> getItemEffects() {
+        return ITEM_EFFECTS.get();
+    }
 
     public void preInit() {
         CapabilityManager.INSTANCE.register(ICharstate.class, new CharstateStorage(), CharstateImpl::new);
@@ -89,6 +96,12 @@ public enum Charstate {
 //        }
     }
 
+    private static Map<CharNeed, Double> getEffects(EntityPlayer player) {
+        return RegionControl.getLocalRules(player.world, player.getPositionVector())
+                .flatMap(r -> r.needs.entrySet().stream())
+                .collect(Collectors.groupingBy(Map.Entry::getKey, Collectors.summingDouble(Map.Entry::getValue)));
+    }
+
     @SubscribeEvent
     public void onPlayerTick(LivingEvent.LivingUpdateEvent event) {
         if (!(event.getEntity() instanceof EntityPlayerMP)) return;
@@ -100,9 +113,10 @@ public enum Charstate {
         final long passedSec = state.passedFromUpdate();
         if (passedSec < UPDATE_INTERVAL_SEC) return;
 
-        integrityHandler.handleTime(player, passedSec);
-        sanityHandler.handleTime(player, UPDATE_INTERVAL_SEC);
-        staminaHandler.handleTime(player, passedSec);
+        final Map<CharNeed, Double> effects = getEffects(player);
+        integrityHandler.handleTime(player, passedSec, effects.getOrDefault(CharNeed.INT, 0d));
+        sanityHandler.handleTime(player, UPDATE_INTERVAL_SEC, effects.getOrDefault(CharNeed.SAN, 0d));
+        staminaHandler.handleTime(player, passedSec, effects.getOrDefault(CharNeed.STA, 0d));
         corruptionHandler.handleTime(player, passedSec);
         effortsHandler.handleTime(player, passedSec);
 
@@ -119,13 +133,14 @@ public enum Charstate {
         final EntityPlayer player = (EntityPlayer) event.getEntityLiving();
         final float amount = Math.min(player.getHealth(), event.getAmount());
 
-        integrityHandler.handleDamage(player,amount);
-        sanityHandler.handleDamage(player,amount);
+        integrityHandler.handleDamage(player, amount);
+        sanityHandler.handleDamage(player, amount);
     }
 
     @SubscribeEvent
     public void onSpeech(SpeechEvent event) {
-        sanityHandler.handleSpeech(event.getPlayer(), event.getMessage());
+        final double factorMod = getEffects(event.getPlayer()).getOrDefault(CharNeed.SAN, 0d);
+        sanityHandler.handleSpeech(event.getPlayer(), event.getMessage(), factorMod);
     }
 
     @SubscribeEvent
