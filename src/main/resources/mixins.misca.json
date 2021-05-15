@@ -11,6 +11,7 @@
     "EnchantmentHelperMixin",
     "EntityLivingBaseMixin",
     "EntityPlayerMixin",
+    "ForgeHooksMixins",
     "ItemFoodMixin",
     "MinecraftServerMixin",
     "ModelRendererMixin",

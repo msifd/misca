@@ -14,6 +14,7 @@ import msifeed.misca.locks.Locks;
 import msifeed.misca.logdb.LogDB;
 import msifeed.misca.potions.CombatPotions;
 import msifeed.misca.potions.NeedsPotions;
+import msifeed.misca.potions.OtherPotions;
 import msifeed.misca.regions.CommandRegions;
 import msifeed.misca.regions.RegionControl;
 import msifeed.misca.rename.RenameItems;
@@ -71,6 +72,7 @@ public class Misca {
 
         MinecraftForge.EVENT_BUS.register(new NeedsPotions());
         MinecraftForge.EVENT_BUS.register(new CombatPotions());
+        MinecraftForge.EVENT_BUS.register(OtherPotions.class);
         MinecraftForge.EVENT_BUS.register(new DisableSomeWorkstations());
         MinecraftForge.EVENT_BUS.register(new DisableSomeDamageTypes());
 
