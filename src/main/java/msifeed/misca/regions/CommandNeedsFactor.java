@@ -1,5 +1,6 @@
 package msifeed.misca.regions;
 
+import msifeed.misca.MiscaPerms;
 import msifeed.misca.charstate.CharNeed;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
@@ -27,6 +28,11 @@ public class CommandNeedsFactor extends CommandTreeBase {
         return "needs";
     }
 
+    @Override
+    public boolean checkPermission(MinecraftServer server, ICommandSender sender) {
+        return MiscaPerms.check(sender, "misca.regions.needs");
+    }
+
     public CommandNeedsFactor() {
         addSubcommand(new Append());
     }
@@ -40,6 +46,11 @@ public class CommandNeedsFactor extends CommandTreeBase {
         @Override
         public String getUsage(ICommandSender sender) {
             return "append <name> <need> <mod>";
+        }
+
+        @Override
+        public boolean checkPermission(MinecraftServer server, ICommandSender sender) {
+            return MiscaPerms.check(sender, "misca.regions.needs.who");
         }
 
         @Override

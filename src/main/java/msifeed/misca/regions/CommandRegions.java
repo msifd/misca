@@ -6,6 +6,7 @@ import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.session.SessionManager;
 import com.sk89q.worldedit.world.World;
+import msifeed.misca.MiscaPerms;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
@@ -29,7 +30,7 @@ public class CommandRegions extends CommandTreeBase {
 
     @Override
     public String getUsage(ICommandSender sender) {
-        return "/regions <get pest needs>";
+        return "/regions <get add delete pest needs>";
     }
 
     public CommandRegions() {
@@ -49,6 +50,11 @@ public class CommandRegions extends CommandTreeBase {
         @Override
         public String getUsage(ICommandSender sender) {
             return "get";
+        }
+
+        @Override
+        public boolean checkPermission(MinecraftServer server, ICommandSender sender) {
+            return MiscaPerms.check(sender, "misca.regions.get");
         }
 
         @Override
@@ -92,6 +98,11 @@ public class CommandRegions extends CommandTreeBase {
         }
 
         @Override
+        public boolean checkPermission(MinecraftServer server, ICommandSender sender) {
+            return MiscaPerms.check(sender, "misca.regions.add");
+        }
+
+        @Override
         public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
             if (args.length < 1) throw new CommandException("Usage: add <name> [global]");
 
@@ -132,6 +143,11 @@ public class CommandRegions extends CommandTreeBase {
         @Override
         public String getUsage(ICommandSender sender) {
             return "delete <name>";
+        }
+
+        @Override
+        public boolean checkPermission(MinecraftServer server, ICommandSender sender) {
+            return MiscaPerms.check(sender, "misca.regions.delete");
         }
 
         @Override

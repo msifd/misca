@@ -1,5 +1,6 @@
 package msifeed.misca.regions;
 
+import msifeed.misca.MiscaPerms;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
@@ -27,7 +28,12 @@ public class CommandPest extends CommandTreeBase {
 
     @Override
     public String getUsage(ICommandSender sender) {
-        return "/pest <who append>";
+        return "/regions pest <who append>";
+    }
+
+    @Override
+    public boolean checkPermission(MinecraftServer server, ICommandSender sender) {
+        return MiscaPerms.check(sender, "misca.regions.pest");
     }
 
     public CommandPest() {
@@ -44,6 +50,11 @@ public class CommandPest extends CommandTreeBase {
         @Override
         public String getUsage(ICommandSender sender) {
             return "who";
+        }
+
+        @Override
+        public boolean checkPermission(MinecraftServer server, ICommandSender sender) {
+            return MiscaPerms.check(sender, "misca.regions.pest.who");
         }
 
         @Override
@@ -79,6 +90,11 @@ public class CommandPest extends CommandTreeBase {
         @Override
         public String getUsage(ICommandSender sender) {
             return "append <name> <class>";
+        }
+
+        @Override
+        public boolean checkPermission(MinecraftServer server, ICommandSender sender) {
+            return MiscaPerms.check(sender, "misca.regions.pest.append");
         }
 
         @Override
