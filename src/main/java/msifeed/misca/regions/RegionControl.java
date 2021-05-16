@@ -61,11 +61,11 @@ public class RegionControl {
         for (RegionConfig.Region r : regions) {
             if (!r.contains(entity.getPositionVector())) continue;
             for (Class<?> c : r.whitelist) {
-                if (ec.isAssignableFrom(c))
+                if (c.isAssignableFrom(ec))
                     return false;
             }
             for (Class<?> c : r.blacklist) {
-                if (ec.isAssignableFrom(c))
+                if (c.isAssignableFrom(ec))
                     return true;
             }
         }

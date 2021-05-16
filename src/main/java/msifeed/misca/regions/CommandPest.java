@@ -61,7 +61,7 @@ public class CommandPest extends CommandTreeBase {
         public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
             final AxisAlignedBB aabb = new AxisAlignedBB(sender.getPosition()).grow(10);
 
-            final List<String> classes = sender.getEntityWorld().getLoadedEntityList().stream()
+            final List<String> classes = sender.getEntityWorld().loadedEntityList.stream()
                     .filter(e -> e instanceof EntityLivingBase && !(e instanceof EntityPlayer))
                     .filter(e -> aabb.contains(e.getPositionVector()))
                     .map(Entity::getClass)
