@@ -13,7 +13,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import javax.annotation.Nonnull;
 
-@Mixin(ForgeHooks.class)
+@Mixin(value = ForgeHooks.class, remap = false)
 public class ForgeHooksMixins {
     @Inject(method = "isLivingOnLadder", at = @At("RETURN"), cancellable = true)
     private static void isLivingOnLadder(@Nonnull IBlockState state, @Nonnull World world, @Nonnull BlockPos pos, @Nonnull EntityLivingBase entity, CallbackInfoReturnable<Boolean> cir) {
