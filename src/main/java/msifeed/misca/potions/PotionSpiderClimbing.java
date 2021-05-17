@@ -1,6 +1,5 @@
 package msifeed.misca.potions;
 
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.potion.Potion;
 import net.minecraft.util.EnumFacing;
@@ -20,8 +19,7 @@ public class PotionSpiderClimbing extends Potion {
 
         for (EnumFacing f : EnumFacing.HORIZONTALS) {
             final BlockPos p = pos.offset(f);
-            final IBlockState state = world.getBlockState(p);
-            if (!state.getBlock().isAir(state, world, p))
+            if (!world.getBlockState(p).getBlock().isPassable(world, p))
                 return true;
         }
 
