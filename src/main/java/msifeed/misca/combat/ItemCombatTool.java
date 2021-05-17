@@ -50,7 +50,7 @@ public class ItemCombatTool extends Item {
         if (player.isSneaking()) {
             final ICombatant com = CombatantProvider.get(player);
             if (com.hasPuppet()) {
-                if (player.world.isRemote) {
+                if (!player.world.isRemote) {
                     com.resetPuppet();
                     CombatantSync.sync(player);
                     player.sendStatusMessage(new TextComponentString("Reset puppet"), true);
@@ -81,7 +81,7 @@ public class ItemCombatTool extends Item {
         if (player.isSneaking()) {
             final ICombatant com = CombatantProvider.get(player);
             com.setPuppet(target.getEntityId());
-            if (player.world.isRemote) {
+            if (!player.world.isRemote) {
                 CombatantSync.sync(player);
                 player.sendStatusMessage(new TextComponentString("Set puppet: " + target.getName()), true);
             }
