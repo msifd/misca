@@ -2,9 +2,11 @@ package msifeed.misca.charsheet;
 
 import msifeed.misca.Misca;
 import msifeed.misca.charsheet.cap.CharsheetProvider;
+import msifeed.misca.charsheet.cap.CharsheetSync;
 import msifeed.misca.charstate.CharstateConfig;
 import msifeed.misca.logdb.LogDB;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextFormatting;
@@ -28,6 +30,8 @@ public class OrdenceFlow {
         LogDB.INSTANCE.log(player, "resource", "gain " + increase + "ord");
 
         convertOrdToSeal(player);
+
+        CharsheetSync.sync((EntityPlayerMP) player, player);
     }
 
     public static void convertOrdToSeal(EntityPlayer player) {
