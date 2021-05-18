@@ -14,6 +14,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextFormatting;
@@ -62,23 +63,41 @@ public class StaminaHandler {
     }
 
     public void handleCrafting(net.minecraftforge.fml.common.gameevent.PlayerEvent.ItemCraftedEvent event) {
-        final double lost = getCraftCost(event.player, event.craftMatrix);
+        final double lost = getCraftCost(event.player, getCraftIngredients(event.craftMatrix));
         final IAttributeInstance inst = event.player.getEntityAttribute(STAMINA);
         inst.setBaseValue(STAMINA.clampValue(inst.getBaseValue() - lost));
     }
 
-    public static double getCraftCost(EntityPlayer player, IInventory matrix) {
+    public static int getCraftIngredients(IInventory matrix) {
         final CharstateConfig config = Misca.getSharedConfig().charstate;
-
         final Map<Item, Integer> uniqueIngredients = new HashMap<>();
         for (int i = 0; i < matrix.getSizeInventory(); i++) {
             final ItemStack stack = matrix.getStackInSlot(i);
             if (!stack.isEmpty())
                 uniqueIngredients.compute(stack.getItem(), (k, v) -> (v == null ? 1 : v + 1));
         }
-        final int ingredients = uniqueIngredients.values().stream()
+        return uniqueIngredients.values().stream()
                 .mapToInt(value -> Math.min(value, config.craftMaxIngredientsOfOneType))
                 .sum();
+    }
+
+    public static int getCraftIngredients(NonNullList<ItemStack> stacks, int start, int end) {
+        final CharstateConfig config = Misca.getSharedConfig().charstate;
+        final Map<Item, Integer> uniqueIngredients = new HashMap<>();
+
+        final int size = end - start;
+        for (int i = 0; i < size; i++) {
+            final ItemStack stack = stacks.get(i);
+            if (!stack.isEmpty())
+                uniqueIngredients.compute(stack.getItem(), (k, v) -> (v == null ? 1 : v + 1));
+        }
+        return uniqueIngredients.values().stream()
+                .mapToInt(value -> Math.min(value, config.craftMaxIngredientsOfOneType))
+                .sum();
+    }
+
+    public static double getCraftCost(EntityPlayer player, int ingredients) {
+        final CharstateConfig config = Misca.getSharedConfig().charstate;
 
         final ICharsheet charsheet = CharsheetProvider.get(player);
         final int survivalSkill = charsheet.skills().get(CharSkill.survival);
@@ -88,9 +107,9 @@ public class StaminaHandler {
         return ingredients * config.staminaCostPerIngredient * factor;
     }
 
-    public static boolean canCraft(EntityPlayer player, IInventory matrix) {
+    public static boolean canCraft(EntityPlayer player, int ingredients) {
         final IAttributeInstance inst = player.getEntityAttribute(STAMINA);
-        return inst.getBaseValue() >= getCraftCost(player, matrix);
+        return inst.getBaseValue() >= getCraftCost(player, ingredients);
     }
 
     public static double getStaminaForDelivery(EntityPlayer player) {

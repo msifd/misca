@@ -15,7 +15,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class ContainerMixin {
     @Inject(method = "slotChangedCraftingGrid", at = @At("HEAD"), cancellable = true)
     protected void slotChangedCraftingGrid(World world, EntityPlayer player, InventoryCrafting matrix, InventoryCraftResult result, CallbackInfo ci) {
-        if (!StaminaHandler.canCraft(player, matrix)) {
+        if (!StaminaHandler.canCraft(player, StaminaHandler.getCraftIngredients(matrix))) {
             ci.cancel();
         }
     }

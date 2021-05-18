@@ -20,7 +20,13 @@ repositories {
 apply plugin: 'net.minecraftforge.gradle.forge'
 apply plugin: 'org.spongepowered.mixin'
 
-version = '2.3.4'
+project.ext.config = file('build.properties').withReader {
+    def prop = new Properties()
+    prop.load(it)
+    new ConfigSlurper().parse prop
+}
+
+version = "${config.mod_version}"
 group = 'msifeed.misca'
 archivesBaseName = 'misca'
 
@@ -73,15 +79,17 @@ dependencies {
     embed 'org.mariadb.jdbc:mariadb-java-client:2.7.2'
     embed 'org.mongodb:mongodb-driver-sync:4.2.2'
 
-    compile "curse.maven:techguns-244201:2958103"
-    compile "curse.maven:baubles-227083:2518667"
-    compile "curse.maven:flans-mod-5-5-2-317310:3195600"
-    compile "curse.maven:electroblobs-wizardry-265642:3189062"
-    compile "curse.maven:thaumcraft-223628:2629023"
-    compile "slimeknights.mantle:Mantle:1.12-1.3.3.55"
-    compile "slimeknights:TConstruct:1.12.2-2.13.0.190"
+    deobfCompile "curse.maven:techguns-244201:2958103"
+    deobfCompile "curse.maven:baubles-227083:2518667"
+    deobfCompile "curse.maven:flans-mod-5-5-2-317310:3195600"
+    deobfCompile "curse.maven:electroblobs-wizardry-265642:3189062"
+    deobfCompile "curse.maven:thaumcraft-223628:2629023"
+    deobfCompile "curse.maven:athenaeum-284350:3063275"
+    deobfCompile "curse.maven:artisan-worktables-284351:3205284"
+    deobfCompile "slimeknights.mantle:Mantle:1.12-1.3.3.55"
+    deobfCompile "slimeknights:TConstruct:1.12.2-2.13.0.190"
 
-    compile ('com.sk89q.worldedit:worldedit-core:6.1.4-SNAPSHOT') {
+    deobfCompile ('com.sk89q.worldedit:worldedit-core:6.1.4-SNAPSHOT') {
         exclude group: 'com.google.code.gson'
         exclude group: 'com.google.guava'
     }

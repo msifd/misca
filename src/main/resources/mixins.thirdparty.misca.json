@@ -5,6 +5,7 @@
   "package": "msifeed.misca.mixins",
   "refmap": "misca.refmap.json",
   "mixins": [
+    "artisan.AWContainerMixin",
     "flan.ItemGunMixin",
     "tconstruct.BowCoreMixin",
     "tconstruct.CrossbowMixin",
