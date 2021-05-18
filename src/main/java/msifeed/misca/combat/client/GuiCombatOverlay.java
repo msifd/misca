@@ -53,6 +53,8 @@ public class GuiCombatOverlay {
         final int[] posX = {(resolution.getScaledWidth() - barFullWidth) / 2};
 
         state.getCombatants().forEach(entity -> {
+            if (entity == null) return;
+
             final int frameWidth = (int) (CombatantsBarRender.getEntityWidth(entity) * frame);
             CombatantsBarRender.renderModel(entity, posX[0], 0, frame, frameWidth);
             if (state.isStarted())

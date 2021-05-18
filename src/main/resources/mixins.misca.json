@@ -24,6 +24,7 @@
     "client.GuiChatMixin",
     "client.GuiIngameMixin",
     "client.RenderMixin",
-    "client.UnpackedBakedQuadMixin"
+    "client.UnpackedBakedQuadMixin",
+    "client.GuiScreenMixin"
   ]
 }
