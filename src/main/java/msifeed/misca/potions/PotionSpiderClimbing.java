@@ -17,10 +17,15 @@ public class PotionSpiderClimbing extends Potion {
         if (!entity.isPotionActive(OtherPotions.spiderClimbing)) return false;
         if (entity.motionY < -1) return false;
 
-        for (EnumFacing f : EnumFacing.HORIZONTALS) {
-            final BlockPos p = pos.offset(f);
-            if (!world.getBlockState(p).getBlock().isPassable(world, p))
-                return true;
+        if (entity.isSneaking()) {
+            for (EnumFacing f : EnumFacing.HORIZONTALS) {
+                final BlockPos p = pos.offset(f);
+                if (!world.getBlockState(p).getBlock().isPassable(world, p))
+                    return true;
+            }
+        } else {
+            final BlockPos p = pos.offset(entity.getHorizontalFacing());
+            return !world.getBlockState(p).getBlock().isPassable(world, p);
         }
 
         return false;
