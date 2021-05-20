@@ -1,7 +1,7 @@
 package msifeed.misca.regions;
 
 import msifeed.misca.MiscaPerms;
-import msifeed.misca.charstate.CharNeed;
+import msifeed.misca.charsheet.CharNeed;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;

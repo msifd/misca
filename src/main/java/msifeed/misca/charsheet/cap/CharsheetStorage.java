@@ -22,6 +22,8 @@ public class CharsheetStorage implements Capability.IStorage<ICharsheet> {
         instance.skills().writeNBT(Tag.skills, nbt);
         instance.effortPools().writeNBT(Tag.effortPools, nbt);
         instance.resources().writeNBT(Tag.resources, nbt);
+        instance.needsRest().writeNBT(Tag.needsRest, nbt);
+        instance.needsLost().writeNBT(Tag.needsLost, nbt);
 
         final NBTTagCompound potionsNbt = new NBTTagCompound();
         for (Map.Entry<Potion, Integer> entry : instance.potions().entrySet())
@@ -46,6 +48,8 @@ public class CharsheetStorage implements Capability.IStorage<ICharsheet> {
         instance.skills().readNBT(nbt, Tag.skills);
         instance.effortPools().readNBT(nbt, Tag.effortPools);
         instance.resources().readNBT(nbt, Tag.resources);
+        instance.needsRest().readNBT(nbt, Tag.needsRest);
+        instance.needsLost().readNBT(nbt, Tag.needsLost);
 
         instance.potions().clear();
         final NBTTagCompound potionsNbt = nbt.getCompoundTag(Tag.potions);
@@ -76,6 +80,8 @@ public class CharsheetStorage implements Capability.IStorage<ICharsheet> {
         private static final String skills = "skills";
         private static final String effortPools = "effortPools";
         private static final String resources = "Resources";
+        private static final String needsRest = "needsRest";
+        private static final String needsLost = "needsLost";
         private static final String potions = "potions";
         private static final String enchants = "enchants";
         private static final String updated = "updated";

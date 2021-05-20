@@ -1,6 +1,7 @@
 package msifeed.misca.charstate.handler;
 
 import msifeed.misca.Misca;
+import msifeed.misca.charsheet.CharNeed;
 import msifeed.misca.charstate.CharstateConfig;
 import net.minecraft.entity.ai.attributes.IAttribute;
 import net.minecraft.entity.ai.attributes.IAttributeInstance;
@@ -12,7 +13,7 @@ public class CorruptionHandler {
 
     public void handleTime(EntityPlayer player, long secs) {
         final CharstateConfig config = Misca.getSharedConfig().charstate;
-        final double lost = secs * config.corruptionLostPerSec;
+        final double lost = secs * config.corruptionLostPerSec * CharNeed.COR.lostFactor(player);
 
         final IAttributeInstance inst = player.getEntityAttribute(CORRUPTION);
         inst.setBaseValue(CORRUPTION.clampValue(inst.getBaseValue() - lost));

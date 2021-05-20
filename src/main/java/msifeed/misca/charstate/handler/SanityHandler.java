@@ -1,6 +1,7 @@
 package msifeed.misca.charstate.handler;
 
 import msifeed.misca.Misca;
+import msifeed.misca.charsheet.CharNeed;
 import msifeed.misca.charsheet.CharSkill;
 import msifeed.misca.charsheet.cap.CharsheetProvider;
 import msifeed.misca.charstate.CharstateConfig;
@@ -35,7 +36,7 @@ public class SanityHandler {
         final int light = player.world.getLight(player.getPosition(), false);
         final double sanPerSec = light < 7 ? config.sanityCostPerSecInDarkness : config.sanityCostPerSec;
         final double factor = Math.max(0, 1 + factorMod + CharsheetProvider.get(player).skills().get(CharSkill.survival) * config.survivalSkillNeedsLostFactor);
-        final double lost = secs * sanPerSec * factor;
+        final double lost = secs * sanPerSec * factor * CharNeed.SAN.lostFactor(player);
 
         final IAttributeInstance inst = player.getEntityAttribute(SANITY);
         inst.setBaseValue(SANITY.clampValue(inst.getBaseValue() - lost));
@@ -62,7 +63,7 @@ public class SanityHandler {
     public void handleDamage(EntityPlayer player, float amount) {
         final CharstateConfig config = Misca.getSharedConfig().charstate;
         final double factor = Math.max(0, 1 + CharsheetProvider.get(player).skills().get(CharSkill.survival) * config.survivalSkillNeedsLostFactor);
-        final double lost = amount * config.sanityCostPerDamage * factor;
+        final double lost = amount * config.sanityCostPerDamage * factor * CharNeed.SAN.lostFactor(player);
 
         final IAttributeInstance inst = player.getEntityAttribute(SANITY);
         inst.setBaseValue(SANITY.clampValue(inst.getBaseValue() - lost));
@@ -74,7 +75,7 @@ public class SanityHandler {
         final ItemFood item = (ItemFood) stack.getItem();
         final CharstateConfig config = Misca.getSharedConfig().charstate;
         final double factor = Math.max(0, 1 + config.foodRestMod(player));
-        final double restored = item.getHealAmount(stack) * config.sanityRestPerFood * factor;
+        final double restored = item.getHealAmount(stack) * config.sanityRestPerFood * factor * CharNeed.SAN.restFactor(player);
 
         final IAttributeInstance inst = player.getEntityAttribute(SANITY);
         inst.setBaseValue(SANITY.clampValue(inst.getBaseValue() + restored));
@@ -99,7 +100,7 @@ public class SanityHandler {
                     ? -(distance - threshold) / range
                     : 0;
             final double factor = Math.max(0, 1 + + factorMod + psychologyMod + distanceMod + config.foodRestMod(player));
-            final double restored = msg.length() * config.sanityRestPerSpeechChar * factor;
+            final double restored = msg.length() * config.sanityRestPerSpeechChar * factor * CharNeed.SAN.restFactor(player);
 
             final IAttributeInstance inst = player.getEntityAttribute(SANITY);
             inst.setBaseValue(SANITY.clampValue(inst.getBaseValue() + restored));

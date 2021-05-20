@@ -4,24 +4,27 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.MathHelper;
 
 import java.util.EnumMap;
+import java.util.Map;
 import java.util.stream.Stream;
 
 public class FloatContainer<K extends Enum<K>> implements Cloneable {
     private final EnumMap<K, Float> values;
 
     private final transient K[] keys;
+    private final transient float defaultValue;
     private final transient float min;
     private final transient float max;
 
-    public FloatContainer(Class<K> enumType, float min, float max) {
+    public FloatContainer(Class<K> enumType, float defaultValue, float min, float max) {
         this.values = new EnumMap<>(enumType);
         this.keys = enumType.getEnumConstants();
+        this.defaultValue = defaultValue;
         this.min = min;
         this.max = max;
     }
 
     public float get(K key) {
-        return values.getOrDefault(key, min);
+        return values.getOrDefault(key, defaultValue);
     }
 
     public void set(K key, float value) {
@@ -52,6 +55,10 @@ public class FloatContainer<K extends Enum<K>> implements Cloneable {
         final int[] arr = nbt.getIntArray(key);
         for (int i = 0; i < Math.min(arr.length, keys.length); i++)
             set(keys[i], Float.intBitsToFloat(arr[i]));
+    }
+
+    public Stream<Map.Entry<K, Float>> stream() {
+        return values.entrySet().stream();
     }
 
     @Override

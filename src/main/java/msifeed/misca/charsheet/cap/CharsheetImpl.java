@@ -1,9 +1,7 @@
 package msifeed.misca.charsheet.cap;
 
-import msifeed.misca.charsheet.CharEffort;
-import msifeed.misca.charsheet.CharResource;
-import msifeed.misca.charsheet.CharSkill;
-import msifeed.misca.charsheet.ICharsheet;
+import msifeed.misca.charsheet.*;
+import msifeed.sys.cap.FloatContainer;
 import msifeed.sys.cap.IntContainer;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.potion.Potion;
@@ -17,6 +15,8 @@ public class CharsheetImpl implements ICharsheet {
     private final IntContainer<CharSkill> skills = new IntContainer<>(CharSkill.class, 0, 25);
     private final IntContainer<CharEffort> effortPools = new IntContainer<>(CharEffort.class, 0, 50);
     private final IntContainer<CharResource> resources = new IntContainer<>(CharResource.class, 0, 1000);
+    private final FloatContainer<CharNeed> needsRest = new FloatContainer<>(CharNeed.class, 1, 0, 10);
+    private final FloatContainer<CharNeed> needsLost = new FloatContainer<>(CharNeed.class, 1, 0, 10);
     private final HashMap<Potion, Integer> potions = new HashMap<>();
     private final HashMap<Enchantment, Integer> enchants = new HashMap<>();
     private long lastUpdated = System.currentTimeMillis() / 1000;
@@ -60,6 +60,16 @@ public class CharsheetImpl implements ICharsheet {
     }
 
     @Override
+    public FloatContainer<CharNeed> needsRest() {
+        return needsRest;
+    }
+
+    @Override
+    public FloatContainer<CharNeed> needsLost() {
+        return needsLost;
+    }
+
+    @Override
     public Map<Potion, Integer> potions() {
         return potions;
     }
@@ -86,6 +96,7 @@ public class CharsheetImpl implements ICharsheet {
         skills.replaceWith(charsheet.skills());
         effortPools.replaceWith(charsheet.effortPools());
         resources.replaceWith(charsheet.resources());
+        needsRest.replaceWith(charsheet.needsRest());
         potions.clear();
         potions.putAll(charsheet.potions());
         enchants.clear();

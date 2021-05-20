@@ -1,6 +1,7 @@
 package msifeed.misca.charstate.handler;
 
 import msifeed.misca.Misca;
+import msifeed.misca.charsheet.CharNeed;
 import msifeed.misca.charsheet.CharSkill;
 import msifeed.misca.charsheet.cap.CharsheetProvider;
 import msifeed.misca.charstate.CharstateConfig;
@@ -21,7 +22,7 @@ public class IntegrityHandler {
     public void handleTime(EntityPlayer player, long secs, double factorMod) {
         final CharstateConfig config = Misca.getSharedConfig().charstate;
         final double factor = Math.max(0, 1 + factorMod + config.foodRestMod(player));
-        final double restored = secs * config.integrityRestPerSec * factor;
+        final double restored = secs * config.integrityRestPerSec * factor * CharNeed.INT.restFactor(player);
 
         final IAttributeInstance inst = player.getEntityAttribute(INTEGRITY);
         inst.setBaseValue(INTEGRITY.clampValue(inst.getBaseValue() + restored));
@@ -40,7 +41,7 @@ public class IntegrityHandler {
     public void handleDamage(EntityPlayer player, float amount) {
         final CharstateConfig config = Misca.getSharedConfig().charstate;
         final double factor = Math.max(0, 1 + CharsheetProvider.get(player).skills().get(CharSkill.survival) * config.survivalSkillNeedsLostFactor);
-        final double lost = amount * config.integrityCostPerDamage * factor;
+        final double lost = amount * config.integrityCostPerDamage * factor * CharNeed.INT.lostFactor(player);
 
         final IAttributeInstance inst = player.getEntityAttribute(INTEGRITY);
         inst.setBaseValue(INTEGRITY.clampValue(inst.getBaseValue() - lost));

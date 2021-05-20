@@ -6,7 +6,7 @@ import msifeed.sys.cap.FloatContainer;
 public class CharstateImpl implements ICharstate {
     private long updateTime;
     private long miningTime;
-    private final FloatContainer<CharEffort> efforts = new FloatContainer<>(CharEffort.class, 0, 50);
+    private final FloatContainer<CharEffort> efforts = new FloatContainer<>(CharEffort.class, 0, 0, 50);
 
     @Override
     public long getUpdateTime() {

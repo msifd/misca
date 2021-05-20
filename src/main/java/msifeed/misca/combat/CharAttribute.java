@@ -2,10 +2,10 @@ package msifeed.misca.combat;
 
 import msifeed.misca.Misca;
 import msifeed.misca.combat.rules.CombatantInfo;
-import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.attributes.IAttribute;
 import net.minecraft.entity.ai.attributes.RangedAttribute;
+import net.minecraft.util.text.translation.I18n;
 
 public enum CharAttribute {
     str, per, end, ref, agi, lck;
@@ -35,10 +35,10 @@ public enum CharAttribute {
     }
 
     public String tr() {
-        return I18n.format("enum.misca.attribute." + name());
+        return I18n.translateToLocal("enum.misca.attribute." + name());
     }
 
     public String trFull() {
-        return I18n.format("enum.misca.attribute.full." + name());
+        return I18n.translateToLocal("enum.misca.attribute.full." + name());
     }
 }

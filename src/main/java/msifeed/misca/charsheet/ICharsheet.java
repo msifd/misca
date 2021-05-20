@@ -1,6 +1,7 @@
 package msifeed.misca.charsheet;
 
 import msifeed.misca.Misca;
+import msifeed.sys.cap.FloatContainer;
 import msifeed.sys.cap.IntContainer;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.potion.Potion;
@@ -21,6 +22,8 @@ public interface ICharsheet extends Cloneable {
     IntContainer<CharSkill> skills();
     IntContainer<CharEffort> effortPools();
     IntContainer<CharResource> resources();
+    FloatContainer<CharNeed> needsRest();
+    FloatContainer<CharNeed> needsLost();
 
     Map<Potion, Integer> potions();
     Map<Enchantment, Integer> enchants();

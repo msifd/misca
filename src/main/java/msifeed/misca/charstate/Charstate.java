@@ -2,6 +2,7 @@ package msifeed.misca.charstate;
 
 import com.google.gson.reflect.TypeToken;
 import msifeed.misca.Misca;
+import msifeed.misca.charsheet.CharNeed;
 import msifeed.misca.charstate.cap.*;
 import msifeed.misca.charstate.client.CharstateHudHandler;
 import msifeed.misca.charstate.handler.*;

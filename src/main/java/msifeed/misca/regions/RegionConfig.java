@@ -1,6 +1,6 @@
 package msifeed.misca.regions;
 
-import msifeed.misca.charstate.CharNeed;
+import msifeed.misca.charsheet.CharNeed;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.Vec3d;
 

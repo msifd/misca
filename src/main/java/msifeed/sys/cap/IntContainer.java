@@ -4,6 +4,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.MathHelper;
 
 import java.util.EnumMap;
+import java.util.Map;
 import java.util.stream.Stream;
 
 public class IntContainer<K extends Enum<K>> implements Cloneable {
@@ -52,6 +53,10 @@ public class IntContainer<K extends Enum<K>> implements Cloneable {
         final int[] arr = nbt.getIntArray(key);
         for (int i = 0; i < Math.min(arr.length, keys.length); i++)
             set(keys[i], arr[i]);
+    }
+
+    public Stream<Map.Entry<K, Integer>> stream() {
+        return values.entrySet().stream();
     }
 
     @Override
