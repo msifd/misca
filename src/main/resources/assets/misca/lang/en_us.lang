@@ -59,6 +59,14 @@ enum.misca.attribute.full.ref=Рефлексы
 enum.misca.attribute.full.agi=Подвижность
 enum.misca.attribute.full.lck=Удача
 
+enum.misca.combat.event.hit=удар
+enum.misca.combat.event.critHit=крит. удар
+enum.misca.combat.event.evade=уклон
+enum.misca.combat.event.critEvade=крит. уклон
+enum.misca.combat.event.neutralDamage=нейтр. урон
+enum.misca.combat.event.magicBackfire=маг. отдача
+enum.misca.combat.event.death=умер
+
 gui.misca.submit=Применить
 
 gui.misca.efforts=Усилия %s
@@ -73,6 +81,7 @@ gui.misca.combat.finishTurn=Закончить ход
 gui.misca.combat.leaveQueue=Выйти из очереди
 gui.misca.combat.joinQueue=Вступить в очередь
 gui.misca.combat.init=Создать бой
+gui.misca.combat.train=Тренировка
 gui.misca.combat.start=Начать бой
 gui.misca.combat.add=Добавить ближайших
 gui.misca.combat.exit=Выйти из боя

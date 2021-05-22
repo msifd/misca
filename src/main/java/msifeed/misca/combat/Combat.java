@@ -14,8 +14,6 @@ import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 
 public class Combat {
-    public static final BattleManager MANAGER = new BattleManager();
-
     public static final SyncChannel<Rules> RULES
             = new SyncChannel<>(Misca.RPC, "combat_rules.json", TypeToken.get(Rules.class));
     public static final SyncChannel<WeaponRegistry> WEAPONS = new SyncChannel<>(
@@ -40,7 +38,7 @@ public class Combat {
     }
 
     public void init() {
-        MinecraftForge.EVENT_BUS.register(MANAGER);
+        MinecraftForge.EVENT_BUS.register(BattleManager.class);
         MinecraftForge.EVENT_BUS.register(new CombatHandler());
 
         Misca.RPC.register(new CombatantSync());
@@ -48,6 +46,7 @@ public class Combat {
         if (FMLCommonHandler.instance().getSide().isClient()) {
             CombatTheme.load();
             Misca.RPC.register(new BattleStateSync());
+            Misca.RPC.register(new CombatEventSync());
         }
     }
 }

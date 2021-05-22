@@ -17,20 +17,20 @@ import java.util.Iterator;
 import java.util.Map;
 
 public class BattleManager {
-    private final Map<Long, Battle> battles = new HashMap<>();
+    private static final Map<Long, Battle> battles = new HashMap<>();
 
     @Nullable
-    public Battle getEntityBattle(EntityLivingBase entity) {
+    public static Battle getEntityBattle(EntityLivingBase entity) {
         if (entity == null) return null;
         return getBattle(CombatantProvider.get(entity).getBattleId());
     }
 
     @Nullable
-    public Battle getBattle(long bid) {
+    public static Battle getBattle(long bid) {
         return battles.get(bid);
     }
 
-    public void initBattle(EntityPlayer player, boolean training) {
+    public static void initBattle(EntityPlayer player, boolean training) {
         if (getEntityBattle(player) != null) return;
 
         final Battle battle = new Battle(training);
@@ -39,12 +39,14 @@ public class BattleManager {
 
         final ICombatant com = CombatantProvider.get(player);
         com.setBattleId(battle.getId());
+        if (training)
+            com.setTrainingHealth(player.getHealth());
 
         CombatantSync.sync(player);
         BattleStateSync.sync(battle);
     }
 
-    public void startBattle(EntityPlayer player) {
+    public static void startBattle(EntityPlayer player) {
         final Battle battle = getEntityBattle(player);
         if (battle == null || battle.isStarted()) return;
 
@@ -57,13 +59,13 @@ public class BattleManager {
         }
     }
 
-    public void finishTurn(Battle battle) {
+    public static void finishTurn(Battle battle) {
         if (!battle.isTurnFinishing()) {
             BattleFlow.finishTurn(battle);
         }
     }
 
-    public boolean tryNextTurn(Battle battle) {
+    public static boolean tryNextTurn(Battle battle) {
         if (BattleFlow.selectNextLeader(battle)) {
             BattleFlow.prepareLeader(battle.getLeader());
             BattleStateSync.syncQueue(battle);
@@ -74,14 +76,14 @@ public class BattleManager {
         }
     }
 
-    public void repositionMembers(EntityLivingBase entity) {
+    public static void repositionMembers(EntityLivingBase entity) {
         final Battle battle = getEntityBattle(entity);
         if (battle == null) return;
 
         battle.getCombatants().forEach(BattleFlow::repositionCombatant);
     }
 
-    public void destroyBattle(Battle battle) {
+    public static void destroyBattle(Battle battle) {
         if (battle == null) return;
 
         battle.destroy();
@@ -91,12 +93,15 @@ public class BattleManager {
         System.out.println("battle destroyed " + battles.size());
     }
 
-    public void addToBattle(long bid, EntityLivingBase entity) {
+    public static void addToBattle(long bid, EntityLivingBase entity) {
         final Battle battle = getBattle(bid);
         if (battle == null) return;
 
         final ICombatant com = CombatantProvider.get(entity);
         if (com.isInBattle()) return;
+
+        if (battle.isTraining())
+            com.setTrainingHealth(entity.getHealth());
 
         battle.addMember(entity);
         if (battle.isStarted()) {
@@ -109,7 +114,7 @@ public class BattleManager {
         CombatantSync.sync(entity);
     }
 
-    public void joinQueue(long bid, EntityLivingBase entity) {
+    public static void joinQueue(long bid, EntityLivingBase entity) {
         final Battle battle = getBattle(bid);
         if (battle == null) return;
 
@@ -120,7 +125,7 @@ public class BattleManager {
         }
     }
 
-    public void leaveQueue(long bid, EntityLivingBase entity) {
+    public static void leaveQueue(long bid, EntityLivingBase entity) {
         final Battle battle = getBattle(bid);
         if (battle == null) return;
 
@@ -130,7 +135,7 @@ public class BattleManager {
         }
     }
 
-    public void exitBattle(EntityLivingBase entity) {
+    public static void exitBattle(EntityLivingBase entity) {
         final Battle battle = getEntityBattle(entity);
         if (battle == null) return;
 
@@ -159,7 +164,7 @@ public class BattleManager {
         }
     }
 
-    public void rejoinToBattle(EntityPlayerMP player) {
+    public static void rejoinToBattle(EntityPlayerMP player) {
         final ICombatant com = CombatantProvider.get(player);
         if (!com.isInBattle()) return;
 
@@ -176,7 +181,7 @@ public class BattleManager {
     }
 
     @SubscribeEvent
-    public void onTick(TickEvent.ServerTickEvent event) {
+    public static void onTick(TickEvent.ServerTickEvent event) {
         final Iterator<Battle> it = battles.values().iterator();
         while (it.hasNext()) {
             final Battle battle = it.next();
@@ -197,7 +202,7 @@ public class BattleManager {
     }
 
     @SubscribeEvent
-    public void onEntityJoinWorld(EntityJoinWorldEvent event) {
+    public static void onEntityJoinWorld(EntityJoinWorldEvent event) {
         if (!(event.getEntity() instanceof EntityLivingBase)) return;
         if (event.getEntity().world.isRemote) return;
 
@@ -215,7 +220,14 @@ public class BattleManager {
     }
 
     @SubscribeEvent
-    public void onLivingDeath(LivingDeathEvent event) {
-        exitBattle(event.getEntityLiving());
+    public static void onLivingDeath(LivingDeathEvent event) {
+        final Battle battle = getEntityBattle(event.getEntityLiving());
+        if (battle == null) return;
+
+        if (battle.isTraining()) {
+            event.setCanceled(true);
+        } else {
+            exitBattle(event.getEntityLiving());
+        }
     }
 }

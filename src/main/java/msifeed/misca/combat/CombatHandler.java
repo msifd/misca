@@ -2,6 +2,7 @@ package msifeed.misca.combat;
 
 import msifeed.misca.combat.battle.Battle;
 import msifeed.misca.combat.battle.BattleFlow;
+import msifeed.misca.combat.battle.BattleManager;
 import msifeed.misca.combat.cap.CombatantProvider;
 import msifeed.misca.combat.cap.CombatantSync;
 import msifeed.misca.combat.cap.ICombatant;
@@ -15,7 +16,6 @@ import net.minecraft.entity.projectile.EntityPotion;
 import net.minecraft.init.Items;
 import net.minecraft.item.EnumAction;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.DamageSource;
 import net.minecraft.util.EntityDamageSource;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
@@ -48,14 +48,14 @@ public class CombatHandler {
 
         final ICombatant com = CombatantProvider.get(entity);
         if (!com.isInBattle()) return;
-        final Battle battle = Combat.MANAGER.getBattle(com.getBattleId());
+        final Battle battle = BattleManager.getBattle(com.getBattleId());
         if (battle == null || !battle.isLeader(entity.getUniqueID())) return;
 
         final double movementAp = Combat.getRules().movementActionPoints(entity, com.getPosition(), entity.getPositionVector());
         if (com.getActionPoints() <= 0 || com.getActionPoints() < movementAp) {
             BattleFlow.consumeMovementAp(entity);
             CombatantSync.syncAp(entity);
-            Combat.MANAGER.finishTurn(battle);
+            BattleManager.finishTurn(battle);
         }
     }
 
@@ -140,13 +140,18 @@ public class CombatHandler {
                 event.setCanceled(true);
             }
 
-            if (!(actor instanceof EntityPlayer)) {
-                // Mobs cant finish their turn, so lets help them
-                final ICombatant com = CombatantProvider.get(actor);
-                final Battle battle = Combat.MANAGER.getBattle(com.getBattleId());
-                if (battle != null && battle.isLeader(actor.getUniqueID()))
-                    Combat.MANAGER.finishTurn(battle);
-            }
+            // Mobs cant finish their turn, so lets help them
+            final ICombatant com = CombatantProvider.get(actor);
+            final Battle battle = BattleManager.getBattle(com.getBattleId());
+            if (battle != null && battle.isLeader(actor.getUniqueID()))
+                BattleManager.finishTurn(battle);
+        }
+
+        if (BattleFlow.isApDepleted(actor, weapon)) {
+            final ICombatant com = CombatantProvider.get(actor);
+            final Battle battle = BattleManager.getBattle(com.getBattleId());
+            if (battle != null)
+                BattleManager.finishTurn(battle);
         }
     }
 
@@ -154,7 +159,7 @@ public class CombatHandler {
     public void onHurt(LivingHurtEvent event) {
         // Neutral damage has no rolls
         if (!(event.getSource() instanceof EntityDamageSource)) {
-            handleNeutralDamage(event);
+            CombatFlow.handleNeutralDamage(event);
             return;
         }
 
@@ -179,10 +184,10 @@ public class CombatHandler {
         if (CombatFlow.isAttackIgnored(damage)) {
             // Get weapon from source, not from actor
             final WeaponInfo weapon = Combat.getWeapons().get(source, source.getHeldItemMainhand());
-            CombatFlow.alterDamage(event, actor, weapon);
+            CombatFlow.alterDamage(event, source, actor, weapon);
         }
 
-        final Battle battle = Combat.MANAGER.getBattle(srcCom.getBattleId());
+        final Battle battle = BattleManager.getBattle(srcCom.getBattleId());
         CombatFlow.handleDeadlyAttack(event, event.getAmount(), victim, battle);
     }
 
@@ -197,35 +202,6 @@ public class CombatHandler {
             event.setAmount(event.getAmount() * Combat.getRules().damageFactor(source, victim, weapon));
         } else {
             event.setAmount(event.getAmount() * Combat.getRules().damageIncreaseFactor(source, weapon));
-        }
-    }
-
-    private void handleNeutralDamage(LivingHurtEvent event) {
-        final DamageSource src = event.getSource();
-        if (src.canHarmInCreative()) return;
-
-        final EntityLivingBase entity = event.getEntityLiving();
-        final ICombatant com = CombatantProvider.get(entity);
-        if (!com.isInBattle()) return;
-
-        final Battle battle = Combat.MANAGER.getBattle(com.getBattleId());
-        if (battle == null) return;
-
-        final boolean isLeader = battle.isLeader(entity.getUniqueID()); // Leader takes damage immediately
-
-        if (!isLeader && CombatFlow.canNotTakeDamage(battle.getLeader())) {
-            event.setCanceled(true);
-            return;
-        }
-
-        final float damageFactor = Combat.getRules().neutralDamageFactor(src);
-        event.setAmount(event.getAmount() * damageFactor);
-        if (!isLeader && CombatFlow.isAttackIgnored(src)) {
-            com.setNeutralDamage(com.getNeutralDamage() + event.getAmount());
-            CombatantSync.syncNeutralDamage(entity);
-            event.setCanceled(true);
-        } else {
-            CombatFlow.handleDeadlyAttack(event, event.getAmount(), event.getEntityLiving(), battle);
         }
     }
 

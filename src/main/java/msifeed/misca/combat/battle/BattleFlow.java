@@ -105,7 +105,7 @@ public class BattleFlow {
 //        leader.setPositionAndUpdate(pos.x, pos.y, pos.z);
         setMobAI(entity, true);
 
-        final Battle battle = Combat.MANAGER.getBattle(com.getBattleId());
+        final Battle battle = BattleManager.getBattle(com.getBattleId());
         if (battle != null) {
             battle.resetPotionUpdateTick(entity);
         }

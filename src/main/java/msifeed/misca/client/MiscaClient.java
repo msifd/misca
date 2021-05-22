@@ -28,7 +28,7 @@ public enum MiscaClient {
 
     public void init() {
         MinecraftForge.EVENT_BUS.register(this);
-        MinecraftForge.EVENT_BUS.register(new GuiCombatOverlay());
+        MinecraftForge.EVENT_BUS.register(GuiCombatOverlay.class);
 
         MiscaTheme.load();
         ClientRegistry.registerKeyBinding(charsheetKey);

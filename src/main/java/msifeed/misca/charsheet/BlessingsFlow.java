@@ -3,6 +3,7 @@ package msifeed.misca.charsheet;
 import msifeed.misca.charsheet.cap.CharsheetProvider;
 import msifeed.misca.combat.Combat;
 import msifeed.misca.combat.battle.Battle;
+import msifeed.misca.combat.battle.BattleManager;
 import msifeed.misca.combat.battle.BattleStateClient;
 import msifeed.misca.combat.cap.CombatantProvider;
 import msifeed.misca.combat.cap.ICombatant;
@@ -26,7 +27,7 @@ public class BlessingsFlow {
 
         final Battle battle = self.world.isRemote
                 ? BattleStateClient.STATE
-                : Combat.MANAGER.getBattle(com.getBattleId());
+                : BattleManager.getBattle(com.getBattleId());
 
         return battle == null || battle.shouldUpdatePotions(self);
     }

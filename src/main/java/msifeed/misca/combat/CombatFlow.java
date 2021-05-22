@@ -2,6 +2,7 @@ package msifeed.misca.combat;
 
 import msifeed.misca.combat.battle.Battle;
 import msifeed.misca.combat.battle.BattleFlow;
+import msifeed.misca.combat.battle.BattleManager;
 import msifeed.misca.combat.battle.BattleStateSync;
 import msifeed.misca.combat.cap.CombatantProvider;
 import msifeed.misca.combat.cap.CombatantSync;
@@ -34,7 +35,7 @@ public class CombatFlow {
         final ICombatant srcCom = CombatantProvider.get(entity);
         if (!srcCom.isInBattle()) return null;
 
-        final Battle battle = Combat.MANAGER.getBattle(srcCom.getBattleId());
+        final Battle battle = BattleManager.getBattle(srcCom.getBattleId());
         if (battle == null) return null;
 
         if (srcCom.hasPuppet()) {
@@ -52,7 +53,7 @@ public class CombatFlow {
         final ICombatant com = CombatantProvider.get(actor);
         if (!com.isInBattle()) return true;
 
-        final Battle battle = Combat.MANAGER.getBattle(com.getBattleId());
+        final Battle battle = BattleManager.getBattle(com.getBattleId());
         if (battle == null) return true;
 
         if (!battle.isLeader(actor.getUniqueID())) return false;
@@ -76,7 +77,7 @@ public class CombatFlow {
         final ICombatant com = CombatantProvider.get(actor);
         if (!com.isInBattle()) return true;
 
-        final Battle battle = Combat.MANAGER.getBattle(com.getBattleId());
+        final Battle battle = BattleManager.getBattle(com.getBattleId());
         if (battle == null) return true;
 
         return battle.isLeader(actor.getUniqueID());
@@ -86,14 +87,22 @@ public class CombatFlow {
         final ICombatant com = CombatantProvider.get(actor);
         if (!com.isInBattle()) return true;
 
-        final Battle battle = Combat.MANAGER.getBattle(com.getBattleId());
+        final Battle battle = BattleManager.getBattle(com.getBattleId());
         if (battle == null) return true;
 
         if (!battle.isLeader(actor.getUniqueID())) return false;
         if (battle.isTurnFinishing()) return false;
 
         final double attackAp = Combat.getRules().attackActionPoints(actor, weapon);
-        return BattleFlow.isEnoughAp(actor, CombatantProvider.get(actor), attackAp);
+        if (BattleFlow.isEnoughAp(actor, CombatantProvider.get(actor), attackAp)) {
+            return true;
+        } else {
+            if (BattleFlow.isApDepleted(actor, weapon)) {
+                BattleManager.finishTurn(battle);
+            }
+
+            return false;
+        }
     }
 
     public static void onAttack(EntityLivingBase actor, WeaponInfo weapon) {
@@ -102,13 +111,6 @@ public class CombatFlow {
         BattleFlow.consumeActionAp(actor, weapon);
         BattleFlow.consumeMovementAp(actor);
         CombatantSync.syncAp(actor);
-
-        if (BattleFlow.isApDepleted(actor, weapon)) {
-            final ICombatant com = CombatantProvider.get(actor);
-            final Battle battle = Combat.MANAGER.getBattle(com.getBattleId());
-            if (battle != null)
-                Combat.MANAGER.finishTurn(battle);
-        }
     }
 
     // Damage
@@ -134,7 +136,7 @@ public class CombatFlow {
      */
     public static boolean attackEvaded = false;
 
-    public static void alterDamage(LivingHurtEvent event, EntityLivingBase actor, WeaponInfo weapon) {
+    public static void alterDamage(LivingHurtEvent event, EntityLivingBase source, EntityLivingBase actor, WeaponInfo weapon) {
         final float damageAmount = event.getAmount() + weapon.dmg;
         if (damageAmount <= 0) {
             event.setCanceled(true);
@@ -146,20 +148,29 @@ public class CombatFlow {
         final CombatantInfo vicInfo = new CombatantInfo(victim);
         final Rules rules = Combat.getRules();
 
+        final Battle battle = BattleManager.getBattle(CombatantProvider.get(source).getBattleId());
+        if (battle == null) return;
+
         final Rules.AttackResult result = rules.rollAttack(actInfo, vicInfo);
         if (result.isSuccessful()) {
             float damageFactor = rules.damageFactor(actor, victim, weapon);
 
             if (result.isCritHit()) {
                 damageFactor += 1;
+                CombatEventSync.send(battle, actor, CombatEvent.critHit);
             } else if (rules.isCloseRangeMagic(actInfo, victim) && Dices.check(rules.magicCloseRangeSpreadChance)) {
                 final float selfDamage = damageAmount * rules.damageFactor(actor, actor, weapon);
                 actor.attackEntityFrom(event.getSource(), selfDamage);
+                CombatEventSync.send(battle, actor, CombatEvent.magicBackfire);
 
                 if (Dices.check(rules.magicCloseRangeMissChance)) {
                     damageFactor = 0;
                     event.setCanceled(true);
+                } else {
+                    CombatEventSync.send(battle, actor, CombatEvent.hit);
                 }
+            } else {
+                CombatEventSync.send(battle, actor, CombatEvent.hit);
             }
 
             event.setAmount(damageAmount * damageFactor);
@@ -171,14 +182,45 @@ public class CombatFlow {
                 final DamageSource ds = new EntityDamageSource(CRIT_EVASION_DAMAGE_TYPE, victim);
                 final float selfDamage = damageAmount * rules.damageFactor(actor, actor, weapon);
                 actor.attackEntityFrom(ds, selfDamage);
+                CombatEventSync.send(battle, victim, CombatEvent.critEvade);
+            } else {
+                CombatEventSync.send(battle, victim, CombatEvent.evade);
             }
         }
     }
 
-    public static void handleDeadlyAttack(Event event, float amount, EntityLivingBase entity, Battle battle) {
-        if (!(entity instanceof EntityPlayer)) return;
+    public static void handleNeutralDamage(LivingHurtEvent event) {
+        final DamageSource src = event.getSource();
+        if (src.canHarmInCreative()) return;
 
-        final EntityPlayer victim = (EntityPlayer) entity;
+        final EntityLivingBase entity = event.getEntityLiving();
+        final ICombatant com = CombatantProvider.get(entity);
+        if (!com.isInBattle()) return;
+
+        final Battle battle = BattleManager.getBattle(com.getBattleId());
+        if (battle == null) return;
+
+        final boolean isLeader = battle.isLeader(entity.getUniqueID()); // Leader takes damage immediately
+
+        if (!isLeader && canNotTakeDamage(battle.getLeader())) {
+            event.setCanceled(true);
+            return;
+        }
+
+        final float damageFactor = Combat.getRules().neutralDamageFactor(src);
+        event.setAmount(event.getAmount() * damageFactor);
+
+        if (!isLeader && isAttackIgnored(src)) {
+            com.setNeutralDamage(com.getNeutralDamage() + event.getAmount());
+            CombatantSync.syncNeutralDamage(entity);
+            event.setCanceled(true);
+            CombatEventSync.send(battle, entity, CombatEvent.neutralDamage);
+        } else {
+            handleDeadlyAttack(event, event.getAmount(), event.getEntityLiving(), battle);
+        }
+    }
+
+    public static void handleDeadlyAttack(Event event, float amount, EntityLivingBase victim, Battle battle) {
         final double armorToughness = victim.getEntityAttribute(SharedMonsterAttributes.ARMOR_TOUGHNESS).getAttributeValue();
         final float damage = CombatRules.getDamageAfterAbsorb(amount, victim.getTotalArmorValue(), (float) armorToughness);
 
@@ -190,16 +232,17 @@ public class CombatFlow {
 
         if (battle.isTraining()) {
             victim.setHealth(CombatantProvider.get(victim).getTrainingHealth());
-
-            victim.sendStatusMessage(new TextComponentString("u dead"), false);
-            victim.inventory.damageArmor(damage);
+            if (victim instanceof EntityPlayer)
+                ((EntityPlayer) victim).inventory.damageArmor(damage);
         } else {
             victim.setHealth(0.5f);
 
             if (battle.isLeader(victim.getUniqueID()))
-                Combat.MANAGER.finishTurn(battle);
+                BattleManager.finishTurn(battle);
             battle.removeFromQueue(victim.getUniqueID());
             BattleStateSync.syncQueue(battle);
         }
+
+        CombatEventSync.send(battle, victim, CombatEvent.death);
     }
 }

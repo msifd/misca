@@ -2,6 +2,7 @@ package msifeed.misca.combat.cap;
 
 import msifeed.misca.combat.CharAttribute;
 import msifeed.misca.combat.Combat;
+import msifeed.misca.combat.battle.BattleManager;
 import msifeed.misca.rolls.Dices;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -36,21 +37,21 @@ public class CombatantEventHandler {
     public void onPlayerSpawn(EntityJoinWorldEvent event) {
         if (event.getWorld().isRemote) return;
         if (event.getEntity() instanceof EntityPlayerMP) {
-            Combat.MANAGER.rejoinToBattle((EntityPlayerMP) event.getEntity());
+            BattleManager.rejoinToBattle((EntityPlayerMP) event.getEntity());
         }
     }
 
     @SubscribeEvent
     public void onPlayerRespawn(PlayerEvent.PlayerRespawnEvent event) {
         if (!event.player.world.isRemote) {
-            Combat.MANAGER.exitBattle(event.player);
+            BattleManager.exitBattle(event.player);
         }
     }
 
     @SubscribeEvent
     public void onPlayerChangeDim(PlayerEvent.PlayerChangedDimensionEvent event) {
         if (!event.player.world.isRemote) {
-            Combat.MANAGER.exitBattle(event.player);
+            BattleManager.exitBattle(event.player);
         }
     }
 

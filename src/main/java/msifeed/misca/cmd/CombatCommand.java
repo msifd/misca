@@ -1,7 +1,6 @@
 package msifeed.misca.cmd;
 
 import msifeed.misca.MiscaPerms;
-import msifeed.misca.combat.Combat;
 import msifeed.misca.combat.battle.Battle;
 import msifeed.misca.combat.battle.BattleManager;
 import msifeed.misca.combat.cap.CombatantProvider;
@@ -43,7 +42,7 @@ public class CombatCommand extends CommandBase {
     @Override
     public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender, String[] args, @Nullable BlockPos targetPos) {
         final EntityPlayer player = (EntityPlayer) sender;
-        final Battle battle = Combat.MANAGER.getEntityBattle(player);
+        final Battle battle = BattleManager.getEntityBattle(player);
 
         if (args.length == 1) {
             if (battle == null)
@@ -77,7 +76,7 @@ public class CombatCommand extends CommandBase {
         final EntityPlayerMP player = (EntityPlayerMP) sender;
 
         if (args.length == 0) {
-            final Battle battle = Combat.MANAGER.getEntityBattle(player);
+            final Battle battle = BattleManager.getEntityBattle(player);
             if (battle == null) return;
 
             final List<String> queue = battle.getQueue().stream()
@@ -98,28 +97,22 @@ public class CombatCommand extends CommandBase {
             return;
         }
 
-        final BattleManager manager = Combat.MANAGER;
         final ICombatant com = CombatantProvider.get(player);
 
         switch (args[0]) {
             default:
                 player.sendStatusMessage(new TextComponentString("unknown command"), true);
                 break;
-            case "q":
-                // quick start for testing
-                manager.initBattle(player, args.length > 1);
-                add(player, com);
-                manager.startBattle(player);
             case "init":
-                manager.initBattle(player, args.length > 1);
+                BattleManager.initBattle(player, args.length > 1);
                 player.sendStatusMessage(new TextComponentString("init"), true);
                 break;
             case "start":
-                manager.startBattle(player);
+                BattleManager.startBattle(player);
                 player.sendStatusMessage(new TextComponentString("start"), true);
                 break;
             case "exit":
-                manager.exitBattle(player);
+                BattleManager.exitBattle(player);
                 player.sendStatusMessage(new TextComponentString("exit"), true);
                 break;
             case "add":
@@ -128,35 +121,35 @@ public class CombatCommand extends CommandBase {
                 break;
             case "next": {
                 if (!com.isInBattle()) break;
-                final Battle battle = manager.getBattle(com.getBattleId());
+                final Battle battle = BattleManager.getBattle(com.getBattleId());
                 if (battle == null) break;
                 if (!battle.isLeader(player.getUniqueID()) && !MiscaPerms.isGameMaster(sender)) break;
-                manager.finishTurn(battle);
+                BattleManager.finishTurn(battle);
                 player.sendStatusMessage(new TextComponentString("next"), true);
                 break;
             }
             case "join":
                 if (!com.isInBattle()) break;
-                manager.joinQueue(com.getBattleId(), player);
+                BattleManager.joinQueue(com.getBattleId(), player);
                 break;
             case "leave":
                 if (!com.isInBattle()) break;
-                manager.leaveQueue(com.getBattleId(), player);
+                BattleManager.leaveQueue(com.getBattleId(), player);
                 break;
             case "pos":
                 if (!MiscaPerms.isGameMaster(sender)) break;
-                manager.repositionMembers(player);
+                BattleManager.repositionMembers(player);
                 break;
             case "destroy":
                 if (!com.isInBattle()) break;
-                manager.destroyBattle(manager.getBattle(com.getBattleId()));
+                BattleManager.destroyBattle(BattleManager.getBattle(com.getBattleId()));
                 player.sendStatusMessage(new TextComponentString("destroy"), true);
                 break;
             case "pup": {
                 if (!MiscaPerms.isGameMaster(sender)) break;
                 if (!com.isInBattle()) break;
 
-                final Battle battle = manager.getBattle(com.getBattleId());
+                final Battle battle = BattleManager.getBattle(com.getBattleId());
                 if (battle == null) break;
 
                 if (args.length >= 2) {
@@ -192,7 +185,7 @@ public class CombatCommand extends CommandBase {
                 .filter(e -> e instanceof EntityLivingBase)
                 .map(e -> (EntityLivingBase) e)
                 .forEach(e -> {
-                    Combat.MANAGER.addToBattle(com.getBattleId(), e);
+                    BattleManager.addToBattle(com.getBattleId(), e);
                     player.sendStatusMessage(new TextComponentString("combat add " + e.getName()), false);
                 });
     }

@@ -7,6 +7,10 @@ import msifeed.misca.charstate.cap.*;
 import msifeed.misca.charstate.client.CharstateHudHandler;
 import msifeed.misca.charstate.handler.*;
 import msifeed.misca.chatex.SpeechEvent;
+import msifeed.misca.combat.battle.Battle;
+import msifeed.misca.combat.battle.BattleManager;
+import msifeed.misca.combat.cap.CombatantProvider;
+import msifeed.misca.combat.cap.ICombatant;
 import msifeed.misca.regions.RegionControl;
 import msifeed.sys.sync.SyncChannel;
 import net.minecraft.entity.EntityLivingBase;
@@ -132,6 +136,13 @@ public enum Charstate {
         if (!(event.getEntity() instanceof EntityPlayer)) return;
 
         final EntityPlayer player = (EntityPlayer) event.getEntityLiving();
+        final ICombatant com = CombatantProvider.get(player);
+        if (com.isInBattle()) {
+            final Battle battle = BattleManager.getBattle(com.getBattleId());
+            if (battle != null && battle.isTraining())
+                return;
+        }
+
         final float amount = Math.min(player.getHealth(), event.getAmount());
 
         integrityHandler.handleDamage(player, amount);

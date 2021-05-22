@@ -1,8 +1,8 @@
 package msifeed.misca.combat.client;
 
-import msifeed.mellow.render.RenderUtils;
 import msifeed.misca.client.MiscaConfig;
 import msifeed.misca.combat.Combat;
+import msifeed.misca.combat.CombatEvent;
 import msifeed.misca.combat.CombatFlow;
 import msifeed.misca.combat.battle.Battle;
 import msifeed.misca.combat.battle.BattleStateClient;
@@ -12,6 +12,7 @@ import msifeed.misca.combat.rules.Rules;
 import msifeed.misca.combat.rules.WeaponInfo;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.entity.RenderManager;
@@ -23,32 +24,53 @@ import net.minecraftforge.client.event.RenderLivingEvent;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
+import java.util.ArrayList;
+import java.util.Comparator;
+
 public class GuiCombatOverlay {
+    private static final long COUNTER_RESET_MS = 3000;
+    private static final ArrayList<TimedEvent> events = new ArrayList<>();
+
+    public static void postEvent(TimedEvent te) {
+        final TimedEvent existing = events.stream()
+                .filter(e -> e.who.equals(te.who) && e.isMe == te.isMe && e.event == te.event)
+                .findAny()
+                .orElse(null);
+
+        if (existing != null) {
+            existing.start = te.start;
+            existing.count += 1;
+        } else {
+            events.add(te);
+        }
+
+        events.sort(Comparator.comparing(e -> e.start));
+    }
+
     @SubscribeEvent
-    public void onRenderOverlay(RenderGameOverlayEvent.Post event) {
+    public static void onRenderOverlay(RenderGameOverlayEvent.Post event) {
         if (event.getType() != RenderGameOverlayEvent.ElementType.ALL) return;
 
         final EntityPlayer player = Minecraft.getMinecraft().player;
         if (!CombatantProvider.get(player).isInBattle()) return;
 
-        drawHud();
+        drawTopHud(event.getResolution());
+        drawEvents(event.getResolution());
 
         if (MiscaConfig.combatDebug) {
             drawDebugInfo();
         }
     }
 
-    private void drawHud() {
+    private static void drawTopHud(ScaledResolution resolution) {
         final Battle state = BattleStateClient.STATE;
 
-        final ScaledResolution resolution = RenderUtils.getScaledResolution();
         final int frame = 32;
         final int gap = 2;
         final int barFullWidth = (int) state.getCombatants()
                 .mapToDouble(CombatantsBarRender::getEntityWidth)
                 .map(val -> val * frame + gap)
                 .sum();
-
 
         final int[] posX = {(resolution.getScaledWidth() - barFullWidth) / 2};
 
@@ -62,6 +84,34 @@ public class GuiCombatOverlay {
 
             posX[0] += frameWidth + gap;
         });
+    }
+
+    private static void drawEvents(ScaledResolution resolution) {
+        final long now = Minecraft.getSystemTime();
+        events.removeIf(c -> now - c.start > COUNTER_RESET_MS);
+
+        final FontRenderer fr = Minecraft.getMinecraft().fontRenderer;
+
+        GlStateManager.enableBlend();
+        GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
+
+        int yPos = resolution.getScaledHeight() - 50;
+        for (TimedEvent e : events) {
+            final boolean isGood = e.event.isGood(e.isMe);
+            final String msg = e.who + ' ' + e.event.tr()
+                    + (e.count > 1 ? " x" + e.count : "");
+
+            final int width = fr.getStringWidth(msg);
+            int xPos = resolution.getScaledWidth() - width - 1;
+
+            GuiScreen.drawRect(xPos - 1, yPos - 2, xPos + width + 1, yPos + fr.FONT_HEIGHT + 1, 0x99000000);
+
+            final int color = isGood ? 0xff11ff11 : 0xffff1111;
+            fr.drawString(msg, xPos, yPos, color);
+            yPos -= fr.FONT_HEIGHT + 3;
+        }
+
+        GlStateManager.disableBlend();
     }
 
     private static void drawDebugInfo() {
@@ -82,7 +132,7 @@ public class GuiCombatOverlay {
 
         final String[] lines = {
                 "actor: " + (CombatantProvider.get(self).hasPuppet() ? "\u00A74" : "") + actor.getName(),
-                "health: " + String.format("%.2f/%.2f", actor.getHealth(), actor.getMaxHealth()),
+                "health: " + String.format("%.2f/%.2f train hp: %.2f", actor.getHealth(), actor.getMaxHealth(), com.getTrainingHealth()),
                 "neutral dmg: " + com.getNeutralDamage(),
                 "----",
                 "AP: " + String.format("%.2f; SPENT: %.2f; OVERHEAD: %.2f", com.getActionPoints(), com.getActionPointsSpent(), overheadAp),
@@ -106,7 +156,7 @@ public class GuiCombatOverlay {
     }
 
     @SubscribeEvent
-    public void onRenderOverlay(RenderWorldLastEvent event) {
+    public static void onRenderOverlay(RenderWorldLastEvent event) {
         final EntityPlayer player = Minecraft.getMinecraft().player;
         final ICombatant com = CombatantProvider.get(player);
         if (!com.isInBattle()) return;
@@ -115,7 +165,7 @@ public class GuiCombatOverlay {
     }
 
     @SubscribeEvent
-    public void onRenderEntity(RenderLivingEvent.Post<EntityLivingBase> event) {
+    public static void onRenderEntity(RenderLivingEvent.Post<EntityLivingBase> event) {
         final EntityPlayer self = Minecraft.getMinecraft().player;
         final EntityLivingBase entity = event.getEntity();
         if (self == entity) return;
@@ -153,5 +203,13 @@ public class GuiCombatOverlay {
         GlStateManager.enableLighting();
 
         GlStateManager.popMatrix();
+    }
+
+    public static class TimedEvent {
+        public String who;
+        public boolean isMe;
+        public CombatEvent event;
+        public long start = Minecraft.getSystemTime();
+        public int count = 1;
     }
 }

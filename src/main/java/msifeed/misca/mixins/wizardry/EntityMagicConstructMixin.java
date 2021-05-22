@@ -3,6 +3,7 @@ package msifeed.misca.mixins.wizardry;
 import electroblob.wizardry.entity.construct.EntityMagicConstruct;
 import msifeed.misca.combat.Combat;
 import msifeed.misca.combat.battle.Battle;
+import msifeed.misca.combat.battle.BattleManager;
 import msifeed.misca.combat.battle.BattleStateClient;
 import msifeed.misca.combat.cap.CombatantProvider;
 import msifeed.misca.combat.cap.ICombatant;
@@ -31,7 +32,7 @@ public abstract class EntityMagicConstructMixin {
 
         final Battle battle = entity.world.isRemote
                 ? BattleStateClient.STATE
-                : Combat.MANAGER.getBattle(com.getBattleId());
+                : BattleManager.getBattle(com.getBattleId());
         if (battle == null) return;
 
         if (!battle.shouldUpdatePotions(entity)) {

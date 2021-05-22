@@ -54,6 +54,7 @@ public class ScreenCombat extends MellowScreen {
                     .when(inQueue, ui -> ui.add(makeButton("leaveQueue", "leave")).below())
                     .when(notInQueue, ui -> ui.add(makeButton("joinQueue", "join")).below())
                     .when(!inBattle, ui -> ui.add(makeButton("init", "init")).below())
+                    .when(!inBattle, ui -> ui.add(makeButton("train", "init train")).below())
                     .when(canStart, ui -> ui.add(makeButton("start", "start")).below())
                     .when(inBattle, ui -> ui.add(makeButton("add", "add")).below())
                     .moveGroup(0, 10, 0)
