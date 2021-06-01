@@ -14,20 +14,7 @@ public class BattleStateClient {
     public static final Battle STATE = new Battle(false);
 
     public static void updateMembers(Set<UUID> newMembers) {
-        final World world = Minecraft.getMinecraft().world;
-
-        for (UUID uuid : newMembers) {
-            final EntityLivingBase currEntity = STATE.getMember(uuid);
-            if (currEntity != null) continue;
-
-            // Lookup entity
-            world.loadedEntityList.stream()
-                    .filter(entity -> entity instanceof EntityLivingBase)
-                    .filter(entity -> entity.getUniqueID().equals(uuid))
-                    .findAny()
-                    .map(entity -> (EntityLivingBase) entity)
-                    .ifPresent(STATE::addMember);
-        }
+        newMembers.forEach(BattleStateClient::addMemberByUuid);
 
         // Cleanup removed members
         STATE.getMembers().entrySet().removeIf(e -> !newMembers.contains(e.getKey()));
@@ -38,10 +25,30 @@ public class BattleStateClient {
         STATE.getQueue().addAll(newQueue);
         STATE.setFinishTurnDelay(0);
 
+        checkMissingMembers();
+
         final EntityLivingBase leader = STATE.getLeader();
         if (leader != null) {
             STATE.resetPotionUpdateTick(leader);
         }
+    }
+
+    public static void checkMissingMembers() {
+        // Find missing entities
+        STATE.getMembers().forEach((uuid, ref) -> {
+            if (ref.get() == null)
+                addMemberByUuid(uuid);
+        });
+    }
+
+    private static void addMemberByUuid(UUID uuid) {
+        final World world = Minecraft.getMinecraft().world;
+        world.loadedEntityList.stream()
+                .filter(entity -> entity instanceof EntityLivingBase)
+                .filter(entity -> entity.getUniqueID().equals(uuid))
+                .findAny()
+                .map(entity -> (EntityLivingBase) entity)
+                .ifPresent(STATE::addMember);
     }
 
     public static void updateFinishDelay(long finishDelay) {
