@@ -88,8 +88,7 @@ public class StaminaHandler {
         final CharstateConfig config = Misca.getSharedConfig().charstate;
         final Map<Item, Integer> uniqueIngredients = new HashMap<>();
 
-        final int size = end - start;
-        for (int i = 0; i < size; i++) {
+        for (int i = start; i < end; i++) {
             final ItemStack stack = stacks.get(i);
             if (!stack.isEmpty())
                 uniqueIngredients.compute(stack.getItem(), (k, v) -> (v == null ? 1 : v + 1));
