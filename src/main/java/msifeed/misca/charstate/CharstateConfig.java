@@ -32,6 +32,9 @@ public class CharstateConfig {
     public float workSkillMiningSpeedFactor = 0.33f;
     public float workSkillCraftCostFactor = -0.02f;
 
+    public double researchSkillFreeCraftChance = 0.1;
+    public double researchSkillRestoreIngredientChance = 0.05;
+
     public int ordIncreaseAmount = 2;
     public long ordIncreaseIntervalSec = 24 * 60 * 60;
     public long ordIncreaseMaxWindowSec = 7 * 24 * 60 * 60;

@@ -164,8 +164,6 @@ public enum Charstate {
 
     @SubscribeEvent
     public void onItemCrafted(net.minecraftforge.fml.common.gameevent.PlayerEvent.ItemCraftedEvent event) {
-        if (event.player.world.isRemote) return;
-
         staminaHandler.handleCrafting(event);
     }
 

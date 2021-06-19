@@ -7,11 +7,14 @@ import msifeed.misca.charsheet.ICharsheet;
 import msifeed.misca.charsheet.cap.CharsheetProvider;
 import msifeed.misca.charstate.CharstateConfig;
 import msifeed.misca.charstate.cap.CharstateProvider;
+import msifeed.misca.charstate.cap.CharstateSync;
 import msifeed.misca.charstate.cap.ICharstate;
+import msifeed.misca.rolls.Dices;
 import net.minecraft.entity.ai.attributes.IAttribute;
 import net.minecraft.entity.ai.attributes.IAttributeInstance;
 import net.minecraft.entity.ai.attributes.RangedAttribute;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -66,9 +69,35 @@ public class StaminaHandler {
     }
 
     public void handleCrafting(net.minecraftforge.fml.common.gameevent.PlayerEvent.ItemCraftedEvent event) {
-        final double lost = getCraftCost(event.player, getCraftIngredients(event.craftMatrix));
-        final IAttributeInstance inst = event.player.getEntityAttribute(STAMINA);
-        inst.setBaseValue(STAMINA.clampValue(inst.getBaseValue() - lost));
+        final EntityPlayer player = event.player;
+        final CharstateConfig config = Misca.getSharedConfig().charstate;
+        final ICharstate state = CharstateProvider.get(player);
+
+        final int researchLevel = CharSkill.research.get(player);
+        final double restoreChance = researchLevel * config.researchSkillRestoreIngredientChance;
+        for (int i = 0; i < event.craftMatrix.getSizeInventory(); i++) {
+            final ItemStack stack = event.craftMatrix.getStackInSlot(i);
+            if (stack.getCount() == stack.getMaxStackSize())
+                continue;
+            final long nonce = state.nonce() + player.getEntityId(); // Mix in player id to make random more personal
+            if (Dices.checkWithNonce(nonce, restoreChance))
+                stack.grow(1);
+            state.incNonce();
+        }
+
+        if (!player.world.isRemote) {
+            CharstateSync.syncNonce((EntityPlayerMP) player);
+
+            final double freeChance = researchLevel * config.researchSkillFreeCraftChance;
+            if (Dices.check(freeChance)) {
+                // Free craft!
+                return;
+            }
+
+            final double lost = getCraftCost(player, getCraftIngredients(event.craftMatrix));
+            final IAttributeInstance inst = player.getEntityAttribute(STAMINA);
+            inst.setBaseValue(STAMINA.clampValue(inst.getBaseValue() - lost));
+        }
     }
 
     public static int getCraftIngredients(IInventory matrix) {

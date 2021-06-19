@@ -30,5 +30,9 @@ public interface ICharstate {
 
     FloatContainer<CharEffort> efforts();
 
+    int nonce();
+    void incNonce();
+    void setNonce(int value);
+
     void replaceWith(ICharstate other);
 }
