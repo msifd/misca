@@ -2,6 +2,7 @@ package msifeed.misca.charstate.cap;
 
 import msifeed.misca.Misca;
 import msifeed.misca.charsheet.CharEffort;
+import msifeed.misca.charsheet.CharNeed;
 import msifeed.sys.cap.FloatContainer;
 import net.minecraft.util.ResourceLocation;
 
@@ -33,6 +34,8 @@ public interface ICharstate {
     int nonce();
     void incNonce();
     void setNonce(int value);
+
+    FloatContainer<CharNeed> tolerances();
 
     void replaceWith(ICharstate other);
 }

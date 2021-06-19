@@ -1,7 +1,6 @@
 package msifeed.misca.combat.cap;
 
 import msifeed.misca.combat.CharAttribute;
-import msifeed.misca.combat.Combat;
 import msifeed.misca.combat.battle.BattleManager;
 import msifeed.misca.rolls.Dices;
 import net.minecraft.entity.Entity;

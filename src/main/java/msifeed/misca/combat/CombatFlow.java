@@ -17,7 +17,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.CombatRules;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EntityDamageSource;
-import net.minecraft.util.text.TextComponentString;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.fml.common.eventhandler.Event;
 

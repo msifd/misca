@@ -1,6 +1,7 @@
 package msifeed.misca.potions;
 
 import msifeed.misca.Misca;
+import msifeed.misca.charsheet.CharNeed;
 import msifeed.misca.charstate.handler.CorruptionHandler;
 import msifeed.misca.charstate.handler.IntegrityHandler;
 import msifeed.misca.charstate.handler.SanityHandler;
@@ -11,17 +12,17 @@ import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 public class NeedsPotions {
-    public static final Potion RESTORE_INT = instant(IntegrityHandler.INTEGRITY, "restoreIntegrity", 5);
+    public static final Potion RESTORE_INT = instantDrug(CharNeed.INT, IntegrityHandler.INTEGRITY, "restoreIntegrity", 5);
     public static final Potion DAMAGE_INT = instant(IntegrityHandler.INTEGRITY, "damageIntegrity", -5);
     public static final Potion BUFF_INT = temp(IntegrityHandler.INTEGRITY, "buffIntegrity", "7ed0b78e-7367-4276-b45c-665e388c9053", 0.01, 2);
     public static final Potion DEBUFF_INT = temp(IntegrityHandler.INTEGRITY, "debuffIntegrity", "0158c929-b3c0-485e-9174-55aeb35a0333", -0.01, 2);
 
-    public static final Potion RESTORE_SAN = instant(SanityHandler.SANITY, "restoreSanity", 5);
+    public static final Potion RESTORE_SAN = instantDrug(CharNeed.SAN, SanityHandler.SANITY, "restoreSanity", 5);
     public static final Potion DAMAGE_SAN = instant(SanityHandler.SANITY, "damageSanity", -5);
     public static final Potion BUFF_SAN = temp(SanityHandler.SANITY, "buffSanity", "5f87931f-d54e-4d32-8c7d-099c7fce0be3", 0.01, 2);
     public static final Potion DEBUFF_SAN = temp(SanityHandler.SANITY, "debuffSanity", "83ee56ba-e229-49b1-989f-af59f8ad85b5", -0.01, 2);
 
-    public static final Potion RESTORE_STA = instant(StaminaHandler.STAMINA, "restoreStamina", 5);
+    public static final Potion RESTORE_STA = instantDrug(CharNeed.STA, StaminaHandler.STAMINA, "restoreStamina", 5);
     public static final Potion DAMAGE_STA = instant(StaminaHandler.STAMINA, "damageStamina", -5);
 
     public static final Potion RESTORE_COR = instant(CorruptionHandler.CORRUPTION, "restoreCorruption", 5);
@@ -49,6 +50,11 @@ public class NeedsPotions {
 
     private static Potion instant(IAttribute attr, String name, double modifier) {
         return new InstantPotion(attr, modifier, 0x707070)
+                .setPotionName("effect." + name).setRegistryName(Misca.MODID, name);
+    }
+
+    private static Potion instantDrug(CharNeed need, IAttribute attr, String name, double modifier) {
+        return new DrugPotion(need, attr, modifier, 0x707070)
                 .setPotionName("effect." + name).setRegistryName(Misca.MODID, name);
     }
 

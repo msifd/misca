@@ -5,14 +5,12 @@ import msifeed.misca.charsheet.CharNeed;
 import msifeed.misca.charsheet.CharSkill;
 import msifeed.misca.charsheet.cap.CharsheetProvider;
 import msifeed.misca.charstate.CharstateConfig;
-import msifeed.misca.chatex.ChatexConfig;
 import msifeed.misca.combat.CharAttribute;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.ai.attributes.IAttribute;
 import net.minecraft.entity.ai.attributes.IAttributeInstance;
 import net.minecraft.entity.ai.attributes.RangedAttribute;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemFood;
 import net.minecraft.item.ItemStack;
 

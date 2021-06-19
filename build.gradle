@@ -79,6 +79,7 @@ dependencies {
     embed 'org.mariadb.jdbc:mariadb-java-client:2.7.2'
     embed 'org.mongodb:mongodb-driver-sync:4.2.2'
 
+    compile files('libs/customstuff4-1.12.2-0.6.9a-deobf.jar')
     compile "curse.maven:techguns-244201:2958103"
     compile "curse.maven:baubles-227083:2518667"
     compile "curse.maven:flans-mod-5-5-2-317310:3195600"

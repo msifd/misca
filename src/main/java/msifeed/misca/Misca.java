@@ -13,6 +13,7 @@ import msifeed.misca.keeper.KeeperSync;
 import msifeed.misca.locks.Locks;
 import msifeed.misca.logdb.LogDB;
 import msifeed.misca.potions.CombatPotions;
+import msifeed.misca.potions.DrugPotion;
 import msifeed.misca.potions.NeedsPotions;
 import msifeed.misca.potions.OtherPotions;
 import msifeed.misca.regions.CommandRegions;
@@ -78,8 +79,10 @@ public class Misca {
 
         Misca.RPC.register(new RollRpc());
 
-        if (FMLCommonHandler.instance().getSide().isClient())
+        if (FMLCommonHandler.instance().getSide().isClient()) {
             MiscaClient.INSTANCE.preInit();
+            MinecraftForge.EVENT_BUS.register(DrugPotion.class);
+        }
     }
 
     @EventHandler

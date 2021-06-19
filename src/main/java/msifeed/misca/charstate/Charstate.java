@@ -15,6 +15,7 @@ import msifeed.misca.combat.battle.BattleManager;
 import msifeed.misca.combat.cap.CombatantProvider;
 import msifeed.misca.combat.cap.ICombatant;
 import msifeed.misca.regions.RegionControl;
+import msifeed.sys.cap.FloatContainer;
 import msifeed.sys.sync.SyncChannel;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.attributes.AbstractAttributeMap;
@@ -35,7 +36,6 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 public enum Charstate {
     INSTANCE;
@@ -122,8 +122,22 @@ public enum Charstate {
         corruptionHandler.handleTime(player, passedSec);
         effortsHandler.handleTime(player, passedSec);
 
+        tickTolerances(state.tolerances(), passedSec);
+
         state.resetUpdateTime();
         CharstateSync.sync(player);
+    }
+
+    private void tickTolerances(FloatContainer<CharNeed> tolerances, long passedSec) {
+        final CharstateConfig config = Misca.getSharedConfig().charstate;
+
+        for (CharNeed need : CharNeed.values()) {
+            final float val = tolerances.get(need);
+            if (val <= 0) continue;
+
+            final double lost = config.getToleranceLost(val) * passedSec;
+            tolerances.set(need, (float) (val - lost));
+        }
     }
 
     @SubscribeEvent(priority = EventPriority.LOWEST)

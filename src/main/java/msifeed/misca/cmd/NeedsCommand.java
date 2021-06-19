@@ -1,6 +1,9 @@
 package msifeed.misca.cmd;
 
 import msifeed.misca.MiscaPerms;
+import msifeed.misca.charsheet.CharNeed;
+import msifeed.misca.charstate.cap.CharstateProvider;
+import msifeed.misca.charstate.cap.ICharstate;
 import msifeed.misca.charstate.handler.CorruptionHandler;
 import msifeed.misca.charstate.handler.IntegrityHandler;
 import msifeed.misca.charstate.handler.SanityHandler;
@@ -29,7 +32,7 @@ public class NeedsCommand extends CommandBase {
 
     @Override
     public String getUsage(ICommandSender sender) {
-        return "/needs <who> <int san sta cor> [<add set> <value>]";
+        return "/needs <who> <int san sta cor> [<add set tolerance> <value>]";
     }
 
     @Override
@@ -40,7 +43,7 @@ public class NeedsCommand extends CommandBase {
             case 2:
                 return getListOfStringsMatchingLastWord(args,"int", "san", "sta", "cor");
             case 3:
-                return getListOfStringsMatchingLastWord(args,"add", "set");
+                return getListOfStringsMatchingLastWord(args,"add", "set", "tolerance");
             default:
                 return Collections.emptyList();
         }
@@ -54,7 +57,19 @@ public class NeedsCommand extends CommandBase {
         final IAttribute attr = getAttribute(args[1]);
         final IAttributeInstance inst = player.getEntityAttribute(attr);
 
-        if (args.length >= 4 && MiscaPerms.isGameMaster(sender)) {
+        if (args.length >= 3 && args[2].equalsIgnoreCase("tolerance")) {
+            final ICharstate state = CharstateProvider.get(player);
+            final CharNeed need = getNeed(args[1]);
+            final int tolerance = (int) (state.tolerances().get(need) * 100);
+
+            sender.sendMessage(new TextComponentString("Tolerance to " + need + " is " + tolerance + "%"));
+
+            if (args.length >= 4 && MiscaPerms.isGameMaster(sender)) {
+                final double value = (float) parseDouble(args[3], 0, 1);
+                state.tolerances().set(need, (float) value);
+                sender.sendMessage(new TextComponentString("  and now is set to " + (int) (value * 100) + "%"));
+            }
+        } else if (args.length >= 4 && MiscaPerms.isGameMaster(sender)) {
             final boolean set = args[2].equalsIgnoreCase("set");
             final double value = (float) parseDouble(args[3], -200, 200);
             final double curr = inst.getBaseValue();
@@ -85,7 +100,26 @@ public class NeedsCommand extends CommandBase {
             case "corruption":
                 return CorruptionHandler.CORRUPTION;
             default:
-                throw new SyntaxErrorException("Invalid attribute name");
+                throw new SyntaxErrorException("Invalid need name");
+        }
+    }
+
+    private static CharNeed getNeed(String name) throws CommandException {
+        switch (name) {
+            case "int":
+            case "integrity":
+                return CharNeed.INT;
+            case "san":
+            case "sanity":
+                return CharNeed.SAN;
+            case "sta":
+            case "stamina":
+                return CharNeed.STA;
+            case "cor":
+            case "corruption":
+                return CharNeed.COR;
+            default:
+                throw new SyntaxErrorException("Invalid need name");
         }
     }
 }

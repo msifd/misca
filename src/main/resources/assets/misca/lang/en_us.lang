@@ -59,6 +59,11 @@ enum.misca.attribute.full.ref=Рефлексы
 enum.misca.attribute.full.agi=Подвижность
 enum.misca.attribute.full.lck=Удача
 
+enum.misca.need.cor=ИСК
+enum.misca.need.int=ЦЕЛ
+enum.misca.need.san=МЕН
+enum.misca.need.sta=УСТ
+
 enum.misca.combat.event.hit=удар
 enum.misca.combat.event.critHit=крит. удар
 enum.misca.combat.event.evade=уклон

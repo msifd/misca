@@ -45,13 +45,21 @@ public class CharstateConfig {
     public float foodNeedsRestMod = 0.25f;
     public float foodExhaustionMod = 0.25f;
 
-    public final float foodRestMod(EntityPlayer player) {
+    public float foodRestMod(EntityPlayer player) {
         final float food = player.getFoodStats().getFoodLevel();
         return food > foodEffectThreshold ? foodNeedsRestMod : 0;
     }
 
-    public final float exhaustionMod(EntityPlayer player) {
+    public float exhaustionMod(EntityPlayer player) {
         final float food = player.getFoodStats().getFoodLevel();
         return food > foodEffectThreshold ? foodExhaustionMod : 0;
+    }
+
+    public double toleranceGainPerPoint = 0.2;
+    public double toleranceLostBasePerSec = 0.00027;
+    public double toleranceLostMinPerSec = 0.00005;
+
+    public double getToleranceLost(double tolerance) {
+        return Math.max(toleranceLostBasePerSec * (1 - tolerance), toleranceLostMinPerSec);
     }
 }
