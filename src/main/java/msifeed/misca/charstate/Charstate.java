@@ -3,9 +3,12 @@ package msifeed.misca.charstate;
 import com.google.gson.reflect.TypeToken;
 import msifeed.misca.Misca;
 import msifeed.misca.charsheet.CharNeed;
+import msifeed.misca.charsheet.CharSkill;
+import msifeed.misca.charsheet.cap.CharsheetProvider;
 import msifeed.misca.charstate.cap.*;
 import msifeed.misca.charstate.client.CharstateHudHandler;
 import msifeed.misca.charstate.handler.*;
+import msifeed.misca.chatex.ChatexConfig;
 import msifeed.misca.chatex.SpeechEvent;
 import msifeed.misca.combat.battle.Battle;
 import msifeed.misca.combat.battle.BattleManager;
@@ -101,12 +104,6 @@ public enum Charstate {
 //        }
     }
 
-    private static Map<CharNeed, Double> getEffects(EntityPlayer player) {
-        return RegionControl.getLocalRules(player.world, player.getPositionVector())
-                .flatMap(r -> r.needs.entrySet().stream())
-                .collect(Collectors.groupingBy(Map.Entry::getKey, Collectors.summingDouble(Map.Entry::getValue)));
-    }
-
     @SubscribeEvent
     public void onPlayerTick(LivingEvent.LivingUpdateEvent event) {
         if (!(event.getEntity() instanceof EntityPlayerMP)) return;
@@ -118,7 +115,7 @@ public enum Charstate {
         final long passedSec = state.passedFromUpdate();
         if (passedSec < UPDATE_INTERVAL_SEC) return;
 
-        final Map<CharNeed, Double> effects = getEffects(player);
+        final Map<CharNeed, Double> effects = RegionControl.getLocalEffects(player);
         integrityHandler.handleTime(player, passedSec, effects.getOrDefault(CharNeed.INT, 0d));
         sanityHandler.handleTime(player, UPDATE_INTERVAL_SEC, effects.getOrDefault(CharNeed.SAN, 0d));
         staminaHandler.handleTime(player, passedSec, effects.getOrDefault(CharNeed.STA, 0d));
@@ -151,8 +148,31 @@ public enum Charstate {
 
     @SubscribeEvent
     public void onSpeech(SpeechEvent event) {
-        final double factorMod = getEffects(event.getPlayer()).getOrDefault(CharNeed.SAN, 0d);
-        sanityHandler.handleSpeech(event.getPlayer(), event.getMessage(), factorMod);
+        final CharstateConfig config = Misca.getSharedConfig().charstate;
+        final ChatexConfig chat = Misca.getSharedConfig().chat;
+
+        final EntityPlayerMP source = event.getPlayer();
+        final int range = chat.getSpeechRange(event.getMessage());
+        final double threshold = range * chat.garble.thresholdPart;
+        final int chars = event.getMessage().length();
+
+        final int psychology = CharsheetProvider.get(source).skills().get(CharSkill.psychology);
+        final double psychologyMod = config.sanityRestModPerPsySkill * psychology;
+
+        for (EntityPlayer player : source.world.playerEntities) {
+            if (player == source) continue;
+
+            final float distance = player.getDistance(source);
+            if (distance > range) continue;
+
+            final Map<CharNeed, Double> regionEffects = RegionControl.getLocalEffects(event.getPlayer());
+            final double distanceMod = distance > threshold
+                    ? -(distance - threshold) / range
+                    : 0;
+
+            sanityHandler.handleSpeech(player, chars, distanceMod, psychologyMod, regionEffects.getOrDefault(CharNeed.SAN, 0d));
+            staminaHandler.handleSpeech(player, chars, distanceMod, regionEffects.getOrDefault(CharNeed.STA, 0d));
+        }
     }
 
     @SubscribeEvent

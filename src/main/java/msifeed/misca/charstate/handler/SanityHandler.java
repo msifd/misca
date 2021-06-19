@@ -81,29 +81,13 @@ public class SanityHandler {
         inst.setBaseValue(SANITY.clampValue(inst.getBaseValue() + restored));
     }
 
-    public void handleSpeech(EntityPlayerMP source, String msg, double factorMod) {
+    public void handleSpeech(EntityPlayer listener, int chars, double distanceMod, double psychologyMod, double regionMod) {
         final CharstateConfig config = Misca.getSharedConfig().charstate;
-        final ChatexConfig chat = Misca.getSharedConfig().chat;
 
-        final int psychology = CharsheetProvider.get(source).skills().get(CharSkill.psychology);
-        final double psychologyMod = config.sanityRestModPerPsySkill * psychology;
-        final int range = chat.getSpeechRange(msg);
-        final double threshold = range * chat.garble.thresholdPart;
+        final double factor = Math.max(0, 1 + regionMod + psychologyMod + distanceMod + config.foodRestMod(listener));
+        final double restored = chars * config.sanityRestPerSpeechChar * factor * CharNeed.SAN.restFactor(listener);
 
-        for (EntityPlayer player : source.world.playerEntities) {
-            if (player == source) continue;
-
-            final float distance = player.getDistance(source);
-            if (distance > range) continue;
-
-            final double distanceMod = distance > threshold
-                    ? -(distance - threshold) / range
-                    : 0;
-            final double factor = Math.max(0, 1 + + factorMod + psychologyMod + distanceMod + config.foodRestMod(player));
-            final double restored = msg.length() * config.sanityRestPerSpeechChar * factor * CharNeed.SAN.restFactor(player);
-
-            final IAttributeInstance inst = player.getEntityAttribute(SANITY);
-            inst.setBaseValue(SANITY.clampValue(inst.getBaseValue() + restored));
-        }
+        final IAttributeInstance inst = listener.getEntityAttribute(SANITY);
+        inst.setBaseValue(SANITY.clampValue(inst.getBaseValue() + restored));
     }
 }

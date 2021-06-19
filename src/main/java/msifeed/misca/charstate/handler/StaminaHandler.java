@@ -163,4 +163,14 @@ public class StaminaHandler {
         comp.getStyle().setItalic(true);
         player.sendStatusMessage(comp, false);
     }
+
+    public void handleSpeech(EntityPlayer listener, int chars, double distanceMod, double regionMod) {
+        final CharstateConfig config = Misca.getSharedConfig().charstate;
+
+        final double factor = Math.max(0, 1 + regionMod + distanceMod + config.foodRestMod(listener));
+        final double restored = chars * config.staminaRestPerSpeechChar * factor * CharNeed.STA.restFactor(listener);
+
+        final IAttributeInstance inst = listener.getEntityAttribute(STAMINA);
+        inst.setBaseValue(STAMINA.clampValue(inst.getBaseValue() + restored));
+    }
 }

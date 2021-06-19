@@ -17,6 +17,7 @@ public class CharstateConfig {
 
     public double staminaRestPerSec = 0.0014;
     public long staminaRestMiningTimeoutSec = 2;
+    public double staminaRestPerSpeechChar = 0.0005;
     public double staminaMiningSlowdownThreshold = 0.25;
     public double staminaCostPerMiningTick = 0.01;
     public double staminaCostPerIngredient = 0.5;
