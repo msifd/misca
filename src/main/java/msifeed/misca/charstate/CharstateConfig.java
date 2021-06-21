@@ -14,6 +14,8 @@ public class CharstateConfig {
     public double sanityCostPerSec = 0.000027;
     public double sanityCostPerSecInDarkness = 0.000055;
     public double sanityCostPerDamage = 0.1;
+    public double sanityLevelToRegenStamina = 100;
+    public double sanityDebuffToRestThreshold = 0.75;
 
     public double staminaRestPerSec = 0.0014;
     public long staminaRestMiningTimeoutSec = 2;
@@ -23,7 +25,12 @@ public class CharstateConfig {
     public double staminaCostPerIngredient = 0.5;
     public int craftMaxIngredientsOfOneType = 4;
 
-    public double corruptionLostPerSec = 0.00000115;
+    public double corruptionSilenceToGainSec = 3600;
+    public double corruptionGainPerSec = 0.00005;
+    public double corruptionLostPerSec = 0.00001;
+    public double corruptionDisablePotionsThreshold = 25;
+    public double corruptionDisableSkillsThreshold = 50;
+    public double corruptionDisableCraft = 75;
 
     public float effortRestPerSec = 0.00027f;
 

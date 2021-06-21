@@ -13,20 +13,20 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 public class NeedsPotions {
     public static final Potion RESTORE_INT = instantDrug(CharNeed.INT, IntegrityHandler.INTEGRITY, "restoreIntegrity", 5);
-    public static final Potion DAMAGE_INT = instant(IntegrityHandler.INTEGRITY, "damageIntegrity", -5);
+    public static final Potion DAMAGE_INT = instant(CharNeed.INT, IntegrityHandler.INTEGRITY, "damageIntegrity", -5);
     public static final Potion BUFF_INT = temp(IntegrityHandler.INTEGRITY, "buffIntegrity", "7ed0b78e-7367-4276-b45c-665e388c9053", 0.01, 2);
     public static final Potion DEBUFF_INT = temp(IntegrityHandler.INTEGRITY, "debuffIntegrity", "0158c929-b3c0-485e-9174-55aeb35a0333", -0.01, 2);
 
     public static final Potion RESTORE_SAN = instantDrug(CharNeed.SAN, SanityHandler.SANITY, "restoreSanity", 5);
-    public static final Potion DAMAGE_SAN = instant(SanityHandler.SANITY, "damageSanity", -5);
+    public static final Potion DAMAGE_SAN = instant(CharNeed.SAN, SanityHandler.SANITY, "damageSanity", -5);
     public static final Potion BUFF_SAN = temp(SanityHandler.SANITY, "buffSanity", "5f87931f-d54e-4d32-8c7d-099c7fce0be3", 0.01, 2);
     public static final Potion DEBUFF_SAN = temp(SanityHandler.SANITY, "debuffSanity", "83ee56ba-e229-49b1-989f-af59f8ad85b5", -0.01, 2);
 
     public static final Potion RESTORE_STA = instantDrug(CharNeed.STA, StaminaHandler.STAMINA, "restoreStamina", 5);
-    public static final Potion DAMAGE_STA = instant(StaminaHandler.STAMINA, "damageStamina", -5);
+    public static final Potion DAMAGE_STA = instant(CharNeed.STA, StaminaHandler.STAMINA, "damageStamina", -5);
 
-    public static final Potion RESTORE_COR = instant(CorruptionHandler.CORRUPTION, "restoreCorruption", 5);
-    public static final Potion DAMAGE_COR = instant(CorruptionHandler.CORRUPTION, "damageCorruption", -5);
+    public static final Potion RESTORE_COR = instant(CharNeed.COR, CorruptionHandler.CORRUPTION, "restoreCorruption", 5);
+    public static final Potion DAMAGE_COR = instant(CharNeed.COR, CorruptionHandler.CORRUPTION, "damageCorruption", -5);
     public static final Potion BUFF_COR = temp(CorruptionHandler.CORRUPTION, "buffCorruption", "621133ab-8d2d-436d-9846-4c77e2d47c51", 0.01, 2);
     public static final Potion DEBUFF_COR = temp(CorruptionHandler.CORRUPTION, "debuffCorruption", "b52d5b3b-6995-4b95-91df-4fbd6720e2be", -0.01, 2);
 
@@ -48,8 +48,8 @@ public class NeedsPotions {
         event.getRegistry().register(DEBUFF_COR);
     }
 
-    private static Potion instant(IAttribute attr, String name, double modifier) {
-        return new InstantPotion(attr, modifier, 0x707070)
+    private static Potion instant(CharNeed need, IAttribute attr, String name, double modifier) {
+        return new InstantPotion(need, attr, modifier, 0x707070)
                 .setPotionName("effect." + name).setRegistryName(Misca.MODID, name);
     }
 

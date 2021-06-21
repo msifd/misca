@@ -4,7 +4,6 @@ import com.google.gson.reflect.TypeToken;
 import msifeed.misca.Misca;
 import msifeed.misca.charsheet.CharNeed;
 import msifeed.misca.charsheet.CharSkill;
-import msifeed.misca.charsheet.cap.CharsheetProvider;
 import msifeed.misca.charstate.cap.*;
 import msifeed.misca.charstate.client.CharstateHudHandler;
 import msifeed.misca.charstate.handler.*;
@@ -119,23 +118,26 @@ public enum Charstate {
         integrityHandler.handleTime(player, passedSec, effects.getOrDefault(CharNeed.INT, 0d));
         sanityHandler.handleTime(player, UPDATE_INTERVAL_SEC, effects.getOrDefault(CharNeed.SAN, 0d));
         staminaHandler.handleTime(player, passedSec, effects.getOrDefault(CharNeed.STA, 0d));
-        corruptionHandler.handleTime(player, passedSec);
+        corruptionHandler.handleTime(player, passedSec, UPDATE_INTERVAL_SEC);
         effortsHandler.handleTime(player, passedSec);
 
-        tickTolerances(state.tolerances(), passedSec);
+        tickTolerances(player, state.tolerances(), passedSec);
 
         state.resetUpdateTime();
         CharstateSync.sync(player);
     }
 
-    private void tickTolerances(FloatContainer<CharNeed> tolerances, long passedSec) {
+    private void tickTolerances(EntityPlayerMP player, FloatContainer<CharNeed> tolerances, long passedSec) {
         final CharstateConfig config = Misca.getSharedConfig().charstate;
+
+        final double regionMod = RegionControl.getLocalToleranceMod(player);
 
         for (CharNeed need : CharNeed.values()) {
             final float val = tolerances.get(need);
             if (val <= 0) continue;
 
-            final double lost = config.getToleranceLost(val) * passedSec;
+            final double factor = Math.max(0, 1 + regionMod);
+            final double lost = config.getToleranceLost(val) * passedSec * factor;
             tolerances.set(need, (float) (val - lost));
         }
     }
@@ -170,13 +172,13 @@ public enum Charstate {
         final double threshold = range * chat.garble.thresholdPart;
         final int chars = event.getMessage().length();
 
-        final int psychology = CharsheetProvider.get(source).skills().get(CharSkill.psychology);
+        final int psychology = CharSkill.psychology.get(source);
         final double psychologyMod = config.sanityRestModPerPsySkill * psychology;
 
-        for (EntityPlayer player : source.world.playerEntities) {
-            if (player == source) continue;
+        for (EntityPlayer listener : source.world.playerEntities) {
+//            if (listener == source) continue;
 
-            final float distance = player.getDistance(source);
+            final float distance = listener.getDistance(source);
             if (distance > range) continue;
 
             final Map<CharNeed, Double> regionEffects = RegionControl.getLocalEffects(event.getPlayer());
@@ -184,8 +186,10 @@ public enum Charstate {
                     ? -(distance - threshold) / range
                     : 0;
 
-            sanityHandler.handleSpeech(player, chars, distanceMod, psychologyMod, regionEffects.getOrDefault(CharNeed.SAN, 0d));
-            staminaHandler.handleSpeech(player, chars, distanceMod, regionEffects.getOrDefault(CharNeed.STA, 0d));
+            final double speechMod = distanceMod + psychologyMod;
+            sanityHandler.handleSpeech(listener, chars, speechMod, regionEffects.getOrDefault(CharNeed.SAN, 0d));
+            staminaHandler.handleSpeech(listener, chars, speechMod, regionEffects.getOrDefault(CharNeed.STA, 0d));
+            corruptionHandler.handleSpeech(listener);
         }
     }
 

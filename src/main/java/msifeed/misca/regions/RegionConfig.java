@@ -38,6 +38,7 @@ public class RegionConfig extends HashMap<Integer, List<RegionConfig.Region>> {
         public String name = "";
         public @Nullable AxisAlignedBB aabb;
         public Map<CharNeed, Double> needs = new HashMap<>();
+        public double toleranceMod = 0;
         public List<Class<?>> blacklist = new ArrayList<>();
         public List<Class<?>> whitelist = new ArrayList<>();
 

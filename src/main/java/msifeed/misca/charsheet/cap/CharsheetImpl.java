@@ -60,7 +60,7 @@ public class CharsheetImpl implements ICharsheet {
     }
 
     @Override
-    public FloatContainer<CharNeed> needsRest() {
+    public FloatContainer<CharNeed> needsGain() {
         return needsRest;
     }
 
@@ -96,7 +96,7 @@ public class CharsheetImpl implements ICharsheet {
         skills.replaceWith(charsheet.skills());
         effortPools.replaceWith(charsheet.effortPools());
         resources.replaceWith(charsheet.resources());
-        needsRest.replaceWith(charsheet.needsRest());
+        needsRest.replaceWith(charsheet.needsGain());
         potions.clear();
         potions.putAll(charsheet.potions());
         enchants.clear();

@@ -7,8 +7,8 @@ import net.minecraft.util.text.translation.I18n;
 public enum CharNeed {
     COR, INT, SAN, STA;
 
-    public double restFactor(EntityPlayer player) {
-        return CharsheetProvider.get(player).needsRest().get(this);
+    public double gainFactor(EntityPlayer player) {
+        return CharsheetProvider.get(player).needsGain().get(this);
     }
 
     public double lostFactor(EntityPlayer player) {

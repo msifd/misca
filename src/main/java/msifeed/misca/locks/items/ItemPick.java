@@ -2,7 +2,6 @@ package msifeed.misca.locks.items;
 
 import msifeed.misca.Misca;
 import msifeed.misca.charsheet.CharSkill;
-import msifeed.misca.charsheet.cap.CharsheetProvider;
 import msifeed.misca.locks.LockType;
 import msifeed.misca.locks.LockUtils;
 import msifeed.misca.locks.LocksConfig;
@@ -62,7 +61,7 @@ public class ItemPick extends Item implements IUnlockTool {
         if (!player.isSneaking()) return EnumActionResult.FAIL;
         if (hand != EnumHand.MAIN_HAND) return EnumActionResult.FAIL;
 
-        final int thievery = CharsheetProvider.get(player).skills().get(CharSkill.thievery);
+        final int thievery = CharSkill.thievery.get(player);
         if (thievery < 1) return EnumActionResult.FAIL;
 
         final ILockHolder lock = LockAccessor.createWrap(world, pos);
@@ -103,7 +102,7 @@ public class ItemPick extends Item implements IUnlockTool {
             final int pin = LockUtils.getFirstFreePin(pick.getSecret(), pinsTried);
             final int pos = LockUtils.getPinPos(pick.getSecret(), pin);
 
-            final int skill = CharsheetProvider.get(player).skills().get(CharSkill.thievery);
+            final int skill = CharSkill.thievery.get(player);
             final int maxPin = 2 + skill * 2;
             if (pin > maxPin) return;
 

@@ -9,6 +9,8 @@ import msifeed.misca.charstate.CharstateConfig;
 import msifeed.misca.charstate.cap.CharstateProvider;
 import msifeed.misca.charstate.cap.CharstateSync;
 import msifeed.misca.charstate.cap.ICharstate;
+import msifeed.misca.charstate.handler.CorruptionHandler;
+import msifeed.misca.charstate.handler.SanityHandler;
 import msifeed.sys.cap.FloatContainer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
@@ -72,13 +74,22 @@ public class DrugPotion extends Potion {
     }
 
     private void affect(EntityPlayer player, IAttributeInstance inst, int amplifier) {
+        if (CorruptionHandler.isPotionsDisabled(player, need))
+            return;
+
         final CharstateConfig config = Misca.getSharedConfig().charstate;
         final ICharstate state = CharstateProvider.get(player);
 
-        final double toleranceFactor = 1 - state.tolerances().get(need);
+        final double sanityFactor;
+        if (need == CharNeed.INT || need == CharNeed.STA)
+            sanityFactor = SanityHandler.getRestoreDebuffMod(player);
+        else
+            sanityFactor = 0;
+
+        final double factor = 1 - state.tolerances().get(need) + sanityFactor;
 
         final double consumed = modifier * (amplifier + 1);
-        final double restored = consumed * toleranceFactor;
+        final double restored = consumed * factor;
         inst.setBaseValue(attribute.clampValue(inst.getBaseValue() + restored));
 
         final double toleranceGain = consumed * config.toleranceGainPerPoint;

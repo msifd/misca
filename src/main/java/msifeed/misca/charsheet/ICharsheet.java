@@ -22,7 +22,7 @@ public interface ICharsheet extends Cloneable {
     IntContainer<CharSkill> skills();
     IntContainer<CharEffort> effortPools();
     IntContainer<CharResource> resources();
-    FloatContainer<CharNeed> needsRest();
+    FloatContainer<CharNeed> needsGain();
     FloatContainer<CharNeed> needsLost();
 
     Map<Potion, Integer> potions();

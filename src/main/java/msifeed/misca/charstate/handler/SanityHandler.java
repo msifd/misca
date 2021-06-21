@@ -3,7 +3,6 @@ package msifeed.misca.charstate.handler;
 import msifeed.misca.Misca;
 import msifeed.misca.charsheet.CharNeed;
 import msifeed.misca.charsheet.CharSkill;
-import msifeed.misca.charsheet.cap.CharsheetProvider;
 import msifeed.misca.charstate.CharstateConfig;
 import msifeed.misca.combat.CharAttribute;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
@@ -33,7 +32,7 @@ public class SanityHandler {
         final CharstateConfig config = Misca.getSharedConfig().charstate;
         final int light = player.world.getLight(player.getPosition(), false);
         final double sanPerSec = light < 7 ? config.sanityCostPerSecInDarkness : config.sanityCostPerSec;
-        final double factor = Math.max(0, 1 + factorMod + CharsheetProvider.get(player).skills().get(CharSkill.survival) * config.survivalSkillNeedsLostFactor);
+        final double factor = Math.max(0, 1 + factorMod + CharSkill.survival.get(player) * config.survivalSkillNeedsLostFactor);
         final double lost = secs * sanPerSec * factor * CharNeed.SAN.lostFactor(player);
 
         final IAttributeInstance inst = player.getEntityAttribute(SANITY);
@@ -60,7 +59,7 @@ public class SanityHandler {
 
     public void handleDamage(EntityPlayer player, float amount) {
         final CharstateConfig config = Misca.getSharedConfig().charstate;
-        final double factor = Math.max(0, 1 + CharsheetProvider.get(player).skills().get(CharSkill.survival) * config.survivalSkillNeedsLostFactor);
+        final double factor = Math.max(0, 1 + CharSkill.survival.get(player) * config.survivalSkillNeedsLostFactor);
         final double lost = amount * config.sanityCostPerDamage * factor * CharNeed.SAN.lostFactor(player);
 
         final IAttributeInstance inst = player.getEntityAttribute(SANITY);
@@ -73,19 +72,30 @@ public class SanityHandler {
         final ItemFood item = (ItemFood) stack.getItem();
         final CharstateConfig config = Misca.getSharedConfig().charstate;
         final double factor = Math.max(0, 1 + config.foodRestMod(player));
-        final double restored = item.getHealAmount(stack) * config.sanityRestPerFood * factor * CharNeed.SAN.restFactor(player);
+        final double restored = item.getHealAmount(stack) * config.sanityRestPerFood * factor * CharNeed.SAN.gainFactor(player);
 
         final IAttributeInstance inst = player.getEntityAttribute(SANITY);
         inst.setBaseValue(SANITY.clampValue(inst.getBaseValue() + restored));
     }
 
-    public void handleSpeech(EntityPlayer listener, int chars, double distanceMod, double psychologyMod, double regionMod) {
+    public void handleSpeech(EntityPlayer listener, int chars, double speechMod, double regionMod) {
         final CharstateConfig config = Misca.getSharedConfig().charstate;
 
-        final double factor = Math.max(0, 1 + regionMod + psychologyMod + distanceMod + config.foodRestMod(listener));
-        final double restored = chars * config.sanityRestPerSpeechChar * factor * CharNeed.SAN.restFactor(listener);
+        final double factor = Math.max(0, 1 + regionMod + speechMod + config.foodRestMod(listener));
+        final double restored = chars * config.sanityRestPerSpeechChar * factor * CharNeed.SAN.gainFactor(listener);
 
         final IAttributeInstance inst = listener.getEntityAttribute(SANITY);
         inst.setBaseValue(SANITY.clampValue(inst.getBaseValue() + restored));
+    }
+
+    /**
+     * @return [-1; 0]
+     */
+    public static double getRestoreDebuffMod(EntityPlayer player) {
+        final CharstateConfig config = Misca.getSharedConfig().charstate;
+        final double sanity = player.getEntityAttribute(SANITY).getAttributeValue();
+        if (sanity >= config.sanityDebuffToRestThreshold) return 0;
+
+        return sanity / config.sanityDebuffToRestThreshold - 1;
     }
 }

@@ -29,6 +29,16 @@ public interface ICharstate {
         setMiningTime(System.currentTimeMillis() / 1000);
     }
 
+    long getSilenceTime();
+    void setSilenceTime(long value);
+    default long passedInSilence() {
+        final long now = System.currentTimeMillis() / 1000;
+        return now - getSilenceTime();
+    }
+    default void resetSilenceTime() {
+        setSilenceTime(System.currentTimeMillis() / 1000);
+    }
+
     FloatContainer<CharEffort> efforts();
 
     int nonce();

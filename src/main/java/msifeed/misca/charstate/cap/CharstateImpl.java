@@ -7,6 +7,7 @@ import msifeed.sys.cap.FloatContainer;
 public class CharstateImpl implements ICharstate {
     private long updateTime;
     private long miningTime;
+    private long silenceTime;
     private int nonce;
 
     private final FloatContainer<CharEffort> efforts = new FloatContainer<>(CharEffort.class, 0, 0, 50);
@@ -30,6 +31,16 @@ public class CharstateImpl implements ICharstate {
     @Override
     public void setMiningTime(long value) {
         this.miningTime = value;
+    }
+
+    @Override
+    public long getSilenceTime() {
+        return silenceTime;
+    }
+
+    @Override
+    public void setSilenceTime(long value) {
+        this.silenceTime = value;
     }
 
     @Override
@@ -61,6 +72,7 @@ public class CharstateImpl implements ICharstate {
     public void replaceWith(ICharstate other) {
         updateTime = other.getUpdateTime();
         miningTime = other.getMiningTime();
+        silenceTime = other.getSilenceTime();
         nonce = other.nonce();
         efforts.replaceWith(other.efforts());
         tolerances.replaceWith(other.tolerances());

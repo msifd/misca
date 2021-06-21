@@ -14,6 +14,7 @@ public class CharstateStorage implements Capability.IStorage<ICharstate> {
         final NBTTagCompound nbt = new NBTTagCompound();
         nbt.setLong("UpdateTime", instance.getUpdateTime());
         nbt.setLong("MiningTime", instance.getMiningTime());
+        nbt.setLong("SilenceTime", instance.getSilenceTime());
         nbt.setInteger("Nonce", instance.nonce());
 
         instance.efforts().writeNBT("Efforts", nbt);
@@ -26,6 +27,7 @@ public class CharstateStorage implements Capability.IStorage<ICharstate> {
         final NBTTagCompound nbt = (NBTTagCompound) nbtBase;
         instance.setUpdateTime(nbt.getLong("UpdateTime"));
         instance.setMiningTime(nbt.getLong("MiningTime"));
+        instance.setSilenceTime(nbt.getLong("SilenceTime"));
         instance.setNonce(nbt.getInteger("Nonce"));
 
         instance.efforts().readNBT(nbt, "Efforts");

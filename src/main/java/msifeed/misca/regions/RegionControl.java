@@ -61,6 +61,12 @@ public class RegionControl {
                 .collect(Collectors.groupingBy(Map.Entry::getKey, Collectors.summingDouble(Map.Entry::getValue)));
     }
 
+    public static double getLocalToleranceMod(EntityPlayer player) {
+        return getLocalRules(player.world, player.getPositionVector())
+                .mapToDouble(r -> r.toleranceMod)
+                .sum();
+    }
+
     private static boolean isBlocked(World world, EntityLivingBase entity) {
         final int dim = world.provider.getDimension();
         final List<RegionConfig.Region> regions = config.get().get(dim);

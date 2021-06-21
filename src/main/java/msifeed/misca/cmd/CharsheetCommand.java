@@ -87,7 +87,7 @@ public class CharsheetCommand extends CommandBase {
                         .collect(Collectors.joining(", "))));
         sender.sendMessage(new TextComponentString(
                 "  Need factors: " + Stream.of(CharNeed.values())
-                        .map(n -> n.toString().toLowerCase() + " +" + sheet.needsRest().get(n) + " -" + sheet.needsLost().get(n))
+                        .map(n -> n.toString().toLowerCase() + " +" + sheet.needsGain().get(n) + " -" + sheet.needsLost().get(n))
                         .collect(Collectors.joining(", "))));
         sender.sendMessage(new TextComponentString(
                 "  Potions: " + sheet.potions().entrySet().stream()
@@ -116,9 +116,9 @@ public class CharsheetCommand extends CommandBase {
         final float curr;
         final String msg;
         if (isRest) {
-            curr = sheet.needsRest().get(need);
+            curr = sheet.needsGain().get(need);
             msg = String.format("Change %s's %s rest factor from %f to %f", player.getName(), need, curr, value);
-            sheet.needsRest().set(need, value);
+            sheet.needsGain().set(need, value);
         } else {
             curr = sheet.needsLost().get(need);
             msg = String.format("Change %s's %s lost factor from %f to %f", player.getName(), need, curr, value);

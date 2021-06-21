@@ -22,7 +22,7 @@ public class CharsheetStorage implements Capability.IStorage<ICharsheet> {
         instance.skills().writeNBT(Tag.skills, nbt);
         instance.effortPools().writeNBT(Tag.effortPools, nbt);
         instance.resources().writeNBT(Tag.resources, nbt);
-        instance.needsRest().writeNBT(Tag.needsRest, nbt);
+        instance.needsGain().writeNBT(Tag.needsRest, nbt);
         instance.needsLost().writeNBT(Tag.needsLost, nbt);
 
         final NBTTagCompound potionsNbt = new NBTTagCompound();
@@ -48,7 +48,7 @@ public class CharsheetStorage implements Capability.IStorage<ICharsheet> {
         instance.skills().readNBT(nbt, Tag.skills);
         instance.effortPools().readNBT(nbt, Tag.effortPools);
         instance.resources().readNBT(nbt, Tag.resources);
-        instance.needsRest().readNBT(nbt, Tag.needsRest);
+        instance.needsGain().readNBT(nbt, Tag.needsRest);
         instance.needsLost().readNBT(nbt, Tag.needsLost);
 
         instance.potions().clear();
