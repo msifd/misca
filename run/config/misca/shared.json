@@ -89,5 +89,6 @@
     "toleranceGainPerPoint": 0.02,
     "toleranceLostBasePerSec": 2.7E-4,
     "toleranceLostMinPerSec": 5.0E-5
-  }
+  },
+  "externalBookUrlTemplate": "https://library.ariadna.su/view.php?id\u003d%s"
 }

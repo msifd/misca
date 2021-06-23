@@ -1,6 +1,7 @@
 package msifeed.misca;
 
 import com.google.gson.reflect.TypeToken;
+import msifeed.misca.books.CommandExternalBook;
 import msifeed.misca.charsheet.cap.CharsheetProvider;
 import msifeed.misca.charstate.Charstate;
 import msifeed.misca.chatex.Chatex;
@@ -131,6 +132,7 @@ public class Misca {
         event.registerServerCommand(new UnstuckCommand());
         event.registerServerCommand(new CommandRegions());
         event.registerServerCommand(new CharsheetCommand());
+        event.registerServerCommand(new CommandExternalBook());
     }
 
     @SubscribeEvent

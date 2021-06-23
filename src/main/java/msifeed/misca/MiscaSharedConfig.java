@@ -13,4 +13,6 @@ public class MiscaSharedConfig {
     public Map<Integer, EnvironRule> environ = new HashMap<>();
     public LocksConfig locks = new LocksConfig();
     public CharstateConfig charstate = new CharstateConfig();
+
+    public String externalBookUrlTemplate = "https://library.ariadna.su/view.php?id=%s";
 }

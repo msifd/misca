@@ -15,6 +15,7 @@ item.supplies_invoice.name=Supplies invoice
 item.supplies_beacon.name=Supplies beacon
 item.combat_tool.name=Combat tool
 item.note_sign.name=Знак-заметка
+item.external_book.name=Внешняя книга
 
 misca.chatex.speech=%s: %s
 misca.chatex.offtop=[OFF] %s: %s
