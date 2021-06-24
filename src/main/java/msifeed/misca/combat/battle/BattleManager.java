@@ -8,6 +8,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
+import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 
@@ -27,6 +28,8 @@ public class BattleManager {
 
     @Nullable
     public static Battle getBattle(long bid) {
+        if (FMLCommonHandler.instance().getEffectiveSide().isClient())
+            return BattleStateClient.STATE;
         return battles.get(bid);
     }
 
@@ -221,6 +224,8 @@ public class BattleManager {
 
     @SubscribeEvent
     public static void onLivingDeath(LivingDeathEvent event) {
+        if (event.getEntityLiving().world.isRemote) return;
+
         final Battle battle = getEntityBattle(event.getEntityLiving());
         if (battle == null) return;
 

@@ -9,6 +9,7 @@ import msifeed.misca.combat.battle.Battle;
 import msifeed.misca.combat.battle.BattleStateClient;
 import msifeed.misca.combat.cap.CombatantProvider;
 import msifeed.misca.combat.cap.ICombatant;
+import msifeed.misca.combat.client.GuiCombatOverlay;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.EntityPlayer;
@@ -64,6 +65,16 @@ public class ScreenCombat extends MellowScreen {
                     .when(inBattle, ui -> ui.add(makeButton("exit", "exit")).below())
                     .when(inBattle, ui -> ui.add(makeButton("destroy", "destroy")).below())
                     .moveGroup(0, 10, 0)
+                    .appendGroup()
+
+                .beginGroup()
+                    .when(inBattle, ui -> {
+                        final ButtonLabel btn = new ButtonLabel("Debug");
+                        btn.setSize(50, 15);
+                        btn.setCallback(() -> GuiCombatOverlay.COMBAT_DEBUG = !GuiCombatOverlay.COMBAT_DEBUG);
+                        ui.add(btn).below().move(25, 0, 0);
+                    })
+                    .moveGroup(0, 20, 0)
                     .appendGroup()
 
                 .centerGroup(Direction.HORIZONTAL)

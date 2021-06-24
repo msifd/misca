@@ -33,6 +33,7 @@ public class ItemCombatTool extends Item {
         setRegistryName(Misca.MODID, ID);
         setTranslationKey(ID);
         setCreativeTab(CreativeTabs.COMBAT);
+        setMaxStackSize(1);
 
         MinecraftForge.EVENT_BUS.register(this);
     }

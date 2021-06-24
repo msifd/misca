@@ -12,6 +12,7 @@
     "techguns.GenericGunMixin",
     "techguns.ReloadStartedMessageMixin",
     "thaumcraft.ItemCasterMixin",
+    "techguns.TGTickHandlerMixin",
     "thaumcraft.ThaumcraftApiMixin",
     "thebetweenlands.ElixirEffectMixin",
     "wizardry.EntityMagicConstructMixin",

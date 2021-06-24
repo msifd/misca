@@ -1,6 +1,5 @@
 package msifeed.misca.combat.client;
 
-import msifeed.misca.client.MiscaConfig;
 import msifeed.misca.combat.Combat;
 import msifeed.misca.combat.CombatEvent;
 import msifeed.misca.combat.CombatFlow;
@@ -30,6 +29,7 @@ import java.util.Comparator;
 public class GuiCombatOverlay {
     private static final long COUNTER_RESET_MS = 3000;
     private static final ArrayList<TimedEvent> events = new ArrayList<>();
+    public static boolean COMBAT_DEBUG = false;
 
     public static void postEvent(TimedEvent te) {
         final TimedEvent existing = events.stream()
@@ -57,7 +57,7 @@ public class GuiCombatOverlay {
         drawTopHud(event.getResolution());
         drawEvents(event.getResolution());
 
-        if (MiscaConfig.combatDebug) {
+        if (COMBAT_DEBUG) {
             drawDebugInfo();
         }
     }

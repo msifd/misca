@@ -96,7 +96,7 @@ public class CombatFlow {
         if (BattleFlow.isEnoughAp(actor, CombatantProvider.get(actor), attackAp)) {
             return true;
         } else {
-            if (BattleFlow.isApDepleted(actor, weapon)) {
+            if (!actor.world.isRemote && BattleFlow.isApDepleted(actor, weapon)) {
                 BattleManager.finishTurn(battle);
             }
 

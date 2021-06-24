@@ -130,6 +130,8 @@ public class CombatHandler {
             return;
         }
 
+        if (source.world.isRemote) return;
+
         if (CombatFlow.canAttack(actor, weapon)) {
             final boolean isPlayer = source instanceof EntityPlayer; // Players consume AP on swing, mobs on attack
             if (!isPlayer) {
