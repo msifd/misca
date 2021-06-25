@@ -173,10 +173,11 @@ public enum Charstate {
         final int chars = event.getMessage().length();
 
         final int psychology = CharSkill.psychology.get(source);
-        final double psychologyMod = config.sanityRestModPerPsySkill * psychology;
+        final double psySanityMod = config.psychologySanityGainFactor * psychology;
+        final double psyStaminaMod = config.psychologyStaminaGainFactor * psychology;
 
         for (EntityPlayer listener : source.world.playerEntities) {
-//            if (listener == source) continue;
+            if (listener == source) continue;
 
             final float distance = listener.getDistance(source);
             if (distance > range) continue;
@@ -186,9 +187,8 @@ public enum Charstate {
                     ? -(distance - threshold) / range
                     : 0;
 
-            final double speechMod = distanceMod + psychologyMod;
-            sanityHandler.handleSpeech(listener, chars, speechMod, regionEffects.getOrDefault(CharNeed.SAN, 0d));
-            staminaHandler.handleSpeech(listener, chars, speechMod, regionEffects.getOrDefault(CharNeed.STA, 0d));
+            sanityHandler.handleSpeech(listener, chars, distanceMod + psySanityMod, regionEffects.getOrDefault(CharNeed.SAN, 0d));
+            staminaHandler.handleSpeech(listener, chars, distanceMod + psyStaminaMod, regionEffects.getOrDefault(CharNeed.STA, 0d));
             corruptionHandler.handleSpeech(listener);
         }
     }

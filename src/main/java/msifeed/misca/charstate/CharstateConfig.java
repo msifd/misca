@@ -10,7 +10,6 @@ public class CharstateConfig {
 
     public double sanityRestPerFood = 1;
     public double sanityRestPerSpeechChar = 0.001;
-    public double sanityRestModPerPsySkill = 0.15;
     public double sanityCostPerSec = 0.000027;
     public double sanityCostPerSecInDarkness = 0.000055;
     public double sanityCostPerDamage = 0.1;
@@ -39,6 +38,9 @@ public class CharstateConfig {
     public float survivalSkillEffortsRestFactor = 0.15f;
     public float workSkillMiningSpeedFactor = 0.33f;
     public float workSkillCraftCostFactor = -0.02f;
+
+    public double psychologySanityGainFactor = 0.15;
+    public double psychologyStaminaGainFactor = 0.05;
 
     public double researchSkillFreeCraftChance = 0.1;
     public double researchSkillRestoreIngredientChance = 0.05;
