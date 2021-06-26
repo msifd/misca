@@ -109,6 +109,7 @@ public enum Charstate {
         if (event.getEntity().world.isRemote) return;
 
         final EntityPlayerMP player = (EntityPlayerMP) event.getEntityLiving();
+        if (player.isCreative()) return;
 
         final ICharstate state = CharstateProvider.get(player);
         final long passedSec = state.passedFromUpdate();
@@ -127,7 +128,7 @@ public enum Charstate {
         CharstateSync.sync(player);
     }
 
-    private void tickTolerances(EntityPlayerMP player, FloatContainer<CharNeed> tolerances, long passedSec) {
+    private static void tickTolerances(EntityPlayerMP player, FloatContainer<CharNeed> tolerances, long passedSec) {
         final CharstateConfig config = Misca.getSharedConfig().charstate;
 
         final double regionMod = RegionControl.getLocalToleranceMod(player);
@@ -149,6 +150,8 @@ public enum Charstate {
         if (!(event.getEntity() instanceof EntityPlayer)) return;
 
         final EntityPlayer player = (EntityPlayer) event.getEntityLiving();
+        if (player.isCreative()) return;
+
         final ICombatant com = CombatantProvider.get(player);
         if (com.isInBattle()) {
             final Battle battle = BattleManager.getBattle(com.getBattleId());
@@ -168,6 +171,8 @@ public enum Charstate {
         final ChatexConfig chat = Misca.getSharedConfig().chat;
 
         final EntityPlayerMP source = event.getPlayer();
+        if (source.isCreative()) return;
+
         final int range = chat.getSpeechRange(event.getMessage());
         final double threshold = range * chat.garble.thresholdPart;
         final int chars = event.getMessage().length();
@@ -178,6 +183,7 @@ public enum Charstate {
 
         for (EntityPlayer listener : source.world.playerEntities) {
             if (listener == source) continue;
+            if (listener.isCreative()) continue;
 
             final float distance = listener.getDistance(source);
             if (distance > range) continue;
@@ -195,6 +201,7 @@ public enum Charstate {
 
     @SubscribeEvent
     public void onBreakSpeed(PlayerEvent.BreakSpeed event) {
+        if (event.getEntityPlayer().isCreative()) return;
         if (event.getEntityPlayer().getHeldItemMainhand().isEmpty()) return;
 
         staminaHandler.handleMining(event);
@@ -202,11 +209,14 @@ public enum Charstate {
 
     @SubscribeEvent
     public void onItemCrafted(net.minecraftforge.fml.common.gameevent.PlayerEvent.ItemCraftedEvent event) {
+        if (event.player.isCreative()) return;
+
         staminaHandler.handleCrafting(event);
     }
 
     public void onFoodEaten(EntityPlayer player, ItemStack stack) {
         if (player.world.isRemote) return;
+        if (player.isCreative()) return;
 
         sanityHandler.handleItemUse(player, stack);
         effectsHandler.handleItemUse(player, stack);
