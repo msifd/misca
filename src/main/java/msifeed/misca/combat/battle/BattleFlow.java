@@ -162,7 +162,7 @@ public class BattleFlow {
         final Rules rules = Combat.getRules();
         final double act = ap + com.getActionPointsOverhead();
         final double mov = rules.movementActionPoints(entity, com.getPosition(), entity.getPositionVector());
-        return (mov + act) < com.getActionPoints();
+        return (mov + act) <= com.getActionPoints();
     }
 
     //// Utils
