@@ -1,5 +1,7 @@
 package msifeed.misca.logdb;
 
+import msifeed.misca.MiscaConfig;
+import msifeed.misca.keeper.KeeperConfig;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.EntityDamageSource;
@@ -22,7 +24,7 @@ public enum LogDB {
 
     public static void reload() {
         if (FMLCommonHandler.instance().getEffectiveSide().isClient()) return;
-        if (LogDBConfig.disabled) return;
+        if (MiscaConfig.logDb.disabled) return;
 
         MinecraftForge.EVENT_BUS.register(INSTANCE);
 

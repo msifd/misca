@@ -6,6 +6,7 @@ import com.mongodb.MongoClientSettings;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.Filters;
+import msifeed.misca.MiscaConfig;
 import msifeed.misca.charsheet.CharEffort;
 import msifeed.misca.charsheet.CharResource;
 import msifeed.misca.charsheet.CharSkill;
@@ -28,12 +29,13 @@ public enum KeeperSync {
     private MongoCollection<KeeperCharsheet> sheets;
 
     public static void reload() {
-        if (KeeperConfig.disabled) return;
+        final KeeperConfig cfg = MiscaConfig.keeper;
+        if (cfg.disabled) return;
 
         final String conn = String.format("mongodb://%s:%s@%s:%d/%s",
-                KeeperConfig.username, KeeperConfig.password,
-                KeeperConfig.host, KeeperConfig.port,
-                KeeperConfig.database);
+                cfg.username, cfg.password,
+                cfg.host, cfg.port,
+                cfg.database);
 
         try {
             LOG.info("Try to connect to Keeper DB...");
@@ -49,8 +51,8 @@ public enum KeeperSync {
                     ))
                     .build();
             INSTANCE.sheets = MongoClients.create(settings)
-                    .getDatabase(KeeperConfig.database)
-                    .getCollection(KeeperConfig.collection, KeeperCharsheet.class);
+                    .getDatabase(cfg.database)
+                    .getCollection(cfg.collection, KeeperCharsheet.class);
             LOG.info("Connection to Keeper DB is successful");
         } catch (Exception e) {
             LOG.error("Failed to connect to Keeper DB", e);

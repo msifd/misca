@@ -1,6 +1,7 @@
 package msifeed.misca.chatex.client.gui;
 
-import msifeed.misca.client.MiscaConfig;
+import msifeed.misca.MiscaConfig;
+import msifeed.misca.client.ClientConfig;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiNewChat;
 
@@ -18,12 +19,12 @@ public class ChatexHud extends GuiNewChat {
 
     @Override
     public int getChatWidth() {
-        return MiscaConfig.chatSize.x;
+        return MiscaConfig.client.chatSize.x;
     }
 
     @Override
     public int getChatHeight() {
-        return MiscaConfig.chatSize.y;
+        return MiscaConfig.client.chatSize.y;
     }
 
     @Override

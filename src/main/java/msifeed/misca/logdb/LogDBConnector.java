@@ -1,5 +1,6 @@
 package msifeed.misca.logdb;
 
+import msifeed.misca.MiscaConfig;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.BlockPos;
@@ -12,16 +13,17 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 
 public class LogDBConnector {
-    private static final String QUERY = "INSERT INTO `" + LogDBConfig.table + "` " +
+    private final String QUERY = "INSERT INTO `" + MiscaConfig.logDb.table + "` " +
             "(`name`,`uuid`,`time`,`world`,`x`,`y`,`z`,`type`,`text`) " +
             "VALUES (?,?,?,?,?,?,?,?,?);";
 
     private final MariaDbPoolDataSource pool;
 
     public LogDBConnector() throws Exception {
-        pool = new MariaDbPoolDataSource(LogDBConfig.host, LogDBConfig.port, LogDBConfig.database);
-        pool.setUser(LogDBConfig.username);
-        pool.setPassword(LogDBConfig.password);
+        final LogDBConfig cfg = MiscaConfig.logDb;
+        pool = new MariaDbPoolDataSource(cfg.host, cfg.port, cfg.database);
+        pool.setUser(cfg.username);
+        pool.setPassword(cfg.password);
         pool.setLoginTimeout(5);
 
         pool.getConnection();
@@ -37,7 +39,7 @@ public class LogDBConnector {
             final String uuid = (sender instanceof EntityPlayer)
                     ? ((EntityPlayer) sender).getUniqueID().toString()
                     : "";
-            final long secs = LocalDateTime.now(ZoneOffset.ofHours(LogDBConfig.timezone)).toEpochSecond(ZoneOffset.UTC);
+            final long secs = LocalDateTime.now(ZoneOffset.ofHours(MiscaConfig.logDb.timezone)).toEpochSecond(ZoneOffset.UTC);
             final BlockPos pos = new BlockPos(sender.getPositionVector());
 
             final PreparedStatement s = conn.prepareStatement(QUERY);

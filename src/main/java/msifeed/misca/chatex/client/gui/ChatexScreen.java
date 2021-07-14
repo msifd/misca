@@ -64,7 +64,7 @@ public class ChatexScreen extends MellowScreen implements ITabCompleter {
     @Override
     public void closeGui() {
         Keyboard.enableRepeatEvents(false);
-        ConfigManager.sync(Misca.MODID, Config.Type.INSTANCE);
+        ConfigManager.sync(Misca.MODID, Config.Type.INSTANCE); // Save chat size
     }
 
     @Override

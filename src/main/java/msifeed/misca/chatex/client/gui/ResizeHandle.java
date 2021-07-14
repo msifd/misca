@@ -7,7 +7,8 @@ import msifeed.mellow.utils.Geom;
 import msifeed.mellow.utils.Point;
 import msifeed.mellow.view.InputHandler;
 import msifeed.mellow.view.View;
-import msifeed.misca.client.MiscaConfig;
+import msifeed.misca.MiscaConfig;
+import msifeed.misca.client.ClientConfig;
 import net.minecraft.util.math.MathHelper;
 
 public class ResizeHandle extends View implements InputHandler.Mouse {
@@ -28,7 +29,7 @@ public class ResizeHandle extends View implements InputHandler.Mouse {
     }
 
     public void resetPos() {
-        setPos(MiscaConfig.chatSize.x + this.geometry.w + xOffset, screenSize.y - MiscaConfig.chatSize.y - yOffset, 10);
+        setPos(MiscaConfig.client.chatSize.x + this.geometry.w + xOffset, screenSize.y - MiscaConfig.client.chatSize.y - yOffset, 10);
     }
 
     @Override
@@ -56,7 +57,7 @@ public class ResizeHandle extends View implements InputHandler.Mouse {
         dragHandler.drag(mouseX, mouseY);
 
         final Geom geom = getRenderGeom();
-        MiscaConfig.chatSize.set(geom.x - geom.w - xOffset, screenSize.y - geom.y - geom.h - yOffset);
+        MiscaConfig.client.chatSize.set(geom.x - geom.w - xOffset, screenSize.y - geom.y - geom.h - yOffset);
     }
 
     @Override

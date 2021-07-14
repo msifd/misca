@@ -1,7 +1,8 @@
 package msifeed.misca.chatex.client;
 
+import msifeed.misca.MiscaConfig;
 import msifeed.misca.chatex.client.gui.ChatexScreen;
-import msifeed.misca.client.MiscaConfig;
+import msifeed.misca.client.ClientConfig;
 import msifeed.misca.mixins.client.GuiChatMixin;
 import net.minecraft.client.gui.GuiChat;
 import net.minecraft.util.text.ChatType;
@@ -20,7 +21,7 @@ public class ChatGuiHandler {
 
     @SubscribeEvent
     public void onClientMsg(ClientChatReceivedEvent event) {
-        if (event.getType() == ChatType.SYSTEM && MiscaConfig.logSystemMessages) {
+        if (event.getType() == ChatType.SYSTEM && MiscaConfig.client.logSystemMessages) {
             LogsSaver.logSpeech(event.getMessage());
         }
     }

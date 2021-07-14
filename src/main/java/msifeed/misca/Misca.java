@@ -101,6 +101,8 @@ public class Misca {
     }
 
     public static void syncConfig() throws Exception {
+        ConfigManager.sync(Misca.MODID, Config.Type.INSTANCE);
+
         SHARED.sync();
         Combat.sync();
         Charstate.sync();

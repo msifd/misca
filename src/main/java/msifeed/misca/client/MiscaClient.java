@@ -1,5 +1,6 @@
 package msifeed.misca.client;
 
+import msifeed.misca.MiscaConfig;
 import msifeed.misca.combat.client.GuiCombatOverlay;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.settings.KeyBinding;
@@ -23,7 +24,7 @@ public enum MiscaClient {
     public static KeyBinding combatKey = new KeyBinding("key.misca.combat", KeyConflictContext.IN_GAME, Keyboard.KEY_O, "key.categories.misca");
 
     public void preInit() {
-        Display.setTitle(MiscaConfig.windowTitle);
+        Display.setTitle(MiscaConfig.client.windowTitle);
     }
 
     public void init() {

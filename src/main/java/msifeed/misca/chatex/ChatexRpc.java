@@ -1,6 +1,7 @@
 package msifeed.misca.chatex;
 
 import msifeed.misca.Misca;
+import msifeed.misca.MiscaConfig;
 import msifeed.misca.MiscaPerms;
 import msifeed.misca.charsheet.CharEffort;
 import msifeed.misca.chatex.client.LogsSaver;
@@ -99,6 +100,13 @@ public class ChatexRpc {
     @RpcMethodHandler(cmd)
     public void onCommand(RpcContext ctx, String command) {
         final MinecraftServer server = FMLCommonHandler.instance().getMinecraftServerInstance();
+
+        if (MiscaConfig.server.trimCommandSlash) {
+            command = command.trim();
+            if (command.startsWith("/"))
+                command = command.substring(1);
+        }
+
         server.getCommandManager().executeCommand(ctx.getServerHandler().player, command);
     }
 

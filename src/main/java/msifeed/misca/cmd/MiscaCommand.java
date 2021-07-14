@@ -56,7 +56,6 @@ public class MiscaCommand extends CommandBase {
 
     private void reloadConfig(ICommandSender sender) {
         try {
-//            ConfigManager.sync(Misca.MODID, Config.Type.INSTANCE);
             Misca.syncConfig();
             sender.sendMessage(new TextComponentString("[Misca] Reload config ok"));
         } catch (Exception e) {
