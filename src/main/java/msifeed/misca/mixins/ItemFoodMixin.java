@@ -1,6 +1,6 @@
 package msifeed.misca.mixins;
 
-import msifeed.misca.charstate.Charstate;
+import msifeed.misca.charsheet.EffectsHandler;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemFood;
 import net.minecraft.item.ItemStack;
@@ -14,6 +14,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class ItemFoodMixin {
     @Inject(method = "onFoodEaten", at = @At("HEAD"))
     public void addStats(ItemStack stack, World world, EntityPlayer player, CallbackInfo ci) {
-        Charstate.INSTANCE.onFoodEaten(player, stack);
+        EffectsHandler.INSTANCE.onFoodEaten(player, stack);
     }
 }

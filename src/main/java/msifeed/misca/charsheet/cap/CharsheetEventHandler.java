@@ -2,8 +2,6 @@ package msifeed.misca.charsheet.cap;
 
 import msifeed.misca.charsheet.CharSkill;
 import msifeed.misca.charsheet.ICharsheet;
-import msifeed.misca.charsheet.OrdenceFlow;
-import msifeed.misca.keeper.KeeperSync;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.attributes.AbstractAttributeMap;
@@ -30,9 +28,6 @@ public class CharsheetEventHandler {
     @SubscribeEvent
     public void onPlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
         if (event.player.world.isRemote) return;
-
-        KeeperSync.INSTANCE.sync((EntityPlayerMP) event.player);
-        OrdenceFlow.increaseOrd(event.player);
         event.player.refreshDisplayName();
     }
 

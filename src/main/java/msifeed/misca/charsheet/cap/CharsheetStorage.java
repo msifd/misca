@@ -20,10 +20,6 @@ public class CharsheetStorage implements Capability.IStorage<ICharsheet> {
         nbt.setString(Tag.name, instance.getName());
         nbt.setString(Tag.wikiPage, instance.getWikiPage());
         instance.skills().writeNBT(Tag.skills, nbt);
-        instance.effortPools().writeNBT(Tag.effortPools, nbt);
-        instance.resources().writeNBT(Tag.resources, nbt);
-        instance.needsGain().writeNBT(Tag.needsRest, nbt);
-        instance.needsLost().writeNBT(Tag.needsLost, nbt);
 
         final NBTTagCompound potionsNbt = new NBTTagCompound();
         for (Map.Entry<Potion, Integer> entry : instance.potions().entrySet())
@@ -35,8 +31,6 @@ public class CharsheetStorage implements Capability.IStorage<ICharsheet> {
             enchantsNbt.setByte(entry.getKey().getRegistryName().toString(), entry.getValue().byteValue());
         nbt.setTag(Tag.enchants, enchantsNbt);
 
-        nbt.setLong(Tag.updated, instance.getLastUpdated());
-
         return nbt;
     }
 
@@ -46,10 +40,6 @@ public class CharsheetStorage implements Capability.IStorage<ICharsheet> {
         instance.setName(nbt.getString(Tag.name));
         instance.setWikiPage(nbt.getString(Tag.wikiPage));
         instance.skills().readNBT(nbt, Tag.skills);
-        instance.effortPools().readNBT(nbt, Tag.effortPools);
-        instance.resources().readNBT(nbt, Tag.resources);
-        instance.needsGain().readNBT(nbt, Tag.needsRest);
-        instance.needsLost().readNBT(nbt, Tag.needsLost);
 
         instance.potions().clear();
         final NBTTagCompound potionsNbt = nbt.getCompoundTag(Tag.potions);
@@ -67,10 +57,6 @@ public class CharsheetStorage implements Capability.IStorage<ICharsheet> {
             if (e != null) {
                 instance.enchants().put(e, (int) enchantsNbt.getByte(key));
             }
-        }
-
-        if (nbt.hasKey(Tag.updated)) {
-            instance.setLastUpdated(nbt.getLong(Tag.updated));
         }
     }
 

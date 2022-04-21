@@ -1,6 +1,5 @@
 package msifeed.misca.regions;
 
-import msifeed.misca.charsheet.CharNeed;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.Vec3d;
 
@@ -8,7 +7,6 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class RegionConfig extends HashMap<Integer, List<RegionConfig.Region>> {
     @Nullable
@@ -37,8 +35,6 @@ public class RegionConfig extends HashMap<Integer, List<RegionConfig.Region>> {
     public static class Region {
         public String name = "";
         public @Nullable AxisAlignedBB aabb;
-        public Map<CharNeed, Double> needs = new HashMap<>();
-        public double toleranceMod = 0;
         public List<Class<?>> blacklist = new ArrayList<>();
         public List<Class<?>> whitelist = new ArrayList<>();
 

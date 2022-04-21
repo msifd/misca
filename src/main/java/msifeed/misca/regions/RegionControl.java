@@ -1,7 +1,6 @@
 package msifeed.misca.regions;
 
 import com.google.gson.reflect.TypeToken;
-import msifeed.misca.charsheet.CharNeed;
 import msifeed.sys.sync.JsonConfig;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
@@ -14,8 +13,6 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class RegionControl {
@@ -53,18 +50,6 @@ public class RegionControl {
         if (regions == null || regions.isEmpty()) return Stream.empty();
 
         return regions.stream().filter(r -> r.contains(pos));
-    }
-
-    public static Map<CharNeed, Double> getLocalEffects(EntityPlayer player) {
-        return getLocalRules(player.world, player.getPositionVector())
-                .flatMap(r -> r.needs.entrySet().stream())
-                .collect(Collectors.groupingBy(Map.Entry::getKey, Collectors.summingDouble(Map.Entry::getValue)));
-    }
-
-    public static double getLocalToleranceMod(EntityPlayer player) {
-        return getLocalRules(player.world, player.getPositionVector())
-                .mapToDouble(r -> r.toleranceMod)
-                .sum();
     }
 
     private static boolean isBlocked(World world, EntityLivingBase entity) {

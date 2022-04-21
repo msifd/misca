@@ -2,10 +2,8 @@ package msifeed.misca.supplies;
 
 import msifeed.misca.Misca;
 import msifeed.misca.MiscaThings;
-import msifeed.misca.charstate.handler.StaminaHandler;
 import msifeed.misca.supplies.cap.ISuppliesInvoice;
 import msifeed.misca.supplies.cap.SuppliesInvoiceProvider;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
@@ -76,8 +74,7 @@ public class ItemSuppliesBeacon extends Item {
             return;
         }
 
-        final double stamina = StaminaHandler.getStaminaForDelivery(Minecraft.getMinecraft().player);
-        tooltip.addAll(SuppliesFlow.getRelativeInfoLines(invoice, stamina));
+        tooltip.addAll(SuppliesFlow.getRelativeInfoLines(invoice));
     }
 
     @Nullable

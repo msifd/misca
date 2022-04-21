@@ -1,13 +1,7 @@
 package msifeed.misca.charsheet;
 
 import msifeed.misca.charsheet.cap.CharsheetProvider;
-import msifeed.misca.combat.battle.Battle;
-import msifeed.misca.combat.battle.BattleManager;
-import msifeed.misca.combat.battle.BattleStateClient;
-import msifeed.misca.combat.cap.CombatantProvider;
-import msifeed.misca.combat.cap.ICombatant;
 import msifeed.misca.mixins.PotionMixin;
-import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.attributes.AbstractAttributeMap;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.ai.attributes.IAttribute;
@@ -19,18 +13,6 @@ import java.util.Map;
 import java.util.Set;
 
 public class BlessingsFlow {
-    public static boolean shouldPerformPotionsEffect(EntityLivingBase self) {
-        final ICombatant com = CombatantProvider.getOptional(self);
-        if (com == null || !com.isInBattle())
-            return true;
-
-        final Battle battle = self.world.isRemote
-                ? BattleStateClient.STATE
-                : BattleManager.getBattle(com.getBattleId());
-
-        return battle == null || battle.shouldUpdatePotions(self);
-    }
-
     public static void performPotionEffects(EntityPlayer self) {
         final ICharsheet sheet = CharsheetProvider.get(self);
         final Set<Potion> realPotions = self.getActivePotionMap().keySet();

@@ -16,17 +16,12 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(EntityLivingBase.class)
 public abstract class EntityLivingBaseMixin {
-    @Inject(method = "updatePotionEffects", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "updatePotionEffects", at = @At("HEAD"))
     public void updatePotionEffects(CallbackInfo ci) {
         final EntityLivingBase self = (EntityLivingBase) (Object) this; // Beautiful T_T
 
         if (self instanceof EntityPlayer) {
             BlessingsFlow.checkPotionAttributes((EntityPlayer) self);
-        }
-
-        if (!BlessingsFlow.shouldPerformPotionsEffect(self)) {
-            ci.cancel();
-        } else if (self instanceof EntityPlayer) {
             BlessingsFlow.performPotionEffects((EntityPlayer) self);
         }
     }

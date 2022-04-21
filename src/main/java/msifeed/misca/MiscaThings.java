@@ -1,7 +1,5 @@
 package msifeed.misca;
 
-import msifeed.misca.books.ItemExternalBook;
-import msifeed.misca.combat.ItemCombatTool;
 import msifeed.misca.content.*;
 import msifeed.misca.supplies.ItemSuppliesBeacon;
 import msifeed.misca.supplies.ItemSuppliesInvoice;
@@ -28,10 +26,7 @@ public enum MiscaThings {
 
     public static final ItemSuppliesInvoice suppliesInvoice = new ItemSuppliesInvoice();
     public static final ItemSuppliesBeacon suppliesBeacon = new ItemSuppliesBeacon();
-    public static final Item combatTool = new ItemCombatTool();
     public static final Item itemNote = new ItemNotification();
-    public static final Item externalBook = new ItemExternalBook();
-
     public static final Block standingNote = new BlockStandingNote();
     public static final Block wallNote = new BlockWallNote();
 
@@ -55,9 +50,7 @@ public enum MiscaThings {
         event.getRegistry().registerAll(
                 suppliesInvoice,
                 suppliesBeacon,
-                combatTool,
-                itemNote,
-                externalBook
+                itemNote
         );
     }
 
@@ -75,9 +68,7 @@ public enum MiscaThings {
         Stream.of(
                 suppliesInvoice,
                 suppliesBeacon,
-                combatTool,
-                itemNote,
-                externalBook
+                itemNote
         ).forEach(MiscaThings::registerItemModel);
     }
 

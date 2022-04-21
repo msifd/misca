@@ -38,7 +38,6 @@ public class CommandRegions extends CommandTreeBase {
         addSubcommand(new Add());
         addSubcommand(new Delete());
         addSubcommand(new CommandPest());
-        addSubcommand(new CommandNeedsFactor());
     }
 
     private static class Get extends CommandBase {
@@ -68,9 +67,6 @@ public class CommandRegions extends CommandTreeBase {
             }
 
             for (RegionConfig.Region r : regions) {
-                final String needs = r.needs.entrySet().stream()
-                        .map(e -> e.getKey() + ":" + e.getValue())
-                        .collect(Collectors.joining(", "));
                 final String blacklist = r.blacklist.stream()
                         .map(Class::getName)
                         .collect(Collectors.joining(", "));
@@ -78,7 +74,6 @@ public class CommandRegions extends CommandTreeBase {
                         .map(Class::getName)
                         .collect(Collectors.joining(", "));
                 final String msg = r.name + ":\n" +
-                        "  needs: " + needs + '\n' +
                         "  blacklist: " + blacklist + '\n' +
                         "  whitelist: " + whitelist;
                 sender.sendMessage(new TextComponentString(msg));

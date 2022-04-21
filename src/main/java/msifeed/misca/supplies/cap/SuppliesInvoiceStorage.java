@@ -20,7 +20,6 @@ public class SuppliesInvoiceStorage implements Capability.IStorage<ISuppliesInvo
         nbt.setLong("Last", instance.getLastDeliveryIndex());
         nbt.setLong("Int", instance.getDeliveryInterval());
         nbt.setInteger("MaxSeq", instance.getMaxDeliverySequence());
-        nbt.setInteger("Price", instance.getDeliveryPrice());
 
         final NBTTagList batchList = new NBTTagList();
         for (ISuppliesInvoice.Batch batch : instance.getBatches()) {
@@ -42,7 +41,6 @@ public class SuppliesInvoiceStorage implements Capability.IStorage<ISuppliesInvo
         instance.setLastDeliveryIndex(nbt.getLong("Last"));
         instance.setDeliveryInterval(nbt.getLong("Int"));
         instance.setMaxDeliverySequence(nbt.getInteger("MaxSeq"));
-        instance.setDeliveryPrice(nbt.getInteger("Price"));
 
         final NBTTagList batchList = nbt.getTagList("Batches", 10);
         for (int i = 0; i < batchList.tagCount(); i++) {

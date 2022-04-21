@@ -7,15 +7,11 @@
   "mixins": [
     "AdvancementManagerMixin",
     "BlockFrostedIceMixin",
-    "ContainerMixin",
     "EnchantmentHelperMixin",
     "EntityLivingBaseMixin",
-    "EntityPlayerMixin",
     "ForgeHooksMixins",
     "ItemFoodMixin",
     "MinecraftServerMixin",
-    "ModelRendererMixin",
-    "NBTTagLongArrayMixin",
     "PlayerListMixin",
     "PotionMixin",
     "SimpleChannelHandlerWrapperMixin"

@@ -1,4 +1,4 @@
-package msifeed.misca.charstate;
+package msifeed.misca.charsheet;
 
 import net.minecraft.util.ResourceLocation;
 

@@ -20,10 +20,6 @@ public interface ISuppliesInvoice {
 
     void setMaxDeliverySequence(int value);
 
-    int getDeliveryPrice();
-
-    void setDeliveryPrice(int value);
-
     List<Batch> getBatches();
 
     void addBatch(Batch batch);
@@ -40,7 +36,6 @@ public interface ISuppliesInvoice {
         this.setLastDeliveryIndex(System.currentTimeMillis());
         this.setDeliveryInterval(invoice.getDeliveryInterval());
         this.setMaxDeliverySequence(invoice.getMaxDeliverySequence());
-        this.setDeliveryPrice(invoice.getDeliveryPrice());
         this.getBatches().clear();
         for (Batch b : invoice.getBatches())
             this.addBatch(b);

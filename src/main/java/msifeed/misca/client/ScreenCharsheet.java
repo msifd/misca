@@ -4,10 +4,8 @@ import msifeed.mellow.MellowScreen;
 import msifeed.mellow.utils.Direction;
 import msifeed.mellow.utils.UiBuilder;
 import msifeed.mellow.view.button.ButtonLabel;
-import msifeed.mellow.view.text.Label;
 import msifeed.mellow.view.text.LabelTr;
 import msifeed.mellow.view.text.TextInput;
-import msifeed.misca.charsheet.CharResource;
 import msifeed.misca.charsheet.ICharsheet;
 import msifeed.misca.charsheet.cap.CharsheetProvider;
 import msifeed.misca.charsheet.cap.CharsheetSync;
@@ -51,15 +49,6 @@ public class ScreenCharsheet extends MellowScreen {
                     .add(new LabelTr("gui.misca.charsheet.wiki")).size(35, lineHeight).below().move(0, 4, 0)
                     .add(wikiInput).right().move(0, -2, 0)
                     .centerGroup(Direction.HORIZONTAL)
-                    .pinGroup()
-
-                .beginGroup()
-                    .add(new LabelTr("enum.misca.resource.ord")).size(35, lineHeight).below().move(0, 10, 0)
-                    .add(new Label("" + charsheet.resources().get(CharResource.ord))).right()
-                    .pinGroup()
-                .beginGroup()
-                    .add(new LabelTr("enum.misca.resource.seal")).size(35, lineHeight).below()
-                    .add(new Label("" + charsheet.resources().get(CharResource.seal))).right()
                     .pinGroup()
 
                 .add(() -> {

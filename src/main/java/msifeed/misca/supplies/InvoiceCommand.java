@@ -2,7 +2,6 @@ package msifeed.misca.supplies;
 
 import msifeed.misca.MiscaPerms;
 import msifeed.misca.MiscaThings;
-import msifeed.misca.charstate.handler.StaminaHandler;
 import msifeed.misca.supplies.cap.ISuppliesInvoice;
 import msifeed.misca.supplies.cap.SuppliesInvoiceProvider;
 import net.minecraft.command.CommandBase;
@@ -83,7 +82,6 @@ public class InvoiceCommand extends CommandBase {
         if (invoice != null) {
             invoice.setDeliveryInterval(interval * 60000);
             invoice.setMaxDeliverySequence(maxSequence);
-            invoice.setDeliveryPrice(price);
         }
 
         player.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, item);
@@ -174,9 +172,8 @@ public class InvoiceCommand extends CommandBase {
             return;
         }
 
-        final double stamina = StaminaHandler.getStaminaForDelivery(player);
         player.sendMessage(new TextComponentString("=== Supplies ==="));
-        SuppliesFlow.getRelativeInfoLines(invoice, stamina).stream()
+        SuppliesFlow.getRelativeInfoLines(invoice).stream()
                 .map(TextComponentString::new)
                 .forEach(player::sendMessage);
     }

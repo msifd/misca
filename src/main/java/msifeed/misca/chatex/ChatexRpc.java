@@ -2,7 +2,6 @@ package msifeed.misca.chatex;
 
 import msifeed.misca.Misca;
 import msifeed.misca.MiscaPerms;
-import msifeed.misca.charsheet.CharEffort;
 import msifeed.misca.chatex.client.LogsSaver;
 import msifeed.misca.chatex.client.TypingState;
 import msifeed.misca.chatex.format.RollFormat;
@@ -85,13 +84,6 @@ public class ChatexRpc {
         final ITextComponent formatted = RollFormat.dice(sender, spec, result);
         Misca.RPC.sendToAllAround(sender, range, rawPos, sender.getPosition(), formatted);
         LogDB.INSTANCE.log(sender, "dice", formatted);
-    }
-
-    public static void broadcastEffortRoll(EntityPlayerMP sender, CharEffort effort, int amount, int difficulty, boolean result) {
-        final int range = Misca.getSharedConfig().chat.rollRange;
-        final ITextComponent formatted = RollFormat.effort(sender, effort, amount, difficulty, result);
-        Misca.RPC.sendToAllAround(sender, range, rawPos, sender.getPosition(), formatted);
-        LogDB.INSTANCE.log(sender, "effort", formatted);
     }
 
     // // // // Server handlers
