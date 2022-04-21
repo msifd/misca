@@ -61,7 +61,7 @@ dependencies {
     minecraft 'net.minecraftforge:forge:1.12.2-14.23.5.2860'
 
     embed 'org.spongepowered:mixin:0.8.3'
-    embed 'org.mariadb.jdbc:mariadb-java-client:3.0.4'
+    embed 'org.mariadb.jdbc:mariadb-java-client:2.7.2'
 
     compile files('libs/customstuff4-1.12.2-0.6.9a-deobf.jar')
 
@@ -77,7 +77,6 @@ mixin {
 
 sourceSets {
     main {
-//        ext.refMap = "misca.refmap.json"
         resources {
             srcDir 'resources'
         }
@@ -96,6 +95,8 @@ jar {
             'TweakClass': 'org.spongepowered.asm.launch.MixinTweaker',
             'TweakOrder': 0,
             'MixinConfigs': 'mixins.misca.json',
+            'FMLCorePluginContainsFMLMod': 'true',
+            'ForceLoadAsMod': 'true'
     )
 }
 
