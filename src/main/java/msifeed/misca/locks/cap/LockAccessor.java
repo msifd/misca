@@ -38,7 +38,7 @@ public class LockAccessor {
             final BlockPos chunkPos = getChunkLockPos(world, pos);
             if (chunkPos == null) return false;
 
-            final Chunk chunk = world.getChunk(chunkPos);
+            final Chunk chunk = world.getChunkFromBlockCoords(chunkPos);
             final ILockable lock = ChunkLockableProvider.get(chunk).getLock(chunkPos);
             return lock != null && lock.isLocked();
         }
@@ -65,7 +65,7 @@ public class LockAccessor {
         } else {
             final BlockPos chunkPos = getChunkLockPos(world, pos);
             if (chunkPos == null) return null;
-            return new ChunkLockWrap(world.getChunk(chunkPos), chunkPos);
+            return new ChunkLockWrap(world.getChunkFromBlockCoords(chunkPos), chunkPos);
         }
     }
 

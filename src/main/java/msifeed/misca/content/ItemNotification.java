@@ -24,7 +24,7 @@ public class ItemNotification extends Item {
 
     public ItemNotification() {
         setRegistryName(Misca.MODID, ID);
-        setTranslationKey(ID);
+        setUnlocalizedName(ID);
         setCreativeTab(CreativeTabs.COMBAT);
 
         MinecraftForge.EVENT_BUS.register(this);

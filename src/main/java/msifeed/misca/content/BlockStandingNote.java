@@ -18,7 +18,7 @@ public class BlockStandingNote extends BlockStandingSign {
 
     public BlockStandingNote() {
         setRegistryName(Misca.MODID, ID);
-        setTranslationKey(ID);
+        setUnlocalizedName(ID);
     }
 
     @Nullable

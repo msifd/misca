@@ -35,17 +35,17 @@ public class ItemKey extends Item implements IUnlockTool {
     }
 
     public ItemKey() {
-        setTranslationKey(ID);
+        setUnlocalizedName(ID);
         setHasSubtypes(true);
         setCreativeTab(CreativeTabs.TOOLS);
     }
 
     @Override
-    public String getTranslationKey(ItemStack stack) {
+    public String getUnlocalizedName(ItemStack stack) {
         if (stack.getMetadata() == 0)
             return "item.blank_key";
         else
-            return super.getTranslationKey(stack);
+            return super.getUnlocalizedName(stack);
     }
 
     @Override

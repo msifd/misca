@@ -21,7 +21,7 @@ public class ItemSkeletalKey extends Item implements IUnlockTool {
 
     public ItemSkeletalKey() {
         setRegistryName(Misca.MODID, ID);
-        setTranslationKey(ID);
+        setUnlocalizedName(ID);
         setCreativeTab(CreativeTabs.TOOLS);
     }
 

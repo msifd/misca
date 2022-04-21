@@ -1,63 +1,50 @@
 buildscript {
     repositories {
+        maven { url = 'https://maven.minecraftforge.net/' }
+        maven { url = 'https://repo.spongepowered.org/repository/maven-public' }
         mavenCentral()
-        maven { url 'https://files.minecraftforge.net/maven' }
-        maven { url 'https://repo.spongepowered.org/repository/maven-public' }
     }
     dependencies {
-        classpath 'net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT'
-        classpath 'org.spongepowered:mixingradle:0.6-SNAPSHOT'
+        classpath 'net.minecraftforge.gradle:ForgeGradle:3.+'
+        classpath 'org.spongepowered:mixingradle:0.7-SNAPSHOT'
     }
 }
 
-repositories {
-    maven { url 'https://repo.spongepowered.org/repository/maven-public' }
-    maven { url 'https://www.cursemaven.com' }
-    maven { url 'https://dvs1.progwml6.com/files/maven' }
-    maven { url 'https://maven.enginehub.org/repo/' }
-}
-
-apply plugin: 'net.minecraftforge.gradle.forge'
+apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'org.spongepowered.mixin'
 
-project.ext.config = file('build.properties').withReader {
-    def prop = new Properties()
-    prop.load(it)
-    new ConfigSlurper().parse prop
-}
-
-version = "${config.mod_version}"
+version = project.mod_version
 group = 'msifeed.misca'
 archivesBaseName = 'misca'
 
-sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8'
-compileJava.options.encoding = compileTestJava.options.encoding = 'UTF-8'
+sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8' // Need this here so eclipse task generates correctly.
 
 minecraft {
-    version = '1.12.2-14.23.5.2847'
-    mappings = 'stable_39'
+    mappings channel: 'snapshot', version: '20171003-1.12'
 
-    useDepAts = true
-    makeObfSourceJar = false
+    // accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
 
-    runDir = 'run'
-    setClientRunArgs([
-            "--tweakClass", "org.spongepowered.asm.launch.MixinTweaker",
-            "--mixin", "mixins.misca.json",
-            "--username", "msifeed",
-    ])
-    setServerRunArgs([
-            "--tweakClass", "org.spongepowered.asm.launch.MixinTweaker",
-            "--mixin", "mixins.misca.json",
-    ])
-    setClientJvmArgs([
-            "-Dfml.coreMods.load=msifeed.misca.mixins.MiscaDepsPlugin",
-            "-Dlog4j.configurationFile=log4j2_fix.xml", // Fixes chat in 2021
-    ])
-    setServerJvmArgs([
-            "-Dfml.coreMods.load=msifeed.misca.mixins.MiscaDepsPlugin",
-            "-Dlog4j.configurationFile=log4j2_fix.xml", // Fixes chat in 2021
-    ])
+    // Default run configurations.
+    // These can be tweaked, removed, or duplicated as needed.
+    runs {
+        client {
+            workingDirectory project.file('run')
+
+            // Recommended logging data for a userdev environment
+            property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
+
+            // Recommended logging level for the console
+            property 'forge.logging.console.level', 'debug'
+        }
+
+        server {
+            // Recommended logging data for a userdev environment
+            property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
+
+            // Recommended logging level for the console
+            property 'forge.logging.console.level', 'debug'
+        }
+    }
 }
 
 configurations {
@@ -65,43 +52,35 @@ configurations {
     compile.extendsFrom(embed)
 }
 
-sourceSets {
-    main {
-        ext.refMap = "misca.refmap.json"
-        resources {
-            srcDir 'resources'
-        }
-    }
+repositories {
+    maven { url 'https://repo.spongepowered.org/repository/maven-public' }
+    maven { url 'https://maven.enginehub.org/repo/' }
 }
 
 dependencies {
-    embed 'org.spongepowered:mixin:0.8.2'
-    embed 'org.mariadb.jdbc:mariadb-java-client:2.7.2'
+    minecraft 'net.minecraftforge:forge:1.12.2-14.23.5.2860'
+
+    embed 'org.spongepowered:mixin:0.8.3'
+    embed 'org.mariadb.jdbc:mariadb-java-client:3.0.4'
 
     compile files('libs/customstuff4-1.12.2-0.6.9a-deobf.jar')
 
-    deobfCompile('com.sk89q.worldedit:worldedit-core:6.1.4-SNAPSHOT') {
+    compile fg.deobf('com.sk89q.worldedit:worldedit-core:6.1.4-SNAPSHOT') {
         exclude group: 'com.google.code.gson'
         exclude group: 'com.google.guava'
     }
 }
 
-processResources {
-    // this will ensure that this task is redone when the versions change.
-    inputs.property "version", project.version
-    inputs.property "mcversion", project.minecraft.version
+mixin {
+    add sourceSets.main, "misca.refmap.json"
+}
 
-    // replace stuff in mcmod.info, nothing else
-    from(sourceSets.main.resources.srcDirs) {
-        include 'mcmod.info'
-
-        // replace version and mcversion
-        expand 'version': project.version, 'mcversion': project.minecraft.version
-    }
-
-    // copy everything else except the mcmod.info
-    from(sourceSets.main.resources.srcDirs) {
-        exclude 'mcmod.info'
+sourceSets {
+    main {
+//        ext.refMap = "misca.refmap.json"
+        resources {
+            srcDir 'resources'
+        }
     }
 }
 
@@ -119,3 +98,5 @@ jar {
             'MixinConfigs': 'mixins.misca.json',
     )
 }
+
+jar.finalizedBy('reobfJar')

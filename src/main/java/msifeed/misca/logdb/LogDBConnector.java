@@ -19,7 +19,8 @@ public class LogDBConnector {
     private final MariaDbPoolDataSource pool;
 
     public LogDBConnector() throws Exception {
-        pool = new MariaDbPoolDataSource(LogDBConfig.host, LogDBConfig.port, LogDBConfig.database);
+        final String url = String.format("jdbc:mariadb://%s:%d/%s", LogDBConfig.host, LogDBConfig.port, LogDBConfig.database);
+        pool = new MariaDbPoolDataSource(url);
         pool.setUser(LogDBConfig.username);
         pool.setPassword(LogDBConfig.password);
         pool.setLoginTimeout(5);

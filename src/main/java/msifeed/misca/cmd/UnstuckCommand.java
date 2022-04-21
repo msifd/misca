@@ -35,7 +35,7 @@ public class UnstuckCommand extends CommandBase {
         final ChunkProviderServer provider = (ChunkProviderServer) world.getChunkProvider();
 
         provider.loadChunk(pos.getX() >> 4, pos.getZ() >> 4, () -> {
-            final Chunk chunk = world.getChunk(pos);
+            final Chunk chunk = world.getChunkFromBlockCoords(pos);
             boolean platform = false;
             boolean blocks = true;
 

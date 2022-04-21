@@ -41,7 +41,7 @@ public class ItemPick extends Item implements IUnlockTool {
         this.type = type;
 
         setRegistryName(Misca.MODID, ID_BASE + type.name());
-        setTranslationKey(ID_BASE + type.name());
+        setUnlocalizedName(ID_BASE + type.name());
         setCreativeTab(CreativeTabs.TOOLS);
     }
 

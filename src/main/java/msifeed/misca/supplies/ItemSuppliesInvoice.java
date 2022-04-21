@@ -26,7 +26,7 @@ public class ItemSuppliesInvoice extends Item {
 
     public ItemSuppliesInvoice() {
         setRegistryName(Misca.MODID, ID);
-        setTranslationKey(ID);
+        setUnlocalizedName(ID);
     }
 
     @Override

@@ -18,7 +18,7 @@ public class BlockWallNote extends BlockWallSign {
 
     public BlockWallNote() {
         setRegistryName(Misca.MODID, ID);
-        setTranslationKey(ID);
+        setUnlocalizedName(ID);
     }
 
     @Nullable

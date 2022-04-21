@@ -37,7 +37,7 @@ public class ItemLock extends Item {
         this.type = type;
 
         setRegistryName(Misca.MODID, ID_BASE + type.name());
-        setTranslationKey(ID_BASE + type.name());
+        setUnlocalizedName(ID_BASE + type.name());
         setHasSubtypes(true);
         setCreativeTab(CreativeTabs.TOOLS);
     }
