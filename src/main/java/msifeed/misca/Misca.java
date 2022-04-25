@@ -25,14 +25,12 @@ import net.minecraftforge.fml.client.event.ConfigChangedEvent;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
-import net.minecraftforge.fml.common.event.FMLFingerprintViolationEvent;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import org.apache.logging.log4j.LogManager;
 
-@Mod(modid = Misca.MODID, name = Misca.NAME, certificateFingerprint = "f78dcf6ac6370fa02c780db9d7aa4f47ada3072f")
+@Mod(modid = Misca.MODID, name = Misca.NAME)
 public class Misca {
     public static final String MODID = "misca";
     public static final String NAME = "Misca";
@@ -113,10 +111,5 @@ public class Misca {
     public void onConfigChangedEvent(ConfigChangedEvent.OnConfigChangedEvent event) {
         if (event.getModID().equals(MODID))
             ConfigManager.sync(MODID, Config.Type.INSTANCE);
-    }
-
-    @Mod.EventHandler
-    public void onFingerprintViolation(FMLFingerprintViolationEvent event) {
-        LogManager.getLogger(Misca.NAME).error("Invalid fingerprint detected!");
     }
 }
