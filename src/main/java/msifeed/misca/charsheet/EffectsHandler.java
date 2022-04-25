@@ -1,8 +1,6 @@
 package msifeed.misca.charsheet;
 
-import com.google.gson.reflect.TypeToken;
 import msifeed.misca.Misca;
-import msifeed.sys.sync.SyncChannel;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.potion.Potion;
@@ -16,18 +14,12 @@ public enum EffectsHandler {
 
     public static class ItemEffectsConfig extends HashMap<ResourceLocation, ItemEffectInfo[]> {
     }
-    public static final SyncChannel<ItemEffectsConfig> ITEM_EFFECTS
-            = new SyncChannel<>(Misca.RPC, "item_effects.json", TypeToken.get(ItemEffectsConfig.class));
-
-    public static void sync() throws Exception {
-        ITEM_EFFECTS.sync();
-    }
 
     public void onFoodEaten(EntityPlayer player, ItemStack stack) {
         if (player.world.isRemote) return;
         if (player.isCreative()) return;
 
-        final HashMap<ResourceLocation, ItemEffectInfo[]> config = ITEM_EFFECTS.get();
+        final HashMap<ResourceLocation, ItemEffectInfo[]> config = Misca.ITEM_EFFECTS.get();
         final ItemEffectInfo[] itemEffects = config.get(stack.getItem().getRegistryName());
 
         if (itemEffects == null)

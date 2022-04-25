@@ -38,6 +38,8 @@ public class Misca {
     public static final RpcChannel RPC = new RpcChannel(MODID + ":rpc");
     public static final SyncChannel<MiscaSharedConfig> SHARED
             = new SyncChannel<>(RPC, "shared.json", TypeToken.get(MiscaSharedConfig.class));
+    public static final SyncChannel<EffectsHandler.ItemEffectsConfig> ITEM_EFFECTS
+            = new SyncChannel<>(RPC, "item_effects.json", TypeToken.get(EffectsHandler.ItemEffectsConfig.class));
 
     private final Chatex chatex = new Chatex();
     private final Environ environ = new Environ();
@@ -80,7 +82,7 @@ public class Misca {
 
     public static void syncConfig() throws Exception {
         SHARED.sync();
-        EffectsHandler.sync();
+        ITEM_EFFECTS.sync();
         LogDB.reload();
         RegionControl.sync();
     }
