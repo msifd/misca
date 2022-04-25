@@ -175,6 +175,9 @@ public class ChatexScreen extends MellowScreen implements ITabCompleter {
     }
 
     private void sendCommand(String msg) {
+        if (Misca.getSharedConfig().chat.trimCommandSlash)
+            msg = msg.substring(1);
+
         msg = net.minecraftforge.event.ForgeEventFactory.onClientSendMessage(msg);
         if (msg.isEmpty()) return;
         if (ClientCommandHandler.instance.executeCommand(mc.player, msg) != 0) return;

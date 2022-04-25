@@ -9,17 +9,8 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.translation.I18n;
 
 public enum CharSkill {
-    psychology,
-    management,
-    thievery,
-    survival,
-    hardworking,
-    biology,
-    engineering,
-    sorcery,
-    research,
-    blacksmith,
-    magic;
+    thievery
+    ;
 
     public static final IAttribute MOD = new RangedAttribute(null, Misca.MODID + ".skillMod", 0, -5, 5);
 

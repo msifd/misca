@@ -3,6 +3,7 @@
     "wikiUrlBase": "https://wiki.ariadna.su/w/",
     "offtopRange": 15,
     "rollRange": 15,
+    "trimCommandSlash": true,
     "speechRanges": [
       2,
       5,
